@@ -47,6 +47,7 @@
   </dependencies>
 
   <build>
+    <finalName>TACS-G4</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -119,7 +120,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>Main</mainClass>
+              <mainClass>app.App</mainClass>
             </manifest>
           </archive>
         </configuration>

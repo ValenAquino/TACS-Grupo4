@@ -1,4 +1,10 @@
-FROM ubuntu:latest
-LABEL authors="lucas"
+FROM maven:3.9.9-eclipse-temurin-17
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+
+COPY . .
+
+RUN mvn clean verify
+
+EXPOSE 8080
+CMD ["java", "-jar", "target/TACS-G4.jar"]

@@ -9,9 +9,9 @@ import java.util.List;
 @Getter
 @Setter
 public class FiguritaIntercambiable {
-  public Figurita figurita;
-  public Integer cantidadDisponible;
-  public List<MetodoIntercambio> metodos;
+    private Figurita figurita;
+    private Integer cantidadDisponible;
+    private List<MetodoIntercambio> metodos;
 
 
 }

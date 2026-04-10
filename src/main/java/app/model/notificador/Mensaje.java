@@ -1,8 +1,14 @@
 package app.model.notificador;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@Getter
+@Setter
 public class Mensaje {
-  public String cuerpo;
-  public LocalDateTime fecha;
+  private String cuerpo;
+  private LocalDateTime fecha;
 }

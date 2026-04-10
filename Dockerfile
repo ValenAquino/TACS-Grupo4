@@ -7,8 +7,8 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-# Compilamos y generamos el JAR sin correr tests
-RUN mvn clean package -DskipTests
+# Compilamos, corremos tests y validaciones, y generamos el JAR
+RUN mvn verify
 
 # --- Etapa de runtime ---
 # Se usa JRE para ejecutar

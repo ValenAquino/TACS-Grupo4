@@ -10,8 +10,8 @@ import java.util.List;
 @Setter
 public class Usuario {
   
-  public Coleccion coleccion;
-  public String telefono;
-  public List<Integer> calificaciones;
+  private Coleccion coleccion;
+  private String telefono;
+  private List<Integer> calificaciones;
 
 }

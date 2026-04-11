@@ -11,8 +11,8 @@ import java.util.List;
 @Setter
 public class Coleccion {
 
-  public List<Figurita> faltantes = new ArrayList<Figurita>();
-  public List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
+  private List<Figurita> faltantes = new ArrayList<Figurita>();
+  private List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
 
 
 }

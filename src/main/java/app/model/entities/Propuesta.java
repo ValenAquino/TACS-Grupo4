@@ -10,11 +10,11 @@ import java.util.List;
 @Setter
 public class Propuesta {
 
-  public Usuario usuarioOrigen;
-  public Usuario usuarioDestino;
-  public List<Figurita> figuritasOfrecidas;
-  public Figurita figuritaBuscada;
-  public EstadoProceso estado;
+  private Usuario usuarioOrigen;
+  private Usuario usuarioDestino;
+  private List<Figurita> figuritasOfrecidas;
+  private Figurita figuritaBuscada;
+  private EstadoProceso estado;
 
 
 }

@@ -9,19 +9,19 @@ import lombok.AllArgsConstructor;
 @Getter
 @Setter
 public class Subasta {
-  private Usuario usuario;
-  private LocalDateTime fechaInicio;
-  private LocalDateTime fechaCierre;
-  private Figurita figuritaSubastada;
-  private Propuesta propuestaGanadora;
+    private Usuario usuario;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaCierre;
+    private Figurita figuritaSubastada;
+    private Propuesta propuestaGanadora;
 
-  public Boolean estaActivo() {
-    final LocalDateTime fechaActual = LocalDateTime.now();
+    public Boolean estaActivo() {
+        final LocalDateTime fechaActual = LocalDateTime.now();
 
-    return fechaActual.isAfter(fechaInicio) && fechaActual.isBefore(fechaCierre);
-  }
+        return fechaActual.isAfter(fechaInicio) && fechaActual.isBefore(fechaCierre);
+    }
 
-  public void algoritmoSeleccionador(Propuesta propuesta) {
-    //TODO
-  }
+    public void algoritmoSeleccionador(Propuesta propuesta) {
+        //TODO
+    }
 }

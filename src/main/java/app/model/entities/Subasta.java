@@ -21,7 +21,17 @@ public class Subasta {
         return fechaActual.isAfter(fechaInicio) && fechaActual.isBefore(fechaCierre);
     }
 
-    public void algoritmoSeleccionador(Propuesta propuesta) {
-        //TODO
+    public Boolean algoritmoSeleccionador(Propuesta propuesta) {
+        Propuesta propuestaActual = this.propuestaGanadora;
+
+        //Dejo la funcion por si en futuras entregas se pone una rareza de figuritas
+
+        return propuesta.getFiguritasOfrecidas().size() > propuestaActual.getFiguritasOfrecidas().size();
+    }
+
+    void setPropuestaGanadora(Propuesta propuesta) {
+        if(this.algoritmoSeleccionador(propuesta)) {
+            this.propuestaGanadora = propuesta;
+        }
     }
 }

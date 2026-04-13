@@ -1,9 +1,10 @@
 package app.repositories;
 
-import org.springframework.stereotype.Repository;
+import app.model.entities.Usuario;
 
-@Repository
-public class RepositorioUsuarios {
+public interface RepositorioUsuarios {
 
+    Usuario findById(String id);
 
+    void save(Usuario usuario);
 }

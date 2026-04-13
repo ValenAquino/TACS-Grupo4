@@ -1,5 +1,5 @@
 package app.model.entities;
 
 public enum Seleccion {
-  ARGENTINA
+  ARGENTINA, FRANCIA, BRASIL, ESPAÑA, ALEMANIA
 }

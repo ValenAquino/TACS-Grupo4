@@ -1,16 +1,10 @@
 package app.repositories;
 
 import app.model.entities.Coleccion;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public class RepositorioColecciones {
+public interface RepositorioColecciones {
 
-  public Coleccion buscarPorId(String colId) {
-    return null;
-  }
+  public Coleccion buscarPorId(String colId);
 
-  public Coleccion save(Coleccion coleccion) {
-    return null;
-  }
+  public void save(Coleccion coleccion);
 }

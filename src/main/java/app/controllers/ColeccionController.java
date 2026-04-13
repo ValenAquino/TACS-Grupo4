@@ -2,7 +2,9 @@ package app.controllers;
 
 import app.dto.TemporalDto;
 import app.dto.request.FaltanteRequest;
+import app.dto.request.RepetidaRequest;
 import app.model.entities.Figurita;
+import app.model.entities.FiguritaIntercambiable;
 import app.servicios.ColeccionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +20,15 @@ public class ColeccionController {
     }
 
     @PostMapping("/{col_id}/repetidas")
-    public ResponseEntity<TemporalDto> agregarRepetida(@PathVariable String col_id) {
-        return ResponseEntity.ok(new TemporalDto("POST /coleccion/" + col_id + "/repetidas"));
+    public ResponseEntity<TemporalDto> agregarRepetida(
+        @PathVariable String col_id,
+        @RequestBody RepetidaRequest request) {
+
+        FiguritaIntercambiable repetida = coleccionService.agregarRepetida(col_id,
+            request.getNumeroFigurita(), request.getCantidadDisponible(), request.getModosIntercambio());
+
+
+        return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/{col_id}/faltantes")
@@ -35,5 +44,6 @@ public class ColeccionController {
 
         return ResponseEntity.status(201).build();
     }
+
 
 }

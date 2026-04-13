@@ -13,5 +13,4 @@ public class FiguritaIntercambiable {
     private Integer cantidadDisponible;
     private List<MetodoIntercambio> metodos;
 
-
 }

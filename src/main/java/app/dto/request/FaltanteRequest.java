@@ -7,6 +7,6 @@ import lombok.Getter;
 public class FaltanteRequest {
 
   @JsonProperty("fig_id")
-  private Long figId;
+  private String figId;
 
 }

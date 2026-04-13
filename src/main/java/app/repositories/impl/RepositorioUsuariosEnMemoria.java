@@ -1,8 +1,10 @@
 package app.repositories.impl;
 
+import app.model.entities.Figurita;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuarios;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +19,16 @@ public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
     }
 
     @Override
+    public List<Usuario> buscarPorFiguritaFaltante(Figurita figurita) {
+        return this.storage.values()
+            .stream()
+            .filter(u -> u.getColeccion().tieneFaltante(figurita))
+            .toList();
+    }
+
+    @Override
     public void save(Usuario usuario) {
         storage.put(usuario.getId(), usuario);
     }
+
 }

@@ -22,7 +22,7 @@ public class Coleccion {
   }
 
   public void agregarFaltante(Figurita faltante) {
-    if(existeFaltante(faltante)) {
+    if(tieneFaltante(faltante)) {
       throw new FiguritaDuplicadaException("Figurita ya listada como faltante");
     }
 
@@ -43,7 +43,9 @@ public class Coleccion {
     repetidas.add(repetida);
   }
 
-  private boolean existeFaltante(Figurita figurita) {
+  public boolean tieneFaltante(Figurita figurita) {
     return this.faltantes.contains(figurita);
   }
+
+
 }

@@ -1,13 +1,14 @@
 package app.servicios;
 
-import app.model.entities.Coleccion;
-import app.model.entities.Figurita;
-import app.model.entities.FiguritaIntercambiable;
-import app.model.entities.MetodoIntercambio;
+import app.model.entities.*;
+import app.model.notificador.Mensaje;
+import app.model.notificador.Notificador;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioUsuarios;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,12 +16,18 @@ public class ColeccionService {
 
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
+  private final RepositorioUsuarios repositorioUsuarios;
+  private final Notificador notificador;
 
   public ColeccionService(RepositorioFiguritas repositorioFiguritas,
-                          RepositorioColecciones repositorioColecciones
+                          RepositorioColecciones repositorioColecciones,
+                          RepositorioUsuarios repositorioUsuarios,
+                          Notificador notificador
   ) {
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioColecciones = repositorioColecciones;
+    this.repositorioUsuarios = repositorioUsuarios;
+    this.notificador = notificador;
   }
 
   public Figurita agregarFaltante(String colId, String figId) {
@@ -46,8 +53,24 @@ public class ColeccionService {
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.save(coleccion);
 
-    //Enviar notificaciones
+    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
+
+    this.notificarInteresados(interesados, repetida);
 
     return repetida;
+  }
+
+  private void notificarInteresados(List<Usuario> interesados, FiguritaIntercambiable repetida) {
+    interesados.forEach(u -> {
+
+      String cuerpo = String.format(
+          "Nueva figurita disponible!\nNumero: %d\nCantidad: %d",
+          repetida.getFigurita().getId(),
+          repetida.getCantidadDisponible()
+      );
+
+      Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
+      this.notificador.enviarNotificacion(mensaje, u);
+    });
   }
 }

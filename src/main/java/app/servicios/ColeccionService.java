@@ -17,17 +17,17 @@ public class ColeccionService {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioUsuarios repositorioUsuarios;
-  private final Notificador notificador;
+  //private final Notificador notificador;
 
   public ColeccionService(RepositorioFiguritas repositorioFiguritas,
                           RepositorioColecciones repositorioColecciones,
-                          RepositorioUsuarios repositorioUsuarios,
-                          Notificador notificador
+                          RepositorioUsuarios repositorioUsuarios
+
   ) {
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioColecciones = repositorioColecciones;
     this.repositorioUsuarios = repositorioUsuarios;
-    this.notificador = notificador;
+    //this.notificador = notificador;
   }
 
   public Figurita agregarFaltante(String colId, String figId) {
@@ -53,9 +53,9 @@ public class ColeccionService {
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.save(coleccion);
 
-    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
-
-    this.notificarInteresados(interesados, repetida);
+//    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
+//
+//    this.notificarInteresados(interesados, repetida);
 
     return repetida;
   }
@@ -64,13 +64,13 @@ public class ColeccionService {
     interesados.forEach(u -> {
 
       String cuerpo = String.format(
-          "Nueva figurita disponible!\nNumero: %d\nCantidad: %d",
+          "Nueva figurita disponible!%nNumero: %d%nCantidad: %d",
           repetida.getFigurita().getId(),
           repetida.getCantidadDisponible()
       );
 
       Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
-      this.notificador.enviarNotificacion(mensaje, u);
+      //this.notificador.enviarNotificacion(mensaje, u);
     });
   }
 }

@@ -11,7 +11,7 @@ public class RepetidaRequest {
   @JsonProperty("cantidad_disponible")
   public Integer cantidadDisponible;
 
-  @JsonProperty("fid_id")
+  @JsonProperty("fig_id")
   public String figId;
 
   @JsonProperty("modos_intercambio")

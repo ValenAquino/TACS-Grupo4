@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/coleccion")
+@RequestMapping("/colecciones")
 public class ColeccionController {
 
     private final ColeccionService coleccionService;
@@ -19,26 +19,25 @@ public class ColeccionController {
         this.coleccionService = coleccionService;
     }
 
-    @PostMapping("/{col_id}/repetidas")
-    public ResponseEntity<TemporalDto> agregarRepetida(
-        @PathVariable String col_id,
-        @RequestBody RepetidaRequest request) {
-
-        FiguritaIntercambiable repetida = coleccionService.agregarRepetida(col_id,
-            request.getFigId(), request.getCantidadDisponible(), request.getModosIntercambio());
-
-        return ResponseEntity.status(201).build();
-    }
-
     @PostMapping("/{col_id}/faltantes")
     public ResponseEntity<Figurita> agregarFaltante(
         @PathVariable String col_id,
         @RequestBody FaltanteRequest request) {
 
-        Figurita faltante = coleccionService.agregarFaltante(col_id, request.getFigId());
+        coleccionService.agregarFaltante(col_id, request.getFigId());
 
         return ResponseEntity.status(201).build();
     }
 
+    @PostMapping("/{col_id}/repetidas")
+    public ResponseEntity<TemporalDto> agregarRepetida(
+        @PathVariable String col_id,
+        @RequestBody RepetidaRequest request) {
+
+        coleccionService.agregarRepetida(col_id,
+            request.getFigId(), request.getCantidadDisponible(), request.getModosIntercambio());
+
+        return ResponseEntity.status(201).build();
+    }
 
 }

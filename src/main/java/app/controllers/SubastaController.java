@@ -42,7 +42,9 @@ public class SubastaController {
         Figurita figuritaSubastada = this.repoFigurita.findById((String) body.get("figuritaId"));
 
         LocalDateTime fechaInicio =  LocalDateTime.now();
-        LocalDateTime fechaFin = fechaInicio.plusMinutes((long) body.get("duracion"));
+
+        Number duracion = (Number) body.get("duracion");
+        LocalDateTime fechaFin = fechaInicio.plusMinutes(duracion.longValue());
 
         Subasta nuevaSubasta = new Subasta(usuario, fechaInicio, fechaFin, figuritaSubastada, null);
 
@@ -65,9 +67,9 @@ public class SubastaController {
         Boolean hayDuplicados = rawFiguritasId.size() != rawFiguritasId.stream().distinct().count();
         Boolean esLaFiguritaSubastada = Objects.equals(figuritaBuscada.getId(), subasta.getFiguritaSubastada().getId());
 
-        if (hayDuplicados || esLaFiguritaSubastada) {
+        if (hayDuplicados || !esLaFiguritaSubastada) {
             //El listado debe tener figuritas distintas
-            return ResponseEntity.badRequest().body(new TemporalDto("POST /subastas/" + sub_id + "/propuestas"));
+            return ResponseEntity.badRequest().body(new TemporalDto("Bad request: hayDuplicado " + hayDuplicados + ", esLaFiguritaSubastada " + esLaFiguritaSubastada));
         }
 
         rawFiguritasId.forEach(figuritaId -> {

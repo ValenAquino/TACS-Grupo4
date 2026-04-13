@@ -2,6 +2,7 @@ package app.controllers;
 
 import app.dto.OperacionesDto;
 import app.dto.TemporalDto;
+import app.model.entities.Sugerencia;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuarios;
 import app.servicios.UsuarioService;
@@ -12,6 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -43,13 +48,27 @@ public class UsuarioController {
 
         this.usuarioRepositorio.save(usuario);
 
-        return ResponseEntity.ok(new TemporalDto("POST /usuarios/" + user_id + "/calificaciones"));
+        return ResponseEntity.ok(new TemporalDto("Nueva calificacion: " + usuario.getCalificacionMedia()));
     }
 
     @GetMapping("/{user_id}/sugerencias")
     public ResponseEntity<TemporalDto> getSugerencias(@PathVariable String user_id) {
+        Usuario usuarioObjetivo = this.usuarioRepositorio.findById(user_id);
+        List<Usuario> usuarios = this.usuarioRepositorio.findAll();
+        List<Sugerencia> sugerencias = new ArrayList<>();
 
+        usuarios.forEach(usuario -> {
+            Sugerencia sugerencia = new Sugerencia(usuario, new ArrayList<>());
 
-        return ResponseEntity.ok(new TemporalDto("GET /usuarios/" + user_id + "/sugerencias"));
+            usuario.getColeccion().getRepetidas().forEach(repetida -> {
+                if(usuarioObjetivo.getColeccion().getFaltantes().contains(repetida.getFigurita())){
+                    sugerencia.getFiguritasSugeridas().add(repetida.getFigurita());
+                }
+            });
+
+            sugerencias.add(sugerencia);
+        });
+
+        return ResponseEntity.ok(new TemporalDto("Sugerencias totales: " + sugerencias.size()));
     }
 }

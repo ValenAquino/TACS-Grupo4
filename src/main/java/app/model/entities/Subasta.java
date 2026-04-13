@@ -33,6 +33,11 @@ public class Subasta {
     public void algoritmoSeleccionador(Propuesta propuesta) {
         Propuesta propuestaActual = this.propuestaGanadora;
 
+        if(propuestaActual == null) {
+            this.propuestaGanadora = propuesta;
+            return;
+        }
+
         if(propuesta.getFiguritasOfrecidas().size() > propuestaActual.getFiguritasOfrecidas().size()) {
             this.propuestaGanadora = propuesta;
         }

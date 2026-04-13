@@ -22,7 +22,7 @@ public class RepositorioSubastasEnMemoria implements RepositorioSubastas {
 
     @Override
     public Subasta findById(String id) {
-        return storage.get()
+        return storage.get(id);
     }
 
     @Override

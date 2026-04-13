@@ -6,6 +6,9 @@ import app.model.entities.Figurita;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
+import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioSubastas;
+import app.repositories.RepositorioUsuarios;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/subastas")
@@ -35,7 +39,7 @@ public class SubastaController {
     @PostMapping
     public ResponseEntity<TemporalDto> crearSubasta(@RequestHeader("id") String id, @RequestBody Map<String,Object> body) {
         Usuario usuario = this.repoUser.findById(id);
-        Figurita figuritaSubastada = this.repoFigurita.findById(body.get("figuritaId"));
+        Figurita figuritaSubastada = this.repoFigurita.findById((String) body.get("figuritaId"));
 
         LocalDateTime fechaInicio =  LocalDateTime.now();
         LocalDateTime fechaFin = fechaInicio.plusMinutes((long) body.get("duracion"));
@@ -50,16 +54,16 @@ public class SubastaController {
     @PostMapping("/{sub_id}/propuestas")
     public ResponseEntity<TemporalDto> ofertarEnSubasta(@PathVariable String sub_id, @RequestHeader("id") String id, @RequestBody Map<String,Object> body) {
         Usuario usuarioOrigen = this.repoUser.findById(id);
-        Usuario usuarioDestino = this.repoUser.findById(body.get("usuarioId"));
-        Figurita figuritaBuscada = this.repoFigurita.findById(body.get("figuritaBuscadaId"));
+        Usuario usuarioDestino = this.repoUser.findById((String) body.get("usuarioId"));
+        Figurita figuritaBuscada = this.repoFigurita.findById((String) body.get("figuritaBuscadaId"));
         List<Figurita> figuritasOfrecidas = new ArrayList<>();
 
         Subasta subasta = this.repoSubasta.findById(sub_id);
 
-        List<LinkedHashMap<String, Object>> rawFiguritasId = (ArrayList<LinkedHashMap<String, Object>>) body.get("figuritasOfrecidas");
+        List<Object> rawFiguritasId = (ArrayList<Object>) body.get("figuritasOfrecidas");
 
         Boolean hayDuplicados = rawFiguritasId.size() != rawFiguritasId.stream().distinct().count();
-        Boolean esLaFiguritaSubastada = figuritaBuscada.getId() == subasta.getFiguritaSubastada().getId();
+        Boolean esLaFiguritaSubastada = Objects.equals(figuritaBuscada.getId(), subasta.getFiguritaSubastada().getId());
 
         if (hayDuplicados || esLaFiguritaSubastada) {
             //El listado debe tener figuritas distintas
@@ -67,7 +71,7 @@ public class SubastaController {
         }
 
         rawFiguritasId.forEach(figuritaId -> {
-            Figurita figurita = this.repoFigurita.findById(figuritaId);
+            Figurita figurita = this.repoFigurita.findById((String) figuritaId);
             figuritasOfrecidas.add(figurita);
         });
 

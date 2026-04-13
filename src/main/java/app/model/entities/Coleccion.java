@@ -14,9 +14,15 @@ public class Coleccion {
   private List<Figurita> faltantes = new ArrayList<Figurita>();
   private List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
 
+  public Coleccion() {}
+
+  public Coleccion(String id) {
+    this.id = id;
+  }
+
   public void agregarFaltante(Figurita faltante) {
     if(existeFaltante(faltante)) {
-      //tirar excepcion
+      throw new RuntimeException("Figurita ya listada como faltante");
     }
 
     this.faltantes.add(faltante);

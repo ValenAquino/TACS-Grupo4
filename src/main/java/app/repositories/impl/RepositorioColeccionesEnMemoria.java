@@ -18,7 +18,7 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
         .findFirst().orElse(null);
 
     if(col == null) {
-      //Tirar excepcion
+      throw new RuntimeException("No se encontro la coleccion");
     }
 
     return col;

@@ -4,6 +4,8 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
+import app.repositories.RepositorioColecciones;
+import app.repositories.RepositorioFiguritas;
 import app.repositories.impl.RepositorioColeccionesEnMemoria;
 import app.repositories.impl.RepositorioFiguritasEnMemoria;
 import org.springframework.stereotype.Service;
@@ -13,11 +15,11 @@ import java.util.List;
 @Service
 public class ColeccionService {
 
-  private final RepositorioFiguritasEnMemoria repositorioFiguritas;
-  private final RepositorioColeccionesEnMemoria repositorioColecciones;
+  private final RepositorioFiguritas repositorioFiguritas;
+  private final RepositorioColecciones repositorioColecciones;
 
-  public ColeccionService(RepositorioFiguritasEnMemoria repositorioFiguritas,
-                          RepositorioColeccionesEnMemoria repositorioColecciones
+  public ColeccionService(RepositorioFiguritas repositorioFiguritas,
+                          RepositorioColecciones repositorioColecciones
   ) {
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioColecciones = repositorioColecciones;
@@ -26,17 +28,7 @@ public class ColeccionService {
   public Figurita agregarFaltante(String colId, String figId) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
 
-    if (coleccion == null) {
-      //Agregar excepciones
-      return null;
-    }
-
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
-
-    if(faltante == null) {
-      //Agregar excepciones
-      return null;
-    }
 
     coleccion.agregarFaltante(faltante);
 

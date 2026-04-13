@@ -25,8 +25,7 @@ public class ColeccionController {
         @RequestBody RepetidaRequest request) {
 
         FiguritaIntercambiable repetida = coleccionService.agregarRepetida(col_id,
-            request.getNumeroFigurita(), request.getCantidadDisponible(), request.getModosIntercambio());
-
+            request.getFigId(), request.getCantidadDisponible(), request.getModosIntercambio());
 
         return ResponseEntity.status(201).build();
     }

@@ -6,8 +6,6 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.impl.RepositorioColeccionesEnMemoria;
-import app.repositories.impl.RepositorioFiguritasEnMemoria;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

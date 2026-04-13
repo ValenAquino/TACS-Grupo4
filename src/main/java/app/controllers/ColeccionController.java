@@ -37,10 +37,6 @@ public class ColeccionController {
 
         Figurita faltante = coleccionService.agregarFaltante(col_id, request.getFigId());
 
-        if(faltante == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.status(201).build();
     }
 

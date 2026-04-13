@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.repositories.RepositorioColecciones;
 import org.springframework.stereotype.Repository;
@@ -18,7 +19,7 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
         .findFirst().orElse(null);
 
     if(col == null) {
-      throw new RuntimeException("No se encontro la coleccion");
+      throw new NotFoundException("No se encontro la coleccion");
     }
 
     return col;

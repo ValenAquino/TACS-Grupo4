@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.repositories.RepositorioFiguritas;
@@ -20,7 +21,7 @@ public class RepositorioFiguritasEnMemoria implements RepositorioFiguritas {
         .findFirst().orElse(null);
 
     if(figurita == null) {
-      throw new RuntimeException("No se encontro la figurita");
+      throw new NotFoundException("No se encontro la figurita");
     }
 
     return figurita;

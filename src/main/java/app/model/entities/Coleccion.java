@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.FiguritaDuplicadaException;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class Coleccion {
 
   public void agregarFaltante(Figurita faltante) {
     if(existeFaltante(faltante)) {
-      throw new RuntimeException("Figurita ya listada como faltante");
+      throw new FiguritaDuplicadaException("Figurita ya listada como faltante");
     }
 
     this.faltantes.add(faltante);

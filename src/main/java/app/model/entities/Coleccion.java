@@ -9,7 +9,11 @@ import java.util.List;
 @Setter
 public class Coleccion {
 
-  private List<Figurita> faltantes = new ArrayList<>();
-  private List<FiguritaIntercambiable> repetidas = new ArrayList<>();
+  private List<Figurita> faltantes = new ArrayList<Figurita>();
+  private List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
+
+  public void agregarFaltante(Figurita faltante) {
+    this.faltantes.add(faltante);
+  }
 
 }

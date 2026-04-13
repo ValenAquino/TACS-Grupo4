@@ -1,15 +1,21 @@
 package app.controllers;
 
 import app.dto.TemporalDto;
+import app.dto.request.FaltanteRequest;
+import app.model.entities.Figurita;
+import app.servicios.ColeccionService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/coleccion")
 public class ColeccionController {
+
+    private final ColeccionService coleccionService;
+
+    public ColeccionController(ColeccionService coleccionService) {
+        this.coleccionService = coleccionService;
+    }
 
     @PostMapping("/{col_id}/repetidas")
     public ResponseEntity<TemporalDto> agregarRepetida(@PathVariable String col_id) {
@@ -17,8 +23,17 @@ public class ColeccionController {
     }
 
     @PostMapping("/{col_id}/faltantes")
-    public ResponseEntity<TemporalDto> agregarFaltante(@PathVariable String col_id) {
-        return ResponseEntity.ok(new TemporalDto("POST /coleccion/" + col_id + "/faltantes"));
+    public ResponseEntity<Figurita> agregarFaltante(
+        @PathVariable String col_id,
+        @RequestBody FaltanteRequest request) {
+
+        Figurita faltante = coleccionService.agregarFaltante(col_id, request.getFigId());
+
+        if(faltante == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.status(201).build();
     }
 
 }

@@ -2,11 +2,14 @@ package app.controllers;
 
 import app.dto.OperacionesDto;
 import app.dto.TemporalDto;
+import app.model.entities.Usuario;
+import app.repositories.RepositorioUsuarios;
 import app.servicios.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final RepositorioUsuarios usuarioRepositorio;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, RepositorioUsuarios usuarioRepositorio) {
+        this.usuarioRepositorio = usuarioRepositorio;
         this.usuarioService = usuarioService;
     }
 
@@ -30,8 +35,21 @@ public class UsuarioController {
     }
 
     @PostMapping("/{user_id}/calificaciones")
-    public ResponseEntity<TemporalDto> calificarUsuario(@PathVariable String user_id) {
+    public ResponseEntity<TemporalDto> calificarUsuario(@PathVariable String user_id, @RequestBody String calificacion) {
+
+        Usuario usuario = this.usuarioRepositorio.findById(user_id);
+
+        usuario.getCalificaciones().add(Integer.parseInt(calificacion));
+
+        this.usuarioRepositorio.save(usuario);
+
         return ResponseEntity.ok(new TemporalDto("POST /usuarios/" + user_id + "/calificaciones"));
     }
 
+    @GetMapping("/{user_id}/sugerencias")
+    public ResponseEntity<TemporalDto> getSugerencias(@PathVariable String user_id) {
+
+
+        return ResponseEntity.ok(new TemporalDto("GET /usuarios/" + user_id + "/sugerencias"));
+    }
 }

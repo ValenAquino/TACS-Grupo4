@@ -14,5 +14,8 @@ public class Coleccion {
   private List<Figurita> faltantes = new ArrayList<Figurita>();
   private List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
 
+  public void agregarFaltante(Figurita faltante) {
+    this.faltantes.add(faltante);
+  }
 
 }

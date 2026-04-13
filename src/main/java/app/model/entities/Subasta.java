@@ -1,14 +1,15 @@
 package app.model.entities;
 
-import lombok.Getter;
-import lombok.Setter;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 @Getter
 @Setter
 public class Subasta {
+    private String id;
     private Usuario usuario;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaCierre;
@@ -17,7 +18,6 @@ public class Subasta {
 
     public Boolean estaActivo() {
         final LocalDateTime fechaActual = LocalDateTime.now();
-
         return fechaActual.isAfter(fechaInicio) && fechaActual.isBefore(fechaCierre);
     }
 

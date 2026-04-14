@@ -6,6 +6,7 @@ import app.exceptions.NotFoundException;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
+import app.model.entities.Sugerencia;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.model.notificador.Notificacion;
@@ -14,6 +15,8 @@ import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
 import app.servicios.UsuarioService;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +61,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
     }
-
+//para cuando quiere realizar una propuesta
     @Override
     public List<FiguritaIntercambiableDto> getIntercambiablesUsuario(String userId) {
         Usuario usuario = repositorioUsuarios.findById(userId);
@@ -80,6 +83,44 @@ public class UsuarioServiceImpl implements UsuarioService {
             fi.getMetodos(),
             fi.getUsuarioId()
         );
+    }
+    public Number agregarCalificacion(Integer calificacion, String userId) {
+        Usuario usuario = this.repositorioUsuarios.findById(userId);
+
+        if(calificacion == null) {
+            throw new RuntimeException("La calificacion no puede ser nula");
+        }
+        if(calificacion < 0 || calificacion > 10) {
+            throw new RuntimeException("La calificacion debe estar entre 0 y 10");
+        }
+
+        usuario.getCalificaciones().add(calificacion);
+
+        this.repositorioUsuarios.save(usuario);
+        return usuario.getCalificacionMedia();
+    }
+
+    @Override
+    public List<Sugerencia> getSugerencias(String userId) {
+        Usuario usuarioObjetivo = this.repositorioUsuarios.findById(userId);
+        List<Usuario> usuarios = this.repositorioUsuarios.findAll();
+        List<Sugerencia> sugerencias = new ArrayList<>();
+
+        usuarios.forEach(usuario -> {
+            Sugerencia sugerencia = new Sugerencia(usuario, new ArrayList<>());
+
+            usuario.getColeccion().getRepetidas().forEach(repetida -> {
+                if(usuarioObjetivo.getColeccion().getFaltantes().contains(repetida.getFigurita())){
+                    sugerencia.getFiguritasSugeridas().add(repetida.getFigurita());
+                }
+            });
+
+            if(!sugerencia.getFiguritasSugeridas().isEmpty()){
+                sugerencias.add(sugerencia);
+            }
+        });
+
+        return sugerencias;
     }
 
     public List<Notificacion> getNotificaciones(String userId) {

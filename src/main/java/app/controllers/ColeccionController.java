@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/colecciones")
@@ -35,9 +36,10 @@ public class ColeccionController {
     @PostMapping("/{col_id}/repetidas")
     public ResponseEntity<FiguritaIntercambiable> agregarRepetida(
         @PathVariable String col_id,
+        @RequestHeader("X-User-Id") String userId,
         @RequestBody RepetidaRequest request) {
 
-        coleccionService.agregarRepetida(col_id,
+        coleccionService.agregarRepetida(col_id, userId,
             request.getFigId(), request.getCantidadDisponible(), request.getModosIntercambio());
 
         return ResponseEntity.status(201).build();

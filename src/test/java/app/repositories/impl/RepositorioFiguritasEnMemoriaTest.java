@@ -24,7 +24,7 @@ public class RepositorioFiguritasEnMemoriaTest {
 
     repositorio.save(messi);
 
-    assertThrows(RuntimeException.class, () -> {repositorio.buscarPorId("11");});
+    assertThrows(RuntimeException.class, () -> {repositorio.findById("11");});
   }
 
   @Test
@@ -33,6 +33,6 @@ public class RepositorioFiguritasEnMemoriaTest {
 
     repositorio.save(messi);
 
-    assertEquals(messi.getId(), repositorio.buscarPorId("ARG-10").getId());
+    assertEquals(messi.getId(), repositorio.findById("ARG-10").getId());
   }
 }

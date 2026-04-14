@@ -9,8 +9,11 @@ import app.model.entities.Propuesta;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
-import app.repositories.*;
-
+import app.repositories.RepositorioColecciones;
+import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioPropuestas;
+import app.repositories.RepositorioSubastas;
+import app.repositories.RepositorioUsuarios;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +26,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioUsuarios usuarios;
     private final RepositorioPropuestas propuestas;
     private final RepositorioSubastas subastas;
-    private final RepositorioColecciones colecciones;
     private final RepositorioFiguritas figuritas;
+    private final RepositorioColecciones colecciones;
 
     public InicializadorDeDatos(RepositorioUsuarios usuarios,
                                 RepositorioPropuestas propuestas,
@@ -50,6 +53,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Figurita kroos     = new Figurita("GER-8",   8, "Kroos",     Seleccion.ALEMANIA);
 
         figuritas.save(messi);
+        figuritas.save(diMaria);
+        figuritas.save(lautaro);
         figuritas.save(vinicius);
 
         cargarUsuarios(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);

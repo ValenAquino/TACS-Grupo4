@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  push:
+      branches:
+        - developer
   pull_request:
     branches:
       - main

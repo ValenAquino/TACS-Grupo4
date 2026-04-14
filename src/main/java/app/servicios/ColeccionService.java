@@ -36,7 +36,7 @@ public class ColeccionService {
   public Figurita agregarFaltante(String colId, String figId) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
 
-    Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
+    Figurita faltante = this.repositorioFiguritas.findById(figId);
 
     coleccion.agregarFaltante(faltante);
 
@@ -45,20 +45,24 @@ public class ColeccionService {
     return faltante;
   }
 
-  public FiguritaIntercambiable agregarRepetida(String colId, String figId, Integer cantidadDisponible, List<String> modosIntercambio) {
+  public FiguritaIntercambiable agregarRepetida(String colId, String userId, String figId, Integer
+      cantidadDisponible, List<String> modosIntercambio) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
 
-    Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
+    Figurita figurita = this.repositorioFiguritas.findById(figId);
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
-        figurita, cantidadDisponible, modosIntercambio.stream().map(MetodoIntercambio::fromString).toList());
+        figurita, cantidadDisponible, modosIntercambio.stream().map(MetodoIntercambio::fromString)
+        .toList(), userId);
 
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.save(coleccion);
 
-    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(repetida.getFigurita());
+    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(repetida
+        .getFigurita());
 
-    String cuerpo = "Nueva figurita disponible, Numero: " + repetida.getFigurita().getId() + ", Cantidad: " + repetida.getCantidadDisponible();
+    String cuerpo = "Nueva figurita disponible, Numero: " + repetida.getFigurita().getId() +
+        ", Cantidad: " + repetida.getCantidadDisponible();
 
     this.notificacionService.notificarInteresados(interesados, cuerpo);
 

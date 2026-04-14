@@ -24,10 +24,4 @@ public class FiguritaController {
     ) {
         return ResponseEntity.ok(figuritaService.buscarFiguritas(numero, seleccion, jugador));
     }
-
-    @GetMapping("/sugerencias")
-    public ResponseEntity<TemporalDto> getSugerencias() {
-        return ResponseEntity.ok(new TemporalDto("GET /sugerencias"));
-    }
-
 }

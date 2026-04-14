@@ -3,6 +3,7 @@ package app.repositories.impl;
 import app.model.entities.Figurita;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuarios;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,19 @@ public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
     }
 
     @Override
-    public void save(Usuario usuario) {
-        storage.put(usuario.getId(), usuario);
+    public List<Usuario> findAll() {
+        return new ArrayList<>(storage.values());
     }
 
+    @Override
+    public int count() {
+        return storage.size();
+    }
+
+    @Override
+    public void save(Usuario usuario) {
+        if(!storage.containsKey(usuario.getId())) {
+            storage.put(usuario.getId(), usuario);
+        }
+    }
 }

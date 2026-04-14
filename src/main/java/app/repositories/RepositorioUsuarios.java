@@ -10,6 +10,8 @@ public interface RepositorioUsuarios {
 
     List<Usuario> findAll();
 
+    int count();
+
     List<Usuario> buscarPorFiguritaFaltante(Figurita figurita);
 
     void save(Usuario usuario);

@@ -3,7 +3,9 @@ package app.repositories.impl;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
+import app.model.entities.Seleccion;
 import app.repositories.RepositorioFiguritas;
+import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -25,6 +27,21 @@ public class RepositorioFiguritasEnMemoria implements RepositorioFiguritas {
     }
 
     return figurita;
+  }
+
+  public List<Figurita> buscarConFiltros(Integer numero, Seleccion seleccion, String jugador) {
+    List<Figurita> resultado = storage.values()
+        .stream()
+        .filter(f -> numero == null || f.getNumero().equals(numero))
+        .filter(f -> seleccion == null || f.getSeleccion().equals(seleccion))
+        .filter(f -> jugador == null || f.getJugador().equalsIgnoreCase(jugador))
+        .toList();
+
+    if (resultado.isEmpty()) {
+      throw new NotFoundException("No se encontraron figuritas con esos filtros");
+    }
+
+    return resultado;
   }
 
   public void save(Figurita figurita) {

@@ -48,4 +48,17 @@ class UsuarioControllerTest {
     void getNotificaciones() throws Exception {
         mockMvc.perform(get("/usuarios/1/notificaciones")).andExpect(status().isOk());
     }
+
+    @Test
+    void getIntercambiables_usuarioExistente_retorna200() throws Exception {
+        mockMvc.perform(get("/usuarios/1000/intercambiables"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void getIntercambiables_usuarioInexistente_retorna404() throws Exception {
+        mockMvc.perform(get("/usuarios/u-99/intercambiables"))
+            .andExpect(status().isNotFound());
+    }
 }

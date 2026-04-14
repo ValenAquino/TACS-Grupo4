@@ -49,7 +49,10 @@ public class UsuarioController {
     @GetMapping("/{user_id}/intercambiables")
     public ResponseEntity<List<FiguritaIntercambiableDto>> getIntercambiables(
         @PathVariable String user_id) {
-        return ResponseEntity.ok(usuarioService.getIntercambiablesUsuario(user_id));
+
+        return ResponseEntity.ok(
+            usuarioService.getIntercambiablesUsuario(user_id)
+        );
     }
     @GetMapping("/{user_id}/sugerencias")
     public ResponseEntity<?> getSugerencias(@PathVariable String user_id) {

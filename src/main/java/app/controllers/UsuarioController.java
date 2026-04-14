@@ -15,19 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-    private final RepositorioUsuarios usuarioRepositorio;
 
-    public UsuarioController(UsuarioService usuarioService, RepositorioUsuarios usuarioRepositorio) {
-        this.usuarioRepositorio = usuarioRepositorio;
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 

@@ -4,17 +4,14 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Seleccion;
-import app.model.entities.Subasta;
 import app.model.entities.Usuario;
-import app.model.notificador.Notificacion;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
 import app.repositories.impl.RepositorioNotificacionesEnMemoria;
-import app.servicios.NotificacionService;
-import app.servicios.SubastaService;
+import app.servicios.ISubastaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +38,7 @@ public class SubastaServiceTest {
   @Mock
   private RepositorioFiguritas repositorioFiguritas;
 
-  private SubastaService service;
+  private ISubastaService service;
 
   @BeforeEach
   void setUp() {

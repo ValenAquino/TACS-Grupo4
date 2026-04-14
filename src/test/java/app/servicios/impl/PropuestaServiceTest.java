@@ -18,7 +18,7 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioUsuarios;
-import app.servicios.PropuestaService;
+import app.servicios.IPropuestaService;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;

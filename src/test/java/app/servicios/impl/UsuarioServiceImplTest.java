@@ -28,6 +28,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,4 +134,21 @@ class UsuarioServiceImplTest {
         assertThrows(NotFoundException.class,
             () -> service.getIntercambiablesUsuario("u-99"));
     }
+    @Test
+    void agregarCalificacion_valida_retornaPromedio() {
+        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+
+        // ya tiene una calificación previa
+        usuario.getCalificaciones().add(6);
+
+        when(repositorioUsuarios.findById("u-1")).thenReturn(usuario);
+
+        Number resultado = service.agregarCalificacion(8, "u-1");
+
+        // promedio de 6 y 8 = 7
+        assertEquals(7.0, resultado.doubleValue());
+        verify(repositorioUsuarios).save(usuario);
+    }
+
+
 }

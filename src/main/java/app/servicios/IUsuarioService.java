@@ -6,7 +6,7 @@ import app.model.entities.Sugerencia;
 import app.model.notificador.Notificacion;
 import java.util.List;
 
-public interface UsuarioService {
+public interface IUsuarioService {
     OperacionesDto getOperacionesUsuario(String userId);
 
     List<FiguritaIntercambiableDto> getIntercambiablesUsuario(String userId);

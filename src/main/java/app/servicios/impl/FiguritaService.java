@@ -6,11 +6,12 @@ import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioFiguritas;
+import app.servicios.IFiguritaService;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FiguritaService {
+public class FiguritaService implements IFiguritaService {
 
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final RepositorioFiguritas repositorioFiguritas;

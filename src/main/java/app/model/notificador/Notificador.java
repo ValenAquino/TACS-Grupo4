@@ -2,6 +2,7 @@ package app.model.notificador;
 
 import app.model.entities.Usuario;
 
+
 public class Notificador {
   public AdapterNotificacion metodo;
 

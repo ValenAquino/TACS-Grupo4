@@ -1,7 +1,7 @@
 package app.controllers;
 
 import app.dto.EstadisticasDto;
-import app.servicios.EstadisticasService;
+import app.servicios.IEstadisticasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/administrador")
 @RequiredArgsConstructor
 public class AdministradorController {
-    private final EstadisticasService estadisticasService;
+
+    private final IEstadisticasService estadisticasService;
 
     @GetMapping("/estadisticas")
     public ResponseEntity<EstadisticasDto> getEstadisticas() {
         return ResponseEntity.ok(estadisticasService.getEstadisticas());
     }
+
 }

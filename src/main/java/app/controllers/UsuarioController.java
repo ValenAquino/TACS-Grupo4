@@ -7,7 +7,7 @@ import app.dto.SugerenciaDto;
 import app.dto.TemporalDto;
 import app.model.entities.Sugerencia;
 import app.model.notificador.Notificacion;
-import app.servicios.UsuarioService;
+import app.servicios.IUsuarioService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,16 +16,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+    private final IUsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(IUsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 

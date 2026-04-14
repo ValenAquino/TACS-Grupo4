@@ -5,33 +5,38 @@ import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
 import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioUsuarios;
+import app.servicios.INotificacionService;
+import app.servicios.IPropuestaService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class PropuestaService {
+public class PropuestaService implements IPropuestaService {
 
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioUsuarios repositorioUsuarios;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
 
+  private final INotificacionService notificacionService;
+
   public PropuestaService(RepositorioPropuestas repositorioPropuestas,
                           RepositorioUsuarios repositorioUsuarios,
                           RepositorioFiguritas repositorioFiguritas,
-                          RepositorioFiguritasIntercambiables repositorioIntercambiables) {
+                          RepositorioFiguritasIntercambiables repositorioIntercambiables,
+                          INotificacionService notificacionService) {
     this.repositorioPropuestas = repositorioPropuestas;
     this.repositorioUsuarios = repositorioUsuarios;
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioIntercambiables = repositorioIntercambiables;
+    this.notificacionService = notificacionService;
   }
 
   /**
@@ -64,28 +69,24 @@ public class PropuestaService {
 
     repositorioPropuestas.save(propuesta);
 
+    String cuerpo = "Tenes una nueva propuesta de: " + propuesta.getUsuarioOrigen().getNombre()
+        + "por la figurita numero: " + figuritaBuscada.getNumero();
+
+    notificacionService.notificarInteresados(List.of(propuesta.getUsuarioDestino()), cuerpo);
+
     return toDto(propuesta);
   }
-  
-//  public Propuesta obtenerPorId(String id) {
-//      Propuesta propuesta = this.repositorioPropuestas.findById(id);
-//
-//      if (propuesta == null) {
-//          throw new RuntimeException("Propuesta no encontrada");
-//      }
-//
-//      return propuesta;
-//  }
+  public void aceptar(String id) {
+      Propuesta propuesta = repositorioPropuestas.findById(id);
+      propuesta.aceptar(propuesta.getUsuarioDestino());
+      repositorioPropuestas.save(propuesta);
+  }
 
-//  public void aceptar(String id) {
-//      Propuesta propuesta = obtenerPorId(id);
-//      propuesta.aceptar(propuesta.getUsuarioDestino());
-//  }
-//
-//  public void rechazar(String id) {
-//      Propuesta propuesta = obtenerPorId(id);
-//      propuesta.rechazar(propuesta.getUsuarioDestino());
-//  }
+  public void rechazar(String id) {
+      Propuesta propuesta = this.repositorioPropuestas.findById(id);
+      propuesta.rechazar(propuesta.getUsuarioDestino());
+      repositorioPropuestas.save(propuesta);
+  }
 
   private PropuestaDto toDto(Propuesta p) {
     return new PropuestaDto(

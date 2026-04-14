@@ -1,10 +1,11 @@
 package app.servicios;
 
+import app.dto.PropuestaDto;
+import app.dto.request.CrearPropuestaRequest;
 import app.model.entities.Propuesta;
 
 public interface IPropuestaService {
-    public Propuesta crear(Propuesta propuesta);
-    public Propuesta obtenerPorId(String id);
+    public PropuestaDto crearPropuesta(CrearPropuestaRequest request);
     public void aceptar(String id);
     public void rechazar(String id);
 }

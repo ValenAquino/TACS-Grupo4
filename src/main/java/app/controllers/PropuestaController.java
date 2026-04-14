@@ -3,7 +3,7 @@ package app.controllers;
 import app.dto.PropuestaDto;
 import app.dto.TemporalDto;
 import app.dto.request.CrearPropuestaRequest;
-import app.servicios.PropuestaService;
+import app.servicios.IPropuestaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,14 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/propuestas")
 public class PropuestaController {
-    private final PropuestaService propuestaService;
-
-    public PropuestaController(PropuestaService propuestaService) {
-        this.propuestaService = propuestaService;
-    }
+    private final IPropuestaService propuestaService;
 
     @PostMapping
     public ResponseEntity<PropuestaDto> crearPropuesta(@RequestBody CrearPropuestaRequest request) {

@@ -1,9 +1,8 @@
 package app.controllers;
 
 import app.dto.FiguritaIntercambiableDto;
-import app.dto.TemporalDto;
 import app.model.entities.Seleccion;
-import app.servicios.impl.FiguritaService;
+import app.servicios.IFiguritaService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 
 public class FiguritaController {
-    private final FiguritaService figuritaService;
+    private final IFiguritaService figuritaService;
+
     @GetMapping("/figuritas")
     public ResponseEntity<List<FiguritaIntercambiableDto>> getFiguritas(
         @RequestParam(required = false) Integer numero,

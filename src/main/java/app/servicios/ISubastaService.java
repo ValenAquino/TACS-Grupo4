@@ -8,7 +8,7 @@ import app.model.entities.Subasta;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface SubastaService {
+public interface ISubastaService {
   SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin,
                           String figuritaSubastadaId, Propuesta propuestaGanadora);
 

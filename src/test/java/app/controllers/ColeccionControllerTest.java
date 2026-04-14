@@ -2,9 +2,7 @@ package app.controllers;
 
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
-import app.repositories.RepositorioColecciones;
-import app.repositories.impl.RepositorioColeccionesEnMemoria;
-import app.servicios.ColeccionService;
+import app.servicios.impl.ColeccionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

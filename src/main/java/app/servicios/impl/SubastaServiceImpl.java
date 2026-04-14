@@ -12,8 +12,8 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
-import app.servicios.NotificacionService;
-import app.servicios.SubastaService;
+import app.servicios.INotificacionService;
+import app.servicios.ISubastaService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,16 +21,16 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class SubastaServiceImpl implements SubastaService {
+public class SubastaServiceImpl implements ISubastaService {
   private final RepositorioSubastas repoSubasta;
   private final RepositorioUsuarios repoUsuario;
   private final RepositorioFiguritas repoFigurita;
   private final RepositorioPropuestas repoPropuesta;
-  private final NotificacionService notificacionService;
+  private final INotificacionService notificacionService;
 
   public SubastaServiceImpl(RepositorioSubastas repoSubasta, RepositorioUsuarios repoUsuario,
                             RepositorioFiguritas repoFigurita, RepositorioPropuestas repoPropuesta,
-                            NotificacionService notificacionService) {
+                            INotificacionService notificacionService) {
     this.repoSubasta = repoSubasta;
     this.repoUsuario = repoUsuario;
     this.repoFigurita = repoFigurita;

@@ -1,7 +1,7 @@
 package app.controllers;
 
+import app.servicios.ISubastaService;
 import app.dto.SubastaDto;
-import app.servicios.SubastaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +17,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/subastas")
 public class SubastaController {
-    private SubastaService subastaService;
+    private ISubastaService subastaService;
 
-    SubastaController(SubastaService subastaService) {
+    SubastaController(ISubastaService subastaService) {
         this.subastaService = subastaService;
     }
 

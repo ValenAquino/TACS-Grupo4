@@ -6,13 +6,10 @@ import java.util.List;
 public interface RepositorioPropuestas {
     // Propuestas enviadas
     List<Propuesta> findByOrigenId(String userId);
-
     // Propuestas recibidas
     List<Propuesta> findByDestinoId(String userId);
-
     List<Propuesta> findAll();
-
+    Propuesta findById(String id);
     int count();
-
     void save(Propuesta propuesta);
 }

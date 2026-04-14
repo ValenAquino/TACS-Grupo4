@@ -1,31 +1,27 @@
-package app.servicios;
+package app.servicios.impl;
 
 import app.model.entities.*;
-import app.model.notificador.Mensaje;
-import app.model.notificador.Notificacion;
-import app.model.notificador.Notificador;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioUsuarios;
+import app.servicios.IColeccionService;
+import app.servicios.INotificacionService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class ColeccionService {
-
+public class ColeccionService implements IColeccionService {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioUsuarios repositorioUsuarios;
-  private final NotificacionService notificacionService;
+  private final INotificacionService notificacionService;
   //private final Notificador notificador;
 
   public ColeccionService(RepositorioFiguritas repositorioFiguritas,
                           RepositorioColecciones repositorioColecciones,
                           RepositorioUsuarios repositorioUsuarios,
-                          NotificacionService notificacionService
+                          INotificacionService notificacionService
   ) {
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioColecciones = repositorioColecciones;

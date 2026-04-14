@@ -17,14 +17,14 @@ import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
-import app.servicios.UsuarioService;
+import app.servicios.IUsuarioService;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsuarioServiceImpl implements UsuarioService {
+public class UsuarioServiceImpl implements IUsuarioService {
 
     private final RepositorioUsuarios repositorioUsuarios;
     private final RepositorioPropuestas repositorioPropuestas;

@@ -1,9 +1,7 @@
 package app.controllers;
 
 import app.exceptions.NotFoundException;
-import app.model.entities.Coleccion;
-import app.model.entities.Figurita;
-import app.model.entities.Seleccion;
+import app.model.entities.*;
 import app.repositories.RepositorioColecciones;
 import app.repositories.impl.RepositorioColeccionesEnMemoria;
 import app.servicios.ColeccionService;
@@ -14,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,16 +34,23 @@ class ColeccionControllerTest {
 
     @Test
     void agregarRepetidaNoFalla() throws Exception {
+        Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+
+        FiguritaIntercambiable repetida =
+            new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA));
+
+        when(serviceColeccion.agregarRepetida(eq("1"), any(), any(), any()))
+            .thenReturn(repetida);
 
         String json = """
         {
-            "fig_id": 10,
+            "fig_id": "ARG-10",
             "cantidad_disponible": 2,
             "modos_intercambio": ["SUBASTA"]
         }
         """;
 
-        mockMvc.perform(post("/coleccion/1/repetidas")
+        mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().is(201));
@@ -53,8 +60,7 @@ class ColeccionControllerTest {
     void agregarFaltanteNoFalla() throws Exception {
         Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
 
-        when(serviceColeccion.agregarFaltante("1", "ARG-10")).thenReturn(
-            messi);
+        when(serviceColeccion.agregarFaltante("1", "ARG-10")).thenReturn(messi);
 
         String json = """
         {
@@ -62,7 +68,7 @@ class ColeccionControllerTest {
         }
         """;
 
-        mockMvc.perform(post("/coleccion/1/faltantes")
+        mockMvc.perform(post("/colecciones/1/faltantes")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
             .andExpect(status().is(201));
@@ -81,7 +87,7 @@ class ColeccionControllerTest {
     }
     """;
 
-        mockMvc.perform(post("/coleccion/1/faltantes")
+        mockMvc.perform(post("/colecciones/1/faltantes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().is(404));
@@ -93,9 +99,9 @@ class ColeccionControllerTest {
             .when(serviceColeccion)
             .agregarRepetida(
                 eq("1"),
-                any(),     // figId
-                any(),     // cantidad
-                any()      // lista
+                any(),
+                any(),
+                any()
             );
 
         String json = """
@@ -106,7 +112,7 @@ class ColeccionControllerTest {
     }
     """;
 
-        mockMvc.perform(post("/coleccion/1/repetidas")
+        mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().isNotFound());
@@ -128,7 +134,7 @@ class ColeccionControllerTest {
             }
             """;
 
-        mockMvc.perform(post("/coleccion/1/repetidas")
+        mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().is(400));

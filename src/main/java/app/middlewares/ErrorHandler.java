@@ -1,5 +1,6 @@
 package app.middlewares;
 
+import app.exceptions.BadRequestException;
 import app.exceptions.FiguritaDuplicadaException;
 import app.exceptions.NotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +14,8 @@ public class ErrorHandler {
     return ResponseEntity.status(404).body(ex.getMessage());
   }
 
-  @ExceptionHandler(IllegalArgumentException.class)
+  @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<String> handleBadRequest(Exception ex) {
-    return ResponseEntity.status(400).body(ex.getMessage());
-  }
-
-  @ExceptionHandler(FiguritaDuplicadaException.class)
-  public ResponseEntity<String> handleFiguritaDuplicada(Exception ex) {
     return ResponseEntity.status(400).body(ex.getMessage());
   }
 }

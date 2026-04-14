@@ -2,9 +2,11 @@ package app.servicios;
 
 import app.model.entities.*;
 import app.model.notificador.Mensaje;
+import app.model.notificador.Notificacion;
 import app.model.notificador.Notificador;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioUsuarios;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +19,19 @@ public class ColeccionService {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioUsuarios repositorioUsuarios;
+  private final RepositorioNotificaciones repositorioNotificaciones;
   //private final Notificador notificador;
 
   public ColeccionService(RepositorioFiguritas repositorioFiguritas,
                           RepositorioColecciones repositorioColecciones,
-                          RepositorioUsuarios repositorioUsuarios
+                          RepositorioUsuarios repositorioUsuarios,
+                          RepositorioNotificaciones repositorioNotificaciones
 
   ) {
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioColecciones = repositorioColecciones;
     this.repositorioUsuarios = repositorioUsuarios;
+    this.repositorioNotificaciones = repositorioNotificaciones;
     //this.notificador = notificador;
   }
 
@@ -53,9 +58,9 @@ public class ColeccionService {
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.save(coleccion);
 
-//    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
-//
-//    this.notificarInteresados(interesados, repetida);
+    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
+
+    this.notificarInteresados(interesados, repetida);
 
     return repetida;
   }
@@ -71,6 +76,7 @@ public class ColeccionService {
 
       Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
       //this.notificador.enviarNotificacion(mensaje, u);
+      this.repositorioNotificaciones.save(new Notificacion(mensaje, u));
     });
   }
 }

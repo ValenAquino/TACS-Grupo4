@@ -5,6 +5,8 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
+import app.model.notificador.Notificacion;
+import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
@@ -18,13 +20,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final RepositorioUsuarios repositorioUsuarios;
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
+    private final RepositorioNotificaciones repositorioNotificaciones;
 
     public UsuarioServiceImpl(RepositorioUsuarios repositorioUsuarios,
                               RepositorioPropuestas repositorioPropuestas,
-                              RepositorioSubastas repositorioSubastas) {
+                              RepositorioSubastas repositorioSubastas,
+                              RepositorioNotificaciones repositorioNotificaciones) {
         this.repositorioUsuarios = repositorioUsuarios;
         this.repositorioPropuestas = repositorioPropuestas;
         this.repositorioSubastas = repositorioSubastas;
+        this.repositorioNotificaciones = repositorioNotificaciones;
     }
 
     @Override
@@ -45,5 +50,11 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .toList();
 
         return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
+    }
+
+    public List<Notificacion> getNotificaciones(String userId) {
+        Usuario usuario = repositorioUsuarios.findById(userId);
+
+        return this.repositorioNotificaciones.buscarPorUsuario(usuario);
     }
 }

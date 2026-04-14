@@ -38,4 +38,9 @@ class UsuarioControllerTest {
     void calificarUsuarioNoFalla() throws Exception {
         mockMvc.perform(post("/usuarios/1/calificaciones")).andExpect(status().isOk());
     }
+
+    @Test
+    void getNotificaciones() throws Exception {
+        mockMvc.perform(get("/usuarios/1/notificaciones")).andExpect(status().isOk());
+    }
 }

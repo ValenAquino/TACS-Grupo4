@@ -8,6 +8,8 @@ import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritasIntercambiables;
+import app.model.notificador.Notificacion;
+import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
@@ -22,15 +24,19 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
     private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
+    private final RepositorioNotificaciones repositorioNotificaciones;
 
     public UsuarioServiceImpl(RepositorioUsuarios repositorioUsuarios,
                               RepositorioPropuestas repositorioPropuestas,
                               RepositorioSubastas repositorioSubastas,
-                              RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables) {
+                              RepositorioNotificaciones repositorioNotificaciones,
+                              RepositorioFiguritasIntercambiables
+                                  repositorioFiguritasIntercambiables) {
         this.repositorioUsuarios = repositorioUsuarios;
         this.repositorioPropuestas = repositorioPropuestas;
         this.repositorioSubastas = repositorioSubastas;
         this.repositorioFiguritasIntercambiables = repositorioFiguritasIntercambiables;
+        this.repositorioNotificaciones = repositorioNotificaciones;
     }
 
     @Override
@@ -76,4 +82,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         );
     }
 
+    public List<Notificacion> getNotificaciones(String userId) {
+        Usuario usuario = repositorioUsuarios.findById(userId);
+
+        return this.repositorioNotificaciones.buscarPorUsuario(usuario);
+    }
 }

@@ -16,7 +16,6 @@ public class Propuesta {
     private Figurita figuritaBuscada;
     private EstadoProceso estado;
 
-
     public Propuesta(Usuario usuarioOrigen, Usuario usuarioDestino, List<Figurita> figuritasOfrecidas, Figurita figuritaBuscada, EstadoProceso estado) {
         this.usuarioOrigen = usuarioOrigen;
         this.usuarioDestino = usuarioDestino;

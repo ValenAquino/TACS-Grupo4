@@ -1,7 +1,7 @@
 package app.repositories.impl;
 
+import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
-import app.model.entities.Propuesta;
 import app.repositories.RepositorioFiguritas;
 import org.springframework.stereotype.Repository;
 import java.util.HashMap;
@@ -13,11 +13,19 @@ public class RepositorioFiguritasEnMemoria implements RepositorioFiguritas {
 
   @Override
   public Figurita findById(String id) {
-    return storage.get(id);
+        .stream()
+        .filter(c -> c.getId().equals(id))
+        .findFirst().orElse(null);
+
+    if(figurita == null) {
+      throw new NotFoundException("No se encontro la figurita");
+    }
+
+    return figurita;
   }
 
-  @Override
   public void save(Figurita figurita) {
-    storage.put(figurita.getId(), figurita);
+    this.storage.put(figurita.getId(), figurita);
+
   }
 }

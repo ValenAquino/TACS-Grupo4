@@ -9,6 +9,8 @@ import app.model.entities.Propuesta;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
+import app.repositories.RepositorioColecciones;
+import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
@@ -24,13 +26,19 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioUsuarios usuarios;
     private final RepositorioPropuestas propuestas;
     private final RepositorioSubastas subastas;
+    private final RepositorioFiguritas figuritas;
+    private final RepositorioColecciones colecciones;
 
     public InicializadorDeDatos(RepositorioUsuarios usuarios,
                                 RepositorioPropuestas propuestas,
-                                RepositorioSubastas subastas) {
+                                RepositorioSubastas subastas,
+                                RepositorioColecciones colecciones,
+                                RepositorioFiguritas figuritas) {
         this.usuarios = usuarios;
         this.propuestas = propuestas;
         this.subastas = subastas;
+        this.colecciones = colecciones;
+        this.figuritas = figuritas;
     }
 
     @Override
@@ -43,6 +51,11 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Figurita vinicius  = new Figurita("BRA-10", 10, "Vinicius",  Seleccion.BRASIL);
         Figurita pedri     = new Figurita("ESP-10", 10, "Pedri",     Seleccion.ESPAÑA);
         Figurita kroos     = new Figurita("GER-8",   8, "Kroos",     Seleccion.ALEMANIA);
+
+        figuritas.save(messi);
+        figuritas.save(diMaria);
+        figuritas.save(lautaro);
+        figuritas.save(vinicius);
 
         cargarUsuarios(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);
@@ -74,6 +87,14 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionMatias.getFaltantes().add(pedri);
         coleccionMatias.getFaltantes().add(kroos);
         usuarios.save(new Usuario("1002", "Matías", coleccionMatias, "+5491100000003", new ArrayList<>()));
+
+        Coleccion coleccionJuan = new Coleccion("1");
+        coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(vinicius, 4, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA)));
+        coleccionJuan.getFaltantes().add(pedri);
+        coleccionJuan.getFaltantes().add(kroos);
+
+        colecciones.save(coleccionJuan);
+        usuarios.save(new Usuario("1003", "Juan", coleccionJuan, "+5491100000003", new ArrayList<>()));
     }
 
     private void cargarPropuestas(Figurita messi, Figurita diMaria,

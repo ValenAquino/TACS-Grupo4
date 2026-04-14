@@ -38,6 +38,14 @@ class UsuarioControllerTest {
 
     @Test
     void calificarUsuarioNoFalla() throws Exception {
-        mockMvc.perform(post("/usuarios/1000/calificaciones").content("2")).andExpect(status().isOk());
+        mockMvc.perform(post("/usuarios/1000/calificaciones")
+            .contentType("application/json")
+            .content("{ \"calificacion\":2} "))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void getNotificaciones() throws Exception {
+        mockMvc.perform(get("/usuarios/1/notificaciones")).andExpect(status().isOk());
     }
 }

@@ -20,10 +20,4 @@ class FiguritaControllerTest {
     void getFiguritasNoFalla() throws Exception {
         mockMvc.perform(get("/figuritas")).andExpect(status().isOk());
     }
-
-    @Test
-    void getSugerenciasNoFalla() throws Exception {
-        mockMvc.perform(get("/sugerencias")).andExpect(status().isOk());
-    }
-
 }

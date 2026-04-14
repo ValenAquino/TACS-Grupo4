@@ -2,6 +2,7 @@ package app.repositories.impl;
 
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuarios;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,12 @@ public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
 
     @Override
     public List<Usuario> findAll() {
-        return storage.values().stream().toList();
+        return new ArrayList<>(storage.values());
+    }
+
+    @Override
+    public int count() {
+        return storage.size();
     }
 
     @Override

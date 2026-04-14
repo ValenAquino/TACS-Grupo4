@@ -116,6 +116,7 @@ class ColeccionControllerTest {
 
         mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("User-Id", "user-123")
                 .content(json))
             .andExpect(status().isNotFound());
     }

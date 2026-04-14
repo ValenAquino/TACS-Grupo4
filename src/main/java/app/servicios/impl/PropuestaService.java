@@ -46,11 +46,11 @@ public class PropuestaService {
     if (destino == null) throw new NotFoundException("Usuario destino no encontrado");
 
     Figurita figuritaBuscada = repositorioFiguritas
-        .buscarPorId(request.getFiguritaBuscadaId());
+        .findById(request.getFiguritaBuscadaId());
 
     List<Figurita> figuritasOfrecidas = request.getFiguritasOfrecedasIds()
         .stream()
-        .map(repositorioFiguritas::buscarPorId)
+        .map(repositorioFiguritas::findById)
         .toList();
 
     Propuesta propuesta = new Propuesta(

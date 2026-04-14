@@ -3,6 +3,7 @@ package app.repositories.impl;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuarios;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,14 @@ public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
     }
 
     @Override
+    public List<Usuario> findAll() {
+        return storage.values().stream().toList();
+    }
+
+    @Override
     public void save(Usuario usuario) {
-        storage.put(usuario.getId(), usuario);
+        if(!storage.containsKey(usuario.getId())) {
+            storage.put(usuario.getId(), usuario);
+        }
     }
 }

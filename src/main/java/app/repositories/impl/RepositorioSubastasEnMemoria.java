@@ -21,6 +21,15 @@ public class RepositorioSubastasEnMemoria implements RepositorioSubastas {
     }
 
     @Override
+    public Subasta findById(String id) {
+        Subasta subasta = storage.get(id);
+        if (subasta == null) {
+            throw new RuntimeException("Subasta no encontrada");
+        }
+        return subasta;
+    }
+
+    @Override
     public void save(Subasta subasta) {
         storage.put(subasta.getId(), subasta);
     }

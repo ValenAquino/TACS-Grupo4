@@ -37,14 +37,8 @@ public class RepositorioPropuestasEnMemoria implements RepositorioPropuestas {
 
     @Override
     public void save(Propuesta propuesta) {
-        Propuesta prop = this.storage.values()
-            .stream()
-            .filter(c -> c.getId().equals(propuesta.getId()))
-            .findFirst().orElse(null);
 
-        if(prop == null) {
-            throw new NotFoundException("No se encontro la propuesta");
-        }
+      this.storage.putIfAbsent(propuesta.getId(), propuesta);
     }
 
     @Override

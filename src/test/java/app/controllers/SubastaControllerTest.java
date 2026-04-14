@@ -15,6 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +38,8 @@ class SubastaControllerTest {
 
     @Test
     void crearSubastaNoFalla() throws Exception {
+        Usuario origen = new Usuario("user123", "", null, "", null);
+        Figurita figuSubastada = new Figurita("figu123", 2, null, null);
 
         String json = """
         {
@@ -44,8 +48,11 @@ class SubastaControllerTest {
         }
         """;
 
+        when(repoUser.findById("user123")).thenReturn(origen);
+        when(repoFigurita.findById("figu123")).thenReturn(figuSubastada);
+
         mockMvc.perform(post("/subastas")
-                .header("id", "user123")
+                .header("user_id", "user123")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().isOk());
@@ -53,19 +60,21 @@ class SubastaControllerTest {
 
     @Test
     void ofertarEnSubastaNoFalla() throws Exception {
-        Usuario origen = new Usuario("user123", "", null, "", null);
-        Usuario destino = new Usuario("user1", "", null, "", null);
+        Usuario subastador = new Usuario("userSubastador", "", null, "", null);
+        Usuario userPropuesta = new Usuario("userPropuesta", "", null, "", null);
+
+        LocalDateTime fechaInicio = LocalDateTime.now();
 
         Figurita buscada = new Figurita("figu123", 2, null, null);
         Figurita ofrecida1 = new Figurita("figu321", 3, null, null);
         Figurita ofrecida2 = new Figurita("figu132", 4, null, null);
 
-        Subasta subasta = new Subasta("1",null, null,null,null,null);
+        Subasta subasta = new Subasta("1",subastador, fechaInicio,fechaInicio.plusMinutes(30),buscada,null);
 
         subasta.setFiguritaSubastada(buscada);
 
-        when(repoUser.findById("user123")).thenReturn(origen);
-        when(repoUser.findById("user1")).thenReturn(destino);
+        when(repoUser.findById("userSubastador")).thenReturn(subastador);
+        when(repoUser.findById("userPropuesta")).thenReturn(userPropuesta);
 
         when(repoFigurita.findById("figu123")).thenReturn(buscada);
         when(repoFigurita.findById("figu321")).thenReturn(ofrecida1);
@@ -75,13 +84,13 @@ class SubastaControllerTest {
 
         String json = """
     {
-        "usuario_id": "user1",
+        "usuario_id": "userSubastador",
         "figuritas_ofrecidas": ["figu321","figu132"]
     }
     """;
 
         mockMvc.perform(post("/subastas/1/propuestas")
-                .header("id", "user123")
+                .header("user_id", "userPropuesta")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().isOk());

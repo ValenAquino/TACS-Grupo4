@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
@@ -8,8 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RepositorioUsuariosEnMemoriaTest {
 
@@ -31,7 +31,9 @@ class RepositorioUsuariosEnMemoriaTest {
 
     @Test
     void findById_inexistente_retornaNull() {
-        assertNull(repositorio.findById("inexistente"));
+        assertThrows(NotFoundException.class, () -> {
+            repositorio.findById("inexistente");
+        });
     }
 
     @Test

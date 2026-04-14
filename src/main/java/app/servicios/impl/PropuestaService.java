@@ -24,7 +24,6 @@ public class PropuestaService implements IPropuestaService {
   private final RepositorioUsuarios repositorioUsuarios;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
-
   private final INotificacionService notificacionService;
 
   public PropuestaService(RepositorioPropuestas repositorioPropuestas,
@@ -53,7 +52,7 @@ public class PropuestaService implements IPropuestaService {
     Figurita figuritaBuscada = repositorioFiguritas
         .findById(request.getFiguritaBuscadaId());
 
-    List<Figurita> figuritasOfrecidas = request.getFiguritasOfrecedasIds()
+    List<Figurita> figuritasOfrecidas = request.getFiguritasOfrecidasIds()
         .stream()
         .map(repositorioFiguritas::findById)
         .toList();

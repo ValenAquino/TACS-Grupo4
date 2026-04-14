@@ -9,5 +9,5 @@ public class CrearPropuestaRequest {
   private String usuarioOrigenId;
   private String usuarioDestinoId;
   private String figuritaBuscadaId;
-  private List<String> figuritasOfrecedasIds;
+  private List<String> figuritasOfrecidasIds;
 }

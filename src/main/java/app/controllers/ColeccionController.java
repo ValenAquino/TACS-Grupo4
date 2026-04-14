@@ -37,7 +37,7 @@ public class ColeccionController {
     @PostMapping("/{col_id}/repetidas")
     public ResponseEntity<FiguritaIntercambiable> agregarRepetida(
         @PathVariable String col_id,
-        @RequestHeader("userId") String userId,
+        @RequestHeader("user_id") String userId,
         @RequestBody RepetidaRequest request) {
 
         coleccionService.agregarRepetida(col_id, userId,

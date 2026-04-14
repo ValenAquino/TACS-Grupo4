@@ -50,7 +50,7 @@ class ColeccionControllerTest {
 
         mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("User-Id", "user-123")
+                .header("user_id", "user-123")
                 .content(json))
             .andExpect(status().is(201));
     }
@@ -114,7 +114,7 @@ class ColeccionControllerTest {
 
         mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("User-Id", "user-123")
+                .header("user_id", "user-123")
                 .content(json))
             .andExpect(status().isNotFound());
     }

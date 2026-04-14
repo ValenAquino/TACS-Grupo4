@@ -24,7 +24,7 @@ public class SubastaController {
     }
 
     @PostMapping
-    public ResponseEntity<SubastaDto> crearSubasta(@RequestHeader("userId") String id, @RequestBody Map<String,Object> body) {
+    public ResponseEntity<SubastaDto> crearSubasta(@RequestHeader("user_id") String id, @RequestBody Map<String,Object> body) {
         String figuritaId = (String) body.get("figurita_id");
         LocalDateTime fechaInicio =  LocalDateTime.now();
         Number duracion = (Number) body.get("duracion");
@@ -36,12 +36,12 @@ public class SubastaController {
     }
 
     @PostMapping("/{sub_id}/propuestas")
-    public ResponseEntity<SubastaDto> ofertarEnSubasta(@PathVariable String sub_id, @RequestHeader("userId") String id, @RequestBody Map<String,Object> body) {
+    public ResponseEntity<SubastaDto> ofertarEnSubasta(@PathVariable String sub_id, @RequestHeader("user_id") String id, @RequestBody Map<String,Object> body) {
         String usuarioDestino = (String) body.get("usuario_id");
         List<Object> rawFiguritasId = (ArrayList<Object>) body.get("figuritas_ofrecidas");
 
         SubastaDto subastaDto = this.subastaService.ofertarEnSubasta(id, usuarioDestino, sub_id, rawFiguritasId);
 
-        return ResponseEntity.accepted().body(subastaDto);
+        return ResponseEntity.ok().body(subastaDto);
     }
 }

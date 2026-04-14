@@ -19,12 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PropuestaController {
     private final PropuestaService propuestaService;
 
-    private final PropuestaService propuestaService;
-
-    public PropuestaController(PropuestaService propuestaService) {
-        this.propuestaService = propuestaService;
-    }
-
     @PostMapping
     public ResponseEntity<PropuestaDto> crearPropuesta(@RequestBody CrearPropuestaRequest request) {
         return ResponseEntity.status(201).body(propuestaService.crearPropuesta(request));

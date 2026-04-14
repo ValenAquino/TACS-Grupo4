@@ -1,5 +1,7 @@
 package app.repositories.impl;
 
+import app.exceptions.NotFoundException;
+import app.model.entities.Coleccion;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioPropuestas;
 import java.util.ArrayList;
@@ -34,12 +36,30 @@ public class RepositorioPropuestasEnMemoria implements RepositorioPropuestas {
     }
 
     @Override
+    public void save(Propuesta propuesta) {
+        Propuesta prop = this.storage.values()
+            .stream()
+            .filter(c -> c.getId().equals(propuesta.getId()))
+            .findFirst().orElse(null);
+
+        if(prop == null) {
+            throw new NotFoundException("No se encontro la propuesta");
+        }
+    }
+
+    @Override
+    public Propuesta findById(String id){
+        Propuesta propuesta = storage.get(id);
+
+        if (propuesta == null) {
+            throw new RuntimeException("Propuesta no encontrada");
+        }
+        return propuesta;
+    }
+
+    @Override
     public int count() {
         return storage.size();
     }
 
-    @Override
-    public void save(Propuesta propuesta) {
-        storage.put(propuesta.getId(), propuesta);
-    }
 }

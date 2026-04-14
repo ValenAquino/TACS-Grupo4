@@ -50,6 +50,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Figurita kroos     = new Figurita("GER-8",   8, "Kroos",     Seleccion.ALEMANIA);
 
         figuritas.save(messi);
+        figuritas.save(vinicius);
 
         cargarUsuarios(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);

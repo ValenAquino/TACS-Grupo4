@@ -19,20 +19,18 @@ public class ColeccionService {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioUsuarios repositorioUsuarios;
-  private final RepositorioNotificaciones repositorioNotificaciones;
+  private final NotificacionService notificacionService;
   //private final Notificador notificador;
 
   public ColeccionService(RepositorioFiguritas repositorioFiguritas,
                           RepositorioColecciones repositorioColecciones,
                           RepositorioUsuarios repositorioUsuarios,
-                          RepositorioNotificaciones repositorioNotificaciones
-
+                          NotificacionService notificacionService
   ) {
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioColecciones = repositorioColecciones;
     this.repositorioUsuarios = repositorioUsuarios;
-    this.repositorioNotificaciones = repositorioNotificaciones;
-    //this.notificador = notificador;
+    this.notificacionService = notificacionService;
   }
 
   public Figurita agregarFaltante(String colId, String figId) {
@@ -58,25 +56,12 @@ public class ColeccionService {
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.save(coleccion);
 
-    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
+    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(repetida.getFigurita());
 
-    this.notificarInteresados(interesados, repetida);
+    String cuerpo = "Nueva figurita disponible, Numero: " + repetida.getFigurita().getId() + ", Cantidad: " + repetida.getCantidadDisponible();
+
+    this.notificacionService.notificarInteresados(interesados, cuerpo);
 
     return repetida;
-  }
-
-  private void notificarInteresados(List<Usuario> interesados, FiguritaIntercambiable repetida) {
-    interesados.forEach(u -> {
-
-      String cuerpo = String.format(
-          "Nueva figurita disponible!%nNumero: %d%nCantidad: %d",
-          repetida.getFigurita().getId(),
-          repetida.getCantidadDisponible()
-      );
-
-      Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
-      //this.notificador.enviarNotificacion(mensaje, u);
-      this.repositorioNotificaciones.save(new Notificacion(mensaje, u));
-    });
   }
 }

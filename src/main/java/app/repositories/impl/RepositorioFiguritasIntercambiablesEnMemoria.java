@@ -19,7 +19,12 @@ public class RepositorioFiguritasIntercambiablesEnMemoria
         .filter(fi -> figuritaIds.contains(fi.getFigurita().getId()))
         .toList();
   }
-
+  @Override
+  public List<FiguritaIntercambiable> buscarPorUsuarioId(String usuarioId) {
+    return storage.values().stream()
+        .filter(fi -> fi.getUsuarioId().equals(usuarioId))
+        .toList();
+  }
   @Override
   public void save(FiguritaIntercambiable figuritaIntercambiable) {
     storage.put(figuritaIntercambiable.getFigurita().getId(), figuritaIntercambiable);

@@ -1,8 +1,10 @@
 package app.controllers;
 
+import app.dto.FiguritaIntercambiableDto;
 import app.dto.OperacionesDto;
 import app.dto.TemporalDto;
 import app.servicios.UsuarioService;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,4 +36,9 @@ public class UsuarioController {
         return ResponseEntity.ok(new TemporalDto("POST /usuarios/" + user_id + "/calificaciones"));
     }
 
+    @GetMapping("/{user_id}/intercambiables")
+    public ResponseEntity<List<FiguritaIntercambiableDto>> getIntercambiables(
+        @PathVariable String user_id) {
+        return ResponseEntity.ok(usuarioService.getIntercambiablesUsuario(user_id));
+    }
 }

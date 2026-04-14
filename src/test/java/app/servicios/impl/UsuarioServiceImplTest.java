@@ -1,12 +1,17 @@
 package app.servicios.impl;
 
+import app.dto.FiguritaIntercambiableDto;
 import app.dto.OperacionesDto;
+import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
+import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
+import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
+import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
@@ -22,6 +27,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,12 +42,15 @@ class UsuarioServiceImplTest {
     @Mock
     private RepositorioNotificaciones repositorioNotificaciones;
 
+    @Mock
+    private RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
+
     private UsuarioServiceImpl service;
 
     @BeforeEach
     void setUp() {
         service = new UsuarioServiceImpl(repositorioUsuarios, repositorioPropuestas,
-            repositorioSubastas, repositorioNotificaciones);
+            repositorioSubastas, repositorioNotificaciones, repositorioFiguritasIntercambiables);
     }
 
     @Test
@@ -96,5 +105,32 @@ class UsuarioServiceImplTest {
 
         assertEquals(1, resultado.getSubastasActivas().size());
         assertEquals("s-1", resultado.getSubastasActivas().get(0).getId());
+    }
+
+    @Test
+    void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
+        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+
+        Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+        FiguritaIntercambiable fi =
+            new FiguritaIntercambiable(figurita, 2, new ArrayList<>(), "u-1");
+
+        when(repositorioUsuarios.findById("u-1")).thenReturn(usuario);
+        when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("u-1"))
+            .thenReturn(List.of(fi));
+
+        List<FiguritaIntercambiableDto> resultado =
+            service.getIntercambiablesUsuario("u-1");
+
+        assertEquals(1, resultado.size());
+        assertEquals("ARG-10", resultado.get(0).getFiguritaId());
+    }
+
+    @Test
+    void getIntercambiablesUsuario_usuarioInexistente_lanzaNotFoundException() {
+        when(repositorioUsuarios.findById("u-99")).thenReturn(null);
+
+        assertThrows(NotFoundException.class,
+            () -> service.getIntercambiablesUsuario("u-99"));
     }
 }

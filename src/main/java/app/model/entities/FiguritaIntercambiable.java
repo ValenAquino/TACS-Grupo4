@@ -12,5 +12,8 @@ public class FiguritaIntercambiable {
     private Figurita figurita;
     private Integer cantidadDisponible;
     private List<MetodoIntercambio> metodos;
-
+    private String usuarioId;
+    public FiguritaIntercambiable(Figurita figurita, Integer cantidadDisponible, List<MetodoIntercambio> metodos) {
+        this(figurita, cantidadDisponible, metodos, null);
+    }
 }

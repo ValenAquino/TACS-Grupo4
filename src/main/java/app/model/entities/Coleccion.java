@@ -2,20 +2,19 @@ package app.model.entities;
 
 import app.exceptions.FiguritaDuplicadaException;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Coleccion {
 
   private String id;
   private List<Figurita> faltantes = new ArrayList<Figurita>();
   private List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
-
-  public Coleccion() {}
 
   public Coleccion(String id) {
     this.id = id;

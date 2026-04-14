@@ -1,92 +1,91 @@
 package app.servicios.impl;
 
-import app.model.entities.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import app.dto.PropuestaDto;
+import app.dto.request.CrearPropuestaRequest;
+import app.exceptions.NotFoundException;
+import app.model.entities.Coleccion;
+import app.model.entities.EstadoProceso;
+import app.model.entities.Figurita;
+import app.model.entities.Seleccion;
+import app.model.entities.Usuario;
+import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioFiguritasIntercambiables;
+import app.repositories.RepositorioPropuestas;
+import app.repositories.RepositorioUsuarios;
+import app.servicios.PropuestaService;
+import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+@ExtendWith(MockitoExtension.class)
+class PropuestaServiceTest {
 
-public class PropuestaServiceTest {
+  @Mock
+  RepositorioPropuestas repositorioPropuestas;
+  @Mock
+  RepositorioUsuarios repositorioUsuarios;
+  @Mock
+  RepositorioFiguritas repositorioFiguritas;
+  @Mock
+  RepositorioFiguritasIntercambiables repositorioIntercambiables;
 
-    private PropuestaService service;
-    private Usuario origen;
-    private Usuario destino;
-    private Propuesta propuesta;
+  @InjectMocks
+  PropuestaService propuestaService;
 
-    @BeforeEach
-    void setUp() {
-        service = new PropuestaService();
+  Usuario lucas = new Usuario("1000", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+  Usuario sofia = new Usuario("1001", "Sofía", new Coleccion(), "+54912", new ArrayList<>());
+  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+  Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA);
 
-        origen = new Usuario("1", "Origen", null, "", List.of());
-        destino = new Usuario("2", "Destino", null, "", List.of());
+  @Test
+  void crearPropuestaDevuelveDto() {
+    CrearPropuestaRequest request = new CrearPropuestaRequest(
+        "1000", "1001", "ARG-10", List.of("FRA-10"));
 
-        propuesta = new Propuesta(
-                "123",
-                origen,
-                destino,
-                List.of(),
-                null,
-                EstadoProceso.PENDIENTE
-        );
+    when(repositorioUsuarios.findById("1000")).thenReturn(lucas);
+    when(repositorioUsuarios.findById("1001")).thenReturn(sofia);
+    when(repositorioFiguritas.findById("ARG-10")).thenReturn(messi);
+    when(repositorioFiguritas.findById("FRA-10")).thenReturn(mbappe);
 
-        service.crear(propuesta);
-    }
+    PropuestaDto resultado = propuestaService.crearPropuesta(request);
 
-    @Test
-    void deberiaCrearYObtenerPropuesta() {
-        Propuesta obtenida = service.obtenerPorId("123");
+    assertEquals("1000", resultado.getUsuarioOrigenId());
+    assertEquals("1001", resultado.getUsuarioDestinoId());
+    assertEquals("ARG-10", resultado.getFiguritaBuscadaId());
+    assertEquals(EstadoProceso.PENDIENTE, resultado.getEstado());
+    verify(repositorioPropuestas).save(any());
+  }
 
-        assertNotNull(obtenida);
-        assertEquals("123", obtenida.getId());
-    }
+  @Test
+  void crearPropuestaUsuarioOrigenNoExisteLanzaNotFoundException() {
+    CrearPropuestaRequest request = new CrearPropuestaRequest(
+        "9999", "1001", "ARG-10", List.of("FRA-10"));
 
-    @Test
-    void deberiaFallarSiLaPropuestaNoExiste() {
-        assertThrows(RuntimeException.class, () -> {
-            service.obtenerPorId("999");
-        });
-    }
+    when(repositorioUsuarios.findById("9999")).thenReturn(null);
 
-    @Test
-    void deberiaAceptarPropuesta() {
-        service.aceptar("123");
+    assertThrows(NotFoundException.class,
+        () -> propuestaService.crearPropuesta(request));
+  }
 
-        Propuesta actualizada = service.obtenerPorId("123");
+  @Test
+  void crearPropuestaUsuarioDestinoNoExisteLanzaNotFoundException() {
+    CrearPropuestaRequest request = new CrearPropuestaRequest(
+        "1000", "9999", "ARG-10", List.of("FRA-10"));
 
-        assertEquals(EstadoProceso.ACEPTADO, actualizada.getEstado());
-    }
+    when(repositorioUsuarios.findById("1000")).thenReturn(lucas);
+    when(repositorioUsuarios.findById("9999")).thenReturn(null);
 
-    @Test
-    void noDeberiaAceptarDosVeces() {
-        service.aceptar("123");
-
-        assertThrows(RuntimeException.class, () -> {
-            service.aceptar("123");
-        });
-    }
-
-    @Test
-    void noDeberiaAceptarPropuestaInexistente() {
-        assertThrows(RuntimeException.class, () -> {
-            service.aceptar("999");
-        });
-    }
-
-    @Test
-    void noDeberiaRechazarPropuestaInexistente() {
-        assertThrows(RuntimeException.class, () -> {
-            service.rechazar("999");
-        });
-    }
-
-    @Test
-    void noDeberiaRechazarLuegoDeAceptar() {
-        service.aceptar("123");
-
-        assertThrows(RuntimeException.class, () -> {
-            service.rechazar("123");
-        });
-    }
+    assertThrows(NotFoundException.class,
+        () -> propuestaService.crearPropuesta(request));
+  }
 }

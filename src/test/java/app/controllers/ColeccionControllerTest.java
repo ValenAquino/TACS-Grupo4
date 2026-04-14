@@ -37,21 +37,22 @@ class ColeccionControllerTest {
         Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
 
         FiguritaIntercambiable repetida =
-            new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA));
+            new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA), "user-123"); // <-- usuarioId
 
-        when(serviceColeccion.agregarRepetida(eq("1"), any(), any(), any()))
+        when(serviceColeccion.agregarRepetida(eq("1"), eq("user-123"), any(), any(), any()))
             .thenReturn(repetida);
 
         String json = """
-        {
-            "fig_id": "ARG-10",
-            "cantidad_disponible": 2,
-            "modos_intercambio": ["SUBASTA"]
-        }
-        """;
+    {
+        "fig_id": "ARG-10",
+        "cantidad_disponible": 2,
+        "modos_intercambio": ["SUBASTA"]
+    }
+    """;
 
         mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("User-Id", "user-123")
                 .content(json))
             .andExpect(status().is(201));
     }
@@ -101,6 +102,7 @@ class ColeccionControllerTest {
                 eq("1"),
                 any(),
                 any(),
+                any(),
                 any()
             );
 
@@ -114,6 +116,7 @@ class ColeccionControllerTest {
 
         mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("User-Id", "user-123")
                 .content(json))
             .andExpect(status().isNotFound());
     }

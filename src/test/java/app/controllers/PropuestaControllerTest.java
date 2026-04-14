@@ -1,14 +1,10 @@
 package app.controllers;
 
-import app.model.entities.*;
-import app.servicios.impl.PropuestaService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,47 +17,32 @@ class PropuestaControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @Autowired
-    PropuestaService propuestaService;
-
-    private Usuario origen;
-    private Usuario destino;
-
-    @BeforeEach
-    void setUp() {
-        origen = new Usuario("1", "Origen", null, "", List.of());
-        destino = new Usuario("2", "Destino", null, "", List.of());
-
-        Propuesta propuesta = new Propuesta(
-                "1",
-                origen,
-                destino,
-                List.of(),
-                null,
-                EstadoProceso.PENDIENTE
-        );
-
-        propuestaService.crear(propuesta);
-    }
-
     @Test
-    void crearPropuestaNoFalla() throws Exception {
-        mockMvc.perform(post("/propuestas"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.endpoint").value("POST /propuestas"));
+    void crearPropuestaDevuelve201() throws Exception {
+        String json = """
+        {
+            "usuario_origen_id": "1000",
+            "usuario_destino_id": "1001",
+            "figurita_buscada_id": "ARG-10",
+            "figuritas_ofrecidas_ids": ["FRA-10"]
+        }
+        """;
+
+        mockMvc.perform(post("/propuestas")
+                .contentType("application/json")
+                .content(json))
+            .andExpect(status().isCreated());
     }
 
     @Test
     void aceptarPropuestaNoFalla() throws Exception {
-        mockMvc.perform(patch("/propuestas/1/aceptar"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.endpoint").value("Propuesta 1 aceptada"));
+        mockMvc.perform(patch("/propuestas/2000/aceptar"))
+                .andExpect(status().isOk());
     }
 
     @Test
     void rechazarPropuestaNoFalla() throws Exception {
-        mockMvc.perform(patch("/propuestas/1/rechazar"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.endpoint").value("Propuesta 1 rechazada"));
+        mockMvc.perform(patch("/propuestas/2000/rechazar"))
+                .andExpect(status().isOk());
     }
 }

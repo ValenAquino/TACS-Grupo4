@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Figurita {
-
   private String id;
 
   private Integer numero;

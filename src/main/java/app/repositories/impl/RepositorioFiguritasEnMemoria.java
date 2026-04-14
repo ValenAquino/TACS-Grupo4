@@ -13,6 +13,7 @@ public class RepositorioFiguritasEnMemoria implements RepositorioFiguritas {
 
   @Override
   public Figurita findById(String id) {
+      Figurita figurita = storage.values()
         .stream()
         .filter(c -> c.getId().equals(id))
         .findFirst().orElse(null);

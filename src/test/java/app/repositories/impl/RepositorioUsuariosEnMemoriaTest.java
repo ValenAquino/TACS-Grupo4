@@ -1,6 +1,8 @@
 package app.repositories.impl;
 
 import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
+import app.model.entities.Seleccion;
 import app.model.entities.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,5 +32,30 @@ class RepositorioUsuariosEnMemoriaTest {
     @Test
     void findById_inexistente_retornaNull() {
         assertNull(repositorio.findById("inexistente"));
+    }
+
+    @Test
+    void buscarPorFiguritaFaltanteDevuelve2() {
+        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+5491100000001", new ArrayList<>());
+        Usuario usuario2 = new Usuario("u-2", "Juan", new Coleccion(), "+5491100000001", new ArrayList<>());
+        Usuario usuario3 = new Usuario("u-4", "Cristina", new Coleccion(), "+5491100000001", new ArrayList<>());
+
+        Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+        Figurita diMaria = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+
+        usuario.getColeccion().agregarFaltante(messi);
+        usuario.getColeccion().agregarFaltante(diMaria);
+
+        usuario2.getColeccion().agregarFaltante(messi);
+        usuario2.getColeccion().agregarFaltante(diMaria);
+
+        usuario3.getColeccion().agregarFaltante(diMaria);
+
+        repositorio.save(usuario);
+        repositorio.save(usuario2);
+        repositorio.save(usuario3);
+
+        assertEquals(2, repositorio.buscarPorFiguritaFaltante(messi).size());
+
     }
 }

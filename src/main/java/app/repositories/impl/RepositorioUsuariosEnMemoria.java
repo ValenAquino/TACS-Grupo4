@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.model.entities.Figurita;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuarios;
 import java.util.HashMap;
@@ -15,6 +16,14 @@ public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
     @Override
     public Usuario findById(String id) {
         return storage.get(id);
+    }
+
+    @Override
+    public List<Usuario> buscarPorFiguritaFaltante(Figurita figurita) {
+        return this.storage.values()
+            .stream()
+            .filter(u -> u.getColeccion().tieneFaltante(figurita))
+            .toList();
     }
 
     @Override

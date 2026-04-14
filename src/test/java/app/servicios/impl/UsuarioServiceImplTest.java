@@ -7,6 +7,7 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
+import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
@@ -32,12 +33,15 @@ class UsuarioServiceImplTest {
     private RepositorioPropuestas repositorioPropuestas;
     @Mock
     private RepositorioSubastas repositorioSubastas;
+    @Mock
+    private RepositorioNotificaciones repositorioNotificaciones;
 
     private UsuarioServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new UsuarioServiceImpl(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
+        service = new UsuarioServiceImpl(repositorioUsuarios, repositorioPropuestas,
+            repositorioSubastas, repositorioNotificaciones);
     }
 
     @Test

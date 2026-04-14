@@ -9,8 +9,11 @@ import app.model.entities.Propuesta;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
-import app.repositories.*;
-
+import app.repositories.RepositorioColecciones;
+import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioPropuestas;
+import app.repositories.RepositorioSubastas;
+import app.repositories.RepositorioUsuarios;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +27,17 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioPropuestas propuestas;
     private final RepositorioSubastas subastas;
     private final RepositorioFiguritas figuritas;
+    private final RepositorioColecciones colecciones;
 
     public InicializadorDeDatos(RepositorioUsuarios usuarios,
                                 RepositorioPropuestas propuestas,
                                 RepositorioSubastas subastas,
+                                RepositorioColecciones colecciones,
                                 RepositorioFiguritas figuritas) {
         this.usuarios = usuarios;
         this.propuestas = propuestas;
         this.subastas = subastas;
+        this.colecciones = colecciones;
         this.figuritas = figuritas;
     }
 
@@ -49,6 +55,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         figuritas.save(messi);
         figuritas.save(diMaria);
         figuritas.save(lautaro);
+        figuritas.save(vinicius);
 
         cargarUsuarios(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);
@@ -81,11 +88,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionMatias.getFaltantes().add(kroos);
         usuarios.save(new Usuario("1002", "Matías", coleccionMatias, "+5491100000003", new ArrayList<>()));
 
-        Coleccion coleccionJuan = new Coleccion();
+        Coleccion coleccionJuan = new Coleccion("1");
         coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(vinicius, 4, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA)));
         coleccionJuan.getFaltantes().add(pedri);
         coleccionJuan.getFaltantes().add(kroos);
 
+        colecciones.save(coleccionJuan);
         usuarios.save(new Usuario("1003", "Juan", coleccionJuan, "+5491100000003", new ArrayList<>()));
     }
 
@@ -111,12 +119,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
         // Subasta activa: Sofía subasta Griezmann, cierra en 2 días
         subastas.save(new Subasta("3000", sofia,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2),
-            griezmann, null));
+                LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2),
+                griezmann, null));
 
         // Subasta vencida: Matías subastó Vinicius, ya cerró
         subastas.save(new Subasta("3001", matias,
-            LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1),
-            vinicius, null));
+                LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1),
+                vinicius, null));
     }
 }

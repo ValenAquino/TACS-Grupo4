@@ -12,10 +12,4 @@ public class FiguritaController {
     public ResponseEntity<TemporalDto> getFiguritas() {
         return ResponseEntity.ok(new TemporalDto("GET /figuritas"));
     }
-
-    @GetMapping("/sugerencias")
-    public ResponseEntity<TemporalDto> getSugerencias() {
-        return ResponseEntity.ok(new TemporalDto("GET /sugerencias"));
-    }
-
 }

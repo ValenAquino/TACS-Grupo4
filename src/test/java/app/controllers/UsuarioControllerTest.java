@@ -43,4 +43,9 @@ class UsuarioControllerTest {
             .content("{ \"calificacion\":2} "))
             .andExpect(status().isOk());
     }
+
+    @Test
+    void getNotificaciones() throws Exception {
+        mockMvc.perform(get("/usuarios/1/notificaciones")).andExpect(status().isOk());
+    }
 }

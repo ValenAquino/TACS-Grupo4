@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/usuarios")
-public class UsuarioController {
+@RequestMapping("/perfil")
+public class PerfilController {
 
-    private final IPerfilService usuarioService;
+    private final IPerfilService perfilService;
 
-    public UsuarioController(IPerfilService usuarioService) {
-        this.usuarioService = usuarioService;
+    public PerfilController(IPerfilService perfilService) {
+        this.perfilService = perfilService;
     }
 
     @GetMapping("/{user_id}/operaciones")
     public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {
-        OperacionesDto operaciones = usuarioService.obtenerOperacionesPerfil(user_id);
+        OperacionesDto operaciones = perfilService.obtenerOperacionesPerfil(user_id);
         if (operaciones == null) {
             return ResponseEntity.notFound().build();
         }
@@ -36,8 +36,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/{user_id}/calificaciones")
-    public ResponseEntity<TemporalDto> calificarUsuario(@PathVariable String user_id, @RequestBody Map<String, Object> body) {
-        Number calificacionMedia = this.usuarioService.agregarCalificacion((Integer) body.get("calificacion"), user_id);
+    public ResponseEntity<TemporalDto> calificarPerfil(@PathVariable String user_id, @RequestBody Map<String, Object> body) {
+        Number calificacionMedia = this.perfilService.agregarCalificacion((Integer) body.get("calificacion"), user_id);
 
         return ResponseEntity.ok(new TemporalDto("Nueva calificacion: " + calificacionMedia));
     }
@@ -47,17 +47,17 @@ public class UsuarioController {
         @PathVariable String user_id) {
 
         return ResponseEntity.ok(
-            usuarioService.obtenerIntercambiablesPerfil(user_id)
+            perfilService.obtenerIntercambiablesPerfil(user_id)
         );
     }
     @GetMapping("/{user_id}/sugerencias")
     public ResponseEntity<List<SugerenciaDto>> obtenerSugerencias(@PathVariable String user_id) {
-        List<SugerenciaDto> sugerenciasDto = this.usuarioService.obtenerSugerencias(user_id);
+        List<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id);
 
         return ResponseEntity.accepted().body(sugerenciasDto);
     }
     @GetMapping("/{user_id}/notificaciones")
     public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(@PathVariable String user_id) {
-        return ResponseEntity.ok(this.usuarioService.obtenerNotificaciones(user_id));
+        return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(user_id));
     }
 }

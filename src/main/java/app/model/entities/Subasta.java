@@ -1,6 +1,9 @@
 package app.model.entities;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,37 +13,61 @@ import lombok.Setter;
 @Setter
 public class Subasta {
     private String id;
-    private Perfil usuario;
+    private Perfil autor;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaCierre;
     private Figurita figuritaSubastada;
-    private Propuesta propuestaGanadora;
+    private List<Propuesta> ofertas;
+    private List<Figurita> figuritasSolicitadas;
+    private Integer calificacionMinimaSolicitada;
+    private Boolean finalizada;
 
-    public Subasta(Perfil usuario, LocalDateTime fechaInicio, LocalDateTime fechaCierre, Figurita figuritaSubastada, Propuesta propuestaGanadora) {
-        this.usuario = usuario;
+    public Subasta(Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
+                   Figurita figuritaSubastada,List<Figurita> figuritasSolicitadas,
+                   Integer calificacionMinimaSolicitada) {
+        this.autor = autor;
         this.fechaInicio = fechaInicio;
         this.fechaCierre = fechaCierre;
         this.figuritaSubastada = figuritaSubastada;
-        this.propuestaGanadora = propuestaGanadora;
+        this.ofertas = new ArrayList<>();
+        this.figuritasSolicitadas = figuritasSolicitadas;
+        this.calificacionMinimaSolicitada = calificacionMinimaSolicitada;
+    }
+
+    public Subasta(Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
+                   Figurita figuritaSubastada) {
+        this.autor = autor;
+        this.fechaInicio = fechaInicio;
+        this.fechaCierre = fechaCierre;
+        this.figuritaSubastada = figuritaSubastada;
+        this.ofertas = new ArrayList<>();
+        this.figuritasSolicitadas = new ArrayList<>();
+        this.calificacionMinimaSolicitada = 0;
     }
 
     public Boolean estaActivo() {
         final LocalDateTime fechaActual = LocalDateTime.now();
 
-        return fechaActual.isAfter(fechaInicio) && fechaActual.isBefore(fechaCierre);
+        return fechaActual.isAfter(fechaInicio)
+            && fechaActual.isBefore(fechaCierre)
+            && ofertas.stream()
+            .anyMatch(p ->
+                p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO
+            );
     }
+//TODO definir se lo utilizaremos, si finaliza sin que el usuario haya seleccionado
 
-    public void algoritmoSeleccionador(Propuesta propuesta) {
-        Propuesta propuestaActual = this.propuestaGanadora;
-
-        if(propuestaActual == null) {
-            this.propuestaGanadora = propuesta;
-            return;
-        }
-
-        if(propuesta.getFiguritasOfrecidas().size() > propuestaActual.getFiguritasOfrecidas().size()) {
-            this.propuestaGanadora = propuesta;
-        }
-    }
+//    public void algoritmoSeleccionador(Propuesta propuesta) {
+//        Propuesta propuestaActual = this.propuestaGanadora;
+//
+//        if(propuestaActual == null) {
+//            this.propuestaGanadora = propuesta;
+//            return;
+//        }
+//
+//        if(propuesta.getFiguritasOfrecidas().size() > propuestaActual.getFiguritasOfrecidas().size()) {
+//            this.propuestaGanadora = propuesta;
+//        }
+//    }
 }
 

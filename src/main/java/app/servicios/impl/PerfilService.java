@@ -55,10 +55,10 @@ public class PerfilService implements IPerfilService {
 
         List<FiguritaIntercambiable> figuritasPublicadas = usuario.getColeccion().getRepetidas();
 
-        List<Propuesta> enviadas = repositorioPropuestas.buscarPorOrigenId(userId);
-        List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinoId(userId);
+        List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(userId);
+        List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(userId);
 
-        List<Subasta> subastasActivas = repositorioSubastas.buscarPorUsuarioId(userId)
+        List<Subasta> subastasActivas = repositorioSubastas.buscarPorPerfilId(userId)
                 .stream()
                 .filter(Subasta::estaActivo)
                 .toList();
@@ -86,7 +86,7 @@ public class PerfilService implements IPerfilService {
             fi.getCantidadExistente(),
             fi.getCantidadReservada(),
             fi.getMetodos(),
-            fi.getUsuarioId()
+            fi.getPerfilId()
         );
     }
     public Number agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {

@@ -4,6 +4,7 @@ import app.dto.PropuestaDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
 import app.model.entities.EstadoProceso;
+import app.model.entities.EstadoPropuesta;
 import app.model.entities.Figurita;
 import app.model.entities.Propuesta;
 import app.model.entities.Perfil;
@@ -13,6 +14,8 @@ import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
 import app.servicios.INotificacionService;
 import app.servicios.IPropuestaService;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -62,39 +65,38 @@ public class PropuestaService implements IPropuestaService {
         origen,
         destino,
         figuritasOfrecidas,
-        figuritaBuscada,
-        EstadoProceso.PENDIENTE
+        figuritaBuscada
     );
 
     repositorioPropuestas.guardar(propuesta);
 
-    String cuerpo = "Tenes una nueva propuesta de: " + propuesta.getUsuarioOrigen().getNombre()
-        + "por la figurita numero: " + figuritaBuscada.getNumero();
+    String cuerpo = "Tenes una nueva propuesta de: " + origen.getNombre()
+        + " por la figurita numero: " + figuritaBuscada.getNumero();
 
-    notificacionService.notificarInteresados(List.of(propuesta.getUsuarioDestino()), cuerpo);
+    notificacionService.notificarInteresados(List.of(destino), cuerpo);
 
     return aDto(propuesta);
   }
   public void aceptar(String id) {
       Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
-      propuesta.aceptar(propuesta.getUsuarioDestino());
+      propuesta.aceptar(propuesta.getDestinatario());
       repositorioPropuestas.guardar(propuesta);
   }
 
   public void rechazar(String id) {
       Propuesta propuesta = this.repositorioPropuestas.buscarPorId(id);
-      propuesta.rechazar(propuesta.getUsuarioDestino());
+      propuesta.rechazar(propuesta.getDestinatario());
       repositorioPropuestas.guardar(propuesta);
   }
 
   private PropuestaDto aDto(Propuesta p) {
     return new PropuestaDto(
         p.getId(),
-        p.getUsuarioOrigen().getId(),
-        p.getUsuarioDestino().getId(),
+        p.getAutor().getId(),
+        p.getDestinatario().getId(),
         p.getFiguritaBuscada().getId(),
         p.getFiguritasOfrecidas().stream().map(Figurita::getId).toList(),
-        p.getEstado()
+        p.obtenerEstadoActual().getValor()
     );
   }
 }

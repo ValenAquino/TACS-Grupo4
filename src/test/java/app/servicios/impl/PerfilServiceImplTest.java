@@ -80,11 +80,11 @@ class PerfilServiceImplTest {
         subastaActiva.getOfertas().add(oferta);
 
         when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-        when(repositorioPropuestas.buscarPorOrigenId("u-1")).thenReturn(
+        when(repositorioPropuestas.buscarPorAutorId("u-1")).thenReturn(
             List.of(propuesta("p-1", usuario, sofia, EstadoProceso.PENDIENTE)));
-        when(repositorioPropuestas.buscarPorDestinoId("u-1")).thenReturn(
+        when(repositorioPropuestas.buscarPorDestinatarioId("u-1")).thenReturn(
             List.of(propuesta("p-2", sofia, usuario, EstadoProceso.RECHAZADO)));
-        when(repositorioSubastas.buscarPorUsuarioId("u-1")).thenReturn(List.of(subastaActiva));
+        when(repositorioSubastas.buscarPorPerfilId("u-1")).thenReturn(List.of(subastaActiva));
 
         OperacionesDto resultado = service.obtenerOperacionesPerfil("u-1");
 
@@ -108,9 +108,9 @@ class PerfilServiceImplTest {
             LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null);
 
         when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-        when(repositorioPropuestas.buscarPorOrigenId("u-1")).thenReturn(new ArrayList<>());
-        when(repositorioPropuestas.buscarPorDestinoId("u-1")).thenReturn(new ArrayList<>());
-        when(repositorioSubastas.buscarPorUsuarioId("u-1")).thenReturn(List.of(subastaActiva, subastaVencida));
+        when(repositorioPropuestas.buscarPorAutorId("u-1")).thenReturn(new ArrayList<>());
+        when(repositorioPropuestas.buscarPorDestinatarioId("u-1")).thenReturn(new ArrayList<>());
+        when(repositorioSubastas.buscarPorPerfilId("u-1")).thenReturn(List.of(subastaActiva, subastaVencida));
 
         OperacionesDto resultado = service.obtenerOperacionesPerfil("u-1");
 

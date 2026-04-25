@@ -15,9 +15,9 @@ public class RepositorioSubastasEnMemoria implements RepositorioSubastas {
     private final Map<String, Subasta> storage = new HashMap<>();
 
     @Override
-    public List<Subasta> buscarPorUsuarioId(String userId) {
+    public List<Subasta> buscarPorPerfilId(String userId) {
         return storage.values().stream()
-                .filter(s -> s.getUsuario().getId().equals(userId))
+                .filter(s -> s.getAutor().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 

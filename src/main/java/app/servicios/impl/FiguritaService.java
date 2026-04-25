@@ -44,9 +44,10 @@ public class FiguritaService implements IFiguritaService {
         fi.getFigurita().getNumero(),
         fi.getFigurita().getJugador(),
         fi.getFigurita().getSeleccion(),
-        fi.getCantidadDisponible(),
+        fi.getCantidadExistente(),
+        fi.getCantidadReservada(),
         fi.getMetodos(),
-        fi.getUsuarioId()
+        fi.getPerfilId()
     );
   }
 }

@@ -15,9 +15,13 @@ public class FiguritaIntercambiable {
     private List<MetodoIntercambio> metodos;
 
     //TODO Ver si esto se mantiene o manejamos las figuritas desde cada perfil
-    private String usuarioId;
+    private String perfilId;
     public FiguritaIntercambiable(Figurita figurita, Integer cantidadDisponible, List<MetodoIntercambio> metodos) {
         this(figurita, cantidadDisponible,0, metodos, null);
+    }
+
+    public FiguritaIntercambiable(Figurita figurita, Integer cantidadDisponible, List<MetodoIntercambio> metodos, String perfilId) {
+        this(figurita, cantidadDisponible,0, metodos, perfilId);
     }
 
     public boolean hayCantidadDisponible(){

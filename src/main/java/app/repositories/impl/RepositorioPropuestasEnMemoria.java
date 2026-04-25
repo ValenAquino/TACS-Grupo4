@@ -17,16 +17,16 @@ public class RepositorioPropuestasEnMemoria implements RepositorioPropuestas {
     private final Map<String, Propuesta> storage = new HashMap<>();
 
     @Override
-    public List<Propuesta> buscarPorOrigenId(String userId) {
+    public List<Propuesta> buscarPorAutorId(String userId) {
         return storage.values().stream()
-                .filter(p -> p.getUsuarioOrigen().getId().equals(userId))
+                .filter(p -> p.getAutor().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Propuesta> buscarPorDestinoId(String userId) {
+    public List<Propuesta> buscarPorDestinatarioId(String userId) {
         return storage.values().stream()
-                .filter(p -> p.getUsuarioDestino().getId().equals(userId))
+                .filter(p -> p.getDestinatario().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 

@@ -10,7 +10,8 @@ public interface IPerfilService {
     OperacionesDto obtenerOperacionesPerfil(String userId);
 
     List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId);
-    Number agregarCalificacion(Integer calificacion, String userId);
+    Number agregarCalificacion(String autorId, String perfilDestinoId, Integer valor,
+                               String descripcion);
     List<SugerenciaDto> obtenerSugerencias(String userId);
     List<NotificacionesDto> obtenerNotificaciones(String userId);
 }

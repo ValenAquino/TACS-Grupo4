@@ -18,8 +18,9 @@ public class Propuesta {
     private Figurita figuritaBuscada;
     private List<EstadoPropuesta> estado;
 
-    public Propuesta(Perfil autor, Perfil destinatario, List<Figurita> figuritasOfrecidas,
+    public Propuesta(String id, Perfil autor, Perfil destinatario, List<Figurita> figuritasOfrecidas,
                      Figurita figuritaBuscada) {
+        this.id = id;
         this.autor = autor;
         this.destinatario = destinatario;
         this.figuritasOfrecidas = figuritasOfrecidas;

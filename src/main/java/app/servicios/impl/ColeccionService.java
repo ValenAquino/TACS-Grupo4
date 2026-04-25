@@ -58,7 +58,7 @@ public class ColeccionService implements IColeccionService {
         .getFigurita());
 
     String cuerpo = "Nueva figurita disponible, Numero: " + repetida.getFigurita().getId() +
-        ", Cantidad: " + repetida.getCantidadDisponible();
+        ", Cantidad: " + repetida.getCantidadExistente();
 
     this.notificacionService.notificarInteresados(interesados, cuerpo);
 

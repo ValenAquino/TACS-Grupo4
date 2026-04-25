@@ -7,13 +7,13 @@ import java.time.Duration;
 import java.util.List;
 @Getter
 public class SubastaDto {
-  PerfilDto usuario;
+  PerfilDto perfilDto;
   long duracion;
   Figurita figurita;
   List<PropuestaDto> ofertas;
 
   public SubastaDto(Subasta subasta) {
-    this.usuario = new PerfilDto(
+    this.perfilDto = new PerfilDto(
         subasta.getAutor().getId(),
         subasta.getAutor().getNombre()
     );

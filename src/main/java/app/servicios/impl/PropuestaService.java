@@ -3,8 +3,6 @@ package app.servicios.impl;
 import app.dto.PropuestaDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
-import app.model.entities.EstadoProceso;
-import app.model.entities.EstadoPropuesta;
 import app.model.entities.Figurita;
 import app.model.entities.Propuesta;
 import app.model.entities.Perfil;
@@ -14,8 +12,6 @@ import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
 import app.servicios.INotificacionService;
 import app.servicios.IPropuestaService;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -46,8 +42,8 @@ public class PropuestaService implements IPropuestaService {
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
   public PropuestaDto crearPropuesta(CrearPropuestaRequest request) {
-    Perfil origen  = repositorioUsuarios.buscarPorId(request.getUsuarioOrigenId());
-    Perfil destino = repositorioUsuarios.buscarPorId(request.getUsuarioDestinoId());
+    Perfil origen  = repositorioUsuarios.buscarPorId(request.getAutorId());
+    Perfil destino = repositorioUsuarios.buscarPorId(request.getDestinatarioId());
 
     if (origen  == null) throw new NotFoundException("Usuario origen no encontrado");
     if (destino == null) throw new NotFoundException("Usuario destino no encontrado");

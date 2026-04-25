@@ -6,8 +6,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class CrearPropuestaRequest {
-  private String usuarioOrigenId;
-  private String usuarioDestinoId;
+  private String autorId;
+  private String destinatarioId;
   private String figuritaBuscadaId;
   private List<String> figuritasOfrecidasIds;
 }

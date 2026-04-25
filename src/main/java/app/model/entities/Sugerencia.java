@@ -9,6 +9,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class Sugerencia {
-  Perfil usuarioSugerido;
+  Perfil destinatario;
   List<Figurita> figuritasSugeridas;
 }

@@ -36,8 +36,16 @@ public class PerfilController {
     }
 
     @PostMapping("/{user_id}/calificaciones")
-    public ResponseEntity<TemporalDto> calificarPerfil(@PathVariable String user_id, @RequestBody Map<String, Object> body) {
-        Number calificacionMedia = this.perfilService.agregarCalificacion((Integer) body.get("calificacion"), user_id);
+    public ResponseEntity<TemporalDto> calificarPerfil(
+        @PathVariable String user_id,
+        @RequestBody Map<String, Object> body) {
+
+        Number calificacionMedia = this.perfilService.agregarCalificacion(
+            (String) body.get("autor_id"),
+            user_id,
+            (Integer) body.get("valor"),
+            (String) body.get("descripcion")
+        );
 
         return ResponseEntity.ok(new TemporalDto("Nueva calificacion: " + calificacionMedia));
     }

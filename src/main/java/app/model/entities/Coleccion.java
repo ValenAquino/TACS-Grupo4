@@ -34,7 +34,7 @@ public class Coleccion {
       if (f.getFigurita().getId()
           .equals(repetida.getFigurita().getId())) {
 
-        f.setCantidadDisponible(f.getCantidadDisponible() + repetida.getCantidadDisponible());
+        f.setCantidadExistente(f.getCantidadExistente() + repetida.getCantidadExistente());
         return;
       }
     }

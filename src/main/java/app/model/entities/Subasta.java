@@ -22,9 +22,10 @@ public class Subasta {
     private Integer calificacionMinimaSolicitada;
     private Boolean finalizada;
 
-    public Subasta(Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
+    public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
                    Figurita figuritaSubastada,List<Figurita> figuritasSolicitadas,
                    Integer calificacionMinimaSolicitada) {
+        this.id = id;
         this.autor = autor;
         this.fechaInicio = fechaInicio;
         this.fechaCierre = fechaCierre;
@@ -34,8 +35,9 @@ public class Subasta {
         this.calificacionMinimaSolicitada = calificacionMinimaSolicitada;
     }
 
-    public Subasta(Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
+    public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
                    Figurita figuritaSubastada) {
+        this.id = id;
         this.autor = autor;
         this.fechaInicio = fechaInicio;
         this.fechaCierre = fechaCierre;

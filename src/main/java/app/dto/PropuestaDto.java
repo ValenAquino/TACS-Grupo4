@@ -9,8 +9,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PropuestaDto {
   private String id;
-  private String usuarioOrigenId;
-  private String usuarioDestinoId;
+  private String autorId;
+  private String destinatarioId;
   private String figuritaBuscadaId;
   private List<String> figuritasOfrocidasIds;
   private EstadoProceso estado;

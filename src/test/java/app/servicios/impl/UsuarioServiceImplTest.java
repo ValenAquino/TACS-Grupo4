@@ -15,7 +15,7 @@ import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 class UsuarioServiceImplTest {
 
     @Mock
-    private RepositorioUsuarios repositorioUsuarios;
+    private RepositorioPerfiles repositorioUsuarios;
     @Mock
     private RepositorioPropuestas repositorioPropuestas;
     @Mock
@@ -46,11 +46,11 @@ class UsuarioServiceImplTest {
     @Mock
     private RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
 
-    private UsuarioServiceImpl service;
+    private PerfilService service;
 
     @BeforeEach
     void setUp() {
-        service = new UsuarioServiceImpl(repositorioUsuarios, repositorioPropuestas,
+        service = new PerfilService(repositorioUsuarios, repositorioPropuestas,
             repositorioSubastas, repositorioNotificaciones, repositorioFiguritasIntercambiables);
     }
 
@@ -58,7 +58,7 @@ class UsuarioServiceImplTest {
     void getOperacionesUsuario_usuarioInexistente_retornaNull() {
         when(repositorioUsuarios.buscarPorId("u-99")).thenReturn(null);
 
-        assertNull(service.obtenerOperacionesUsuario("u-99"));
+        assertNull(service.obtenerOperacionesPerfil("u-99"));
     }
 
     @Test
@@ -78,7 +78,7 @@ class UsuarioServiceImplTest {
         when(repositorioPropuestas.buscarPorDestinoId("u-1")).thenReturn(recibidas);
         when(repositorioSubastas.buscarPorUsuarioId("u-1")).thenReturn(subastas);
 
-        OperacionesDto resultado = service.obtenerOperacionesUsuario("u-1");
+        OperacionesDto resultado = service.obtenerOperacionesPerfil("u-1");
 
         assertEquals(1, resultado.getFiguritasPublicadas().size());
         assertEquals(1, resultado.getPropuestasEnviadas().size());
@@ -102,7 +102,7 @@ class UsuarioServiceImplTest {
         when(repositorioPropuestas.buscarPorDestinoId("u-1")).thenReturn(new ArrayList<>());
         when(repositorioSubastas.buscarPorUsuarioId("u-1")).thenReturn(subastas);
 
-        OperacionesDto resultado = service.obtenerOperacionesUsuario("u-1");
+        OperacionesDto resultado = service.obtenerOperacionesPerfil("u-1");
 
         assertEquals(1, resultado.getSubastasActivas().size());
         assertEquals("s-1", resultado.getSubastasActivas().get(0).getId());
@@ -121,7 +121,7 @@ class UsuarioServiceImplTest {
             .thenReturn(List.of(fi));
 
         List<FiguritaIntercambiableDto> resultado =
-            service.obtenerIntercambiablesUsuario("u-1");
+            service.obtenerIntercambiablesPerfil("u-1");
 
         assertEquals(1, resultado.size());
         assertEquals("ARG-10", resultado.get(0).getFiguritaId());
@@ -132,7 +132,7 @@ class UsuarioServiceImplTest {
         when(repositorioUsuarios.buscarPorId("u-99")).thenReturn(null);
 
         assertThrows(NotFoundException.class,
-            () -> service.obtenerIntercambiablesUsuario("u-99"));
+            () -> service.obtenerIntercambiablesPerfil("u-99"));
     }
     @Test
     void agregarCalificacion_valida_retornaPromedio() {

@@ -10,7 +10,7 @@ import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import app.servicios.INotificacionService;
 import app.servicios.IPropuestaService;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,13 @@ import java.util.UUID;
 public class PropuestaService implements IPropuestaService {
 
   private final RepositorioPropuestas repositorioPropuestas;
-  private final RepositorioUsuarios repositorioUsuarios;
+  private final RepositorioPerfiles repositorioUsuarios;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final INotificacionService notificacionService;
 
   public PropuestaService(RepositorioPropuestas repositorioPropuestas,
-                          RepositorioUsuarios repositorioUsuarios,
+                          RepositorioPerfiles repositorioUsuarios,
                           RepositorioFiguritas repositorioFiguritas,
                           RepositorioFiguritasIntercambiables repositorioIntercambiables,
                           INotificacionService notificacionService) {

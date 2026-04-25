@@ -1,24 +1,21 @@
 package app.dto;
 
 import app.model.entities.Figurita;
-import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import lombok.Getter;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-
 @Getter
 public class SubastaDto {
   PerfilDto usuario;
   long duracion;
   Figurita figurita;
-  PropuestaDto propuestaGanadora;
+  List<PropuestaDto> ofertas;
 
   public SubastaDto(Subasta subasta) {
     this.usuario = new PerfilDto(
-        subasta.getUsuario().getId(),
-        subasta.getUsuario().getNombre()
+        subasta.getAutor().getId(),
+        subasta.getAutor().getNombre()
     );
 
     Duration duracion = Duration.between(
@@ -28,17 +25,18 @@ public class SubastaDto {
 
     this.duracion = duracion.toMinutes();
     this.figurita = subasta.getFiguritaSubastada();
-    Propuesta propGanadora = subasta.getPropuestaGanadora();
 
-    if(propGanadora == null) {
-      this.propuestaGanadora = null;
-    }
-    else {
-      List<Figurita> figuritasOfrecidasDom = new ArrayList<>(propGanadora.getFiguritasOfrecidas());
-      this.propuestaGanadora = new PropuestaDto(propGanadora.getId(),
-          propGanadora.getUsuarioOrigen().getId(), propGanadora.getUsuarioDestino().getId(),
-          propGanadora.getFiguritaBuscada().getId(),
-          figuritasOfrecidasDom.stream().map(Figurita::getId).toList(), propGanadora.getEstado());
-    }
+    this.ofertas = subasta.getOfertas().stream()
+        .map(p -> new PropuestaDto(
+            p.getId(),
+            p.getAutor().getId(),
+            p.getDestinatario().getId(),
+            p.getFiguritaBuscada().getId(),
+            p.getFiguritasOfrecidas().stream()
+                .map(Figurita::getId)
+                .toList(),
+            p.obtenerEstadoActual().getValor()
+        ))
+        .toList();
   }
 }

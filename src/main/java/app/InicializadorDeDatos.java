@@ -14,7 +14,7 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +24,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class InicializadorDeDatos implements CommandLineRunner {
 
-    private final RepositorioUsuarios usuarios;
+    private final RepositorioPerfiles usuarios;
     private final RepositorioPropuestas propuestas;
     private final RepositorioSubastas subastas;
     private final RepositorioFiguritas figuritas;
     private final RepositorioColecciones colecciones;
     private final RepositorioFiguritasIntercambiables intercambiables;
 
-    public InicializadorDeDatos(RepositorioUsuarios usuarios,
+    public InicializadorDeDatos(RepositorioPerfiles usuarios,
                                 RepositorioPropuestas propuestas,
                                 RepositorioSubastas subastas,
                                 RepositorioColecciones colecciones,

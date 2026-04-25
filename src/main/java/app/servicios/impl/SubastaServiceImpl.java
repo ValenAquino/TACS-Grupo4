@@ -10,7 +10,7 @@ import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import app.servicios.INotificacionService;
 import app.servicios.ISubastaService;
 import org.springframework.stereotype.Service;
@@ -21,12 +21,12 @@ import java.util.List;
 @Service
 public class SubastaServiceImpl implements ISubastaService {
   private final RepositorioSubastas repoSubasta;
-  private final RepositorioUsuarios repoUsuario;
+  private final RepositorioPerfiles repoUsuario;
   private final RepositorioFiguritas repoFigurita;
   private final RepositorioPropuestas repoPropuesta;
   private final INotificacionService notificacionService;
 
-  public SubastaServiceImpl(RepositorioSubastas repoSubasta, RepositorioUsuarios repoUsuario,
+  public SubastaServiceImpl(RepositorioSubastas repoSubasta, RepositorioPerfiles repoUsuario,
                             RepositorioFiguritas repoFigurita, RepositorioPropuestas repoPropuesta,
                             INotificacionService notificacionService) {
     this.repoSubasta = repoSubasta;

@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RepositorioUsuariosEnMemoriaTest {
 
-    private RepositorioUsuariosEnMemoria repositorio;
+    private RepositorioPerfilesEnMemoria repositorio;
 
     @BeforeEach
     void setUp() {
-        repositorio = new RepositorioUsuariosEnMemoria();
+        repositorio = new RepositorioPerfilesEnMemoria();
     }
 
     @Test

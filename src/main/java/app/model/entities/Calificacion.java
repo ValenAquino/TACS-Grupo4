@@ -1,8 +1,10 @@
 package app.model.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class Calificacion {
   private String id;
   private Perfil autor;

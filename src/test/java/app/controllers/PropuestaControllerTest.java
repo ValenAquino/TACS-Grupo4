@@ -5,7 +5,7 @@ import app.model.entities.Propuesta;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,7 +26,7 @@ class PropuestaControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    RepositorioUsuarios repoUser;
+    RepositorioPerfiles repoUser;
 
     @MockBean
     RepositorioFiguritas repoFigurita;

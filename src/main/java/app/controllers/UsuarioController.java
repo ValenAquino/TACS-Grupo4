@@ -5,9 +5,7 @@ import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
 import app.dto.TemporalDto;
-import app.model.entities.Sugerencia;
-import app.model.notificador.Notificacion;
-import app.servicios.IUsuarioService;
+import app.servicios.IPerfilService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,15 +20,15 @@ import java.util.Map;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private final IUsuarioService usuarioService;
+    private final IPerfilService usuarioService;
 
-    public UsuarioController(IUsuarioService usuarioService) {
+    public UsuarioController(IPerfilService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
     @GetMapping("/{user_id}/operaciones")
     public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {
-        OperacionesDto operaciones = usuarioService.obtenerOperacionesUsuario(user_id);
+        OperacionesDto operaciones = usuarioService.obtenerOperacionesPerfil(user_id);
         if (operaciones == null) {
             return ResponseEntity.notFound().build();
         }
@@ -49,7 +47,7 @@ public class UsuarioController {
         @PathVariable String user_id) {
 
         return ResponseEntity.ok(
-            usuarioService.obtenerIntercambiablesUsuario(user_id)
+            usuarioService.obtenerIntercambiablesPerfil(user_id)
         );
     }
     @GetMapping("/{user_id}/sugerencias")

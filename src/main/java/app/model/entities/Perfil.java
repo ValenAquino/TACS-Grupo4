@@ -13,11 +13,11 @@ public class Perfil {
     private String nombre;
     private Coleccion coleccion;
     private List<MedioDeContacto> mediosDeContacto;
-    private List<Integer> calificaciones;
+    private List<Calificacion> calificaciones;
 
     public Float obtenerCalificacionMedia() {
         return (float) calificaciones.stream()
-            .mapToInt(Integer::intValue)
+            .mapToInt(Calificacion::getValor)
             .average()
             .orElse(0.0);
     }

@@ -9,7 +9,7 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import app.repositories.impl.RepositorioNotificacionesEnMemoria;
 import app.servicios.ISubastaService;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class SubastaServiceTest {
   @Mock
-  private RepositorioUsuarios repositorioUsuarios;
+  private RepositorioPerfiles repositorioUsuarios;
   @Mock
   private RepositorioPropuestas repositorioPropuestas;
   @Mock

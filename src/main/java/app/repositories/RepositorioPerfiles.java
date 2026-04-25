@@ -4,7 +4,7 @@ import app.model.entities.Figurita;
 import app.model.entities.Perfil;
 import java.util.List;
 
-public interface RepositorioUsuarios {
+public interface RepositorioPerfiles {
 
     Perfil buscarPorId(String id);
 
@@ -14,5 +14,5 @@ public interface RepositorioUsuarios {
 
     List<Perfil> buscarPorFiguritaFaltante(Figurita figurita);
 
-    void guardar(Perfil usuario);
+    void guardar(Perfil perfil);
 }

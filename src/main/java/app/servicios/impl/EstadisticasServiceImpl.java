@@ -4,7 +4,7 @@ import app.dto.EstadisticasDto;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import app.servicios.IEstadisticasService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EstadisticasServiceImpl implements IEstadisticasService {
 
-    private final RepositorioUsuarios repositorioUsuarios;
+    private final RepositorioPerfiles repositorioUsuarios;
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
 

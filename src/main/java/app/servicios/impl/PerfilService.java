@@ -6,6 +6,7 @@ import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
+import app.model.entities.Calificacion;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
@@ -15,29 +16,30 @@ import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
-import app.servicios.IUsuarioService;
+import app.repositories.RepositorioPerfiles;
+import app.servicios.IPerfilService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UsuarioServiceImpl implements IUsuarioService {
+public class PerfilService implements IPerfilService {
 
-    private final RepositorioUsuarios repositorioUsuarios;
+    private final RepositorioPerfiles repositorioPerfiles;
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
     private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
     private final RepositorioNotificaciones repositorioNotificaciones;
 
-    public UsuarioServiceImpl(RepositorioUsuarios repositorioUsuarios,
-                              RepositorioPropuestas repositorioPropuestas,
-                              RepositorioSubastas repositorioSubastas,
-                              RepositorioNotificaciones repositorioNotificaciones,
-                              RepositorioFiguritasIntercambiables
+    public PerfilService(RepositorioPerfiles repositorioPerfiles,
+                         RepositorioPropuestas repositorioPropuestas,
+                         RepositorioSubastas repositorioSubastas,
+                         RepositorioNotificaciones repositorioNotificaciones,
+                         RepositorioFiguritasIntercambiables
                                   repositorioFiguritasIntercambiables) {
-        this.repositorioUsuarios = repositorioUsuarios;
+        this.repositorioPerfiles = repositorioPerfiles;
         this.repositorioPropuestas = repositorioPropuestas;
         this.repositorioSubastas = repositorioSubastas;
         this.repositorioFiguritasIntercambiables = repositorioFiguritasIntercambiables;
@@ -45,8 +47,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     @Override
-    public OperacionesDto obtenerOperacionesUsuario(String userId) {
-        Perfil usuario = repositorioUsuarios.buscarPorId(userId);
+    public OperacionesDto obtenerOperacionesPerfil(String userId) {
+        Perfil usuario = repositorioPerfiles.buscarPorId(userId);
         if (usuario == null) {
             return null;
         }
@@ -65,9 +67,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 //para cuando quiere realizar una propuesta
     @Override
-    public List<FiguritaIntercambiableDto> obtenerIntercambiablesUsuario(String userId) {
-        Perfil usuario = repositorioUsuarios.buscarPorId(userId);
-        if (usuario == null) throw new NotFoundException("Usuario no encontrado");
+    public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
+        Perfil perfil = repositorioPerfiles.buscarPorId(userId);
+        if (perfil == null) throw new NotFoundException("Perfil no encontrado");
 
         return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
             .stream()
@@ -81,38 +83,47 @@ public class UsuarioServiceImpl implements IUsuarioService {
             fi.getFigurita().getNumero(),
             fi.getFigurita().getJugador(),
             fi.getFigurita().getSeleccion(),
-            fi.getCantidadDisponible(),
+            fi.getCantidadExistente(),
+            fi.getCantidadReservada(),
             fi.getMetodos(),
             fi.getUsuarioId()
         );
     }
-    public Number agregarCalificacion(Integer calificacion, String userId) {
-        Perfil usuario = this.repositorioUsuarios.buscarPorId(userId);
-
-        if(calificacion == null) {
-            throw new BadRequestException("La calificacion no puede ser nula");
+    public Number agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {
+        if (valor == null) {
+            throw new BadRequestException("El valor de la calificación no puede ser nulo");
         }
-        if(calificacion < 0 || calificacion > 10) {
-            throw new BadRequestException("La calificacion debe estar entre 0 y 10");
+        if (valor < 1 || valor > 5) {
+            throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
         }
 
-        usuario.getCalificaciones().add(calificacion);
+        Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
+        Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
 
-        this.repositorioUsuarios.guardar(usuario);
-        return usuario.obtenerCalificacionMedia();
+        Calificacion calificacion = new Calificacion(
+            UUID.randomUUID().toString(), //TODO ver
+            autor,
+            valor,
+            descripcion
+        );
+
+        perfilDestino.getCalificaciones().add(calificacion);
+
+        this.repositorioPerfiles.guardar(perfilDestino);
+        return perfilDestino.obtenerCalificacionMedia();
     }
 
     @Override
     public List<SugerenciaDto> obtenerSugerencias(String userId) {
-        Perfil usuarioObjetivo = this.repositorioUsuarios.buscarPorId(userId);
-        List<Perfil> usuarios = this.repositorioUsuarios.buscarTodos();
+        Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorId(userId);
+        List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
         List<Sugerencia> sugerencias = new ArrayList<>();
 
-        usuarios.forEach(usuario -> {
-            Sugerencia sugerencia = new Sugerencia(usuario, new ArrayList<>());
+        perfiles.forEach(perfil -> {
+            Sugerencia sugerencia = new Sugerencia(perfil, new ArrayList<>());
 
-            usuario.getColeccion().getRepetidas().forEach(repetida -> {
-                if(usuarioObjetivo.getColeccion().getFaltantes().contains(repetida.getFigurita())){
+            perfil.getColeccion().getRepetidas().forEach(repetida -> {
+                if(perfilObjetivo.getColeccion().getFaltantes().contains(repetida.getFigurita())){
                     sugerencia.getFiguritasSugeridas().add(repetida.getFigurita());
                 }
             });
@@ -126,8 +137,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     public List<NotificacionesDto> obtenerNotificaciones(String userId) {
-        Perfil usuario = repositorioUsuarios.buscarPorId(userId);
+        Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
-        return this.repositorioNotificaciones.buscarPorUsuario(usuario).stream().map(NotificacionesDto::new).toList();
+        return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
     }
 }

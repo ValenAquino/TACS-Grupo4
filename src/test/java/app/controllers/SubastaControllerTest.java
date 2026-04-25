@@ -5,7 +5,7 @@ import app.model.entities.Subasta;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class SubastaControllerTest {
     MockMvc mockMvc;
 
     @MockBean
-    RepositorioUsuarios repoUser;
+    RepositorioPerfiles repoUser;
 
     @MockBean
     RepositorioSubastas repoSubasta;

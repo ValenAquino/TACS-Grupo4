@@ -11,7 +11,7 @@ public class SugerenciaDto {
   List<Figurita> figuritas;
 
   public SugerenciaDto(Sugerencia sugerencia) {
-    this.usuario = new PerfilDto(sugerencia.getUsuarioSugerido());
+    this.usuario = new PerfilDto(sugerencia.getDestinatario());
     this.figuritas = sugerencia.getFiguritasSugeridas();
   }
 }

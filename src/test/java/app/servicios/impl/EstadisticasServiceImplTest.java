@@ -7,7 +7,7 @@ import app.model.entities.Subasta;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 class EstadisticasServiceImplTest {
 
     @Mock
-    private RepositorioUsuarios repositorioUsuarios;
+    private RepositorioPerfiles repositorioUsuarios;
     @Mock
     private RepositorioPropuestas repositorioPropuestas;
     @Mock

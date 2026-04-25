@@ -3,7 +3,7 @@ package app.servicios.impl;
 import app.model.entities.*;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioUsuarios;
+import app.repositories.RepositorioPerfiles;
 import app.servicios.IColeccionService;
 import app.servicios.INotificacionService;
 import org.springframework.stereotype.Service;
@@ -14,13 +14,13 @@ import java.util.List;
 public class ColeccionService implements IColeccionService {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
-  private final RepositorioUsuarios repositorioUsuarios;
+  private final RepositorioPerfiles repositorioUsuarios;
   private final INotificacionService notificacionService;
   //private final Notificador notificador;
 
   public ColeccionService(RepositorioFiguritas repositorioFiguritas,
                           RepositorioColecciones repositorioColecciones,
-                          RepositorioUsuarios repositorioUsuarios,
+                          RepositorioPerfiles repositorioUsuarios,
                           INotificacionService notificacionService
   ) {
     this.repositorioFiguritas = repositorioFiguritas;

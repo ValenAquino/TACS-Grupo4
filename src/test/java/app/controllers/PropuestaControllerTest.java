@@ -2,11 +2,9 @@ package app.controllers;
 
 import app.model.entities.Figurita;
 import app.model.entities.Propuesta;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +35,8 @@ class PropuestaControllerTest {
 
     @Test
     void crearPropuestaDevuelve201() throws Exception {
-        Usuario subastador = new Usuario("1000", "", null, "", null);
-        Usuario userPropuesta = new Usuario("1001", "", null, "", null);
+        Perfil subastador = new Perfil("1000", "", null, "", null);
+        Perfil userPropuesta = new Perfil("1001", "", null, "", null);
 
         Figurita buscada = new Figurita("ARG-10", 2, null, null);
         Figurita ofrecida = new Figurita("FRA-10", 2, null, null);
@@ -66,8 +64,8 @@ class PropuestaControllerTest {
 
     @Test
     void aceptarPropuestaNoFalla() throws Exception {
-        Usuario subastador = new Usuario("1000", "", null, "", null);
-        Usuario userPropuesta = new Usuario("1001", "", null, "", null);
+        Perfil subastador = new Perfil("1000", "", null, "", null);
+        Perfil userPropuesta = new Perfil("1001", "", null, "", null);
         Propuesta propuesta = new Propuesta(subastador, userPropuesta, null, null, null);
 
         propuesta.setId("1000");
@@ -80,8 +78,8 @@ class PropuestaControllerTest {
 
     @Test
     void rechazarPropuestaNoFalla() throws Exception {
-        Usuario subastador = new Usuario("1000", "", null, "", null);
-        Usuario userPropuesta = new Usuario("1001", "", null, "", null);
+        Perfil subastador = new Perfil("1000", "", null, "", null);
+        Perfil userPropuesta = new Perfil("1001", "", null, "", null);
         Propuesta propuesta = new Propuesta(subastador, userPropuesta, null, null, null);
 
         propuesta.setId("1000");

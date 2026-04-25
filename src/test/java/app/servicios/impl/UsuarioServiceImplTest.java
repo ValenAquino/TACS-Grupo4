@@ -10,7 +10,7 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
@@ -65,9 +65,9 @@ class UsuarioServiceImplTest {
     void getOperacionesUsuario_usuarioExistente_retornaOperaciones() {
         Coleccion coleccion = new Coleccion();
         coleccion.getRepetidas().add(new FiguritaIntercambiable(null, 1, new ArrayList<>()));
-        Usuario usuario = new Usuario("u-1", "Lucas", coleccion, "+54911", new ArrayList<>());
+        Perfil usuario = new Perfil("u-1", "Lucas", coleccion, "+54911", new ArrayList<>());
 
-        Usuario sofia = new Usuario("u-2", "Sofía", new Coleccion(), "+54911", new ArrayList<>());
+        Perfil sofia = new Perfil("u-2", "Sofía", new Coleccion(), "+54911", new ArrayList<>());
         List<Propuesta> enviadas  = List.of(new Propuesta("p-1", usuario, sofia,   new ArrayList<>(), null, EstadoProceso.PENDIENTE));
         List<Propuesta> recibidas = List.of(new Propuesta("p-2", sofia,   usuario, new ArrayList<>(), null, EstadoProceso.RECHAZADO));
         List<Subasta>   subastas  = List.of(new Subasta("s-1", usuario,
@@ -88,7 +88,7 @@ class UsuarioServiceImplTest {
 
     @Test
     void getOperacionesUsuario_filtraSoloSubastasActivas() {
-        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+        Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
 
         List<Subasta> subastas = List.of(
                 new Subasta("s-1", usuario,
@@ -110,7 +110,7 @@ class UsuarioServiceImplTest {
 
     @Test
     void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
-        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+        Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
 
         Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
         FiguritaIntercambiable fi =
@@ -136,7 +136,7 @@ class UsuarioServiceImplTest {
     }
     @Test
     void agregarCalificacion_valida_retornaPromedio() {
-        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+        Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
 
         // ya tiene una calificación previa
         usuario.getCalificaciones().add(6);

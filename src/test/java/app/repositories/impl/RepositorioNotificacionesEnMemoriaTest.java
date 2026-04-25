@@ -1,7 +1,7 @@
 package app.repositories.impl;
 
 import app.model.entities.Coleccion;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.model.notificador.Mensaje;
 import app.model.notificador.Notificacion;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,9 +26,9 @@ public class RepositorioNotificacionesEnMemoriaTest {
   void buscarNotificacionesDeUnUsuario() {
     LocalDateTime fecha = LocalDateTime.now();
     Mensaje mensaje = new Mensaje("Mensaje1", fecha);
-    Usuario user1 = new Usuario(
+    Perfil user1 = new Perfil(
         "1", "Juan", new Coleccion(), "12223123123", new ArrayList<>());
-    Usuario user2 = new Usuario(
+    Perfil user2 = new Perfil(
         "2", "Miguel", new Coleccion(), "9998262", new ArrayList<>());
 
     Notificacion notificacion1 = new Notificacion(mensaje, user1);

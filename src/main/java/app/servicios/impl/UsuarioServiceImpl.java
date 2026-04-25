@@ -10,9 +10,8 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Sugerencia;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritasIntercambiables;
-import app.model.notificador.Notificacion;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
@@ -47,7 +46,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public OperacionesDto obtenerOperacionesUsuario(String userId) {
-        Usuario usuario = repositorioUsuarios.buscarPorId(userId);
+        Perfil usuario = repositorioUsuarios.buscarPorId(userId);
         if (usuario == null) {
             return null;
         }
@@ -67,7 +66,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
 //para cuando quiere realizar una propuesta
     @Override
     public List<FiguritaIntercambiableDto> obtenerIntercambiablesUsuario(String userId) {
-        Usuario usuario = repositorioUsuarios.buscarPorId(userId);
+        Perfil usuario = repositorioUsuarios.buscarPorId(userId);
         if (usuario == null) throw new NotFoundException("Usuario no encontrado");
 
         return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
@@ -88,7 +87,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         );
     }
     public Number agregarCalificacion(Integer calificacion, String userId) {
-        Usuario usuario = this.repositorioUsuarios.buscarPorId(userId);
+        Perfil usuario = this.repositorioUsuarios.buscarPorId(userId);
 
         if(calificacion == null) {
             throw new BadRequestException("La calificacion no puede ser nula");
@@ -105,8 +104,8 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Override
     public List<SugerenciaDto> obtenerSugerencias(String userId) {
-        Usuario usuarioObjetivo = this.repositorioUsuarios.buscarPorId(userId);
-        List<Usuario> usuarios = this.repositorioUsuarios.buscarTodos();
+        Perfil usuarioObjetivo = this.repositorioUsuarios.buscarPorId(userId);
+        List<Perfil> usuarios = this.repositorioUsuarios.buscarTodos();
         List<Sugerencia> sugerencias = new ArrayList<>();
 
         usuarios.forEach(usuario -> {
@@ -127,7 +126,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
     }
 
     public List<NotificacionesDto> obtenerNotificaciones(String userId) {
-        Usuario usuario = repositorioUsuarios.buscarPorId(userId);
+        Perfil usuario = repositorioUsuarios.buscarPorId(userId);
 
         return this.repositorioNotificaciones.buscarPorUsuario(usuario).stream().map(NotificacionesDto::new).toList();
     }

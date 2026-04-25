@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SubastaTest {
 
-    private final Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+    private final Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
 
     @Test
     void estaActivo_cuandoSubastaActiva_retornaTrue() {

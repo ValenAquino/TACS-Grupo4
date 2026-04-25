@@ -8,11 +8,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Usuario {
+public class Perfil {
     private String id;
     private String nombre;
     private Coleccion coleccion;
-    private String telefono;
+    private List<MedioDeContacto> mediosDeContacto;
     private List<Integer> calificaciones;
 
     public Float obtenerCalificacionMedia() {

@@ -10,13 +10,13 @@ import java.util.List;
 
 @Getter
 public class SubastaDto {
-  UsuarioDto usuario;
+  PerfilDto usuario;
   long duracion;
   Figurita figurita;
   PropuestaDto propuestaGanadora;
 
   public SubastaDto(Subasta subasta) {
-    this.usuario = new UsuarioDto(
+    this.usuario = new PerfilDto(
         subasta.getUsuario().getId(),
         subasta.getUsuario().getNombre()
     );

@@ -6,7 +6,7 @@ import app.exceptions.NotFoundException;
 import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
 import app.model.entities.Propuesta;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
@@ -43,8 +43,8 @@ public class PropuestaService implements IPropuestaService {
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
   public PropuestaDto crearPropuesta(CrearPropuestaRequest request) {
-    Usuario origen  = repositorioUsuarios.buscarPorId(request.getUsuarioOrigenId());
-    Usuario destino = repositorioUsuarios.buscarPorId(request.getUsuarioDestinoId());
+    Perfil origen  = repositorioUsuarios.buscarPorId(request.getUsuarioOrigenId());
+    Perfil destino = repositorioUsuarios.buscarPorId(request.getUsuarioDestinoId());
 
     if (origen  == null) throw new NotFoundException("Usuario origen no encontrado");
     if (destino == null) throw new NotFoundException("Usuario destino no encontrado");

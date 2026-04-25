@@ -1,7 +1,6 @@
 package app.model.notificador;
 
-import app.model.entities.Usuario;
-import lombok.AllArgsConstructor;
+import app.model.entities.Perfil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,9 +9,9 @@ import lombok.Setter;
 public class Notificacion {
   String id;
   Mensaje mensaje;
-  Usuario usuario;
+  Perfil usuario;
 
-  public Notificacion(Mensaje mensaje, Usuario usuario) {
+  public Notificacion(Mensaje mensaje, Perfil usuario) {
     this.mensaje = mensaje;
     this.usuario = usuario;
   }

@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 public class SugerenciaDto {
-  UsuarioDto usuario;
+  PerfilDto usuario;
   List<Figurita> figuritas;
 
   public SugerenciaDto(Sugerencia sugerencia) {
-    this.usuario = new UsuarioDto(sugerencia.getUsuarioSugerido());
+    this.usuario = new PerfilDto(sugerencia.getUsuarioSugerido());
     this.figuritas = sugerencia.getFiguritasSugeridas();
   }
 }

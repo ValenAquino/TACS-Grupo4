@@ -4,7 +4,7 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Seleccion;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
@@ -57,11 +57,11 @@ public class SubastaServiceTest {
 
     Coleccion coleccionMessi = new Coleccion();
     coleccionMessi.getFaltantes().add(messi);
-    Usuario usuarioSinMessi = new Usuario("u-1", "Lucas", coleccionMessi, "+54911", new ArrayList<>());
+    Perfil usuarioSinMessi = new Perfil("u-1", "Lucas", coleccionMessi, "+54911", new ArrayList<>());
 
     Coleccion coleccionRepetidos = new Coleccion();
     coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, new ArrayList<>()));
-    Usuario sofia = new Usuario("u-2", "Sofía", coleccionRepetidos, "+54911", new ArrayList<>());
+    Perfil sofia = new Perfil("u-2", "Sofía", coleccionRepetidos, "+54911", new ArrayList<>());
 
     LocalDateTime fechaInicio = LocalDateTime.now();
 
@@ -83,11 +83,11 @@ public class SubastaServiceTest {
 
     Coleccion coleccionMessi = new Coleccion();
     coleccionMessi.getFaltantes().add(messi);
-    Usuario usuarioSinMessi = new Usuario("u-1", "Lucas", coleccionMessi, "+54911", new ArrayList<>());
+    Perfil usuarioSinMessi = new Perfil("u-1", "Lucas", coleccionMessi, "+54911", new ArrayList<>());
 
     Coleccion coleccionRepetidos = new Coleccion();
     coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, new ArrayList<>()));
-    Usuario sofia = new Usuario("u-2", "Sofía", coleccionRepetidos, "+54911", new ArrayList<>());
+    Perfil sofia = new Perfil("u-2", "Sofía", coleccionRepetidos, "+54911", new ArrayList<>());
 
     LocalDateTime fechaInicio = LocalDateTime.now();
 

@@ -10,13 +10,13 @@ import lombok.Setter;
 @Setter
 public class Subasta {
     private String id;
-    private Usuario usuario;
+    private Perfil usuario;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaCierre;
     private Figurita figuritaSubastada;
     private Propuesta propuestaGanadora;
 
-    public Subasta(Usuario usuario, LocalDateTime fechaInicio, LocalDateTime fechaCierre, Figurita figuritaSubastada, Propuesta propuestaGanadora) {
+    public Subasta(Perfil usuario, LocalDateTime fechaInicio, LocalDateTime fechaCierre, Figurita figuritaSubastada, Propuesta propuestaGanadora) {
         this.usuario = usuario;
         this.fechaInicio = fechaInicio;
         this.fechaCierre = fechaCierre;

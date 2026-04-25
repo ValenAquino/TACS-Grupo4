@@ -3,7 +3,7 @@ package app.repositories.impl;
 import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.Propuesta;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -15,16 +15,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RepositorioPropuestasEnMemoriaTest {
 
     private RepositorioPropuestasEnMemoria repositorio;
-    private Usuario u1;
-    private Usuario u2;
-    private Usuario u3;
+    private Perfil u1;
+    private Perfil u2;
+    private Perfil u3;
 
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioPropuestasEnMemoria();
-        u1 = new Usuario("u-1", "Lucas",  new Coleccion(), "+541", new ArrayList<>());
-        u2 = new Usuario("u-2", "Sofía",  new Coleccion(), "+542", new ArrayList<>());
-        u3 = new Usuario("u-3", "Matías", new Coleccion(), "+543", new ArrayList<>());
+        u1 = new Perfil("u-1", "Lucas",  new Coleccion(), "+541", new ArrayList<>());
+        u2 = new Perfil("u-2", "Sofía",  new Coleccion(), "+542", new ArrayList<>());
+        u3 = new Perfil("u-3", "Matías", new Coleccion(), "+543", new ArrayList<>());
     }
 
     @Test

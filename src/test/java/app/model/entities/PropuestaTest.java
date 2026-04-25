@@ -9,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PropuestaTest {
 
-    private Usuario origen;
-    private Usuario destino;
+    private Perfil origen;
+    private Perfil destino;
     private Propuesta propuesta;
 
     @BeforeEach
     void setUp() {
-        origen = new Usuario("1", "Origen", null, "", List.of());
-        destino = new Usuario("2", "Destino", null, "", List.of());
+        origen = new Perfil("1", "Origen", null, "", List.of());
+        destino = new Perfil("2", "Destino", null, "", List.of());
 
         propuesta = new Propuesta(
                 "123",
@@ -62,7 +62,7 @@ public class PropuestaTest {
 
     @Test
     void noDeberiaAceptarSiNoEsElUsuarioDestino() {
-        Usuario otro = new Usuario("3", "Otro", null, "", List.of());
+        Perfil otro = new Perfil("3", "Otro", null, "", List.of());
 
         assertThrows(RuntimeException.class, () -> {
             propuesta.aceptar(otro);

@@ -4,7 +4,7 @@ import app.dto.EstadisticasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Subasta;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
@@ -62,8 +62,8 @@ class EstadisticasServiceImplTest {
         Coleccion coleccionConUna = new Coleccion();
         coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, new ArrayList<>()));
 
-        Usuario u1 = new Usuario("u-1", "Lucas", coleccionConDos, "+54911", new ArrayList<>());
-        Usuario u2 = new Usuario("u-2", "Sofía", coleccionConUna, "+54911", new ArrayList<>());
+        Perfil u1 = new Perfil("u-1", "Lucas", coleccionConDos, "+54911", new ArrayList<>());
+        Perfil u2 = new Perfil("u-2", "Sofía", coleccionConUna, "+54911", new ArrayList<>());
 
         Subasta subastaActiva = new Subasta("s-1", u1,
                 LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null, null);
@@ -83,7 +83,7 @@ class EstadisticasServiceImplTest {
 
     @Test
     void getEstadisticas_filtraSoloSubastasActivas() {
-        Usuario u1 = new Usuario("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+        Perfil u1 = new Perfil("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
 
         Subasta activa   = new Subasta("s-1", u1,
                 LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null, null);

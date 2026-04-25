@@ -54,7 +54,7 @@ public class ColeccionService implements IColeccionService {
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.guardar(coleccion);
 
-    List<Usuario> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(repetida
+    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(repetida
         .getFigurita());
 
     String cuerpo = "Nueva figurita disponible, Numero: " + repetida.getFigurita().getId() +

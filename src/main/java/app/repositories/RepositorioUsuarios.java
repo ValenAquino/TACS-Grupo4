@@ -1,20 +1,18 @@
 package app.repositories;
 
 import app.model.entities.Figurita;
-import app.model.entities.Usuario;
-import java.util.List;
-
+import app.model.entities.Perfil;
 import java.util.List;
 
 public interface RepositorioUsuarios {
 
-    Usuario buscarPorId(String id);
+    Perfil buscarPorId(String id);
 
-    List<Usuario> buscarTodos();
+    List<Perfil> buscarTodos();
 
     int contar();
 
-    List<Usuario> buscarPorFiguritaFaltante(Figurita figurita);
+    List<Perfil> buscarPorFiguritaFaltante(Figurita figurita);
 
-    void guardar(Usuario usuario);
+    void guardar(Perfil usuario);
 }

@@ -4,7 +4,7 @@ import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ class RepositorioUsuariosEnMemoriaTest {
 
     @Test
     void save_y_findById_retornaUsuario() {
-        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+5491100000001", new ArrayList<>());
+        Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), "+5491100000001", new ArrayList<>());
 
         repositorio.guardar(usuario);
 
@@ -38,9 +38,9 @@ class RepositorioUsuariosEnMemoriaTest {
 
     @Test
     void buscarPorFiguritaFaltanteDevuelve2() {
-        Usuario usuario = new Usuario("u-1", "Lucas", new Coleccion(), "+5491100000001", new ArrayList<>());
-        Usuario usuario2 = new Usuario("u-2", "Juan", new Coleccion(), "+5491100000001", new ArrayList<>());
-        Usuario usuario3 = new Usuario("u-4", "Cristina", new Coleccion(), "+5491100000001", new ArrayList<>());
+        Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), "+5491100000001", new ArrayList<>());
+        Perfil usuario2 = new Perfil("u-2", "Juan", new Coleccion(), "+5491100000001", new ArrayList<>());
+        Perfil usuario3 = new Perfil("u-4", "Cristina", new Coleccion(), "+5491100000001", new ArrayList<>());
 
         Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
         Figurita diMaria = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);

@@ -2,7 +2,7 @@ package app.repositories.impl;
 
 import app.model.entities.Coleccion;
 import app.model.entities.Subasta;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RepositorioSubastasEnMemoriaTest {
 
     private RepositorioSubastasEnMemoria repositorio;
-    private Usuario u1;
-    private Usuario u2;
+    private Perfil u1;
+    private Perfil u2;
 
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioSubastasEnMemoria();
-        u1 = new Usuario("u-1", "Lucas", new Coleccion(), "+541", new ArrayList<>());
-        u2 = new Usuario("u-2", "Sofía", new Coleccion(), "+542", new ArrayList<>());
+        u1 = new Perfil("u-1", "Lucas", new Coleccion(), "+541", new ArrayList<>());
+        u2 = new Perfil("u-2", "Sofía", new Coleccion(), "+542", new ArrayList<>());
     }
 
     @Test

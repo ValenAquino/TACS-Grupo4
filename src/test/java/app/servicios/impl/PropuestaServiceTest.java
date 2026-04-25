@@ -13,14 +13,12 @@ import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
-import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioUsuarios;
 import app.servicios.INotificacionService;
-import app.servicios.IPropuestaService;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -46,8 +44,8 @@ class PropuestaServiceTest {
   @InjectMocks
   PropuestaService propuestaService;
 
-  Usuario lucas = new Usuario("1000", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
-  Usuario sofia = new Usuario("1001", "Sofía", new Coleccion(), "+54912", new ArrayList<>());
+  Perfil lucas = new Perfil("1000", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+  Perfil sofia = new Perfil("1001", "Sofía", new Coleccion(), "+54912", new ArrayList<>());
   Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
   Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA);
 

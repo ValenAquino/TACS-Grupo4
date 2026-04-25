@@ -2,7 +2,7 @@ package app.controllers;
 
 import app.model.entities.Figurita;
 import app.model.entities.Subasta;
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
@@ -38,7 +38,7 @@ class SubastaControllerTest {
 
     @Test
     void crearSubastaNoFalla() throws Exception {
-        Usuario origen = new Usuario("user123", "", null, "", null);
+        Perfil origen = new Perfil("user123", "", null, "", null);
         Figurita figuSubastada = new Figurita("figu123", 2, null, null);
 
         String json = """
@@ -60,8 +60,8 @@ class SubastaControllerTest {
 
     @Test
     void ofertarEnSubastaNoFalla() throws Exception {
-        Usuario subastador = new Usuario("userSubastador", "", null, "", null);
-        Usuario userPropuesta = new Usuario("userPropuesta", "", null, "", null);
+        Perfil subastador = new Perfil("userSubastador", "", null, "", null);
+        Perfil userPropuesta = new Perfil("userPropuesta", "", null, "", null);
 
         LocalDateTime fechaInicio = LocalDateTime.now();
 

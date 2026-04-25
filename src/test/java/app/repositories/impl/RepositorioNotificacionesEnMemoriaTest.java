@@ -1,9 +1,12 @@
 package app.repositories.impl;
 
 import app.model.entities.Coleccion;
+import app.model.entities.MedioComunicacion;
+import app.model.entities.MedioDeContacto;
 import app.model.entities.Perfil;
 import app.model.notificador.Mensaje;
 import app.model.notificador.Notificacion;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,20 +19,22 @@ public class RepositorioNotificacionesEnMemoriaTest {
 
   private RepositorioNotificacionesEnMemoria repositorio;
 
-
   @BeforeEach
   void setUp() {
     repositorio = new RepositorioNotificacionesEnMemoria();
+  }
+
+  private List<MedioDeContacto> telegram(String numero) {
+    return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
   }
 
   @Test
   void buscarNotificacionesDeUnUsuario() {
     LocalDateTime fecha = LocalDateTime.now();
     Mensaje mensaje = new Mensaje("Mensaje1", fecha);
-    Perfil user1 = new Perfil(
-        "1", "Juan", new Coleccion(), "12223123123", new ArrayList<>());
-    Perfil user2 = new Perfil(
-        "2", "Miguel", new Coleccion(), "9998262", new ArrayList<>());
+
+    Perfil user1 = new Perfil("1", "Juan",   new Coleccion(), telegram("@juan"),   new ArrayList<>());
+    Perfil user2 = new Perfil("2", "Miguel", new Coleccion(), telegram("@miguel"), new ArrayList<>());
 
     Notificacion notificacion1 = new Notificacion(mensaje, user1);
     Notificacion notificacion2 = new Notificacion(mensaje, user1);
@@ -37,11 +42,11 @@ public class RepositorioNotificacionesEnMemoriaTest {
     Notificacion notificacion4 = new Notificacion(mensaje, user2);
     Notificacion notificacion5 = new Notificacion(mensaje, user2);
 
-    this.repositorio.guardar(notificacion1);
-    this.repositorio.guardar(notificacion2);
-    this.repositorio.guardar(notificacion3);
-    this.repositorio.guardar(notificacion4);
-    this.repositorio.guardar(notificacion5);
+    repositorio.guardar(notificacion1);
+    repositorio.guardar(notificacion2);
+    repositorio.guardar(notificacion3);
+    repositorio.guardar(notificacion4);
+    repositorio.guardar(notificacion5);
 
     assertEquals(3, repositorio.buscarPorUsuario(user1).size());
   }

@@ -1,5 +1,7 @@
 package app.model.entities;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,16 +17,16 @@ public class PropuestaTest {
 
     @BeforeEach
     void setUp() {
-        origen = new Perfil("1", "Origen", null, "", List.of());
-        destino = new Perfil("2", "Destino", null, "", List.of());
+        origen  = new Perfil("1", "Origen",  null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@origen")),  List.of());
+        destino = new Perfil("2", "Destino", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@destino")), List.of());
 
         propuesta = new Propuesta(
-                "123",
-                origen,
-                destino,
-                List.of(),
-                null,
-                EstadoProceso.PENDIENTE
+            "123",
+            origen,
+            destino,
+            List.of(),
+            null,
+            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE)))
         );
     }
 
@@ -32,40 +34,34 @@ public class PropuestaTest {
     void deberiaAceptarPropuestaPendiente() {
         propuesta.aceptar(destino);
 
-        assertEquals(EstadoProceso.ACEPTADO, propuesta.getEstado());
+        assertEquals(EstadoProceso.ACEPTADO, propuesta.obtenerEstadoActual().getValor());
     }
 
     @Test
     void deberiaRechazarPropuestaPendiente() {
         propuesta.rechazar(destino);
 
-        assertEquals(EstadoProceso.RECHAZADO, propuesta.getEstado());
+        assertEquals(EstadoProceso.RECHAZADO, propuesta.obtenerEstadoActual().getValor());
     }
 
     @Test
     void noDeberiaAceptarUnaPropuestaYaAceptada() {
         propuesta.aceptar(destino);
 
-        assertThrows(RuntimeException.class, () -> {
-            propuesta.aceptar(destino);
-        });
+        assertThrows(RuntimeException.class, () -> propuesta.aceptar(destino));
     }
 
     @Test
     void noDeberiaRechazarUnaPropuestaYaAceptada() {
         propuesta.aceptar(destino);
 
-        assertThrows(RuntimeException.class, () -> {
-            propuesta.rechazar(destino);
-        });
+        assertThrows(RuntimeException.class, () -> propuesta.rechazar(destino));
     }
 
     @Test
     void noDeberiaAceptarSiNoEsElUsuarioDestino() {
-        Perfil otro = new Perfil("3", "Otro", null, "", List.of());
+        Perfil otro = new Perfil("3", "Otro", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
 
-        assertThrows(RuntimeException.class, () -> {
-            propuesta.aceptar(otro);
-        });
+        assertThrows(RuntimeException.class, () -> propuesta.aceptar(otro));
     }
 }

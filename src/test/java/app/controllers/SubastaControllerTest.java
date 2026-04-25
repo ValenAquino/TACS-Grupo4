@@ -1,12 +1,16 @@
 package app.controllers;
 
 import app.model.entities.Figurita;
+import app.model.entities.MedioComunicacion;
+import app.model.entities.MedioDeContacto;
 import app.model.entities.Subasta;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,18 +31,14 @@ class SubastaControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean
-    RepositorioPerfiles repoUser;
-
-    @MockBean
-    RepositorioSubastas repoSubasta;
-
-    @MockBean
-    RepositorioFiguritas repoFigurita;
+    @MockBean RepositorioPerfiles repoUser;
+    @MockBean RepositorioSubastas repoSubasta;
+    @MockBean RepositorioFiguritas repoFigurita;
 
     @Test
     void crearSubastaNoFalla() throws Exception {
-        Perfil origen = new Perfil("user123", "", null, "", null);
+        Perfil origen = new Perfil("user123", "", null,
+            List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@user123")), null);
         Figurita figuSubastada = new Figurita("figu123", 2, null, null);
 
         String json = """
@@ -60,34 +60,33 @@ class SubastaControllerTest {
 
     @Test
     void ofertarEnSubastaNoFalla() throws Exception {
-        Perfil subastador = new Perfil("userSubastador", "", null, "", null);
-        Perfil userPropuesta = new Perfil("userPropuesta", "", null, "", null);
+        Perfil subastador    = new Perfil("userSubastador", "", null,
+            List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@subastador")), null);
+        Perfil userPropuesta = new Perfil("userPropuesta", "", null,
+            List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@propuesta")), null);
 
         LocalDateTime fechaInicio = LocalDateTime.now();
 
-        Figurita buscada = new Figurita("figu123", 2, null, null);
+        Figurita buscada   = new Figurita("figu123", 2, null, null);
         Figurita ofrecida1 = new Figurita("figu321", 3, null, null);
         Figurita ofrecida2 = new Figurita("figu132", 4, null, null);
 
-        Subasta subasta = new Subasta("1",subastador, fechaInicio,fechaInicio.plusMinutes(30),buscada,null);
-
-        subasta.setFiguritaSubastada(buscada);
+        Subasta subasta = new Subasta("1", subastador,
+            fechaInicio, fechaInicio.plusMinutes(30), buscada);
 
         when(repoUser.buscarPorId("userSubastador")).thenReturn(subastador);
         when(repoUser.buscarPorId("userPropuesta")).thenReturn(userPropuesta);
-
         when(repoFigurita.buscarPorId("figu123")).thenReturn(buscada);
         when(repoFigurita.buscarPorId("figu321")).thenReturn(ofrecida1);
         when(repoFigurita.buscarPorId("figu132")).thenReturn(ofrecida2);
-
         when(repoSubasta.buscarPorId("1")).thenReturn(subasta);
 
         String json = """
-    {
-        "usuario_id": "userSubastador",
-        "figuritas_ofrecidas": ["figu321","figu132"]
-    }
-    """;
+        {
+            "usuario_id": "userSubastador",
+            "figuritas_ofrecidas": ["figu321","figu132"]
+        }
+        """;
 
         mockMvc.perform(post("/subastas/1/propuestas")
                 .header("user_id", "userPropuesta")

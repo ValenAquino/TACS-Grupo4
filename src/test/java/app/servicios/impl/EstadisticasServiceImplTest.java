@@ -3,6 +3,8 @@ package app.servicios.impl;
 import app.dto.EstadisticasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MedioComunicacion;
+import app.model.entities.MedioDeContacto;
 import app.model.entities.Subasta;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioPropuestas;
@@ -24,14 +26,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class EstadisticasServiceImplTest {
 
-    @Mock
-    private RepositorioPerfiles repositorioUsuarios;
-    @Mock
-    private RepositorioPropuestas repositorioPropuestas;
-    @Mock
-    private RepositorioSubastas repositorioSubastas;
+    @Mock private RepositorioPerfiles repositorioUsuarios;
+    @Mock private RepositorioPropuestas repositorioPropuestas;
+    @Mock private RepositorioSubastas repositorioSubastas;
 
     private EstadisticasServiceImpl service;
+
+    private List<MedioDeContacto> telegram(String numero) {
+        return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
+    }
 
     @BeforeEach
     void setUp() {
@@ -62,11 +65,11 @@ class EstadisticasServiceImplTest {
         Coleccion coleccionConUna = new Coleccion();
         coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, new ArrayList<>()));
 
-        Perfil u1 = new Perfil("u-1", "Lucas", coleccionConDos, "+54911", new ArrayList<>());
-        Perfil u2 = new Perfil("u-2", "Sofía", coleccionConUna, "+54911", new ArrayList<>());
+        Perfil u1 = new Perfil("u-1", "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
+        Perfil u2 = new Perfil("u-2", "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());
 
         Subasta subastaActiva = new Subasta("s-1", u1,
-                LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null, null);
+            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
 
         when(repositorioUsuarios.contar()).thenReturn(2);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1, u2));
@@ -83,12 +86,12 @@ class EstadisticasServiceImplTest {
 
     @Test
     void getEstadisticas_filtraSoloSubastasActivas() {
-        Perfil u1 = new Perfil("u-1", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
+        Perfil u1 = new Perfil("u-1", "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
 
-        Subasta activa   = new Subasta("s-1", u1,
-                LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null, null);
-        Subasta vencida  = new Subasta("s-2", u1,
-                LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null, null);
+        Subasta activa  = new Subasta("s-1", u1,
+            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
+        Subasta vencida = new Subasta("s-2", u1,
+            LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null);
 
         when(repositorioUsuarios.contar()).thenReturn(1);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));

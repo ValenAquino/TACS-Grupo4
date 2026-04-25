@@ -28,7 +28,7 @@ class FiguritaControllerTest {
     @Test
     void buscarFiguritasDevuelve200() throws Exception {
         FiguritaIntercambiableDto dto = new FiguritaIntercambiableDto(
-            "ARG-10", 10, "Messi", Seleccion.ARGENTINA, 2,
+            "ARG-10", 10, "Messi", Seleccion.ARGENTINA, 2,0,
             List.of(MetodoIntercambio.INTERCAMBIO), "1000");
 
         when(figuritaService.buscarFiguritas(null, null, null))

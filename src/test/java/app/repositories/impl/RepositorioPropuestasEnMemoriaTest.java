@@ -2,8 +2,12 @@ package app.repositories.impl;
 
 import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
+import app.model.entities.EstadoPropuesta;
+import app.model.entities.MedioComunicacion;
+import app.model.entities.MedioDeContacto;
 import app.model.entities.Propuesta;
 import app.model.entities.Perfil;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -19,18 +23,25 @@ class RepositorioPropuestasEnMemoriaTest {
     private Perfil u2;
     private Perfil u3;
 
+    private List<MedioDeContacto> telegram(String numero) {
+        return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
+    }
+
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioPropuestasEnMemoria();
-        u1 = new Perfil("u-1", "Lucas",  new Coleccion(), "+541", new ArrayList<>());
-        u2 = new Perfil("u-2", "Sofía",  new Coleccion(), "+542", new ArrayList<>());
-        u3 = new Perfil("u-3", "Matías", new Coleccion(), "+543", new ArrayList<>());
+        u1 = new Perfil("u-1", "Lucas",  new Coleccion(), telegram("@lucas"),  new ArrayList<>());
+        u2 = new Perfil("u-2", "Sofía",  new Coleccion(), telegram("@sofia"),  new ArrayList<>());
+        u3 = new Perfil("u-3", "Matías", new Coleccion(), telegram("@matias"), new ArrayList<>());
     }
 
     @Test
     void findByOrigenId_retornaSoloPropuestasDelOrigen() {
-        Propuesta p1 = new Propuesta("p-1", u1, u2, new ArrayList<>(), null, EstadoProceso.PENDIENTE);
-        Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null, EstadoProceso.PENDIENTE);
+        Propuesta p1 = new Propuesta("p-1", u1, u2, new ArrayList<>(), null,
+            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+        Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null,
+            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 
@@ -42,8 +53,11 @@ class RepositorioPropuestasEnMemoriaTest {
 
     @Test
     void findByDestinoId_retornaSoloPropuestasDelDestino() {
-        Propuesta p1 = new Propuesta("p-1", u1, u2, new ArrayList<>(), null, EstadoProceso.PENDIENTE);
-        Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null, EstadoProceso.PENDIENTE);
+        Propuesta p1 = new Propuesta("p-1", u1, u2, new ArrayList<>(), null,
+            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+        Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null,
+            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 

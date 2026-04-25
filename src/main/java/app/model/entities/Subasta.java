@@ -51,11 +51,11 @@ public class Subasta {
         final LocalDateTime fechaActual = LocalDateTime.now();
 
         return fechaActual.isAfter(fechaInicio)
-            && fechaActual.isBefore(fechaCierre)
-            && ofertas.stream()
-            .anyMatch(p ->
-                p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO
-            );
+            && fechaActual.isBefore(fechaCierre);
+//            && ofertas.stream()
+//            .anyMatch(p ->
+//                p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO
+//            );
     }
 //TODO definir se lo utilizaremos, si finaliza sin que el usuario haya seleccionado
 

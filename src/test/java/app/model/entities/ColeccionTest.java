@@ -70,6 +70,6 @@ class ColeccionTest {
 
     assertTrue(coleccion.getRepetidas().contains(repetida));
     assertEquals(1, coleccion.getRepetidas().size());
-    assertEquals(4, repetida.getCantidadDisponible());
+    assertEquals(4, repetida.getCantidadExistente());
   }
 }

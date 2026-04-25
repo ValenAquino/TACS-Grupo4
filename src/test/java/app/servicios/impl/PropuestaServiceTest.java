@@ -12,6 +12,8 @@ import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
+import app.model.entities.MedioComunicacion;
+import app.model.entities.MedioDeContacto;
 import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
@@ -30,23 +32,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class PropuestaServiceTest {
 
-  @Mock
-  RepositorioPropuestas repositorioPropuestas;
-  @Mock
-  RepositorioPerfiles repositorioUsuarios;
-  @Mock
-  RepositorioFiguritas repositorioFiguritas;
-  @Mock
-  RepositorioFiguritasIntercambiables repositorioIntercambiables;
-  @Mock
-  INotificacionService notificacionesService;
+  @Mock RepositorioPropuestas repositorioPropuestas;
+  @Mock RepositorioPerfiles repositorioUsuarios;
+  @Mock RepositorioFiguritas repositorioFiguritas;
+  @Mock RepositorioFiguritasIntercambiables repositorioIntercambiables;
+  @Mock INotificacionService notificacionesService;
 
   @InjectMocks
   PropuestaService propuestaService;
 
-  Perfil lucas = new Perfil("1000", "Lucas", new Coleccion(), "+54911", new ArrayList<>());
-  Perfil sofia = new Perfil("1001", "Sofía", new Coleccion(), "+54912", new ArrayList<>());
-  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+  Perfil lucas = new Perfil("1000", "Lucas", new Coleccion(),
+      List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
+  Perfil sofia = new Perfil("1001", "Sofía", new Coleccion(),
+      List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
+  Figurita messi  = new Figurita("ARG-10", 10, "Messi",  Seleccion.ARGENTINA);
   Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA);
 
   @Test
@@ -61,8 +60,8 @@ class PropuestaServiceTest {
 
     PropuestaDto resultado = propuestaService.crearPropuesta(request);
 
-    assertEquals("1000", resultado.getUsuarioOrigenId());
-    assertEquals("1001", resultado.getUsuarioDestinoId());
+    assertEquals("1000", resultado.getAutorId());
+    assertEquals("1001", resultado.getDestinatarioId());
     assertEquals("ARG-10", resultado.getFiguritaBuscadaId());
     assertEquals(EstadoProceso.PENDIENTE, resultado.getEstado());
     verify(repositorioPropuestas).guardar(any());

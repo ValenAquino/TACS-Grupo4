@@ -1,10 +1,11 @@
 package app.controllers;
 
+import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
-import app.dto.TemporalDto;
+import app.model.entities.Calificacion;
 import app.servicios.IPerfilService;
 import java.util.List;
 
@@ -36,19 +37,19 @@ public class PerfilController {
     }
 
     @PostMapping("/{perfil_id}/calificaciones")
-    public ResponseEntity<TemporalDto> calificarPerfil(
+    public ResponseEntity<CalificacionDto> calificarPerfil(
         @PathVariable String perfil_id,
         @RequestHeader String autor_id,
         @RequestBody Map<String, Object> body) {
 
-        Number calificacionMedia = this.perfilService.agregarCalificacion(
+        CalificacionDto calificacion = this.perfilService.agregarCalificacion(
             autor_id,
             perfil_id,
             (Integer) body.get("valor"),
             (String) body.get("descripcion")
         );
 
-        return ResponseEntity.ok(new TemporalDto("Nueva calificacion: " + calificacionMedia));
+        return ResponseEntity.ok(calificacion);
     }
 
     @GetMapping("/{user_id}/intercambiables")

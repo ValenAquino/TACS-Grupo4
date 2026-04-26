@@ -1,5 +1,6 @@
 package app.servicios.impl;
 
+import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
@@ -18,7 +19,6 @@ import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
 import app.servicios.IPerfilService;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -76,11 +76,11 @@ public class PerfilService implements IPerfilService {
             .map(FiguritaIntercambiableDto::new)
             .toList();
     }
-    public Number agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {
+    public CalificacionDto agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {
         if (valor == null) {
             throw new BadRequestException("El valor de la calificación no puede ser nulo");
         }
-        if (valor < 1 || valor > 5) {
+        if (valor <= 1 || valor >= 5) {
             throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
         }
 
@@ -97,7 +97,7 @@ public class PerfilService implements IPerfilService {
         perfilDestino.getCalificaciones().add(calificacion);
 
         this.repositorioPerfiles.guardar(perfilDestino);
-        return perfilDestino.obtenerCalificacionMedia();
+        return new CalificacionDto(calificacion, perfilDestino.obtenerCalificacionMedia());
     }
 
     @Override

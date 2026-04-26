@@ -8,6 +8,8 @@ public interface RepositorioPerfiles {
 
     Perfil buscarPorId(String id);
 
+    Perfil buscarPorUsuarioId(String usuarioId);
+
     List<Perfil> buscarTodos();
 
     int contar();

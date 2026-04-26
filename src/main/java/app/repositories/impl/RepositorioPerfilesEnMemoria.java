@@ -24,6 +24,14 @@ public class RepositorioPerfilesEnMemoria implements RepositorioPerfiles {
     }
 
     @Override
+    public Perfil buscarPorUsuarioId(String usuarioId) {
+        return storage.values().stream()
+            .filter(p -> p.getUsuario().getId().equals(usuarioId))
+            .findFirst()
+            .orElseThrow(() -> new NotFoundException("Perfil no encontrado para el usuario: " + usuarioId));
+    }
+
+    @Override
     public List<Perfil> buscarPorFiguritaFaltante(Figurita figurita) {
         return this.storage.values()
             .stream()

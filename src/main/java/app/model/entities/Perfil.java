@@ -14,6 +14,7 @@ public class Perfil {
     private Coleccion coleccion;
     private List<MedioDeContacto> mediosDeContacto;
     private List<Calificacion> calificaciones;
+    private Usuario usuario;
 
     public Float obtenerCalificacionMedia() {
         return (float) calificaciones.stream()

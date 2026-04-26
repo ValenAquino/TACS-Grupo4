@@ -5,7 +5,7 @@ import app.dto.request.CrearPropuestaRequest;
 import app.model.entities.Propuesta;
 
 public interface IPropuestaService {
-    public PropuestaDto crearPropuesta(CrearPropuestaRequest request);
-    public void aceptar(String id);
-    public void rechazar(String id);
+    PropuestaDto crearPropuesta(CrearPropuestaRequest request);
+    void aceptar(String id, String usuarioId);
+    void rechazar(String id, String usuarioId);
 }

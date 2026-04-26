@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.PropuestaException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,16 +56,14 @@ public class Propuesta {
     }
 
     private void validarPendiente() {
-        EstadoPropuesta actual = obtenerEstadoActual();
-
-        if (actual.getValor() != EstadoProceso.PENDIENTE) {
-            throw new RuntimeException("La propuesta ya fue respondida");
+        if (obtenerEstadoActual().getValor() != EstadoProceso.PENDIENTE) {
+            throw new PropuestaException("La propuesta ya fue respondida");
         }
     }
 
     private void validarUsuarioDestino(Perfil usuario) {
         if (!this.destinatario.getId().equals(usuario.getId())) {
-            throw new RuntimeException("Solo el destinatario puede responder la propuesta");
+            throw new PropuestaException("Solo el destinatario puede responder la propuesta");
         }
     }
 }

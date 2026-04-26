@@ -73,15 +73,17 @@ public class PropuestaService implements IPropuestaService {
 
     return new PropuestaDto(propuesta);
   }
-  public void aceptar(String id) {
-      Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
-      propuesta.aceptar(propuesta.getDestinatario());
-      repositorioPropuestas.guardar(propuesta);
+  public void aceptar(String propuestaId, String usuarioId) {
+    Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
+    propuesta.aceptar(perfil);
+    repositorioPropuestas.guardar(propuesta);
   }
 
-  public void rechazar(String id) {
-      Propuesta propuesta = this.repositorioPropuestas.buscarPorId(id);
-      propuesta.rechazar(propuesta.getDestinatario());
-      repositorioPropuestas.guardar(propuesta);
+  public void rechazar(String id, String usuarioId) {
+    Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
+    propuesta.rechazar(perfil);
+    repositorioPropuestas.guardar(propuesta);
   }
 }

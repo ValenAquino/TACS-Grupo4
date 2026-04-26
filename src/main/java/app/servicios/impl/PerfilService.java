@@ -80,7 +80,7 @@ public class PerfilService implements IPerfilService {
         if (valor == null) {
             throw new BadRequestException("El valor de la calificación no puede ser nulo");
         }
-        if (valor <= 1 || valor >= 5) {
+        if (valor < 1 || valor > 5) {
             throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
         }
 

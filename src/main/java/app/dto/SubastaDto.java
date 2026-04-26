@@ -13,10 +13,7 @@ public class SubastaDto {
   List<PropuestaDto> ofertas;
 
   public SubastaDto(Subasta subasta) {
-    this.perfilDto = new PerfilDto(
-        subasta.getAutor().getId(),
-        subasta.getAutor().getNombre()
-    );
+    this.perfilDto = new PerfilDto(subasta.getAutor());
 
     Duration duracion = Duration.between(
         subasta.getFechaInicio(),

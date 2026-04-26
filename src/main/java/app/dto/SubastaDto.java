@@ -27,16 +27,7 @@ public class SubastaDto {
     this.figurita = subasta.getFiguritaSubastada();
 
     this.ofertas = subasta.getOfertas().stream()
-        .map(p -> new PropuestaDto(
-            p.getId(),
-            p.getAutor().getId(),
-            p.getDestinatario().getId(),
-            p.getFiguritaBuscada().getId(),
-            p.getFiguritasOfrecidas().stream()
-                .map(Figurita::getId)
-                .toList(),
-            p.obtenerEstadoActual().getValor()
-        ))
+        .map(PropuestaDto::new)
         .toList();
   }
 }

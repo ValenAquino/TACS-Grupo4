@@ -71,7 +71,7 @@ public class PropuestaService implements IPropuestaService {
 
     notificacionService.notificarInteresados(List.of(destino), cuerpo);
 
-    return aDto(propuesta);
+    return new PropuestaDto(propuesta);
   }
   public void aceptar(String id) {
       Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
@@ -83,16 +83,5 @@ public class PropuestaService implements IPropuestaService {
       Propuesta propuesta = this.repositorioPropuestas.buscarPorId(id);
       propuesta.rechazar(propuesta.getDestinatario());
       repositorioPropuestas.guardar(propuesta);
-  }
-
-  private PropuestaDto aDto(Propuesta p) {
-    return new PropuestaDto(
-        p.getId(),
-        p.getAutor().getId(),
-        p.getDestinatario().getId(),
-        p.getFiguritaBuscada().getId(),
-        p.getFiguritasOfrecidas().stream().map(Figurita::getId).toList(),
-        p.obtenerEstadoActual().getValor()
-    );
   }
 }

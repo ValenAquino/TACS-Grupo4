@@ -2,6 +2,7 @@ package app.controllers;
 
 import app.servicios.ISubastaService;
 import app.dto.SubastaDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,12 +17,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/subastas")
+@RequiredArgsConstructor
 public class SubastaController {
     private final ISubastaService subastaService;
-
-    SubastaController(ISubastaService subastaService) {
-        this.subastaService = subastaService;
-    }
 
     @PostMapping
     public ResponseEntity<SubastaDto> crearSubasta(@RequestHeader("user_id") String id, @RequestBody Map<String,Object> body) {

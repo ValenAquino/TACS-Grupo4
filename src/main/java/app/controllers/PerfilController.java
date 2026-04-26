@@ -7,6 +7,8 @@ import app.dto.SugerenciaDto;
 import app.dto.TemporalDto;
 import app.servicios.IPerfilService;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,13 +21,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/perfil")
+@RequiredArgsConstructor
 public class PerfilController {
 
     private final IPerfilService perfilService;
-
-    public PerfilController(IPerfilService perfilService) {
-        this.perfilService = perfilService;
-    }
 
     @GetMapping("/{user_id}/operaciones")
     public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {

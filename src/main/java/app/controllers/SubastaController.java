@@ -1,5 +1,7 @@
 package app.controllers;
 
+import app.dto.request.CrearSubastaRequest;
+import app.dto.request.OfertarEnSubastaRequest;
 import app.servicios.ISubastaService;
 import app.dto.SubastaDto;
 import lombok.RequiredArgsConstructor;
@@ -22,23 +24,19 @@ public class SubastaController {
     private final ISubastaService subastaService;
 
     @PostMapping
-    public ResponseEntity<SubastaDto> crearSubasta(@RequestHeader("user_id") String id, @RequestBody Map<String,Object> body) {
-        String figuritaId = (String) body.get("figurita_id");
+    public ResponseEntity<SubastaDto> crearSubasta(@RequestHeader("user_id") String id, @RequestBody CrearSubastaRequest body) {
         LocalDateTime fechaInicio =  LocalDateTime.now();
-        Number duracion = (Number) body.get("duracion");
-        LocalDateTime fechaFin = fechaInicio.plusMinutes(duracion.longValue());
+        LocalDateTime fechaFin = fechaInicio.plusMinutes(body.getDuracion().longValue());
 
-        SubastaDto subastaDto = this.subastaService.crearSubasta(id, fechaInicio, fechaFin, figuritaId);
+        SubastaDto subastaDto = this.subastaService.crearSubasta(id, fechaInicio, fechaFin, body.getFiguritaId());
 
         return ResponseEntity.ok(subastaDto);
     }
 
     @PostMapping("/{sub_id}/propuestas")
-    public ResponseEntity<SubastaDto> ofertarEnSubasta(@PathVariable String sub_id, @RequestHeader("user_id") String id, @RequestBody Map<String,Object> body) {
-        String usuarioDestino = (String) body.get("usuario_id");
-        List<Object> rawFiguritasId = (ArrayList<Object>) body.get("figuritas_ofrecidas");
+    public ResponseEntity<SubastaDto> ofertarEnSubasta(@PathVariable String sub_id, @RequestHeader("user_id") String id, @RequestBody OfertarEnSubastaRequest body) {
 
-        SubastaDto subastaDto = this.subastaService.ofertarEnSubasta(id, usuarioDestino, sub_id, rawFiguritasId);
+        SubastaDto subastaDto = this.subastaService.ofertarEnSubasta(id, body.getUsuarioId(), sub_id, body.getFiguritasOfrecidasId());
 
         return ResponseEntity.ok().body(subastaDto);
     }

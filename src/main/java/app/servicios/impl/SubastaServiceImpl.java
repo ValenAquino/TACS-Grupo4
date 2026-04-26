@@ -64,7 +64,7 @@ public class SubastaServiceImpl implements ISubastaService {
 
   @Override
   public SubastaDto ofertarEnSubasta(String userId, String usuarioDestinoId,
-                                     String subastaId, List<Object> rawFiguritasId) {
+                                     String subastaId, List<String> rawFiguritasId) {
     Perfil autor        = this.repositorioPerfiles.buscarPorId(userId);
     Perfil destinatario = this.repositorioPerfiles.buscarPorId(usuarioDestinoId);
     Subasta subasta     = this.repoSubasta.buscarPorId(subastaId);
@@ -76,7 +76,7 @@ public class SubastaServiceImpl implements ISubastaService {
     }
 
     List<Figurita> figuritasOfrecidas = rawFiguritasId.stream()
-        .map(id -> this.repoFigurita.buscarPorId((String) id))
+        .map(this.repoFigurita::buscarPorId)
         .toList();
 
     Propuesta nuevaPropuesta = new Propuesta(

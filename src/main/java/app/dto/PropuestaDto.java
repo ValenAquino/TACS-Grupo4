@@ -12,7 +12,7 @@ public class PropuestaDto {
   private String autorId;
   private String destinatarioId;
   private String figuritaBuscadaId;
-  private List<String> figuritasOfrocidasIds;
+  private List<String> figuritasOfrecidasIds;
   private EstadoProceso estado;
 
 

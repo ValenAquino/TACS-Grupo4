@@ -20,7 +20,7 @@ import java.util.UUID;
 public class PropuestaService implements IPropuestaService {
 
   private final RepositorioPropuestas repositorioPropuestas;
-  private final RepositorioPerfiles repositorioUsuarios;
+  private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final INotificacionService notificacionService;
@@ -31,7 +31,7 @@ public class PropuestaService implements IPropuestaService {
                           RepositorioFiguritasIntercambiables repositorioIntercambiables,
                           INotificacionService notificacionService) {
     this.repositorioPropuestas = repositorioPropuestas;
-    this.repositorioUsuarios = repositorioUsuarios;
+    this.repositorioPerfiles = repositorioUsuarios;
     this.repositorioFiguritas = repositorioFiguritas;
     this.repositorioIntercambiables = repositorioIntercambiables;
     this.notificacionService = notificacionService;
@@ -42,8 +42,8 @@ public class PropuestaService implements IPropuestaService {
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
   public PropuestaDto crearPropuesta(CrearPropuestaRequest request) {
-    Perfil origen  = repositorioUsuarios.buscarPorId(request.getAutorId());
-    Perfil destino = repositorioUsuarios.buscarPorId(request.getDestinatarioId());
+    Perfil origen  = repositorioPerfiles.buscarPorId(request.getAutorId());
+    Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId());
 
     if (origen  == null) throw new NotFoundException("Usuario origen no encontrado");
     if (destino == null) throw new NotFoundException("Usuario destino no encontrado");

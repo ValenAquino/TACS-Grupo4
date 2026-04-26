@@ -50,8 +50,8 @@ class PropuestaControllerTest {
 
         String json = """
         {
-            "usuario_origen_id": "1000",
-            "usuario_destino_id": "1001",
+            "autor_id": "1000",
+            "destinatario_id": "1001",
             "figurita_buscada_id": "ARG-10",
             "figuritas_ofrecidas_ids": ["FRA-10"]
         }

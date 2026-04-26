@@ -4,6 +4,8 @@ import app.model.entities.Coleccion;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
 import app.model.entities.Perfil;
+import app.model.entities.Rol;
+import app.model.entities.Usuario;
 import app.model.notificador.Mensaje;
 import app.model.notificador.Notificacion;
 import java.util.List;
@@ -33,8 +35,8 @@ public class RepositorioNotificacionesEnMemoriaTest {
     LocalDateTime fecha = LocalDateTime.now();
     Mensaje mensaje = new Mensaje("Mensaje1", fecha);
 
-    Perfil user1 = new Perfil("1", "Juan",   new Coleccion(), telegram("@juan"),   new ArrayList<>());
-    Perfil user2 = new Perfil("2", "Miguel", new Coleccion(), telegram("@miguel"), new ArrayList<>());
+    Perfil user1 = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Juan",   new Coleccion(), telegram("@juan"),   new ArrayList<>());
+    Perfil user2 = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Miguel", new Coleccion(), telegram("@miguel"), new ArrayList<>());
 
     Notificacion notificacion1 = new Notificacion(mensaje, user1);
     Notificacion notificacion2 = new Notificacion(mensaje, user1);

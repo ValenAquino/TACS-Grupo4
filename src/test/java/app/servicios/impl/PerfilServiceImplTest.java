@@ -13,9 +13,11 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
 import app.model.entities.Propuesta;
+import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Perfil;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
@@ -45,15 +47,27 @@ class PerfilServiceImplTest {
     @Mock private RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
 
     private PerfilService service;
+    private Perfil usuario;
+    private Perfil otro;
 
     @BeforeEach
     void setUp() {
         service = new PerfilService(repositorioPerfiles, repositorioPropuestas,
             repositorioSubastas, repositorioNotificaciones, repositorioFiguritasIntercambiables);
+
+        usuario = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas",
+            new Coleccion(), telegram("@lucas"), new ArrayList<>());
+        otro    = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO), "Sofía",
+            new Coleccion(), telegram("@sofia"), new ArrayList<>());
     }
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
+    }
+
+    private Perfil perfil(String id, String usuarioId, String nombre) {
+        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), nombre,
+            new Coleccion(), telegram("@" + nombre.toLowerCase()), new ArrayList<>());
     }
 
     private Propuesta propuesta(String id, Perfil autor, Perfil destino, EstadoProceso estado) {
@@ -70,21 +84,18 @@ class PerfilServiceImplTest {
 
     @Test
     void getOperacionesUsuario_usuarioExistente_retornaOperaciones() {
-        Coleccion coleccion = new Coleccion();
-        coleccion.getRepetidas().add(new FiguritaIntercambiable(null, 1, new ArrayList<>()));
-        Perfil usuario = new Perfil("u-1", "Lucas", coleccion, telegram("@lucas"), new ArrayList<>());
-        Perfil sofia   = new Perfil("u-2", "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
+        usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(null, 1, new ArrayList<>()));
 
-        Propuesta oferta = propuesta("p-3", sofia, usuario, EstadoProceso.ACEPTADO);
+        Propuesta oferta = propuesta("p-3", otro, usuario, EstadoProceso.ACEPTADO);
         Subasta subastaActiva = new Subasta("s-1", usuario,
             LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
         subastaActiva.getOfertas().add(oferta);
 
         when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
         when(repositorioPropuestas.buscarPorAutorId("u-1")).thenReturn(
-            List.of(propuesta("p-1", usuario, sofia, EstadoProceso.PENDIENTE)));
+            List.of(propuesta("p-1", usuario, otro, EstadoProceso.PENDIENTE)));
         when(repositorioPropuestas.buscarPorDestinatarioId("u-1")).thenReturn(
-            List.of(propuesta("p-2", sofia, usuario, EstadoProceso.RECHAZADO)));
+            List.of(propuesta("p-2", otro, usuario, EstadoProceso.RECHAZADO)));
         when(repositorioSubastas.buscarPorPerfilId("u-1")).thenReturn(List.of(subastaActiva));
 
         OperacionesDto resultado = service.obtenerOperacionesPerfil("u-1");
@@ -97,9 +108,6 @@ class PerfilServiceImplTest {
 
     @Test
     void getOperacionesUsuario_filtraSoloSubastasActivas() {
-        Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
-        Perfil otro    = new Perfil("u-2", "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
-
         Propuesta oferta = propuesta("p-1", otro, usuario, EstadoProceso.ACEPTADO);
         Subasta subastaActiva = new Subasta("s-1", usuario,
             LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
@@ -121,14 +129,11 @@ class PerfilServiceImplTest {
 
     @Test
     void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
-        Perfil usuario = new Perfil("u-1", "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
-
         Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
         FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, new ArrayList<>());
 
         when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-        when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("u-1"))
-            .thenReturn(List.of(fi));
+        when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("u-1")).thenReturn(List.of(fi));
 
         List<FiguritaIntercambiableDto> resultado = service.obtenerIntercambiablesPerfil("u-1");
 
@@ -146,17 +151,14 @@ class PerfilServiceImplTest {
 
     @Test
     void agregarCalificacion_valida_retornaPromedio() {
-        Perfil autor   = new Perfil("u-2", "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
-        Perfil destino = new Perfil("u-1", "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
+        usuario.getCalificaciones().add(new Calificacion("c-0", otro, 4, "Buen intercambio"));
 
-        destino.getCalificaciones().add(new Calificacion("c-0", autor, 4, "Buen intercambio"));
-
-        when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(destino);
-        when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(autor);
+        when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
+        when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
 
         CalificacionDto resultado = service.agregarCalificacion("u-2", "u-1", 2, "Tardó en responder");
 
         assertEquals(3.0f, resultado.getCalificacionFinal().floatValue());
-        verify(repositorioPerfiles).guardar(destino);
+        verify(repositorioPerfiles).guardar(usuario);
     }
 }

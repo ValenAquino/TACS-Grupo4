@@ -7,6 +7,8 @@ import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
 import app.model.entities.Propuesta;
 import app.model.entities.Perfil;
+import app.model.entities.Rol;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
@@ -32,22 +34,11 @@ class PropuestaControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean RepositorioPerfiles repoUser;
-    @MockBean RepositorioFiguritas repoFigurita;
-    @MockBean RepositorioPropuestas repoPropuesta;
-
-    private List<MedioDeContacto> telegram(String numero) {
-        return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
-    }
+    @Autowired
+    RepositorioPropuestas repoPropuesta;
 
     @Test
     void crearPropuestaDevuelve201() throws Exception {
-        Perfil subastador    = new Perfil("1000", "", null, telegram("@subastador"),    null);
-        Perfil userPropuesta = new Perfil("1001", "", null, telegram("@userPropuesta"), null);
-
-        Figurita buscada  = new Figurita("ARG-10", 2, null, null);
-        Figurita ofrecida = new Figurita("FRA-10", 2, null, null);
-
         String json = """
         {
             "autor_id": "1000",
@@ -57,11 +48,6 @@ class PropuestaControllerTest {
         }
         """;
 
-        when(repoUser.buscarPorId("1000")).thenReturn(subastador);
-        when(repoUser.buscarPorId("1001")).thenReturn(userPropuesta);
-        when(repoFigurita.buscarPorId("ARG-10")).thenReturn(buscada);
-        when(repoFigurita.buscarPorId("FRA-10")).thenReturn(ofrecida);
-
         mockMvc.perform(post("/propuestas")
                 .contentType("application/json")
                 .content(json))
@@ -70,31 +56,15 @@ class PropuestaControllerTest {
 
     @Test
     void aceptarPropuestaNoFalla() throws Exception {
-        Perfil subastador    = new Perfil("1000", "", null, telegram("@subastador"),    null);
-        Perfil userPropuesta = new Perfil("1001", "", null, telegram("@userPropuesta"), null);
-
-        Propuesta propuesta = new Propuesta("1000", subastador, userPropuesta,
-            new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
-
-        when(repoPropuesta.buscarPorId("1000")).thenReturn(propuesta);
-
-        mockMvc.perform(patch("/propuestas/1000/aceptar"))
+        mockMvc.perform(patch("/propuestas/2000/aceptar")
+                .header("usuario_id", "u-1001"))
             .andExpect(status().isNoContent());
     }
 
     @Test
     void rechazarPropuestaNoFalla() throws Exception {
-        Perfil subastador    = new Perfil("1000", "", null, telegram("@subastador"),    null);
-        Perfil userPropuesta = new Perfil("1001", "", null, telegram("@userPropuesta"), null);
-
-        Propuesta propuesta = new Propuesta("1000", subastador, userPropuesta,
-            new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
-
-        when(repoPropuesta.buscarPorId("1000")).thenReturn(propuesta);
-
-        mockMvc.perform(patch("/propuestas/1000/rechazar"))
+        mockMvc.perform(patch("/propuestas/2000/rechazar")
+                .header("usuario_id", "u-1001"))
             .andExpect(status().isNoContent());
     }
 }

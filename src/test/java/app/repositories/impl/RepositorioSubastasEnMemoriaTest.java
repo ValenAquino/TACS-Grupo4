@@ -3,8 +3,10 @@ package app.repositories.impl;
 import app.model.entities.Coleccion;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
+import app.model.entities.Rol;
 import app.model.entities.Subasta;
 import app.model.entities.Perfil;
+import app.model.entities.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
@@ -27,8 +29,8 @@ class RepositorioSubastasEnMemoriaTest {
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioSubastasEnMemoria();
-        u1 = new Perfil("u-1", "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
-        u2 = new Perfil("u-2", "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
+        u1 = new Perfil("u-1",new Usuario("u-1000",  Rol.USUARIO), "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
+        u2 = new Perfil("u-2",new Usuario("u-1000",  Rol.USUARIO), "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
     }
 
     @Test

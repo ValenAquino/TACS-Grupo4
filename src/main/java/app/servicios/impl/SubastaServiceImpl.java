@@ -40,7 +40,7 @@ public class SubastaServiceImpl implements ISubastaService {
   @Override
   public SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin,
                                  String figuritaId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorId(userId);
+    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
     Subasta nuevaSubasta = new Subasta(
@@ -63,10 +63,10 @@ public class SubastaServiceImpl implements ISubastaService {
   }
 
   @Override
-  public SubastaDto ofertarEnSubasta(String userId, String usuarioDestinoId,
+  public SubastaDto ofertarEnSubasta(String userId, String perfilDestinoId,
                                      String subastaId, List<String> rawFiguritasId) {
-    Perfil autor        = this.repositorioPerfiles.buscarPorId(userId);
-    Perfil destinatario = this.repositorioPerfiles.buscarPorId(usuarioDestinoId);
+    Perfil autor        = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+    Perfil destinatario = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     Subasta subasta     = this.repoSubasta.buscarPorId(subastaId);
 
     Figurita figuritaBuscada = subasta.getFiguritaSubastada();

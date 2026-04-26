@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import jdk.jfr.Experimental;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,8 +14,7 @@ public class FiguritaIntercambiable {
     private Integer cantidadExistente;
     private Integer cantidadReservada;
     private List<MetodoIntercambio> metodos;
-
-    //TODO Ver si esto se mantiene o manejamos las figuritas desde cada perfil
+    @Experimental
     private String perfilId;
     public FiguritaIntercambiable(Figurita figurita, Integer cantidadDisponible, List<MetodoIntercambio> metodos) {
         this(figurita, cantidadDisponible,0, metodos, null);

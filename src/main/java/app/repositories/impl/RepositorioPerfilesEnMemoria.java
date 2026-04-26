@@ -2,8 +2,8 @@ package app.repositories.impl;
 
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
-import app.model.entities.Usuario;
-import app.repositories.RepositorioUsuarios;
+import app.model.entities.Perfil;
+import app.repositories.RepositorioPerfiles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,20 +11,20 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
+public class RepositorioPerfilesEnMemoria implements RepositorioPerfiles {
 
-    private final Map<String, Usuario> storage = new HashMap<>();
+    private final Map<String, Perfil> storage = new HashMap<>();
 
     @Override
-    public Usuario buscarPorId(String id) {
+    public Perfil buscarPorId(String id) {
         if(!storage.containsKey(id)) {
-            throw new NotFoundException("Usuario no encontrado");
+            throw new NotFoundException("Perfil no encontrado");
         }
         return storage.get(id);
     }
 
     @Override
-    public List<Usuario> buscarPorFiguritaFaltante(Figurita figurita) {
+    public List<Perfil> buscarPorFiguritaFaltante(Figurita figurita) {
         return this.storage.values()
             .stream()
             .filter(u -> u.getColeccion().tieneFaltante(figurita))
@@ -32,7 +32,7 @@ public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
     }
 
     @Override
-    public List<Usuario> buscarTodos() {
+    public List<Perfil> buscarTodos() {
         return new ArrayList<>(storage.values());
     }
 
@@ -42,9 +42,9 @@ public class RepositorioUsuariosEnMemoria implements RepositorioUsuarios {
     }
 
     @Override
-    public void guardar(Usuario usuario) {
-        if(!storage.containsKey(usuario.getId())) {
-            storage.put(usuario.getId(), usuario);
+    public void guardar(Perfil perfil) {
+        if(!storage.containsKey(perfil.getId())) {
+            storage.put(perfil.getId(), perfil);
         }
     }
 }

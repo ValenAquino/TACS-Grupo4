@@ -8,8 +8,8 @@ import java.util.List;
 @Getter
 public class RepetidaRequest {
 
-  @JsonProperty("cantidad_disponible")
-  public Integer cantidadDisponible;
+  @JsonProperty("cantidad_existente")
+  public Integer cantidadExistente;
 
   @JsonProperty("fig_id")
   public String figId;

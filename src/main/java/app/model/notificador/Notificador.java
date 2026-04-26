@@ -1,6 +1,6 @@
 package app.model.notificador;
 
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 
 
 public class Notificador {
@@ -10,7 +10,7 @@ public class Notificador {
     this.metodo = metodo;
   }
 
-  public void enviarNotificacion(Mensaje mensaje, Usuario usuario) {
+  public void enviarNotificacion(Mensaje mensaje, Perfil usuario) {
     this.metodo.notificar(mensaje, usuario);
   }
 }

@@ -30,7 +30,7 @@ public class SubastaController {
         Number duracion = (Number) body.get("duracion");
         LocalDateTime fechaFin = fechaInicio.plusMinutes(duracion.longValue());
 
-        SubastaDto subastaDto = this.subastaService.crearSubasta(id, fechaInicio, fechaFin, figuritaId, null);
+        SubastaDto subastaDto = this.subastaService.crearSubasta(id, fechaInicio, fechaFin, figuritaId);
 
         return ResponseEntity.ok(subastaDto);
     }

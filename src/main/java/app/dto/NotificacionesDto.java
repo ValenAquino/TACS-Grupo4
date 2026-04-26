@@ -8,11 +8,11 @@ import lombok.Getter;
 public class NotificacionesDto {
   String id;
   Mensaje mensaje;
-  UsuarioDto usuario;
+  PerfilDto usuario;
 
   public NotificacionesDto(Notificacion notificacion) {
     this.id = notificacion.getId();
     this.mensaje = notificacion.getMensaje();
-    this.usuario = new UsuarioDto(notificacion.getUsuario());
+    this.usuario = new PerfilDto(notificacion.getUsuario());
   }
 }

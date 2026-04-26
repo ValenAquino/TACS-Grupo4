@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+//TODO no se corrige porque este dto dejara de existir, se dividira en mis figuritas, intercambios y subastas
 public class OperacionesDto {
 
     List<FiguritaIntercambiable> figuritasPublicadas;

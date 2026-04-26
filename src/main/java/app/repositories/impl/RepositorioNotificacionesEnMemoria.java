@@ -1,6 +1,6 @@
 package app.repositories.impl;
 
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 import app.model.notificador.Notificacion;
 import app.repositories.RepositorioNotificaciones;
 import org.springframework.stereotype.Repository;
@@ -33,7 +33,7 @@ public class RepositorioNotificacionesEnMemoria implements RepositorioNotificaci
   }
 
   @Override
-  public List<Notificacion> buscarPorUsuario(Usuario usuario) {
+  public List<Notificacion> buscarPorUsuario(Perfil usuario) {
     return storage.values().stream()
         .filter(n -> n.getUsuario().getId().equals(usuario.getId()))
         .toList();

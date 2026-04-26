@@ -20,9 +20,9 @@ public class RepositorioFiguritasIntercambiablesEnMemoria
         .toList();
   }
   @Override
-  public List<FiguritaIntercambiable> buscarPorUsuarioId(String usuarioId) {
+  public List<FiguritaIntercambiable> buscarPorUsuarioId(String perfilId) {
     return storage.values().stream()
-        .filter(fi -> fi.getUsuarioId().equals(usuarioId))
+        .filter(fi -> fi.getPerfilId().equals(perfilId))
         .toList();
   }
   @Override

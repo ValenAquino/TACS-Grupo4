@@ -5,7 +5,6 @@ import app.dto.request.RepetidaRequest;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.servicios.IColeccionService;
-import app.servicios.impl.ColeccionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +40,7 @@ public class ColeccionController {
         @RequestBody RepetidaRequest request) {
 
         coleccionService.agregarRepetida(col_id, userId,
-            request.getFigId(), request.getCantidadDisponible(), request.getModosIntercambio());
+            request.getFigId(), request.getCantidadExistente(), request.getModosIntercambio());
 
         return ResponseEntity.status(201).build();
     }

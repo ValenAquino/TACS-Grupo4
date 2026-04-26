@@ -5,9 +5,9 @@ import java.util.List;
 
 public interface RepositorioPropuestas {
     // Propuestas enviadas
-    List<Propuesta> buscarPorOrigenId(String userId);
+    List<Propuesta> buscarPorAutorId(String userId);
     // Propuestas recibidas
-    List<Propuesta> buscarPorDestinoId(String userId);
+    List<Propuesta> buscarPorDestinatarioId(String userId);
     List<Propuesta> buscarTodos();
     Propuesta buscarPorId(String id);
     int contar();

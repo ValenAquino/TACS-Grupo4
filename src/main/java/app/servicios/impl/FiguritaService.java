@@ -34,19 +34,7 @@ public class FiguritaService implements IFiguritaService {
     return repositorioIntercambiables
         .buscarPorFiguritaIds(idsFiltrados)
         .stream()
-        .map(this::aDto)
+        .map(FiguritaIntercambiableDto::new)
         .toList();
-  }
-
-  private FiguritaIntercambiableDto aDto(FiguritaIntercambiable fi) {
-    return new FiguritaIntercambiableDto(
-        fi.getFigurita().getId(),
-        fi.getFigurita().getNumero(),
-        fi.getFigurita().getJugador(),
-        fi.getFigurita().getSeleccion(),
-        fi.getCantidadDisponible(),
-        fi.getMetodos(),
-        fi.getUsuarioId()
-    );
   }
 }

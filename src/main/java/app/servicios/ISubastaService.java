@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ISubastaService {
   SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin,
-                          String figuritaSubastadaId, Propuesta propuestaGanadora);
+                          String figuritaSubastadaId);
 
   SubastaDto ofertarEnSubasta(String userId, String usuarioDestinoId,
                                String subastaId, List<Object> rawFiguritasId);

@@ -1,7 +1,7 @@
 package app.model.notificador;
 
-import app.model.entities.Usuario;
+import app.model.entities.Perfil;
 
 public interface AdapterNotificacion {
-  public void notificar(Mensaje mensaje, Usuario receptor);
+  public void notificar(Mensaje mensaje, Perfil receptor);
 }

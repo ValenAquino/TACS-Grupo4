@@ -1,6 +1,8 @@
 package app.controllers;
 
 import app.dto.FiguritaIntercambiableDto;
+import app.model.entities.Figurita;
+import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Seleccion;
 import app.model.entities.MetodoIntercambio;
 import app.servicios.impl.FiguritaService;
@@ -27,9 +29,11 @@ class FiguritaControllerTest {
     private FiguritaService figuritaService;
     @Test
     void buscarFiguritasDevuelve200() throws Exception {
-        FiguritaIntercambiableDto dto = new FiguritaIntercambiableDto(
-            "ARG-10", 10, "Messi", Seleccion.ARGENTINA, 2,0,
-            List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+        FiguritaIntercambiable figuritaIntercambiable = new FiguritaIntercambiable(
+            figurita, 2, 0, List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+
+        FiguritaIntercambiableDto dto = new FiguritaIntercambiableDto(figuritaIntercambiable);
 
         when(figuritaService.buscarFiguritas(null, null, null))
             .thenReturn(List.of(dto));

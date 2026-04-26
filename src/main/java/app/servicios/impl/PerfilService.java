@@ -73,21 +73,8 @@ public class PerfilService implements IPerfilService {
 
         return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
             .stream()
-            .map(this::aDto)
+            .map(FiguritaIntercambiableDto::new)
             .toList();
-    }
-//implementar mappers en lugar de tener la logica aca
-    private FiguritaIntercambiableDto aDto(FiguritaIntercambiable fi) {
-        return new FiguritaIntercambiableDto(
-            fi.getFigurita().getId(),
-            fi.getFigurita().getNumero(),
-            fi.getFigurita().getJugador(),
-            fi.getFigurita().getSeleccion(),
-            fi.getCantidadExistente(),
-            fi.getCantidadReservada(),
-            fi.getMetodos(),
-            fi.getPerfilId()
-        );
     }
     public Number agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {
         if (valor == null) {

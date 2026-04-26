@@ -29,7 +29,7 @@ public class ColeccionService implements IColeccionService {
     this.notificacionService = notificacionService;
   }
 
-  public Figurita agregarFaltante(String colId, String figId) {
+  public void agregarFaltante(String colId, String figId) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
 
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
@@ -37,11 +37,9 @@ public class ColeccionService implements IColeccionService {
     coleccion.agregarFaltante(faltante);
 
     repositorioColecciones.guardar(coleccion);
-
-    return faltante;
   }
 
-  public FiguritaIntercambiable agregarRepetida(String colId, String userId, String figId, Integer
+  public void agregarRepetida(String colId, String userId, String figId, Integer
       cantidadDisponible, List<String> modosIntercambio) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
 
@@ -61,7 +59,5 @@ public class ColeccionService implements IColeccionService {
         ", Cantidad: " + repetida.getCantidadExistente();
 
     this.notificacionService.notificarInteresados(interesados, cuerpo);
-
-    return repetida;
   }
 }

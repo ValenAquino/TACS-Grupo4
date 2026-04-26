@@ -19,5 +19,4 @@ public class AdministradorController {
     public ResponseEntity<EstadisticasDto> obtenerEstadisticas() {
         return ResponseEntity.ok(estadisticasService.obtenerEstadisticas());
     }
-
 }

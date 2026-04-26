@@ -5,6 +5,7 @@ import app.dto.request.RepetidaRequest;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.servicios.IColeccionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,16 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/colecciones")
+@RequiredArgsConstructor
 public class ColeccionController {
 
     private final IColeccionService coleccionService;
 
-    public ColeccionController(IColeccionService coleccionService) {
-        this.coleccionService = coleccionService;
-    }
-
     @PostMapping("/{col_id}/faltantes")
-    public ResponseEntity<Figurita> agregarFaltante(
+    public ResponseEntity<Void> agregarFaltante(
         @PathVariable String col_id,
         @RequestBody FaltanteRequest request) {
 
@@ -34,7 +32,7 @@ public class ColeccionController {
     }
 
     @PostMapping("/{col_id}/repetidas")
-    public ResponseEntity<FiguritaIntercambiable> agregarRepetida(
+    public ResponseEntity<Void> agregarRepetida(
         @PathVariable String col_id,
         @RequestHeader("user_id") String userId,
         @RequestBody RepetidaRequest request) {

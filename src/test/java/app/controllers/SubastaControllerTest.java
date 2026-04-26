@@ -84,7 +84,7 @@ class SubastaControllerTest {
         String json = """
         {
             "usuario_id": "userSubastador",
-            "figuritas_ofrecidas": ["figu321","figu132"]
+            "figuritas_ofrecidas_id": ["figu321","figu132"]
         }
         """;
 

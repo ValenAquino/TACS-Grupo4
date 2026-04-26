@@ -13,5 +13,5 @@ public interface ISubastaService {
                           String figuritaSubastadaId);
 
   SubastaDto ofertarEnSubasta(String userId, String usuarioDestinoId,
-                               String subastaId, List<Object> rawFiguritasId);
+                               String subastaId, List<String> rawFiguritasId);
 }

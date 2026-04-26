@@ -1,5 +1,6 @@
 package app.servicios.impl;
 
+import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.OperacionesDto;
 import app.exceptions.NotFoundException;
@@ -153,9 +154,9 @@ class PerfilServiceImplTest {
         when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(destino);
         when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(autor);
 
-        Number resultado = service.agregarCalificacion("u-2", "u-1", 2, "Tardó en responder");
+        CalificacionDto resultado = service.agregarCalificacion("u-2", "u-1", 2, "Tardó en responder");
 
-        assertEquals(3.0f, resultado.floatValue());
+        assertEquals(3.0f, resultado.getCalificacionFinal().floatValue());
         verify(repositorioPerfiles).guardar(destino);
     }
 }

@@ -37,9 +37,6 @@ class ColeccionControllerTest {
         FiguritaIntercambiable repetida =
             new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA), "user-123"); // <-- usuarioId
 
-        when(serviceColeccion.agregarRepetida(eq("1"), eq("user-123"), any(), any(), any()))
-            .thenReturn(repetida);
-
         String json = """
     {
         "fig_id": "ARG-10",
@@ -58,8 +55,6 @@ class ColeccionControllerTest {
     @Test
     void agregarFaltanteNoFalla() throws Exception {
         Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-
-        when(serviceColeccion.agregarFaltante("1", "ARG-10")).thenReturn(messi);
 
         String json = """
         {

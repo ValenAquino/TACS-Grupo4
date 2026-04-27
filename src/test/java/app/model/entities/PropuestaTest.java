@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.PropuestaException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,20 +49,20 @@ public class PropuestaTest {
     void noDeberiaAceptarUnaPropuestaYaAceptada() {
         propuesta.aceptar(destino);
 
-        assertThrows(RuntimeException.class, () -> propuesta.aceptar(destino));
+        assertThrows(PropuestaException.class, () -> propuesta.aceptar(destino));
     }
 
     @Test
     void noDeberiaRechazarUnaPropuestaYaAceptada() {
         propuesta.aceptar(destino);
 
-        assertThrows(RuntimeException.class, () -> propuesta.rechazar(destino));
+        assertThrows(PropuestaException.class, () -> propuesta.rechazar(destino));
     }
 
     @Test
     void noDeberiaAceptarSiNoEsElUsuarioDestino() {
         Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO), "Otro", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
 
-        assertThrows(RuntimeException.class, () -> propuesta.aceptar(otro));
+        assertThrows(PropuestaException.class, () -> propuesta.aceptar(otro));
     }
 }

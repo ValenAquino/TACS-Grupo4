@@ -65,11 +65,6 @@ class PerfilServiceImplTest {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
     }
 
-    private Perfil perfil(String id, String usuarioId, String nombre) {
-        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), nombre,
-            new Coleccion(), telegram("@" + nombre.toLowerCase()), new ArrayList<>());
-    }
-
     private Propuesta propuesta(String id, Perfil autor, Perfil destino, EstadoProceso estado) {
         return new Propuesta(id, autor, destino, new ArrayList<>(), null,
             new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), estado))));

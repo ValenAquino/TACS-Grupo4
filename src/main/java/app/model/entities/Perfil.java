@@ -10,11 +10,11 @@ import lombok.Setter;
 @Setter
 public class Perfil {
     private String id;
+    private Usuario usuario;
     private String nombre;
     private Coleccion coleccion;
     private List<MedioDeContacto> mediosDeContacto;
     private List<Calificacion> calificaciones;
-    private Usuario usuario;
 
     public Float obtenerCalificacionMedia() {
         return (float) calificaciones.stream()

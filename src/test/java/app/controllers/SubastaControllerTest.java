@@ -31,28 +31,17 @@ class SubastaControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean RepositorioPerfiles repoUser;
-    @MockBean RepositorioSubastas repoSubasta;
-    @MockBean RepositorioFiguritas repoFigurita;
-
     @Test
     void crearSubastaNoFalla() throws Exception {
-        Perfil origen = new Perfil("user123", "", null,
-            List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@user123")), null);
-        Figurita figuSubastada = new Figurita("figu123", 2, null, null);
-
         String json = """
         {
-            "figurita_id": "figu123",
+            "figurita_id": "ARG-10",
             "duracion": 10
         }
         """;
 
-        when(repoUser.buscarPorId("user123")).thenReturn(origen);
-        when(repoFigurita.buscarPorId("figu123")).thenReturn(figuSubastada);
-
         mockMvc.perform(post("/subastas")
-                .header("user_id", "user123")
+                .header("user_id", "u-1000")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().isOk());
@@ -60,36 +49,15 @@ class SubastaControllerTest {
 
     @Test
     void ofertarEnSubastaNoFalla() throws Exception {
-        Perfil subastador    = new Perfil("userSubastador", "", null,
-            List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@subastador")), null);
-        Perfil userPropuesta = new Perfil("userPropuesta", "", null,
-            List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@propuesta")), null);
-
-        LocalDateTime fechaInicio = LocalDateTime.now();
-
-        Figurita buscada   = new Figurita("figu123", 2, null, null);
-        Figurita ofrecida1 = new Figurita("figu321", 3, null, null);
-        Figurita ofrecida2 = new Figurita("figu132", 4, null, null);
-
-        Subasta subasta = new Subasta("1", subastador,
-            fechaInicio, fechaInicio.plusMinutes(30), buscada);
-
-        when(repoUser.buscarPorId("userSubastador")).thenReturn(subastador);
-        when(repoUser.buscarPorId("userPropuesta")).thenReturn(userPropuesta);
-        when(repoFigurita.buscarPorId("figu123")).thenReturn(buscada);
-        when(repoFigurita.buscarPorId("figu321")).thenReturn(ofrecida1);
-        when(repoFigurita.buscarPorId("figu132")).thenReturn(ofrecida2);
-        when(repoSubasta.buscarPorId("1")).thenReturn(subasta);
-
         String json = """
         {
-            "usuario_id": "userSubastador",
-            "figuritas_ofrecidas_id": ["figu321","figu132"]
+            "usuario_id": "1001",
+            "figuritas_ofrecidas_id": ["ARG-11"]
         }
         """;
 
-        mockMvc.perform(post("/subastas/1/propuestas")
-                .header("user_id", "userPropuesta")
+        mockMvc.perform(post("/subastas/3000/propuestas")
+                .header("user_id", "u-1001")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().isOk());

@@ -14,8 +14,10 @@ import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
+import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
@@ -23,6 +25,7 @@ import app.repositories.RepositorioPerfiles;
 import app.servicios.INotificacionService;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,12 +44,20 @@ class PropuestaServiceTest {
   @InjectMocks
   PropuestaService propuestaService;
 
-  Perfil lucas = new Perfil("1000", "Lucas", new Coleccion(),
-      List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
-  Perfil sofia = new Perfil("1001", "Sofía", new Coleccion(),
-      List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
-  Figurita messi  = new Figurita("ARG-10", 10, "Messi",  Seleccion.ARGENTINA);
-  Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA);
+  private Perfil lucas;
+  private Perfil sofia;
+  private Figurita messi;
+  private Figurita mbappe;
+
+  @BeforeEach
+  void setUp() {
+    lucas = new Perfil("1000", new Usuario("u-1000", Rol.USUARIO), "Lucas", new Coleccion(),
+        List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
+    sofia = new Perfil("1001", new Usuario("u-1001", Rol.USUARIO), "Sofía", new Coleccion(),
+        List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
+    messi  = new Figurita("ARG-10", 10, "Messi",  Seleccion.ARGENTINA);
+    mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA);
+  }
 
   @Test
   void crearPropuestaDevuelveDto() {

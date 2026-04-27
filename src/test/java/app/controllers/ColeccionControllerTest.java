@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.exceptions.FiguritaDuplicadaException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
 import app.servicios.impl.ColeccionService;
@@ -32,18 +33,13 @@ class ColeccionControllerTest {
 
     @Test
     void agregarRepetidaNoFalla() throws Exception {
-        Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-
-        FiguritaIntercambiable repetida =
-            new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA), "user-123"); // <-- usuarioId
-
         String json = """
-    {
-        "fig_id": "ARG-10",
-        "cantidad_disponible": 2,
-        "modos_intercambio": ["SUBASTA"]
-    }
-    """;
+        {
+            "fig_id": "ARG-10",
+            "cantidad_disponible": 2,
+            "modos_intercambio": ["SUBASTA"]
+        }
+        """;
 
         mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -54,19 +50,16 @@ class ColeccionControllerTest {
 
     @Test
     void agregarFaltanteNoFalla() throws Exception {
-        Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-
         String json = """
         {
-            "fig_id": 10
+            "fig_id": "ARG-10"
         }
         """;
 
         mockMvc.perform(post("/colecciones/1/faltantes")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
             .andExpect(status().is(201));
-
     }
 
     @Test
@@ -76,10 +69,10 @@ class ColeccionControllerTest {
             .agregarFaltante("1", "ARG-10");
 
         String json = """
-    {
-        "fig_id": "ARG-10"
-    }
-    """;
+        {
+            "fig_id": "ARG-10"
+        }
+        """;
 
         mockMvc.perform(post("/colecciones/1/faltantes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,21 +84,15 @@ class ColeccionControllerTest {
     void agregarRepetidaNoEncontradaDevuelve404() throws Exception {
         doThrow(new NotFoundException("No se encontro la figurita"))
             .when(serviceColeccion)
-            .agregarRepetida(
-                eq("1"),
-                any(),
-                any(),
-                any(),
-                any()
-            );
+            .agregarRepetida(eq("1"), any(), any(), any(), any());
 
         String json = """
-    {
-        "fig_id": "ARG-10",
-        "cantidad_disponible": 2,
-        "modos_intercambio": ["SUBASTA"]
-    }
-    """;
+        {
+            "fig_id": "ARG-10",
+            "cantidad_disponible": 2,
+            "modos_intercambio": ["SUBASTA"]
+        }
+        """;
 
         mockMvc.perform(post("/colecciones/1/repetidas")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -116,24 +103,19 @@ class ColeccionControllerTest {
 
     @Test
     void agregarFaltanteDevuelve400SiDuplicada() throws Exception {
-
-        doThrow(new IllegalArgumentException("Figurita ya repetida"))
+        doThrow(new FiguritaDuplicadaException("Figurita ya listada como faltante"))
             .when(serviceColeccion)
-            .agregarFaltante(
-                eq("1"),
-                any()
-            );
+            .agregarFaltante(eq("1"), any());
 
         String json = """
-            {
-                "fig_id": "ARG-10
-            }
-            """;
+        {
+            "fig_id": "ARG-10"
+        }
+        """;
 
-        mockMvc.perform(post("/colecciones/1/repetidas")
+        mockMvc.perform(post("/colecciones/1/faltantes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
             .andExpect(status().is(400));
     }
-
 }

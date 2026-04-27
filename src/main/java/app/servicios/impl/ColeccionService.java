@@ -39,24 +39,25 @@ public class ColeccionService implements IColeccionService {
     repositorioColecciones.guardar(coleccion);
   }
 
-  public void agregarRepetida(String colId, String userId, String figId, Integer
-      cantidadDisponible, List<String> modosIntercambio) {
+  public void agregarRepetida(String colId, String usuarioId, String figId, Integer
+      cantidadExistente, List<String> modosIntercambio) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
-
     Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
 
+    Perfil perfil = this.repositorioUsuarios.buscarPorUsuarioId(usuarioId);
+
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
-        figurita, cantidadDisponible, modosIntercambio.stream().map(MetodoIntercambio::fromString)
-        .toList(), userId);
+        figurita, cantidadExistente, modosIntercambio.stream()
+        .map(MetodoIntercambio::fromString)
+        .toList(), perfil.getId());
 
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.guardar(coleccion);
 
-    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(repetida
-        .getFigurita());
+    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
 
-    String cuerpo = "Nueva figurita disponible, Numero: " + repetida.getFigurita().getId() +
-        ", Cantidad: " + repetida.getCantidadExistente();
+    String cuerpo = "Nueva figurita disponible, Numero: " + figurita.getId() +
+        ", Cantidad: " + cantidadExistente;
 
     this.notificacionService.notificarInteresados(interesados, cuerpo);
   }

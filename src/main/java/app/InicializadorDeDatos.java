@@ -9,9 +9,11 @@ import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Propuesta;
+import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Perfil;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
@@ -27,20 +29,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class InicializadorDeDatos implements CommandLineRunner {
 
-    private final RepositorioPerfiles usuarios;
+    private final RepositorioPerfiles perfiles;
     private final RepositorioPropuestas propuestas;
     private final RepositorioSubastas subastas;
     private final RepositorioFiguritas figuritas;
     private final RepositorioColecciones colecciones;
     private final RepositorioFiguritasIntercambiables intercambiables;
 
-    public InicializadorDeDatos(RepositorioPerfiles usuarios,
+    public InicializadorDeDatos(RepositorioPerfiles perfiles,
                                 RepositorioPropuestas propuestas,
                                 RepositorioSubastas subastas,
                                 RepositorioColecciones colecciones,
                                 RepositorioFiguritas figuritas,
                                 RepositorioFiguritasIntercambiables intercambiables) {
-        this.usuarios = usuarios;
+        this.perfiles = perfiles;
         this.propuestas = propuestas;
         this.subastas = subastas;
         this.colecciones = colecciones;
@@ -74,19 +76,19 @@ public class InicializadorDeDatos implements CommandLineRunner {
         figuritas.guardar(lautaro);
         figuritas.guardar(vinicius);
 
-        cargarUsuarios(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);
+        cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);
         cargarSubastas(griezmann, vinicius);
     }
 
-    private void cargarUsuarios(Figurita messi, Figurita diMaria, Figurita lautaro,
+    private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
                                 Figurita pedri, Figurita kroos) {
-        // Lucas: tiene Messi y Di María repetidas, le falta Mbappé y Vinicius
+        // Lucas
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
-        FiguritaIntercambiable interMessi    = new FiguritaIntercambiable(messi,    3, List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-        FiguritaIntercambiable interDiMaria  = new FiguritaIntercambiable(diMaria,  2, List.of(MetodoIntercambio.SUBASTA),     "1000");
+        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.SUBASTA),     "1000");
         coleccionLucas.getRepetidas().add(interMessi);
         coleccionLucas.getRepetidas().add(interDiMaria);
         coleccionLucas.getFaltantes().add(mbappe);
@@ -94,9 +96,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         intercambiables.guardar(interMessi);
         intercambiables.guardar(interDiMaria);
         colecciones.guardar(coleccionLucas);
-        usuarios.guardar(new Perfil("1000", "Lucas", coleccionLucas, telegram("@lucas"), new ArrayList<>()));
+        perfiles.guardar(new Perfil("1000", new Usuario("u-1000",  Rol.USUARIO), "Lucas",
+            coleccionLucas, telegram("@lucas"), new ArrayList<>()));
 
-        // Sofía: tiene Mbappé y Griezmann repetidas, le falta Messi y Lautaro
+        // Sofía
         Coleccion coleccionSofia = new Coleccion();
         coleccionSofia.setId("2");
         FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
@@ -108,9 +111,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         intercambiables.guardar(interMbappe);
         intercambiables.guardar(interGriezmann);
         colecciones.guardar(coleccionSofia);
-        usuarios.guardar(new Perfil("1001", "Sofía", coleccionSofia, telegram("@sofia"), new ArrayList<>()));
+        perfiles.guardar(new Perfil("1001", new Usuario("u-1001", Rol.USUARIO), "Sofía",
+            coleccionSofia, telegram("@sofia"), new ArrayList<>()));
 
-        // Matías: tiene Vinicius repetido, le falta Pedri y Kroos
+        // Matías
         Coleccion coleccionMatias = new Coleccion();
         coleccionMatias.setId("3");
         FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1002");
@@ -119,9 +123,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionMatias.getFaltantes().add(kroos);
         intercambiables.guardar(interVinicius);
         colecciones.guardar(coleccionMatias);
-        usuarios.guardar(new Perfil("1002", "Matías", coleccionMatias, telegram("@matias"), new ArrayList<>()));
+        perfiles.guardar(new Perfil("1002", new Usuario("u-1002",  Rol.USUARIO), "Matías",
+            coleccionMatias, telegram("@matias"), new ArrayList<>()));
 
-        // Juan: tiene Pedri repetido, le falta Pedri y Kroos
+        // Juan
         Coleccion coleccionJuan = new Coleccion();
         coleccionJuan.setId("4");
         FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
@@ -130,14 +135,15 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionJuan.getFaltantes().add(kroos);
         intercambiables.guardar(interPedri);
         colecciones.guardar(coleccionJuan);
-        usuarios.guardar(new Perfil("1003", "Juan", coleccionJuan, telegram("@juan"), new ArrayList<>()));
+        perfiles.guardar(new Perfil("1003", new Usuario("u-1003",  Rol.USUARIO), "Juan",
+            coleccionJuan, telegram("@juan"), new ArrayList<>()));
     }
 
     private void cargarPropuestas(Figurita messi, Figurita diMaria,
                                   Figurita griezmann, Figurita mbappe, Figurita vinicius) {
-        Perfil lucas  = usuarios.buscarPorId("1000");
-        Perfil sofia  = usuarios.buscarPorId("1001");
-        Perfil matias = usuarios.buscarPorId("1002");
+        Perfil lucas  = perfiles.buscarPorId("1000");
+        Perfil sofia  = perfiles.buscarPorId("1001");
+        Perfil matias = perfiles.buscarPorId("1002");
 
         propuestas.guardar(propuesta("2000", lucas,  sofia,  List.of(messi),     mbappe,   EstadoProceso.PENDIENTE));
         propuestas.guardar(propuesta("2001", sofia,  matias, List.of(griezmann), vinicius, EstadoProceso.ACEPTADO));
@@ -145,8 +151,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
     }
 
     private void cargarSubastas(Figurita griezmann, Figurita vinicius) {
-        Perfil sofia  = usuarios.buscarPorId("1001");
-        Perfil matias = usuarios.buscarPorId("1002");
+        Perfil sofia  = perfiles.buscarPorId("1001");
+        Perfil matias = perfiles.buscarPorId("1002");
 
         subastas.guardar(new Subasta("3000", sofia,
             LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2),

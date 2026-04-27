@@ -5,8 +5,10 @@ import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
+import app.model.entities.Rol;
 import app.model.entities.Subasta;
 import app.model.entities.Perfil;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
@@ -34,6 +36,11 @@ class EstadisticasServiceImplTest {
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
+    }
+
+    private Perfil perfil(String id, String usuarioId, String nombre) {
+        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), nombre,
+            new Coleccion(), telegram("@" + nombre.toLowerCase()), new ArrayList<>());
     }
 
     @BeforeEach
@@ -65,8 +72,8 @@ class EstadisticasServiceImplTest {
         Coleccion coleccionConUna = new Coleccion();
         coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, new ArrayList<>()));
 
-        Perfil u1 = new Perfil("u-1", "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
-        Perfil u2 = new Perfil("u-2", "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());
+        Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
+        Perfil u2 = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO), "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());
 
         Subasta subastaActiva = new Subasta("s-1", u1,
             LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
@@ -86,7 +93,7 @@ class EstadisticasServiceImplTest {
 
     @Test
     void getEstadisticas_filtraSoloSubastasActivas() {
-        Perfil u1 = new Perfil("u-1", "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
+        Perfil u1 = perfil("u-1", "usr-1", "Lucas");
 
         Subasta activa  = new Subasta("s-1", u1,
             LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);

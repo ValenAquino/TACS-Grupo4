@@ -5,8 +5,10 @@ import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
+import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
@@ -39,6 +41,10 @@ public class SubastaServiceTest {
   private RepositorioNotificaciones repositorioNotificaciones;
   private ISubastaService service;
 
+  private Perfil lucas;
+  private Perfil sofia;
+  private Figurita messi;
+
   private List<MedioDeContacto> telegram(String numero) {
     return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
   }
@@ -47,55 +53,46 @@ public class SubastaServiceTest {
   void setUp() {
     this.repositorioNotificaciones = new RepositorioNotificacionesEnMemoria();
     NotificacionService serviceNotificacion = new NotificacionService(repositorioNotificaciones);
-
     service = new SubastaServiceImpl(repositorioSubastas, repositorioUsuarios,
         repositorioFiguritas, repositorioPropuestas, serviceNotificacion);
+
+    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+
+    Coleccion coleccionSinMessi = new Coleccion();
+    coleccionSinMessi.getFaltantes().add(messi);
+    lucas = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Lucas",
+        coleccionSinMessi, telegram("@lucas"), new ArrayList<>());
+
+    Coleccion coleccionRepetidos = new Coleccion();
+    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, new ArrayList<>()));
+    sofia = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Sofía",
+        coleccionRepetidos, telegram("@sofia"), new ArrayList<>());
   }
 
   @Test
   void crearSubastaNotificaUsuarios() {
-    Figurita messi   = new Figurita("ARG-10", 10, "Messi",    Seleccion.ARGENTINA);
-
-    Coleccion coleccionSinMessi = new Coleccion();
-    coleccionSinMessi.getFaltantes().add(messi);
-    Perfil usuarioSinMessi = new Perfil("u-1", "Lucas", coleccionSinMessi, telegram("@lucas"), new ArrayList<>());
-
-    Coleccion coleccionRepetidos = new Coleccion();
-    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, new ArrayList<>()));
-    Perfil sofia = new Perfil("u-2", "Sofía", coleccionRepetidos, telegram("@sofia"), new ArrayList<>());
-
     LocalDateTime fechaInicio = LocalDateTime.now();
 
-    when(repositorioUsuarios.buscarPorId("u-2")).thenReturn(sofia);
+    when(repositorioUsuarios.buscarPorUsuarioId("u-2")).thenReturn(sofia);
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-    when(repositorioUsuarios.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(usuarioSinMessi));
+    when(repositorioUsuarios.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(lucas));
 
-    service.crearSubasta(sofia.getId(), fechaInicio, fechaInicio.plusMinutes(30), "ARG-10");
+    service.crearSubasta(sofia.getUsuario().getId(), fechaInicio, fechaInicio.plusMinutes(30), "ARG-10");
 
-    assertEquals(1, repositorioNotificaciones.buscarPorUsuario(usuarioSinMessi).size());
+    assertEquals(1, repositorioNotificaciones.buscarPorUsuario(lucas).size());
   }
 
   @Test
   void crearSubastaNoNotificaUsuarios() {
-    Figurita messi   = new Figurita("ARG-10", 10, "Messi",    Seleccion.ARGENTINA);
     Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
-
-    Coleccion coleccionSinMessi = new Coleccion();
-    coleccionSinMessi.getFaltantes().add(messi);
-    Perfil usuarioSinMessi = new Perfil("u-1", "Lucas", coleccionSinMessi, telegram("@lucas"), new ArrayList<>());
-
-    Coleccion coleccionRepetidos = new Coleccion();
-    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, new ArrayList<>()));
-    Perfil sofia = new Perfil("u-2", "Sofía", coleccionRepetidos, telegram("@sofia"), new ArrayList<>());
-
     LocalDateTime fechaInicio = LocalDateTime.now();
 
-    when(repositorioUsuarios.buscarPorId("u-2")).thenReturn(sofia);
+    when(repositorioUsuarios.buscarPorUsuarioId("u-2")).thenReturn(sofia);
     when(repositorioFiguritas.buscarPorId("ARG-11")).thenReturn(diMaria);
     when(repositorioUsuarios.buscarPorFiguritaFaltante(diMaria)).thenReturn(List.of());
 
-    service.crearSubasta(sofia.getId(), fechaInicio, fechaInicio.plusMinutes(30), "ARG-11");
+    service.crearSubasta(sofia.getUsuario().getId(), fechaInicio, fechaInicio.plusMinutes(30), "ARG-11");
 
-    assertEquals(0, repositorioNotificaciones.buscarPorUsuario(usuarioSinMessi).size());
+    assertEquals(0, repositorioNotificaciones.buscarPorUsuario(lucas).size());
   }
 }

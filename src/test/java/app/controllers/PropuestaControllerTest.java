@@ -7,6 +7,8 @@ import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
 import app.model.entities.Propuesta;
 import app.model.entities.Perfil;
+import app.model.entities.Rol;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
@@ -40,10 +42,14 @@ class PropuestaControllerTest {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
     }
 
+    private Perfil perfil(String id, String usuarioId, String handle) {
+        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), "", null, telegram(handle), null);
+    }
+
     @Test
     void crearPropuestaDevuelve201() throws Exception {
-        Perfil subastador    = new Perfil("1000", "", null, telegram("@subastador"),    null);
-        Perfil userPropuesta = new Perfil("1001", "", null, telegram("@userPropuesta"), null);
+        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
+        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
 
         Figurita buscada  = new Figurita("ARG-10", 2, null, null);
         Figurita ofrecida = new Figurita("FRA-10", 2, null, null);
@@ -70,31 +76,53 @@ class PropuestaControllerTest {
 
     @Test
     void aceptarPropuestaNoFalla() throws Exception {
-        Perfil subastador    = new Perfil("1000", "", null, telegram("@subastador"),    null);
-        Perfil userPropuesta = new Perfil("1001", "", null, telegram("@userPropuesta"), null);
+        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
+        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
 
-        Propuesta propuesta = new Propuesta("1000", subastador, userPropuesta,
+        Propuesta propuesta = new Propuesta("p-1", subastador, userPropuesta,
             new ArrayList<>(), null,
             new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
 
-        when(repoPropuesta.buscarPorId("1000")).thenReturn(propuesta);
+        when(repoPropuesta.buscarPorId("p-1")).thenReturn(propuesta);
+        when(repoUser.buscarPorUsuarioId("u-1001")).thenReturn(userPropuesta);
 
-        mockMvc.perform(patch("/propuestas/1000/aceptar"))
+        mockMvc.perform(patch("/propuestas/p-1/aceptar")
+                .header("usuario_id", "u-1001"))
             .andExpect(status().isNoContent());
     }
 
     @Test
     void rechazarPropuestaNoFalla() throws Exception {
-        Perfil subastador    = new Perfil("1000", "", null, telegram("@subastador"),    null);
-        Perfil userPropuesta = new Perfil("1001", "", null, telegram("@userPropuesta"), null);
+        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
+        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
 
-        Propuesta propuesta = new Propuesta("1000", subastador, userPropuesta,
+        Propuesta propuesta = new Propuesta("p-2", subastador, userPropuesta,
             new ArrayList<>(), null,
             new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
 
-        when(repoPropuesta.buscarPorId("1000")).thenReturn(propuesta);
+        when(repoPropuesta.buscarPorId("p-2")).thenReturn(propuesta);
+        when(repoUser.buscarPorUsuarioId("u-1001")).thenReturn(userPropuesta);
 
-        mockMvc.perform(patch("/propuestas/1000/rechazar"))
+        mockMvc.perform(patch("/propuestas/p-2/rechazar")
+                .header("usuario_id", "u-1001"))
             .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void aceptarPropuestaFallaConUsuarioIncorrecto() throws Exception {
+        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
+        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
+        Perfil otroUsuario   = perfil("1002", "u-1002", "@otro");
+
+        Propuesta propuesta = new Propuesta("p-3", subastador, userPropuesta,
+            new ArrayList<>(), null,
+            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+
+        when(repoPropuesta.buscarPorId("p-3")).thenReturn(propuesta);
+        when(repoUser.buscarPorUsuarioId("u-1002")).thenReturn(otroUsuario);
+
+        mockMvc.perform(patch("/propuestas/p-3/aceptar")
+                .header("usuario_id", "u-1002"))
+            .andExpect(status().is(400));
     }
 }

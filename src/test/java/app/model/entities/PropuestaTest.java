@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.PropuestaException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +18,8 @@ public class PropuestaTest {
 
     @BeforeEach
     void setUp() {
-        origen  = new Perfil("1", "Origen",  null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@origen")),  List.of());
-        destino = new Perfil("2", "Destino", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@destino")), List.of());
+        origen  = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Origen",  null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@origen")),  List.of());
+        destino = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Destino", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@destino")), List.of());
 
         propuesta = new Propuesta(
             "123",
@@ -48,20 +49,20 @@ public class PropuestaTest {
     void noDeberiaAceptarUnaPropuestaYaAceptada() {
         propuesta.aceptar(destino);
 
-        assertThrows(RuntimeException.class, () -> propuesta.aceptar(destino));
+        assertThrows(PropuestaException.class, () -> propuesta.aceptar(destino));
     }
 
     @Test
     void noDeberiaRechazarUnaPropuestaYaAceptada() {
         propuesta.aceptar(destino);
 
-        assertThrows(RuntimeException.class, () -> propuesta.rechazar(destino));
+        assertThrows(PropuestaException.class, () -> propuesta.rechazar(destino));
     }
 
     @Test
     void noDeberiaAceptarSiNoEsElUsuarioDestino() {
-        Perfil otro = new Perfil("3", "Otro", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
+        Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO), "Otro", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
 
-        assertThrows(RuntimeException.class, () -> propuesta.aceptar(otro));
+        assertThrows(PropuestaException.class, () -> propuesta.aceptar(otro));
     }
 }

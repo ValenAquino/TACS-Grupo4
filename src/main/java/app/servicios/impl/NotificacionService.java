@@ -16,6 +16,7 @@ public class NotificacionService implements INotificacionService {
 
   private final RepositorioNotificaciones repositorioNotificaciones;
 
+  @Override
   public void notificarInteresados(List<Perfil> interesados, String cuerpo) {
     interesados.forEach(u -> {
       Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());

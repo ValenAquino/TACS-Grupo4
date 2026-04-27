@@ -5,8 +5,17 @@ import app.model.entities.FiguritaIntercambiable;
 import java.util.List;
 
 public interface IColeccionService {
-  void agregarFaltante(String colId, String figId);
-  void agregarRepetida(String colId, String userId, String figId, Integer
-      cantidadDisponible, List<String> modosIntercambio);
 
+    /**
+     * Agrega la figurita indicada a la lista de faltantes de la colección.
+     * Propaga {@link app.exceptions.FiguritaDuplicadaException} si ya está registrada como faltante.
+     */
+    void agregarFaltante(String colId, String figId);
+
+    /**
+     * Agrega una figurita repetida a la colección y notifica a los usuarios
+     * que la tienen en su lista de faltantes.
+     */
+    void agregarRepetida(String colId, String userId, String figId, Integer
+        cantidadDisponible, List<String> modosIntercambio);
 }

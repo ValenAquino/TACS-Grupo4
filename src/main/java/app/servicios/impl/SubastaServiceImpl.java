@@ -2,22 +2,20 @@ package app.servicios.impl;
 
 import app.dto.SubastaDto;
 import app.exceptions.BadRequestException;
-import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
+import app.model.entities.Perfil;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
-import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioPerfiles;
 import app.servicios.INotificacionService;
 import app.servicios.ISubastaService;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class SubastaServiceImpl implements ISubastaService {
@@ -65,9 +63,9 @@ public class SubastaServiceImpl implements ISubastaService {
   @Override
   public SubastaDto ofertarEnSubasta(String userId, String perfilDestinoId,
                                      String subastaId, List<String> rawFiguritasId) {
-    Perfil autor        = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Perfil destinatario = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
-    Subasta subasta     = this.repoSubasta.buscarPorId(subastaId);
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
     Figurita figuritaBuscada = subasta.getFiguritaSubastada();
 

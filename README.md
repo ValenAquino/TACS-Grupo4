@@ -1,80 +1,209 @@
-# java-base-project
+# TACS 2026 1C - Grupo 5
 
-Esta es una plantilla de proyecto diseñada para:
+Aplicación de intercambio de figuritas del Mundial. Permite a los usuarios gestionar sus colecciones, proponer intercambios, participar en subastas y calificarse entre sí.
 
-* Java 21. :warning: Si bien el proyecto no lo limita explícitamente, el comando `mvn verify` no funcionará con versiones más antiguas de Java.
-* JUnit 5. :warning: La versión 5 de JUnit es la más nueva del framework y presenta algunas diferencias respecto a la versión "clásica" (JUnit 4). Para mayores detalles, ver:
-  * [Apunte de herramientas](https://docs.google.com/document/d/1VYBey56M0UU6C0689hAClAvF9ILE6E7nKIuOqrRJnWQ/edit#heading=h.dnwhvummp994)
-  * [Entrada de Blog (en inglés)](https://www.baeldung.com/junit-5-migration)
-  * [Entrada de Blog (en español)](https://www.paradigmadigital.com/dev/nos-espera-junit-5/)
-* Maven 3.9 o superior (recomendado)
+## Stack tecnológico
+
+| Componente       | Tecnología                 |
+|------------------|----------------------------|
+| Lenguaje         | Java 17                    |
+| Framework        | Spring Boot 3.2.5          |
+| Build            | Maven 3.9+                 |
+| Tests            | JUnit 5 + Mockito          |
+| Cobertura        | JaCoCo                     |
+| Calidad          | SpotBugs                   |
+| Boilerplate      | Lombok                     |
+| Containerización | Docker (multi-stage build) |
+| CI               | GitHub Actions             |
+
+## Levantar la aplicación
+
+### Con Docker (recomendado)
+
+```bash
+docker build -t tacs-grupo5 .
+docker run -p 8080:8080 tacs-grupo5
+```
+
+### Con Maven
+
+```bash
+mvn spring-boot:run
+```
+
+La aplicación queda disponible en `http://localhost:8080`.
+
+## Endpoints disponibles
+
+### Perfil
+
+| Método | Endpoint                             | Descripción                                                                                |
+|--------|--------------------------------------|--------------------------------------------------------------------------------------------|
+| GET    | `/perfil/{user_id}/operaciones`      | Retorna figuritas publicadas, propuestas enviadas/recibidas y subastas activas del usuario |
+| GET    | `/perfil/{user_id}/intercambiables`  | Lista las figuritas intercambiables del usuario                                            |
+| GET    | `/perfil/{user_id}/sugerencias`      | Sugiere perfiles que tienen figuritas que le faltan al usuario                             |
+| GET    | `/perfil/{user_id}/notificaciones`   | Lista las notificaciones del usuario                                                       |
+| POST   | `/perfil/{perfil_id}/calificaciones` | Agrega una calificación (1–5) a un perfil                                                  |
+
+**Header requerido en calificaciones:** `autor_id`
+
+**Body de calificación:**
+
+```json
+{
+  "valor": 4,
+  "descripcion": "Buen intercambio"
+}
+```
+
+### Propuestas
+
+| Método | Endpoint                         | Descripción                       |
+|--------|----------------------------------|-----------------------------------|
+| POST   | `/propuestas`                    | Crea una propuesta de intercambio |
+| PATCH  | `/propuestas/{prop_id}/aceptar`  | Acepta una propuesta pendiente    |
+| PATCH  | `/propuestas/{prop_id}/rechazar` | Rechaza una propuesta pendiente   |
+
+**Body de creación:**
+
+```json
+{
+  "autor_id": "1000",
+  "destinatario_id": "1001",
+  "figurita_buscada_id": "ARG-10",
+  "figuritas_ofrecidas_ids": [
+    "FRA-10",
+    "BRA-11"
+  ]
+}
+```
+
+### Subastas
+
+| Método | Endpoint                        | Descripción                        |
+|--------|---------------------------------|------------------------------------|
+| POST   | `/subastas`                     | Crea una subasta para una figurita |
+| POST   | `/subastas/{sub_id}/propuestas` | Oferta en una subasta existente    |
+
+**Header requerido:** `user_id`
+
+**Body de creación:**
+
+```json
+{
+  "figurita_id": "ARG-10",
+  "duracion": 60
+}
+```
+
+**Body de oferta:**
+
+```json
+{
+  "usuario_id": "1001",
+  "figuritas_ofrecidas_id": [
+    "FRA-10"
+  ]
+}
+```
+
+### Colecciones
+
+| Método | Endpoint                          | Descripción                                              |
+|--------|-----------------------------------|----------------------------------------------------------|
+| POST   | `/colecciones/{col_id}/faltantes` | Agrega una figurita a la lista de faltantes              |
+| POST   | `/colecciones/{col_id}/repetidas` | Agrega una figurita repetida disponible para intercambio |
+
+**Header requerido en repetidas:** `user_id`
+
+**Body de faltante:**
+
+```json
+{
+  "fig_id": "ARG-10"
+}
+```
+
+**Body de repetida:**
+
+```json
+{
+  "fig_id": "ARG-10",
+  "cantidad_disponible": 2,
+  "modos_intercambio": [
+    "INTERCAMBIO",
+    "SUBASTA"
+  ]
+}
+```
+
+### Figuritas
+
+| Método | Endpoint     | Descripción                                            |
+|--------|--------------|--------------------------------------------------------|
+| GET    | `/figuritas` | Lista figuritas intercambiables con filtros opcionales |
+
+**Query params opcionales:** `numero`, `seleccion`, `jugador`
+
+### Administrador
+
+| Método | Endpoint                      | Descripción                                                           |
+|--------|-------------------------------|-----------------------------------------------------------------------|
+| GET    | `/administrador/estadisticas` | Retorna estadísticas globales (usuarios, figuritas, subastas activas) |
+
+---
+
+## Colección de Postman
+
+El archivo `postman_collection.json` en la raíz del repositorio contiene todos los endpoints preconfigurados con ejemplos de request. Para usarla:
+
+1. Abrir Postman
+2. **Import** > seleccionar `postman_collection.json`
+3. Levantar la aplicación y ejecutar los requests
+
+Los IDs de perfiles, figuritas y colecciones usados en los ejemplos corresponden a los datos de prueba precargados al iniciar la app.
+
+---
+
+## Decisiones de diseño
+
+### `MetodoIntercambio` como enum y no como entidad
+
+Los métodos de intercambio son un conjunto cerrado y conocido en tiempo de compilación (`INTERCAMBIO`, `SUBASTA`). Modelarlos como enum evita una tabla extra en la base de datos, elimina joins innecesarios y permite usar el compilador como validación. Si en el futuro aparece un nuevo método de
+intercambio, el cambio es deliberado y controlado.
+
+### La colección tiene su propio repositorio separado del perfil
+
+`Coleccion` es un agregado con identidad propia y lógica no trivial (deduplicación de faltantes, acumulación de repetidas). Separar su repositorio del de `Perfil` respeta el principio de responsabilidad única y facilita la futura migración a base de datos, donde serán tablas distintas. Además,
+permite que operaciones sobre la colección no requieran cargar el perfil completo.
+
+---
 
 ## Ejecutar tests
 
-```
+```bash
 mvn test
 ```
 
-## Validar el proyecto de forma exhaustiva
+## Validar el proyecto
 
-```
+```bash
 mvn clean verify
 ```
 
-Este comando hará lo siguiente:
-
-1. Ejecutará los tests
-2. Validará las convenciones de formato mediante checkstyle
-3. Detectará la presencia de (ciertos) code smells
-4. Validará la cobertura del proyecto
-
-## Entrega del proyecto
-
-Para entregar el proyecto, crear un tag llamado `entrega-final`. Es importante que antes de realizarlo se corra la validación
-explicada en el punto anterior. Se recomienda hacerlo de la siguiente forma:
-
-```
-mvn clean verify && git tag entrega-final && git push origin HEAD --tags
-```
+Este comando ejecuta los tests, corre el análisis de SpotBugs y valida la cobertura mínima con JaCoCo.
 
 ## Configuración del IDE (IntelliJ)
 
-### Usar el SDK de Java 21
+### SDK de Java 17
 
-1. En **File/Project Structure...**, ir a **Project Settings | Project**
-2. En **Project SDK** seleccionar la versión 21 y en **Project language level** seleccionar el nivel 21 (coincidente con el SDK)
+En **File > Project Structure > Project**, seleccionar SDK 17 y language level 17.
 
-![image](https://user-images.githubusercontent.com/39303639/228126065-221b9851-fb96-4f7f-a8e1-010732dc7ef6.png)
+### Fin de línea Unix
 
-### Usar fin de línea unix
+En **File > Settings > Editor > Code Style**, seleccionar `Unix and OS X (\n)` en **Line separator**.
 
-1. En **File/Settings...**, ir a **Editor | Code Style**.
-2. En la lista **Line separator**, seleccionar `Unix and OS X (\n)`.
+### Indentación con 2 espacios
 
-![image](https://user-images.githubusercontent.com/39303639/228126546-352289fa-8feb-4b39-99db-d8b860915fea.png)
+En **File > Settings > Editor > Code Style > Java > Tabs and Indents**, setear Tab size, Indent y Continuation indent en 2, 2 y 4.
 
-### Tabular con dos espacios
-
-1. En **File/Settings...**, ir a **Editor | Code Style | Java | Tabs and Indents**.
-2. Cambiar **Tab size**, **Indent** y **Continuation indent** a 2, 2 y 4 respectivamente:
-
-![image](https://user-images.githubusercontent.com/39303639/228127009-8c84ea72-969b-4e05-b311-45e3688a4164.png)
-
-### Ordenar los imports
-
-1. En **File/Settings...**, ir a **Editor | Code Style | Java | Imports**.
-2. Cambiar **Class count to use import with '\*'** y **Names count to use static import with '\*'** a un número muy alto (ej: 99).
-3. En **Import Layout**, dejarlo como se muestra a continuación:
-   - `import static all other imports`
-   - `<blank line>`
-   - `import all other imports`
-
-![image](https://user-images.githubusercontent.com/39303639/228126787-36f9ecff-27f2-4b99-bf11-a6bd89f67087.png)
-
-### Instalar y configurar Checkstyle
-
-1. Instalar el plugin https://plugins.jetbrains.com/plugin/1065-checkstyle-idea
-2. En **File/Settings...**, ir a **Tools | Checkstyle**.
-3. Configurarlo activando los Checks de Google y una versión de Checkstyle compatible con el plugin (alinear con la usada por `maven-checkstyle-plugin` del proyecto).
-
-![image](https://github.com/dds-utn/java-base-project/assets/11719816/b1edc122-4675-4f8d-bffc-9e3d3366fac6)

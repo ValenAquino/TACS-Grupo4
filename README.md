@@ -18,7 +18,13 @@ Aplicación de intercambio de figuritas del Mundial. Permite a los usuarios gest
 
 ## Levantar la aplicación
 
-### Con Docker (recomendado)
+### Con Docker Compose
+
+```bash
+docker compose up
+```
+
+### Con Docker
 
 ```bash
 docker build -t tacs-grupo5 .
@@ -32,6 +38,8 @@ mvn spring-boot:run
 ```
 
 La aplicación queda disponible en `http://localhost:8080`.
+
+---
 
 ## Endpoints disponibles
 

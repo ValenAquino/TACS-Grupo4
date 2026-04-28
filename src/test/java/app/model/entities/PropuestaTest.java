@@ -67,6 +67,14 @@ public class PropuestaTest {
   }
 
   @Test
+  void noDeberiaRechazarSiNoEsElUsuarioDestino() {
+    Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO), "Otro", null,
+        List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
+
+    assertThrows(PropuestaException.class, () -> propuesta.rechazar(otro));
+  }
+
+  @Test
   void noDeberiaAceptarUnaPropuestaYaRechazada() {
     propuesta.rechazar(destino);
 

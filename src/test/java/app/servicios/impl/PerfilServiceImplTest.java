@@ -187,4 +187,24 @@ class PerfilServiceImplTest {
     assertThrows(BadRequestException.class,
         () -> service.agregarCalificacion("u-2", "u-1", null, "Sin valor"));
   }
+
+  @Test
+  void agregarCalificacion_valorLimiteMinimo_noLanzaExcepcion() {
+    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
+
+    CalificacionDto resultado = service.agregarCalificacion("u-2", "u-1", 1, "Muy malo");
+
+    assertEquals(1.0f, resultado.getCalificacionFinal().floatValue());
+  }
+
+  @Test
+  void agregarCalificacion_valorLimiteMaximo_noLanzaExcepcion() {
+    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
+
+    CalificacionDto resultado = service.agregarCalificacion("u-2", "u-1", 5, "Excelente");
+
+    assertEquals(5.0f, resultado.getCalificacionFinal().floatValue());
+  }
 }

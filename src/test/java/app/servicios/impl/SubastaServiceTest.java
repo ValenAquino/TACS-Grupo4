@@ -102,6 +102,20 @@ public class SubastaServiceTest {
   }
 
   @Test
+  void ofertarEnSubastaConFiguritasDuplicadas_lanzaExcepcion() {
+    Subasta subastaActiva = new Subasta("s-2", sofia,
+        LocalDateTime.now().minusHours(1),
+        LocalDateTime.now().plusDays(1),
+        messi);
+
+    when(repositorioUsuarios.buscarPorUsuarioId("u-1")).thenReturn(lucas);
+    when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaActiva);
+
+    assertThrows(BadRequestException.class,
+        () -> service.ofertarEnSubasta("u-1", "2", "s-2", List.of("ARG-11", "ARG-11")));
+  }
+
+  @Test
   void crearSubastaNoNotificaUsuarios() {
     Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
     LocalDateTime fechaInicio = LocalDateTime.now();

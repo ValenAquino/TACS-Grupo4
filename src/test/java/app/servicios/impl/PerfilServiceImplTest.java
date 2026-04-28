@@ -207,4 +207,35 @@ class PerfilServiceImplTest {
 
     assertEquals(5.0f, resultado.getCalificacionFinal().floatValue());
   }
+
+  @Test
+  void obtenerSugerencias_conCoincidencias_retornaSugerencias() {
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    usuario.getColeccion().getFaltantes().add(messi);
+
+    Coleccion coleccionOtro = new Coleccion();
+    coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, new ArrayList<>()));
+    Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO), "Juan",
+        coleccionOtro, telegram("@juan"), new ArrayList<>());
+
+    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));
+
+    var resultado = service.obtenerSugerencias("u-1");
+
+    assertEquals(1, resultado.size());
+  }
+
+  @Test
+  void obtenerSugerencias_sinCoincidencias_retornaListaVacia() {
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    usuario.getColeccion().getFaltantes().add(messi);
+
+    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otro));
+
+    var resultado = service.obtenerSugerencias("u-1");
+
+    assertEquals(0, resultado.size());
+  }
 }

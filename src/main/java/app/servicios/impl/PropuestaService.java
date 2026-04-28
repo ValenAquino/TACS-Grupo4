@@ -4,19 +4,21 @@ import app.dto.PropuestaDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
-import app.model.entities.Propuesta;
 import app.model.entities.Perfil;
+import app.model.entities.Propuesta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
-import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
+import app.repositories.RepositorioPropuestas;
 import app.servicios.INotificacionService;
 import app.servicios.IPropuestaService;
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PropuestaService implements IPropuestaService {
 
   private final RepositorioPropuestas repositorioPropuestas;
@@ -25,24 +27,15 @@ public class PropuestaService implements IPropuestaService {
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final INotificacionService notificacionService;
 
-  public PropuestaService(RepositorioPropuestas repositorioPropuestas,
-                          RepositorioPerfiles repositorioUsuarios,
-                          RepositorioFiguritas repositorioFiguritas,
-                          RepositorioFiguritasIntercambiables repositorioIntercambiables,
-                          INotificacionService notificacionService) {
-    this.repositorioPropuestas = repositorioPropuestas;
-    this.repositorioPerfiles = repositorioUsuarios;
-    this.repositorioFiguritas = repositorioFiguritas;
-    this.repositorioIntercambiables = repositorioIntercambiables;
-    this.notificacionService = notificacionService;
-  }
-
-  @Override
+  /**
+   * Crea una propuesta de intercambio. Valida que el usuario origen,
+   * destino y figuritas existan. El estado inicial es PENDIENTE.
+   */
   public PropuestaDto crearPropuesta(CrearPropuestaRequest request) {
-    Perfil origen  = repositorioPerfiles.buscarPorId(request.getAutorId());
+    Perfil origen = repositorioPerfiles.buscarPorId(request.getAutorId());
     Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId());
 
-    if (origen  == null) throw new NotFoundException("Usuario origen no encontrado");
+    if (origen == null) throw new NotFoundException("Usuario origen no encontrado");
     if (destino == null) throw new NotFoundException("Usuario destino no encontrado");
 
     Figurita figuritaBuscada = repositorioFiguritas

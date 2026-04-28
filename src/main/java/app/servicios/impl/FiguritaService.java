@@ -1,28 +1,22 @@
 package app.servicios.impl;
 
 import app.dto.FiguritaIntercambiableDto;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
-import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioFiguritasIntercambiables;
 import app.servicios.IFiguritaService;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class FiguritaService implements IFiguritaService {
 
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final RepositorioFiguritas repositorioFiguritas;
 
-  public FiguritaService(RepositorioFiguritasIntercambiables repositorioIntercambiables,
-                         RepositorioFiguritas repositorioFiguritas) {
-    this.repositorioIntercambiables = repositorioIntercambiables;
-    this.repositorioFiguritas = repositorioFiguritas;
-  }
-
-  @Override
   public List<FiguritaIntercambiableDto> buscarFiguritas(
       Integer numero, Seleccion seleccion, String jugador) {
 

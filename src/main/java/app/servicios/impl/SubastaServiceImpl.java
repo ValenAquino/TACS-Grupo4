@@ -15,25 +15,17 @@ import app.servicios.ISubastaService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SubastaServiceImpl implements ISubastaService {
   private final RepositorioSubastas repoSubasta;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repoFigurita;
   private final RepositorioPropuestas repoPropuesta;
   private final INotificacionService notificacionService;
-
-  public SubastaServiceImpl(RepositorioSubastas repoSubasta, RepositorioPerfiles repoUsuario,
-                            RepositorioFiguritas repoFigurita, RepositorioPropuestas repoPropuesta,
-                            INotificacionService notificacionService) {
-    this.repoSubasta = repoSubasta;
-    this.repositorioPerfiles = repoUsuario;
-    this.repoFigurita = repoFigurita;
-    this.repoPropuesta = repoPropuesta;
-    this.notificacionService = notificacionService;
-  }
 
   @Override
   public SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin,

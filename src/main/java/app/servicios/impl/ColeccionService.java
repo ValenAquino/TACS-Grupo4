@@ -11,26 +11,16 @@ import app.repositories.RepositorioPerfiles;
 import app.servicios.IColeccionService;
 import app.servicios.INotificacionService;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ColeccionService implements IColeccionService {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioPerfiles repositorioUsuarios;
   private final INotificacionService notificacionService;
-  //private final Notificador notificador;
-
-  public ColeccionService(RepositorioFiguritas repositorioFiguritas,
-                          RepositorioColecciones repositorioColecciones,
-                          RepositorioPerfiles repositorioUsuarios,
-                          INotificacionService notificacionService
-  ) {
-    this.repositorioFiguritas = repositorioFiguritas;
-    this.repositorioColecciones = repositorioColecciones;
-    this.repositorioUsuarios = repositorioUsuarios;
-    this.notificacionService = notificacionService;
-  }
 
   @Override
   public void agregarFaltante(String colId, String figId) {

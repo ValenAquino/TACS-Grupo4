@@ -3,8 +3,12 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copiamos el pom, la configuración de SpotBugs, la configuracion de lombok y el código fuente
+# Copiamos solo el pom para cachear la descarga de dependencias
+# Si src/ cambia pero pom.xml no, Docker reutiliza esta capa
 COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copiamos el resto de archivos de configuración y el código fuente
 COPY spotbugs-exclude.xml .
 COPY lombok.config .
 COPY src ./src

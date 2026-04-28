@@ -13,12 +13,20 @@ COPY src ./src
 RUN mvn verify
 
 # --- Etapa de runtime ---
-# Se usa JRE para ejecutar
-FROM eclipse-temurin:17-jre
+# Se usa JRE Alpine para ejecutar — imagen mas liviana que la estandar
+# forzamos la plataforma linux/amd64 porque eclipse-temurin:alpine no tiene soporte ARM64
+FROM --platform=linux/amd64 eclipse-temurin:17-jre-alpine
 WORKDIR /app
+
+# Creamos un usuario sin privilegios para correr la app
+# Si alguien explota la app, no tiene acceso root al contenedor
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Copiamos el JAR
 COPY --from=build /app/target/*.jar app.jar
+
+# Cambiamos al usuario sin privilegios
+USER appuser
 
 # Exponemos el puerto
 EXPOSE 8080

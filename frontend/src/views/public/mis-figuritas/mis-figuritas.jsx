@@ -6,7 +6,7 @@ import TabsContainer from "../../../components/ui/tabs-container/tabs-container.
 
 const MisFiguritas = () => {
 
-    const colId = "3"
+    const colId = "2"
 
     const TABS = [
         { key: 'repetidas', label: 'Repetidas', component: Repetidas, props: { colId } },

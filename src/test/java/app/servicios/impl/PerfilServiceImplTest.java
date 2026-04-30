@@ -60,7 +60,7 @@ class PerfilServiceImplTest {
   @BeforeEach
   void setUp() {
     service = new PerfilService(repositorioPerfiles, repositorioPropuestas,
-        repositorioSubastas, repositorioNotificaciones, repositorioFiguritasIntercambiables);
+        repositorioSubastas, repositorioFiguritasIntercambiables, repositorioNotificaciones);
 
     usuario = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas",
         new Coleccion(), telegram("@lucas"), new ArrayList<>());

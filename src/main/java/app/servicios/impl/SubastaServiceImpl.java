@@ -67,6 +67,11 @@ public class SubastaServiceImpl implements ISubastaService {
     Perfil destinatario = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+
+
     Figurita figuritaBuscada = subasta.getFiguritaSubastada();
 
     if (rawFiguritasId.size() != rawFiguritasId.stream().distinct().count()) {

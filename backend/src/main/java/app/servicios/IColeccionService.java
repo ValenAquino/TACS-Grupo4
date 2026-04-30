@@ -20,5 +20,5 @@ public interface IColeccionService {
         cantidadDisponible, List<String> modosIntercambio);
 
     List<Figurita> buscarFaltantes(String colId);
-    List<FiguritaIntercambiable> buscarRepetidas(String colId, boolean subasta, boolean intercambio, boolean ambos);
+    List<FiguritaIntercambiable> buscarRepetidas(String colId, String tipo);
 }

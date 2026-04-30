@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.dto.FiguritaIntercambiableDto;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.model.entities.Figurita;
@@ -55,16 +56,14 @@ public class ColeccionController {
     }
 
     @GetMapping("/{col_id}/repetidas")
-    public ResponseEntity<List<FiguritaIntercambiable>> buscarRepetidas(
+    public ResponseEntity<List<FiguritaIntercambiableDto>> buscarRepetidas(
         @PathVariable String col_id,
-        @RequestParam(defaultValue = "false") boolean subasta,
-        @RequestParam(defaultValue = "false") boolean intercambio,
-        @RequestParam(defaultValue = "false") boolean ambos
+        @RequestParam(defaultValue = "todas") String tipo
         ) {
 
-        List<FiguritaIntercambiable> faltantes = coleccionService.buscarRepetidas(col_id, subasta, intercambio, ambos);
+        List<FiguritaIntercambiable> faltantes = coleccionService.buscarRepetidas(col_id, tipo);
 
-        return ResponseEntity.ok(faltantes);
+        return ResponseEntity.ok(faltantes.stream().map(FiguritaIntercambiableDto::new).toList());
     }
 
 }

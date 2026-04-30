@@ -11,6 +11,8 @@ import app.repositories.RepositorioPerfiles;
 import app.servicios.IColeccionService;
 import app.servicios.INotificacionService;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -57,32 +59,28 @@ public class ColeccionService implements IColeccionService {
     this.notificacionService.notificarInteresados(interesados, cuerpo);
   }
 
+  @Override
   public List<Figurita> buscarFaltantes(String colId) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
     return coleccion.getFaltantes();
   }
 
-  public List<FiguritaIntercambiable> buscarRepetidas(String colId, boolean subasta, boolean intercambio, boolean ambos) {
+  @Override
+  public List<FiguritaIntercambiable> buscarRepetidas(String colId, String tipo) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
     List<FiguritaIntercambiable> repetidas = coleccion.getRepetidas();
 
-    if (subasta) {
+    if (Objects.equals(tipo, "subasta")) {
       repetidas = repetidas.stream()
           .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.SUBASTA)
               || fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
           .toList();
     }
 
-    if (intercambio) {
+    if (Objects.equals(tipo, "intercambio")) {
       repetidas = repetidas.stream()
           .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.INTERCAMBIO)
               || fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
-          .toList();
-    }
-
-    if (ambos) {
-      repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
           .toList();
     }
 

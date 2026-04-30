@@ -65,10 +65,19 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
 
     int resultados = repetidas.size();
 
+    int paginaActual = filtros.pagina();
+    int limite = filtros.limite();
+
+    int offset = (paginaActual - 1) * limite;
+
     List<FiguritaIntercambiableDto> repetidasMapeadas = repetidas.stream()
+        .skip(offset)
+        .limit(limite)
         .map(FiguritaIntercambiableDto::new)
         .toList();
 
-    return new RepetidasDto(repetidasMapeadas, publicadas, disponibles, resultados,1, 10);
+    int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
+
+    return new RepetidasDto(repetidasMapeadas, publicadas, disponibles, resultados, paginaActual, paginasTotales);
   }
 }

@@ -1,5 +1,7 @@
 package app.model.entities.filtros;
 
 public record RepetidasFiltro(
-    String tipo
+    String tipo,
+    int limite,
+    int pagina
 ) {}

@@ -10,8 +10,8 @@ import java.util.List;
 public class RepetidasDto {
   private List<FiguritaIntercambiableDto> data;
   private int publicadas;
-  private int disponible;
+  private int disponibles;
   private int resultados;
-  private int currentPage;
-  private int totalPages;
+  private int paginaActual;
+  private int paginasTotales;
 }

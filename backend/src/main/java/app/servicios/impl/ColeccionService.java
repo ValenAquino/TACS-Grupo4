@@ -1,10 +1,12 @@
 package app.servicios.impl;
 
+import app.dto.RepetidasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
+import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
@@ -66,24 +68,7 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public List<FiguritaIntercambiable> buscarRepetidas(String colId, String tipo) {
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
-    List<FiguritaIntercambiable> repetidas = coleccion.getRepetidas();
-
-    if (Objects.equals(tipo, "subasta")) {
-      repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.SUBASTA)
-              || fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
-          .toList();
-    }
-
-    if (Objects.equals(tipo, "intercambio")) {
-      repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.INTERCAMBIO)
-              || fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
-          .toList();
-    }
-
-    return repetidas;
+  public RepetidasDto buscarRepetidas(String colId, RepetidasFiltro filtros) {
+    return this.repositorioColecciones.buscarRepetidas(colId, filtros);
   }
 }

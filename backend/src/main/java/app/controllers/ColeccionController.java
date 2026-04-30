@@ -1,10 +1,12 @@
 package app.controllers;
 
 import app.dto.FiguritaIntercambiableDto;
+import app.dto.RepetidasDto;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.filtros.RepetidasFiltro;
 import app.servicios.IColeccionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -56,14 +58,11 @@ public class ColeccionController {
     }
 
     @GetMapping("/{col_id}/repetidas")
-    public ResponseEntity<List<FiguritaIntercambiableDto>> buscarRepetidas(
+    public ResponseEntity<RepetidasDto> buscarRepetidas(
         @PathVariable String col_id,
-        @RequestParam(defaultValue = "todas") String tipo
-        ) {
-
-        List<FiguritaIntercambiable> faltantes = coleccionService.buscarRepetidas(col_id, tipo);
-
-        return ResponseEntity.ok(faltantes.stream().map(FiguritaIntercambiableDto::new).toList());
+        RepetidasFiltro filtros
+    ) {
+        return ResponseEntity.ok(this.coleccionService.buscarRepetidas(col_id, filtros));
     }
 
 }

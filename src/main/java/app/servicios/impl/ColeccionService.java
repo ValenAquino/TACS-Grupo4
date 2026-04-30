@@ -1,14 +1,17 @@
 package app.servicios.impl;
 
-import app.model.entities.*;
+import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
+import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
+import app.model.entities.Perfil;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.servicios.IColeccionService;
 import app.servicios.INotificacionService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ColeccionService implements IColeccionService {
@@ -29,6 +32,7 @@ public class ColeccionService implements IColeccionService {
     this.notificacionService = notificacionService;
   }
 
+  @Override
   public void agregarFaltante(String colId, String figId) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
 
@@ -39,6 +43,7 @@ public class ColeccionService implements IColeccionService {
     repositorioColecciones.guardar(coleccion);
   }
 
+  @Override
   public void agregarRepetida(String colId, String usuarioId, String figId, Integer
       cantidadExistente, List<String> modosIntercambio) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);

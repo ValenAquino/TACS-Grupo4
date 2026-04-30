@@ -34,6 +34,10 @@ public class Propuesta {
     //Valído que no este pendiente y que solo lo pueda aceptar el usuario Correspondiente.
     //Chequear si eso está bien o no es necesario.
 
+    /**
+     * Retorna el estado más reciente de la propuesta. Si la lista está vacía
+     * (puede ocurrir al deserializar), inicializa con PENDIENTE.
+     */
     public EstadoPropuesta obtenerEstadoActual() {
         if (estado == null || estado.isEmpty()) {
             EstadoPropuesta inicial = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
@@ -43,12 +47,21 @@ public class Propuesta {
         }
         return estado.get(estado.size() - 1);
     }
+
+    /**
+     * Acepta la propuesta. Valida que {@code usuario} sea el destinatario
+     * y que la propuesta esté en estado PENDIENTE.
+     */
     public void aceptar(Perfil usuario) {
         validarUsuarioDestino(usuario);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
     }
 
+    /**
+     * Rechaza la propuesta. Valida que {@code usuario} sea el destinatario
+     * y que la propuesta esté en estado PENDIENTE.
+     */
     public void rechazar(Perfil usuario) {
         validarUsuarioDestino(usuario);
         validarPendiente();

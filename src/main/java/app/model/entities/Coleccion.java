@@ -1,11 +1,11 @@
 package app.model.entities;
 
 import app.exceptions.FiguritaDuplicadaException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -20,14 +20,22 @@ public class Coleccion {
     this.id = id;
   }
 
+  /**
+   * Agrega una figurita a la lista de faltantes.
+   * Lanza {@link FiguritaDuplicadaException} si ya está registrada como faltante.
+   */
   public void agregarFaltante(Figurita faltante) {
-    if(tieneFaltante(faltante)) {
+    if (tieneFaltante(faltante)) {
       throw new FiguritaDuplicadaException("Figurita ya listada como faltante");
     }
 
     this.faltantes.add(faltante);
   }
 
+  /**
+   * Agrega una figurita repetida a la colección. Si ya existe una entrada para
+   * esa figurita, acumula la cantidad en lugar de crear una entrada duplicada.
+   */
   public void agregarRepetida(FiguritaIntercambiable repetida) {
 
     for (FiguritaIntercambiable f : repetidas) {

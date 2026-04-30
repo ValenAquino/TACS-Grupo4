@@ -5,6 +5,10 @@ public enum MetodoIntercambio {
   INTERCAMBIO,
   SUBASTA_E_INTERCAMBIO;
 
+  /**
+   * Convierte un string al enum correspondiente (case-insensitive).
+   * Lanza {@link IllegalArgumentException} si el valor no coincide con ningún método.
+   */
   public static MetodoIntercambio fromString(String value) {
     for (MetodoIntercambio metodo : MetodoIntercambio.values()) {
       if (metodo.name().equalsIgnoreCase(value)) {

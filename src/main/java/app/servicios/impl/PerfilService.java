@@ -65,7 +65,7 @@ public class PerfilService implements IPerfilService {
 
         return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
     }
-//para cuando quiere realizar una propuesta
+
     @Override
     public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
         Perfil perfil = repositorioPerfiles.buscarPorId(userId);
@@ -76,6 +76,8 @@ public class PerfilService implements IPerfilService {
             .map(FiguritaIntercambiableDto::new)
             .toList();
     }
+
+    @Override
     public CalificacionDto agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {
         if (valor == null) {
             throw new BadRequestException("El valor de la calificación no puede ser nulo");
@@ -123,6 +125,7 @@ public class PerfilService implements IPerfilService {
         return sugerencias.stream().map(SugerenciaDto::new).toList();
     }
 
+    @Override
     public List<NotificacionesDto> obtenerNotificaciones(String userId) {
         Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 

@@ -22,6 +22,7 @@ public class FiguritaService implements IFiguritaService {
     this.repositorioFiguritas = repositorioFiguritas;
   }
 
+  @Override
   public List<FiguritaIntercambiableDto> buscarFiguritas(
       Integer numero, Seleccion seleccion, String jugador) {
 

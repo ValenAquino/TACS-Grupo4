@@ -9,9 +9,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ISubastaService {
-  SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin,
-                          String figuritaSubastadaId);
 
-  SubastaDto ofertarEnSubasta(String userId, String usuarioDestinoId,
-                               String subastaId, List<String> rawFiguritasId);
+    /**
+     * Crea una subasta para la figurita indicada y notifica a los usuarios
+     * que la tienen en su lista de faltantes.
+     */
+    SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin,
+                            String figuritaSubastadaId);
+
+    /**
+     * Registra una oferta en la subasta. Valida que no haya figuritas ofrecidas duplicadas
+     * y crea una propuesta asociada a la subasta.
+     */
+    SubastaDto ofertarEnSubasta(String userId, String usuarioDestinoId,
+                                String subastaId, List<String> rawFiguritasId);
 }

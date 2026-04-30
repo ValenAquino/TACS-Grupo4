@@ -16,6 +16,10 @@ public class Perfil {
     private List<MedioDeContacto> mediosDeContacto;
     private List<Calificacion> calificaciones;
 
+    /**
+     * Calcula el promedio de las calificaciones recibidas.
+     * Retorna 0 si el perfil aún no tiene calificaciones.
+     */
     public Float obtenerCalificacionMedia() {
         return (float) calificaciones.stream()
             .mapToInt(Calificacion::getValor)

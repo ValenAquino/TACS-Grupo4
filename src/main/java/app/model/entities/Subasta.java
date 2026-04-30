@@ -2,7 +2,6 @@ package app.model.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +22,7 @@ public class Subasta {
     private Boolean finalizada;
 
     public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
-                   Figurita figuritaSubastada,List<Figurita> figuritasSolicitadas,
+                   Figurita figuritaSubastada, List<Figurita> figuritasSolicitadas,
                    Integer calificacionMinimaSolicitada) {
         this.id = id;
         this.autor = autor;
@@ -47,18 +46,20 @@ public class Subasta {
         this.calificacionMinimaSolicitada = 0;
     }
 
+    /**
+     * Retorna {@code true} si la subasta está dentro de su ventana de tiempo
+     */
     public Boolean estaActivo() {
         final LocalDateTime fechaActual = LocalDateTime.now();
 
-        return fechaActual.isAfter(fechaInicio)
-            && fechaActual.isBefore(fechaCierre);
+        return fechaActual.isAfter(fechaInicio) && fechaActual.isBefore(fechaCierre);
 //            && ofertas.stream()
 //            .anyMatch(p ->
 //                p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO
 //            );
     }
-//TODO definir se lo utilizaremos, si finaliza sin que el usuario haya seleccionado
 
+//    TODO definir se lo utilizaremos, si finaliza sin que el usuario haya seleccionado
 //    public void algoritmoSeleccionador(Propuesta propuesta) {
 //        Propuesta propuestaActual = this.propuestaGanadora;
 //

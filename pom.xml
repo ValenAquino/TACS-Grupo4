@@ -86,14 +86,15 @@
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
-<!--                      < TODO: Volver a subir el coverage-->
-                      <minimum>0</minimum>
+                      <minimum>0.80</minimum>
                     </limit>
                   </limits>
                 </rule>
               </rules>
               <excludes>
                 <exclude>Main.class</exclude>
+                <!-- DTOs y requests son POJOs sin lógica de negocio: solo campos y getters/setters -->
+                <exclude>app/dto/**</exclude>
               </excludes>
             </configuration>
           </execution>

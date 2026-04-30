@@ -37,10 +37,7 @@ public class PropuestaService implements IPropuestaService {
     this.notificacionService = notificacionService;
   }
 
-  /**
-   * Crea una propuesta de intercambio. Valida que el usuario origen,
-   * destino y figuritas existan. El estado inicial es PENDIENTE.
-   */
+  @Override
   public PropuestaDto crearPropuesta(CrearPropuestaRequest request) {
     Perfil origen  = repositorioPerfiles.buscarPorId(request.getAutorId());
     Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId());
@@ -73,6 +70,8 @@ public class PropuestaService implements IPropuestaService {
 
     return new PropuestaDto(propuesta);
   }
+
+  @Override
   public void aceptar(String propuestaId, String usuarioId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
     Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
@@ -80,6 +79,7 @@ public class PropuestaService implements IPropuestaService {
     repositorioPropuestas.guardar(propuesta);
   }
 
+  @Override
   public void rechazar(String id, String usuarioId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);

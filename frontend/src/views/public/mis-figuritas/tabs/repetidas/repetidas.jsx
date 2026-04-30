@@ -1,19 +1,21 @@
 import {useEffect, useState} from 'react';
-import FiguritaCard from '../../../../../components/ui/figurita-card/figurita-card';
 import styles from './Repetidas.module.css';
 import {buscarRepetidas} from "../../../../../services/coleccionService.js";
-import RepetidaCard from "../../../../../components/ui/repetida-card.jsx";
+import RepetidaCard from "../../../../../components/ui/repetida-card/repetida-card.jsx";
+import FilterChip from "../../../../../components/ui/filter-chip/filter-chip.jsx";
 
 const Repetidas = ({colId}) => {
 
     const [repetidas, setRepetidas] = useState([]);
-    const [filtros, setFiltros] = useState({});
+    const [filtros, setFiltros] = useState({
+        tipo: "todas"
+    });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        const cargarRepetidas = async (filtros = {}) => {
+        const cargarRepetidas = async () => {
             try {
                 setLoading(true)
                 const repetidasApi = await buscarRepetidas(colId, filtros)
@@ -32,9 +34,39 @@ const Repetidas = ({colId}) => {
     return <p className={styles.error}>{error}</p>;
   }
 
+    const cambiarFiltro = (nuevoTipo) => {
+        setFiltros(prev => {
+            if (prev.tipo === nuevoTipo) return prev
+            return {
+                ...prev,
+                tipo: nuevoTipo
+            }
+        });
+    };
+
   return (
     <div className={styles.wrapper}>
-      {/* Cards grid */}
+
+      <div className="d-flex gap-1">
+          <FilterChip
+              label="Todas"
+              selected={filtros.tipo === 'todas'}
+              onClick={() => cambiarFiltro('todas')}
+          />
+
+          <FilterChip
+              label="Intercambio"
+              selected={filtros.tipo === 'intercambio'}
+              onClick={() => cambiarFiltro('intercambio')}
+          />
+
+          <FilterChip
+              label="Subasta"
+              selected={filtros.tipo === 'subasta'}
+              onClick={() => cambiarFiltro('subasta')}
+          />
+      </div>
+
       <div className={`row g-3`}>
         {repetidas.map((fig) => (
           <div key={fig.figurita_id} className="col-6 col-md-4 col-lg-3">
@@ -43,10 +75,9 @@ const Repetidas = ({colId}) => {
         ))}
       </div>
 
-      {/* Loading skeleton */}
       {loading && (
         <div className={`row g-3 ${styles.skeletonRow}`}>
-          {[...Array(4)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <div key={i} className="col-6 col-md-4 col-lg-3">
               <div className={styles.skeleton} />
             </div>

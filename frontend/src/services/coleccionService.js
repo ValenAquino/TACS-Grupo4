@@ -18,7 +18,7 @@ export const buscarRepetidas = async (colId, filtros) => {
     try {
         const { data } = await api.get(
             `${COLECCIONES_URL}/${colId}/repetidas`,
-            {}
+            {params: filtros},
         );
 
         return data;

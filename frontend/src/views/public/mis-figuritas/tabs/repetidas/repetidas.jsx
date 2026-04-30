@@ -19,7 +19,7 @@ const Repetidas = ({colId}) => {
             try {
                 setLoading(true)
                 const repetidasApi = await buscarRepetidas(colId, filtros)
-                setRepetidas(repetidasApi)
+                setRepetidas(repetidasApi.data)
             } catch (error) {
                 setError(true);
             } finally {
@@ -47,6 +47,10 @@ const Repetidas = ({colId}) => {
   return (
     <div className={styles.wrapper}>
 
+        <div >
+
+        </div>
+
       <div className="d-flex gap-1">
           <FilterChip
               label="Todas"
@@ -68,11 +72,12 @@ const Repetidas = ({colId}) => {
       </div>
 
       <div className={`row g-3`}>
-        {repetidas.map((fig) => (
-          <div key={fig.figurita_id} className="col-6 col-md-4 col-lg-3">
-            <RepetidaCard figurita={fig} />
-          </div>
-        ))}
+          {repetidas.length > 0 ? repetidas.map((fig) => (
+              <div key={fig.figurita_id} className="col-6 col-md-4 col-lg-3">
+                  <RepetidaCard figurita={fig} />
+              </div>
+          )) : <h3>No hay resultados...</h3>}
+
       </div>
 
       {loading && (

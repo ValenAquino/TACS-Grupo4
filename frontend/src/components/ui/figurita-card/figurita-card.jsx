@@ -35,7 +35,7 @@ const FiguritaCard = ({
 
   return (
     <div className={`${styles.card} ${type === 'subasta' ? styles.cardSubasta : ''}`}>
-      {/* Header */}
+
       <div className={styles.cardHeader}>
         <span className={styles.cardNumber}>#{number}</span>
         <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
@@ -44,13 +44,13 @@ const FiguritaCard = ({
       {/* Emoji / avatar */}
       <div className={styles.cardEmoji}>{emoji}</div>
 
-      {/* Info */}
+
       <div className={styles.cardInfo}>
         <p className={styles.cardName}>{name}</p>
         <p className={styles.cardSubtitle}>{subtitle}</p>
       </div>
 
-      {/* Footer */}
+
       <div className={styles.cardFooter}>
         {extra ? (
           <span className={styles.cardExtra}>{extra}</span>

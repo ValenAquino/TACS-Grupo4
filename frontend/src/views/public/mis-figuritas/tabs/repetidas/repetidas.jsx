@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import FiguritaCard from '../../../../../components/ui/figurita-card/figurita-card';
 import styles from './Repetidas.module.css';
 import {buscarRepetidas} from "../../../../../services/coleccionService.js";
+import RepetidaCard from "../../../../../components/ui/repetida-card.jsx";
 
 const Repetidas = ({colId}) => {
 
@@ -36,18 +37,8 @@ const Repetidas = ({colId}) => {
       {/* Cards grid */}
       <div className={`row g-3`}>
         {repetidas.map((fig) => (
-          <div key={fig.id} className="col-6 col-md-4 col-lg-3">
-            <FiguritaCard
-              number={fig.figurita.id}
-              // type={fig.type}
-              // emoji={fig.emoji}
-              // name={fig.name}
-              // subtitle={fig.subtitle}
-              // available={fig.available}
-              // extra={fig.extra}
-              // actionLabel={fig.actionLabel}
-              // onAction={() => console.log('acción repetida', fig.id)}
-            />
+          <div key={fig.figurita_id} className="col-6 col-md-4 col-lg-3">
+            <RepetidaCard figurita={fig} />
           </div>
         ))}
       </div>

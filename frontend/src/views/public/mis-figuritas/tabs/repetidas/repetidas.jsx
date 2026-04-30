@@ -3,15 +3,19 @@ import styles from './Repetidas.module.css';
 import {buscarRepetidas} from "../../../../../services/coleccionService.js";
 import RepetidaCard from "../../../../../components/ui/repetida-card/repetida-card.jsx";
 import FilterChip from "../../../../../components/ui/filter-chip/filter-chip.jsx";
+import Button from "../../../../../components/ui/button/button.jsx";
+import {useNavigate} from "react-router";
 
 const Repetidas = ({colId}) => {
 
-    const [repetidas, setRepetidas] = useState([]);
+    const [repetidas, setRepetidas] = useState({});
     const [filtros, setFiltros] = useState({
         tipo: "todas"
     });
 
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -19,7 +23,8 @@ const Repetidas = ({colId}) => {
             try {
                 setLoading(true)
                 const repetidasApi = await buscarRepetidas(colId, filtros)
-                setRepetidas(repetidasApi.data)
+
+                setRepetidas(repetidasApi)
             } catch (error) {
                 setError(true);
             } finally {
@@ -71,24 +76,31 @@ const Repetidas = ({colId}) => {
           />
       </div>
 
-      <div className={`row g-3`}>
-          {repetidas.length > 0 ? repetidas.map((fig) => (
-              <div key={fig.figurita_id} className="col-6 col-md-4 col-lg-3">
-                  <RepetidaCard figurita={fig} />
-              </div>
-          )) : <h3>No hay resultados...</h3>}
+        <div className="d-flex justify-content-between align-items-center">
+            <p className="mb-0">
+                {`${repetidas.resultados} resultados encontrados`}
+            </p>
 
-      </div>
-
-      {loading && (
-        <div className={`row g-3 ${styles.skeletonRow}`}>
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="col-6 col-md-4 col-lg-3">
-              <div className={styles.skeleton} />
-            </div>
-          ))}
+            <Button label={"Agregar repetida ↗"} onClick={() => navigate("/mis-figuritas/nueva-repetida")}/>
         </div>
-      )}
+
+        {loading ? (
+            <div className={`row g-3 ${styles.skeletonRow}`}>
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="col-6 col-md-4 col-lg-3">
+                        <div className={styles.skeleton} />
+                    </div>
+                ))}
+            </div>
+        ) : <div className={`row g-3`}>
+            {repetidas.data.length > 0 ? repetidas.data.map((fig) => (
+                <div key={fig.figurita_id} className="col-6 col-md-4 col-lg-3">
+                    <RepetidaCard figurita={fig} />
+                </div>
+            )) : <h3>No hay resultados...</h3>}
+
+            </div>
+        }
     </div>
   );
 };

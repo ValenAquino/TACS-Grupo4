@@ -100,6 +100,8 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
         .limit(limite)
         .toList();
 
-    return new FaltantesDto(faltantes, resultados, paginaActual, limite);
+    int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
+
+    return new FaltantesDto(faltantes, resultados, paginaActual, paginasTotales);
   }
 }

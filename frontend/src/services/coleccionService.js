@@ -26,3 +26,16 @@ export const buscarRepetidas = async (colId, filtros) => {
         handleAxiosError(error);
     }
 };
+
+export const agregarFaltante = async (colId, faltante) => {
+    try {
+        const { data } = await api.post(
+            `${COLECCIONES_URL}/${colId}/faltantes`,
+            {fig_id: faltante.id}
+        );
+
+        return data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+}

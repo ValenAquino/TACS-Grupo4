@@ -3,11 +3,14 @@ import SectionCard from "../../components/ui/section-card/section-card.jsx";
 import AutocompleteInput from "../../components/ui/autocomplete-input/autocomplete-input.jsx";
 import Button from "../../components/ui/button/button.jsx";
 import {buscarFiguritas} from "../../services/figuritaService.js";
+import {agregarFaltante} from "../../services/coleccionService.js";
 
 const NuevaFaltante = () => {
-    const [figurita, setFigurita] = useState(null);
+    const [figurita, setFigurita] = useState(undefined);
     const [numero, setNumero]   = useState('');
     const [jugador, setJugador] = useState('');
+
+    const colId = "2"
 
     const handleSelect = (fig) => {
         setFigurita(fig);
@@ -20,7 +23,8 @@ const NuevaFaltante = () => {
     };
 
     const buscarPorNumero = async (texto) => {
-        return await buscarFiguritas({ id: texto });
+        const resultado = await buscarFiguritas({ id: texto });
+        handleSelect(resultado[0]);
     };
 
     return (
@@ -55,17 +59,18 @@ const NuevaFaltante = () => {
                         Buscar figurita
                     </p>
 
-                    <div className="mb-3">
-                        <AutocompleteInput
-                            label="Número de figurita"
+                    <div className="mb-3 d-flex align-items-center gap-3">
+                        <input
+                            type="text"
+                            className="form-control"
                             placeholder="Ej: ARG-10"
                             value={numero}
-                            onChange={(val) => { setNumero(val); setFigurita(null); }}
-                            onSelect={handleSelect}
-                            onSearch={buscarPorNumero}
-                            debounceMs={300}
-                            getLabel={(fig) => `${fig.id} · ${fig.jugador}`}
-                        />
+                            onChange={(e) => {
+                                setNumero(e.target.value);
+                                setFigurita(null);
+                        }}/>
+                        <Button label={"Buscar"} onClick={() => buscarPorNumero(numero)}/>
+
                     </div>
 
                     <AutocompleteInput
@@ -84,7 +89,13 @@ const NuevaFaltante = () => {
             <Button
                 label="Publicar figurita ↗"
                 disabled={!figurita}
-                onClick={() => console.log('publicar', figurita)}
+                onClick={() => {
+                    agregarFaltante(colId, figurita)
+                    alert("Se guardo la faltante")
+                    setNumero('')
+                    setJugador('')
+                    setFigurita(undefined)
+                }}
             />
 
         </div>

@@ -4,7 +4,7 @@ const AutocompleteInput = ({
        value,
        onChange,
        onSelect,
-       onSearch,            // modo async: función que recibe el texto y devuelve items
+       onSearch,
        debounceMs = 300,
        placeholder = '',
        label = '',
@@ -16,27 +16,39 @@ const AutocompleteInput = ({
     const [open, setOpen] = useState(false);
     const wrapperRef  = useRef(null);
     const debounceRef = useRef(null);
+    const userTypingRef = useRef(false);
 
     // Modo async: llamar onSearch con debounce
     useEffect(() => {
         if (!onSearch) return;
-        if (!value) { setSuggestions([]); setOpen(false); return; }
+
+        if (!value) {
+            setSuggestions([]);
+            setOpen(false);
+            return;
+        }
+
+        if (!userTypingRef.current) return;
 
         clearTimeout(debounceRef.current);
+
         debounceRef.current = setTimeout(async () => {
             setLoading(true);
+
             try {
                 const results = await onSearch(value);
                 setSuggestions(results);
                 setOpen(true);
-            } catch (e) {
+            } catch {
                 setSuggestions([]);
             } finally {
                 setLoading(false);
+                userTypingRef.current = false;
             }
         }, debounceMs);
 
         return () => clearTimeout(debounceRef.current);
+
     }, [value, onSearch, debounceMs]);
 
     useEffect(() => {
@@ -50,8 +62,8 @@ const AutocompleteInput = ({
     }, []);
 
     const handleChange = (e) => {
+        userTypingRef.current = true;
         onChange(e.target.value);
-        if (!onSearch) setOpen(true);
     };
 
     const handleSelect = (item) => {

@@ -16,6 +16,10 @@ const publics = [
     {
         path: '/mis-figuritas/nueva-repetida',
         element: <h1>Hola repetida</h1>
+    },
+    {
+        path: '/mis-figuritas/nueva-faltante',
+        element: <h1>Hola Faltante</h1>
     }
 ];
 

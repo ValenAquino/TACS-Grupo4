@@ -2,11 +2,11 @@ import {api, handleAxiosError } from "./api.js";
 
 const COLECCIONES_URL = "/colecciones";
 
-export const buscarFaltantes = async (colId) => {
+export const buscarFaltantes = async (colId, filtros) => {
     try {
         const { data } = await api.get(
             `${COLECCIONES_URL}/${colId}/faltantes`,
-            {}
+            {params: filtros}
         );
         return data;
     } catch (error) {

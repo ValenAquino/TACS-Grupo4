@@ -1,7 +1,7 @@
 import styles from './faltantes.module.css';
 import {useEffect, useState} from "react";
 import {buscarFaltantes} from "../../../../../services/coleccionService.js";
-import FaltanteCard from "../../../../../components/ui/faltante-card.jsx";
+import FaltanteCard from "../../../../../components/ui/faltante-card/faltante-card.jsx";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import {useNavigate} from "react-router";
 import Button from "../../../../../components/ui/button/button.jsx";

@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import Home from "./views/public/home/home"
 import Layout from './components/layouts/layout/layout';
 import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
+import NuevaFaltante from "./views/nueva-faltante/nueva-faltante.jsx";
 
 
 const publics = [
@@ -19,7 +20,7 @@ const publics = [
     },
     {
         path: '/mis-figuritas/nueva-faltante',
-        element: <h1>Hola Faltante</h1>
+        element: <NuevaFaltante />
     }
 ];
 

@@ -1,19 +1,5 @@
 import styles from './figurita-card.module.css';
 
-/**
- * FiguritaCard
- *
- * Props:
- *  - number      {string|number}  Número de figurita (ej: 14)
- *  - type        {string}         'intercambio' | 'subasta' | 'ambos'
- *  - emoji       {string}         Emoji o ícono representativo
- *  - name        {string}         Nombre del jugador / estadio
- *  - subtitle    {string}         "País · Posición" o categoría
- *  - available   {number}         Cantidad disponible
- *  - actionLabel {string}         Texto del botón principal
- *  - onAction    {function}       Callback del botón
- *  - extra       {string}         Texto extra debajo de "Disponibles" (ej: "Subasta: 2h 14m")
- */
 const TYPE_LABELS = {
   intercambio: { label: 'intercambio', className: styles.badgeIntercambio },
   subasta:     { label: 'subasta',     className: styles.badgeSubasta },
@@ -24,33 +10,39 @@ const FiguritaCard = ({
   number,
   type = 'intercambio',
   emoji,
+  emojiBg,
   name,
   subtitle,
   available,
-  actionLabel = 'Ver propuestas',
+  actionLabel,
   onAction,
   extra,
+  user,
 }) => {
   const badge = TYPE_LABELS[type] ?? TYPE_LABELS.intercambio;
+  const resolvedLabel = actionLabel ?? (type === 'subasta' ? 'Ver subasta ↗' : 'Proponer intercambio ↗');
 
   return (
     <div className={`${styles.card} ${type === 'subasta' ? styles.cardSubasta : ''}`}>
-      {/* Header */}
+
+      {/* Número y tipo */}
       <div className={styles.cardHeader}>
         <span className={styles.cardNumber}>#{number}</span>
         <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
       </div>
 
-      {/* Emoji / avatar */}
-      <div className={styles.cardEmoji}>{emoji}</div>
+      {/* Imagen / emoji */}
+      <div className={styles.cardEmoji} style={emojiBg ? { background: emojiBg } : {}}>
+        {emoji}
+      </div>
 
-      {/* Info */}
+      {/* Nombre y subtítulo */}
       <div className={styles.cardInfo}>
         <p className={styles.cardName}>{name}</p>
         <p className={styles.cardSubtitle}>{subtitle}</p>
       </div>
 
-      {/* Footer */}
+      {/* Disponibilidad, usuario y acción */}
       <div className={styles.cardFooter}>
         {extra ? (
           <span className={styles.cardExtra}>{extra}</span>
@@ -59,9 +51,26 @@ const FiguritaCard = ({
             <span className={styles.cardAvailable}>Disponibles: {available}</span>
           )
         )}
-        <button className={styles.actionBtn} onClick={onAction}>
-          {actionLabel}
+
+        {user && (
+          <div className={styles.userChip}>
+            <span className={styles.userAvatar} style={{ background: user.color }}>
+              {user.initials}
+            </span>
+            <span className={styles.userName}>{user.name}</span>
+            <span className={styles.userStars}>
+              {'★'.repeat(user.stars)}{'☆'.repeat(5 - user.stars)}
+            </span>
+          </div>
+        )}
+
+        <button
+          className={`${styles.actionBtn} ${type === 'subasta' ? styles.actionBtnSubasta : ''}`}
+          onClick={onAction}
+        >
+          {resolvedLabel}
         </button>
+
       </div>
     </div>
   );

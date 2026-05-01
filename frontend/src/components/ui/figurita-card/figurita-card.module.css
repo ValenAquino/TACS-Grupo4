@@ -16,7 +16,6 @@
   transform: translateY(-2px);
 }
 
-/* Subasta cards get a slight tinted background */
 .cardSubasta {
   background: #fff8f5;
 }
@@ -62,7 +61,8 @@
   font-size: 2.8rem;
   text-align: center;
   line-height: 1;
-  padding: 6px 0;
+  padding: 14px 0;
+  border-radius: 8px;
 }
 
 /* ── Info ────────────────────────────────────── */
@@ -103,6 +103,39 @@
   color: #ea580c;
 }
 
+/* ── User chip ───────────────────────────────── */
+.userChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.userAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.userName {
+  font-size: 0.78rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.userStars {
+  font-size: 0.65rem;
+  color: #f59e0b;
+  letter-spacing: -1px;
+}
+
+/* ── Action button ───────────────────────────── */
 .actionBtn {
   width: 100%;
   padding: 8px 0;
@@ -119,4 +152,17 @@
 .actionBtn:hover {
   background: #f3f4f6;
   border-color: #9ca3af;
+}
+
+.actionBtnSubasta {
+  background: var(--color-terciary);
+  border-color: var(--color-terciary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.actionBtnSubasta:hover {
+  background: #b8851e;
+  border-color: #b8851e;
+  color: #ffffff;
 }

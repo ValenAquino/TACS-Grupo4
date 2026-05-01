@@ -2,17 +2,22 @@ import { Route, Routes } from 'react-router-dom';
 import Home from "./views/public/home/home"
 import Layout from './components/layouts/layout/layout';
 import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
+import Explorar from "./views/public/explorar/explorar.jsx";
 
 
 const publics = [
-    {
-        path: '/',
-        element: <Home />,
-    },
-    {
-        path: '/mis-figuritas',
-        element: <MisFiguritas />
-    }
+  {
+    path: '/',
+    element: <Home />,
+  },
+  {
+    path: '/mis-figuritas',
+    element: <MisFiguritas />
+  },
+  {
+    path: '/explorar',
+    element: <Explorar />
+  }
 ];
 
 const privates = [];

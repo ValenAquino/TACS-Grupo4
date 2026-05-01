@@ -4,7 +4,7 @@ import app.model.entities.Seleccion;
 
 public record FiguritasFiltro (
     String id,
-    int numero,
+    Integer numero,
     Seleccion seleccion,
     String jugador
 ) {

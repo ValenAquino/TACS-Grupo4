@@ -19,13 +19,6 @@ public class FiguritaService implements IFiguritaService {
   private final RepositorioFiguritas repositorioFiguritas;
 
   public List<Figurita> buscarFiguritas(FiguritasFiltro filtros) {
-
-    List<String> idsFiltrados = repositorioFiguritas
-        .buscarConFiltros(filtros)
-        .stream()
-        .map(Figurita::getId)
-        .toList();
-
     return this.repositorioFiguritas.buscarConFiltros(filtros);
   }
 }

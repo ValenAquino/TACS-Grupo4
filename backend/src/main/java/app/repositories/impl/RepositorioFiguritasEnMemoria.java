@@ -32,7 +32,7 @@ public class RepositorioFiguritasEnMemoria implements RepositorioFiguritas {
     List<Figurita> resultado = storage.values()
         .stream()
         .filter(f -> filtros.id() == null ||
-            f.getId().toLowerCase().contains(filtros.jugador().toLowerCase()))
+            f.getId().equalsIgnoreCase(filtros.id()))
         .filter(f -> filtros.seleccion() == null || f.getSeleccion().equals(filtros.seleccion()))
         .filter(f ->
             filtros.jugador() == null ||
@@ -48,6 +48,5 @@ public class RepositorioFiguritasEnMemoria implements RepositorioFiguritas {
 
   public void guardar(Figurita figurita) {
     this.storage.put(figurita.getId(), figurita);
-
   }
 }

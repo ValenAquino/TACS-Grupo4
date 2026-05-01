@@ -1,11 +1,14 @@
 package app.repositories.impl;
 
+import app.dto.FaltantesDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.RepetidasDto;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
+import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import org.springframework.stereotype.Repository;
@@ -79,5 +82,24 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
     int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
 
     return new RepetidasDto(repetidasMapeadas, publicadas, disponibles, resultados, paginaActual, paginasTotales);
+  }
+
+  public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {
+    Coleccion col = this.storage.get(colId);
+
+    List<Figurita> faltantes = col.getFaltantes();
+
+    int resultados = faltantes.size();
+
+    int paginaActual = filtros.pagina();
+    int limite = filtros.limite();
+    int offset = (paginaActual - 1) * limite;
+
+    faltantes = faltantes.stream()
+        .skip(offset)
+        .limit(limite)
+        .toList();
+
+    return new FaltantesDto(faltantes, resultados, paginaActual, limite);
   }
 }

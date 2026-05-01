@@ -1,11 +1,13 @@
 package app.servicios.impl;
 
+import app.dto.FaltantesDto;
 import app.dto.RepetidasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
+import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
@@ -62,9 +64,9 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public List<Figurita> buscarFaltantes(String colId) {
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
-    return coleccion.getFaltantes();
+  public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {
+    return this.repositorioColecciones.buscarFaltantes(colId, filtros);
+
   }
 
   @Override

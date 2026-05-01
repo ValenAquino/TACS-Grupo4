@@ -1,8 +1,10 @@
 package app.servicios;
 
+import app.dto.FaltantesDto;
 import app.dto.RepetidasDto;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public interface IColeccionService {
     /**
      * Busca las figuritas faltantes de la coleccion con la opcion de aplicar filtros.
      */
-    List<Figurita> buscarFaltantes(String colId);
+    FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros);
 
     /**
      * Busca las figuritas faltantes de la coleccion con la opcion de aplicar filtros.

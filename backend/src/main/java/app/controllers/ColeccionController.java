@@ -1,11 +1,13 @@
 package app.controllers;
 
+import app.dto.FaltantesDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.RepetidasDto;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.servicios.IColeccionService;
 import lombok.RequiredArgsConstructor;
@@ -49,18 +51,17 @@ public class ColeccionController {
     }
 
     @GetMapping("/{col_id}/faltantes")
-    public ResponseEntity<List<Figurita>> buscarFaltantes(
-        @PathVariable String col_id) {
-
-        List<Figurita> faltantes = coleccionService.buscarFaltantes(col_id);
-
-        return ResponseEntity.ok(faltantes);
+    public ResponseEntity<FaltantesDto> buscarFaltantes(
+        @PathVariable String col_id,
+        @ModelAttribute FaltantesFiltro filtros
+    ) {
+        return ResponseEntity.ok(this.coleccionService.buscarFaltantes(col_id, filtros));
     }
 
     @GetMapping("/{col_id}/repetidas")
     public ResponseEntity<RepetidasDto> buscarRepetidas(
         @PathVariable String col_id,
-        RepetidasFiltro filtros
+        @ModelAttribute RepetidasFiltro filtros
     ) {
         return ResponseEntity.ok(this.coleccionService.buscarRepetidas(col_id, filtros));
     }

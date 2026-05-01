@@ -1,7 +1,10 @@
 package app.model.entities.filtros;
 
+import app.model.entities.MetodoIntercambio;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record RepetidasFiltro(
-    String tipo,
-    int limite,
-    int pagina
+    MetodoIntercambio metodoIntercambio,
+    Integer limite,
+    Integer pagina
 ) {}

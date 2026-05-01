@@ -1,9 +1,9 @@
 import {useState} from "react";
-import SectionCard from "../../components/ui/section-card/section-card.jsx";
-import AutocompleteInput from "../../components/ui/autocomplete-input/autocomplete-input.jsx";
-import Button from "../../components/ui/button/button.jsx";
-import {buscarFiguritas} from "../../services/figuritaService.js";
-import {agregarFaltante} from "../../services/coleccionService.js";
+import SectionCard from "../../../components/ui/section-card/section-card.jsx";
+import AutocompleteInput from "../../../components/ui/autocomplete-input/autocomplete-input.jsx";
+import Button from "../../../components/ui/button/button.jsx";
+import {buscarFiguritas} from "../../../services/figuritaService.js";
+import {agregarFaltante} from "../../../services/coleccionService.js";
 
 const NuevaFaltante = () => {
     const [figurita, setFigurita] = useState(undefined);

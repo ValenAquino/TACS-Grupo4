@@ -40,17 +40,13 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public void agregarRepetida(String colId, String usuarioId, String figId, Integer
-      cantidadExistente, List<String> modosIntercambio) {
+  public void agregarRepetida(String colId, String figId, Integer
+      cantidadExistente, MetodoIntercambio modoIntercambio) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
     Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
 
-    Perfil perfil = this.repositorioUsuarios.buscarPorUsuarioId(usuarioId);
-
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
-        figurita, cantidadExistente, modosIntercambio.stream()
-        .map(MetodoIntercambio::fromString)
-        .toList(), perfil.getId());
+        figurita, cantidadExistente, modoIntercambio);
 
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.guardar(coleccion);

@@ -89,8 +89,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // Lucas
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
-        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.SUBASTA),     "1000");
+        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, MetodoIntercambio.INTERCAMBIO, "1000");
+        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, MetodoIntercambio.SUBASTA,     "1000");
         coleccionLucas.getRepetidas().add(interMessi);
         coleccionLucas.getRepetidas().add(interDiMaria);
         coleccionLucas.getFaltantes().add(mbappe);
@@ -104,9 +104,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // Sofía
         Coleccion coleccionSofia = new Coleccion();
         coleccionSofia.setId("2");
-        FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
-        FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
-        FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
+        FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, MetodoIntercambio.INTERCAMBIO, "1001");
+        FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, MetodoIntercambio.SUBASTA,     "1001");
+        FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, MetodoIntercambio.INTERCAMBIO, "1001");
         coleccionSofia.getRepetidas().add(interMbappe);
         coleccionSofia.getRepetidas().add(interGriezmann);
         coleccionSofia.getRepetidas().add(interNeymar);
@@ -121,7 +121,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // Matías
         Coleccion coleccionMatias = new Coleccion();
         coleccionMatias.setId("3");
-        FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1002");
+        FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, MetodoIntercambio.INTERCAMBIO, "1002");
         coleccionMatias.getRepetidas().add(interVinicius);
         coleccionMatias.getFaltantes().add(pedri);
         coleccionMatias.getFaltantes().add(kroos);
@@ -133,7 +133,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // Juan
         Coleccion coleccionJuan = new Coleccion();
         coleccionJuan.setId("4");
-        FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
+        FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, MetodoIntercambio.INTERCAMBIO, "1003");
         coleccionJuan.getRepetidas().add(interPedri);
         coleccionJuan.getFaltantes().add(pedri);
         coleccionJuan.getFaltantes().add(kroos);

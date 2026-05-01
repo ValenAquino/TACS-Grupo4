@@ -5,7 +5,7 @@ const RepetidaCard = ({ figurita }) => {
         seleccion,
         cantidad_existente,
         cantidad_reservada,
-        metodos,
+        metodo,
         foto_url,
     } = figurita;
 
@@ -24,11 +24,9 @@ const RepetidaCard = ({ figurita }) => {
               #{figurita_id}
             </span>
                 <div className="d-flex gap-1">
-                    {metodos.map((m) => (
-                        <span key={m} className="badge rounded-pill" style={{ backgroundColor: '#e1f5ee', color: '#0f6e56', fontSize: '0.7rem' }}>
-                          {m.toLowerCase()}
-                        </span>
-                    ))}
+                    <span className="badge rounded-pill" style={{ backgroundColor: '#e1f5ee', color: '#0f6e56', fontSize: '0.7rem' }}>
+                      {metodo.toLowerCase()}
+                    </span>
                 </div>
             </div>
 

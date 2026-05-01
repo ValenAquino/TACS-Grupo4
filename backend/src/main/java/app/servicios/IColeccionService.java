@@ -4,6 +4,7 @@ import app.dto.FaltantesDto;
 import app.dto.RepetidasDto;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 
@@ -21,8 +22,8 @@ public interface IColeccionService {
      * Agrega una figurita repetida a la colección y notifica a los usuarios
      * que la tienen en su lista de faltantes.
      */
-    void agregarRepetida(String colId, String userId, String figId, Integer
-        cantidadDisponible, List<String> modosIntercambio);
+    void agregarRepetida(String colId, String figId, Integer
+        cantidadDisponible, MetodoIntercambio modosIntercambio);
 
     /**
      * Busca las figuritas faltantes de la coleccion con la opcion de aplicar filtros.

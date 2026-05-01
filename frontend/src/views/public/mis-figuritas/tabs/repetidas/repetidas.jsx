@@ -11,7 +11,7 @@ const Repetidas = ({colId}) => {
 
     const [repetidas, setRepetidas] = useState({});
     const [filtros, setFiltros] = useState({
-        tipo: "todas"
+        metodoIntercambio: "SUBASTA_E_INTERCAMBIO"
     });
 
     const navigate = useNavigate();
@@ -42,10 +42,10 @@ const Repetidas = ({colId}) => {
 
     const cambiarFiltro = (nuevoTipo) => {
         setFiltros(prev => {
-            if (prev.tipo === nuevoTipo) return prev
+            if (prev.metodoIntercambio === nuevoTipo) return prev
             return {
                 ...prev,
-                tipo: nuevoTipo
+                metodoIntercambio: nuevoTipo
             }
         });
     };
@@ -85,20 +85,20 @@ const Repetidas = ({colId}) => {
             <div className="d-flex flex-wrap gap-2">
                 <FilterChip
                     label="Todas"
-                    selected={filtros.tipo === "todas"}
-                    onClick={() => cambiarFiltro("todas")}
+                    selected={filtros.metodoIntercambio === "SUBASTA_E_INTERCAMBIO"}
+                    onClick={() => cambiarFiltro("SUBASTA_E_INTERCAMBIO")}
                 />
 
                 <FilterChip
                     label="Intercambio"
-                    selected={filtros.tipo === "intercambio"}
-                    onClick={() => cambiarFiltro("intercambio")}
+                    selected={filtros.metodoIntercambio === "INTERCAMBIO"}
+                    onClick={() => cambiarFiltro("INTERCAMBIO")}
                 />
 
                 <FilterChip
                     label="Subasta"
-                    selected={filtros.tipo === "subasta"}
-                    onClick={() => cambiarFiltro("subasta")}
+                    selected={filtros.metodoIntercambio === "SUBASTA"}
+                    onClick={() => cambiarFiltro("SUBASTA")}
                 />
             </div>
 

@@ -41,11 +41,10 @@ public class ColeccionController {
     @PostMapping("/{col_id}/repetidas")
     public ResponseEntity<Void> agregarRepetida(
         @PathVariable String col_id,
-        @RequestHeader("user_id") String userId,
         @RequestBody RepetidaRequest request) {
 
-        coleccionService.agregarRepetida(col_id, userId,
-            request.getFigId(), request.getCantidadExistente(), request.getModosIntercambio());
+        coleccionService.agregarRepetida(col_id,
+            request.figId(), request.cantidadExistente(), request.modoIntercambio());
 
         return ResponseEntity.status(201).build();
     }

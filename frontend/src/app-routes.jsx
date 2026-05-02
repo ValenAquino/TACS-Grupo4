@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import Home from "./views/public/home/home"
 import Layout from './components/layouts/layout/layout';
 import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
-
+import Sugerencias from "./views/public/sugerencias/sugerencias.jsx";
 
 const publics = [
     {
@@ -12,6 +12,10 @@ const publics = [
     {
         path: '/mis-figuritas',
         element: <MisFiguritas />
+    },
+    {
+        path: '/sugerencias',
+        element: <Sugerencias />
     }
 ];
 

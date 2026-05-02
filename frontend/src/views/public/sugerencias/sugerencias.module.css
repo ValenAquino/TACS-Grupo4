@@ -1,0 +1,23 @@
+.statGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.informationContainer{}
+
+.informationIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    padding: 8px;
+
+    border-radius: 8px; /* cuadrado con bordes suaves */
+
+    background-color: rgba(111, 66, 193, 0.3); /* violeta con opacidad */
+    color: #6f42c1; /* violeta sólido */
+
+    font-size: 18px; /* ajusta el tamaño del icono */
+}

@@ -4,22 +4,22 @@ import styles from './sugerencias.module.css';
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
 import TodosSugerencias from "./tabs/todos/todosSugerencias.jsx";
 import {useCallback, useEffect, useState} from "react";
-import {buscarStatsSimples} from "../../../services/perfilService.js";
+import {buscarContadores} from "../../../services/perfilService.js";
 
 const Sugerencias = () => {
 
     const [cargando, setCargando] = useState(true)
-    const [statsSimples, setStatsSimples] = useState([])
+    const [contadores, setContadores] = useState([])
 
     const TABS = [
         { key: 'todos', label: 'Todos', component: TodosSugerencias, props: {} }
     ];
 
-    const cargarEstadisticas = useCallback(async () => {
+    const cargarContadores = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarStatsSimples()
-            setStatsSimples(payload)
+            const payload = await buscarContadores({userId:1000})
+            setContadores(payload)
 
         } catch (error) {
             console.log(error)
@@ -29,7 +29,7 @@ const Sugerencias = () => {
     })
 
     useEffect(() => {
-        cargarEstadisticas()
+        cargarContadores()
         /*
             stat: [{
                 nombre: (string)
@@ -52,10 +52,7 @@ const Sugerencias = () => {
                 <div
                     className={styles.statGrid + " d-grid gap-3"}
                 >
-                    {statsSimples.map(st => <StatCard title={st.nombre} value={st.valor}/>)}
-                    <StatCard title="COINCIDENCIAS TOTALES" value="12" />
-                    <StatCard title="TUS FALTANTES" value="47" />
-                    <StatCard title="TUS REPETIDAS" value="23" />
+                    {contadores.map((st, index) => <StatCard key={index} title={st.nombre} value={st.valor}/>)}
                 </div>
                 <div className="d-flex flex-row flex-nowrap gap-3 bg-body-secondary p-3 rounded-3">
                     <i className={styles.informationIcon + " bi bi-info-circle"}></i>

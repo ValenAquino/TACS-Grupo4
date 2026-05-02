@@ -10,7 +10,7 @@ const TodosSugerencias = () => {
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias()
+            const payload = await buscarSugerencias({userId:1000})
             setSugerencias(payload)
 
         } catch (error) {
@@ -43,10 +43,11 @@ const TodosSugerencias = () => {
     */
 
     return (
-        <div>
+        <div className="d-flex flex-column gap-3 ms-2 me-2">
             {
-                sugerencias.map(s => <SugerenciaCard key={s.perfil.id} figuritasNecesarias = {s.figuritasNecesarias}
-                                                  figuritasRecomendadas = {s.figuritasRecomendadas}/>
+                sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}
+                                                     figuritasNecesarias = {s.figuritas_necesarias}
+                                                     figuritasRecomendadas = {s.figuritas_recomendadas}/>
             )}
             <SugerenciaCard
                 perfil={{nombre: "Rodrigo_Lopez"}}

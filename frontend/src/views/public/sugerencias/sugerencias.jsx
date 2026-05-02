@@ -30,13 +30,12 @@ const Sugerencias = () => {
     */}
 
     return (
-        <div>
-            <Breadcrumb crumbs={[{name: "Explorar", to: "/explorar"}, {name: "Sugerencias", to: "/sugerencias"}]}/>
+        <div className={styles.sugerenciasBody}>
+            <Breadcrumb className={styles.left}
+                        crumbs={[{name: "Explorar", to: "/explorar"}, {name: "Sugerencias", to: "/sugerencias"}]}/>
 
-            <h2>Sugerencias</h2>
-            <p className="fs-5 opacity-75">Coincidencias entre tus faltantes y los repetidos de otros usuarios, y viceversa</p>
-
-            <hr/>
+            <h2 className={styles.left}><strong>Sugerencias</strong></h2>
+            <p className={styles.left + " fs-5 opacity-75"}>Coincidencias entre tus faltantes y los repetidos de otros usuarios, y viceversa</p>
 
             <div className="d-flex flex-column flex-nowrap gap-3">
                 <div

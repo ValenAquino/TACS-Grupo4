@@ -1,5 +1,6 @@
 import Button from "../../../components/ui/button/button.jsx";
 import styles from "./sugerenciaCard.module.css";
+import FiguritaRecomendadaCard from "./figuritaRecomendadaCard.jsx";
 
 const SugerenciaCard = ({perfil, figuritasRecomendadas, figuritasNecesarias}) => {
     return (
@@ -16,41 +17,30 @@ const SugerenciaCard = ({perfil, figuritasRecomendadas, figuritasNecesarias}) =>
 
             <hr className="my-3"/>
 
-            <div className="d-flex align-items-end justify-content-between">
-                <div className="flex-grow-1">
+            <div className="d-flex flex-column justify-content-between">
+                <div className="d-flex flex-row justify-content-between gap-2">
                     <div className="small text-muted mb-1">VOS LE DAS</div>
-                    {figuritasRecomendadas.map(fig =>
-                        <div key={fig.id} className={styles.itemGreen+ " d-flex flex-row justify-content-between"}>
-                            <div >
-                                {fig.jugador}
-                            </div>
-                            <p className="text-black">
-                                {fig.seleccion}
-                            </p>
-                        </div>
-                        )
-                    }
-                </div>
 
-                <div className={styles.swapIcon}>
-                    ⇄
-                </div>
-
-                <div className="flex-grow-1 text-end">
                     <div className="small text-muted mb-1">ÉL TE DA</div>
-
-                    {figuritasNecesarias.map(fig =>
-                        <div key={fig.id} className={styles.itemBlue + " d-flex flex-row justify-content-between"}>
-                            <div >
-                                {fig.jugador}
-                            </div>
-                            <p className="text-black">
-                                {fig.seleccion}
-                            </p>
-                        </div>
-                    )}
                 </div>
+                <div className="d-flex flex-row align-items-center gap-2">
+                    <div className="flex-grow-1">
+                        {figuritasRecomendadas.map(fig =>
+                            <FiguritaRecomendadaCard fig={fig} key={fig.id}/>
+                        )}
+                    </div>
 
+                    <div className={styles.swapIcon}>
+                        ⇄
+                    </div>
+
+                    <div className="flex-grow-1 text-end">
+
+                        {figuritasNecesarias.map(fig =>
+                            <FiguritaRecomendadaCard fig={fig} key={fig.id} verde={false}/>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <hr className="my-3"/>

@@ -2,7 +2,18 @@
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-.informationContainer{}
+.left {
+    align-self: start;
+}
+
+.sugerenciasBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 90%;
+}
 
 .informationIcon {
     display: inline-flex;

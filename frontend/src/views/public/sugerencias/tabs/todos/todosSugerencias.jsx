@@ -5,7 +5,7 @@ const TodosSugerencias = () => {
         <div>
             <SugerenciaCard
                 perfil={{nombre: "Rodrigo_Lopez"}}
-                figuritasRecomendadas={[{id:1, jugador:"#10 Messi", seleccion:"ARG"}]}
+                figuritasRecomendadas={[{id:1, jugador:"#10 Messi", seleccion:"ARG"},{id:3, jugador:"#10 otroMessi", seleccion:"ARG"}]}
                 figuritasNecesarias={[{id:2, jugador:"#-1 Nicolas Cage", seleccion:"UNK"}]}/>
         </div>
     )

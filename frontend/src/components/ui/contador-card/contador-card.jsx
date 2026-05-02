@@ -1,4 +1,4 @@
-const StatCard = ({ title, value, color }) => {
+const ContadorCard = ({ title, value, color }) => {
     return (
         <div className="d-flex flex-column justify-content-between p-3 rounded-3 bg-body-secondary h-100">
             <div className="text-muted small fw-semibold">
@@ -12,4 +12,4 @@ const StatCard = ({ title, value, color }) => {
     );
 };
 
-export default StatCard;
+export default ContadorCard;

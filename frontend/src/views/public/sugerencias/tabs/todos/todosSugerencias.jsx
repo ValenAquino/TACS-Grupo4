@@ -42,17 +42,23 @@ const TodosSugerencias = () => {
         }]
     */
 
-    return (
-        <div className="d-flex flex-column gap-3 ms-2 me-2">
-            {
-                sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}
+    const mostrarSugerencias = () => {
+        return (
+            <>
+                {
+                    sugerencias.length > 0 ?
+                        sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}
                                                      figuritasNecesarias = {s.figuritas_necesarias}
                                                      figuritasRecomendadas = {s.figuritas_recomendadas}/>
-            )}
-            <SugerenciaCard
-                perfil={{nombre: "Rodrigo_Lopez"}}
-                figuritasRecomendadas={[{id:1, jugador:"#10 Messi", seleccion:"ARG"},{id:3, jugador:"#10 otroMessi", seleccion:"ARG"}]}
-                figuritasNecesarias={[{id:2, jugador:"#-1 Nicolas Cage", seleccion:"UNK"}]}/>
+                        ) : <h2>No pudimos encontrar sugerencias!</h2>
+                }
+            </>
+        )
+    }
+
+    return (
+        <div className="d-flex flex-column gap-3 ms-2 me-2">
+            {cargando ? <h2>Cargando sugerencias...</h2> : mostrarSugerencias()}
         </div>
     )
 }

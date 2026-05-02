@@ -10,7 +10,7 @@ const SugerenciaCard = ({perfil, figuritasRecomendadas, figuritasNecesarias}) =>
             <div className="d-flex align-items-center justify-content-between">
 
                 <div className="d-flex align-items-center gap-2">
-                    <div className={styles.avatar}>RL</div>
+                    <div className={styles.avatar}>{perfil.nombre.slice(0,1).toUpperCase()}</div>
                     <p>{perfil.nombre}</p>
                 </div>
             </div>

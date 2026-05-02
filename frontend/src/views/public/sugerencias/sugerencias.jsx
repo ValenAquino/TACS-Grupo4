@@ -1,5 +1,5 @@
 import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
-import StatCard from "../../../components/ui/statcard/statcard.jsx";
+import ContadorCard from "../../../components/ui/contador-card/contador-card.jsx";
 import styles from './sugerencias.module.css';
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
 import TodosSugerencias from "./tabs/todos/todosSugerencias.jsx";
@@ -38,6 +38,14 @@ const Sugerencias = () => {
         */
     }, []);
 
+    const mostrarContadores = () => {
+        return (
+            <>
+                {contadores.map((st, index) => <ContadorCard key={index} title={st.nombre} value={st.valor}/>)}
+            </>
+        )
+    }
+
     return (
         <div className={styles.sugerenciasBody}>
             <Breadcrumb className={styles.left}
@@ -52,7 +60,7 @@ const Sugerencias = () => {
                 <div
                     className={styles.statGrid + " d-grid gap-3"}
                 >
-                    {contadores.map((st, index) => <StatCard key={index} title={st.nombre} value={st.valor}/>)}
+                    {cargando ? <h2>Cargando estadisticas...</h2> : mostrarContadores()}
                 </div>
                 <div className="d-flex flex-row flex-nowrap gap-3 bg-body-secondary p-3 rounded-3">
                     <i className={styles.informationIcon + " bi bi-info-circle"}></i>

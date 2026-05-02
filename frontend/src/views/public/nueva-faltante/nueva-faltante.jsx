@@ -87,7 +87,7 @@ const NuevaFaltante = () => {
             </SectionCard>
 
             <Button
-                label="Publicar figurita ↗"
+                label="Publicar faltante ↗"
                 disabled={!figurita}
                 onClick={() => {
                     agregarFaltante(colId, figurita)

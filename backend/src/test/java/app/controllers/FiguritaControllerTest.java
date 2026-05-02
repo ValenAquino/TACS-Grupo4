@@ -5,6 +5,7 @@ import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Seleccion;
 import app.model.entities.MetodoIntercambio;
+import app.model.entities.filtros.FiguritasFiltro;
 import app.servicios.impl.FiguritaService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -29,14 +30,11 @@ class FiguritaControllerTest {
     private FiguritaService figuritaService;
     @Test
     void buscarFiguritasDevuelve200() throws Exception {
+        FiguritasFiltro filtros = new FiguritasFiltro(null, null, Seleccion.ARGENTINA, null);
         Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-        FiguritaIntercambiable figuritaIntercambiable = new FiguritaIntercambiable(
-            figurita, 2, 0, List.of(MetodoIntercambio.INTERCAMBIO), "1000");
 
-        FiguritaIntercambiableDto dto = new FiguritaIntercambiableDto(figuritaIntercambiable);
-
-        when(figuritaService.buscarFiguritas(null, null, null))
-            .thenReturn(List.of(dto));
+        when(figuritaService.buscarFiguritas(filtros))
+            .thenReturn(List.of(figurita));
 
         mockMvc.perform(get("/figuritas")
                 .contentType(MediaType.APPLICATION_JSON))

@@ -80,7 +80,7 @@ class ColeccionControllerTest {
   void agregarRepetidaNoEncontradaDevuelve404() throws Exception {
     doThrow(new NotFoundException("No se encontro la figurita"))
         .when(serviceColeccion)
-        .agregarRepetida(eq("1"), any(), any(), any(), any());
+        .agregarRepetida(eq("1"), any(), any(), any());
 
     String json = """
         {

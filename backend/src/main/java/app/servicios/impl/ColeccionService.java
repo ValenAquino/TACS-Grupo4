@@ -42,6 +42,7 @@ public class ColeccionService implements IColeccionService {
   @Override
   public void agregarRepetida(String colId, String figId, Integer
       cantidadExistente, MetodoIntercambio modoIntercambio) {
+
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
     Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
 

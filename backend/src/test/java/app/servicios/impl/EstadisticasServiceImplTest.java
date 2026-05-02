@@ -1,14 +1,7 @@
 package app.servicios.impl;
 
 import app.dto.EstadisticasDto;
-import app.model.entities.Coleccion;
-import app.model.entities.FiguritaIntercambiable;
-import app.model.entities.MedioComunicacion;
-import app.model.entities.MedioDeContacto;
-import app.model.entities.Rol;
-import app.model.entities.Subasta;
-import app.model.entities.Perfil;
-import app.model.entities.Usuario;
+import app.model.entities.*;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
@@ -66,11 +59,11 @@ class EstadisticasServiceImplTest {
     @Test
     void getEstadisticas_conDatos_retornaValoresCorrectos() {
         Coleccion coleccionConDos = new Coleccion();
-        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 1, new ArrayList<>()));
-        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 2, new ArrayList<>()));
+        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 1, MetodoIntercambio.INTERCAMBIO));
+        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 2, MetodoIntercambio.INTERCAMBIO));
 
         Coleccion coleccionConUna = new Coleccion();
-        coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, new ArrayList<>()));
+        coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, MetodoIntercambio.INTERCAMBIO));
 
         Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
         Perfil u2 = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO), "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());

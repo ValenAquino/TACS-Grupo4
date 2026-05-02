@@ -16,7 +16,7 @@ class FiguritaIntercambiableTest {
   @BeforeEach
   void setUp() {
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-    fi = new FiguritaIntercambiable(messi, 3, List.of(MetodoIntercambio.INTERCAMBIO));
+    fi = new FiguritaIntercambiable(messi, 3, MetodoIntercambio.INTERCAMBIO);
   }
 
   @Test

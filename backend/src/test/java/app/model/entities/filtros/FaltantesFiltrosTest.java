@@ -1,0 +1,34 @@
+package app.model.entities.filtros;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+public class FaltantesFiltrosTest {
+
+  @Test
+  void deberiaCrearRecordCorrectamente() {
+    FaltantesFiltro filtro = new FaltantesFiltro(10, 2);
+
+    assertEquals(10, filtro.limite());
+    assertEquals(2, filtro.pagina());
+  }
+
+  @Test
+  void deberiaSerIgualSiLosValoresSonIguales() {
+    FaltantesFiltro a = new FaltantesFiltro(10, 2);
+    FaltantesFiltro b = new FaltantesFiltro(10, 2);
+
+    assertEquals(a, b);
+    assertEquals(a.hashCode(), b.hashCode());
+  }
+
+  @Test
+  void deberiaSerDistintoSiCambianValores() {
+    FaltantesFiltro a = new FaltantesFiltro(10, 2);
+    FaltantesFiltro b = new FaltantesFiltro(20, 1);
+
+    assertNotEquals(a, b);
+  }
+}

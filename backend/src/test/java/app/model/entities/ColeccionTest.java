@@ -33,15 +33,13 @@ class ColeccionTest {
   @Test
   void agregarNuevaRepetida() {
     Coleccion coleccion = new Coleccion("10");
-    List<MetodoIntercambio> metodosIntercambio = new ArrayList<>(
-        Arrays.asList(MetodoIntercambio.SUBASTA)
-    );
+    MetodoIntercambio metodoIntercambio = MetodoIntercambio.SUBASTA;
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
-        messi, 2, metodosIntercambio);
+        messi, 2, metodoIntercambio);
 
     FiguritaIntercambiable repetida2 = new FiguritaIntercambiable(
-        diMaria, 2, metodosIntercambio);
+        diMaria, 2, metodoIntercambio);
     coleccion.agregarRepetida(repetida);
 
     coleccion.agregarRepetida(repetida);
@@ -55,15 +53,14 @@ class ColeccionTest {
   @Test
   void agregarNuevaRepetidaDuplicada() {
     Coleccion coleccion = new Coleccion("10");
-    List<MetodoIntercambio> metodosIntercambio = new ArrayList<>(
-        Arrays.asList(MetodoIntercambio.SUBASTA)
-    );
+    MetodoIntercambio metodoIntercambio = MetodoIntercambio.SUBASTA;
+
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
-        messi, 2, metodosIntercambio);
+        messi, 2, metodoIntercambio);
 
     FiguritaIntercambiable repetida2 = new FiguritaIntercambiable(
-        messi, 2, metodosIntercambio);
+        messi, 2, metodoIntercambio);
     coleccion.agregarRepetida(repetida);
 
     coleccion.agregarRepetida(repetida);

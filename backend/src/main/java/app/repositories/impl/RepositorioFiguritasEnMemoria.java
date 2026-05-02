@@ -37,6 +37,7 @@ public class RepositorioFiguritasEnMemoria implements RepositorioFiguritas {
         .filter(f ->
             filtros.jugador() == null ||
                 f.getJugador().toLowerCase().contains(filtros.jugador().toLowerCase()))
+        .filter(f -> filtros.numero() == null || f.getNumero() == filtros.numero())
         .toList();
 
     if (resultado.isEmpty()) {

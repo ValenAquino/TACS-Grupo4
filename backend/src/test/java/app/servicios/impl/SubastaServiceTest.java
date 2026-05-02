@@ -5,16 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import app.exceptions.BadRequestException;
-import app.model.entities.Coleccion;
-import app.model.entities.Figurita;
-import app.model.entities.FiguritaIntercambiable;
-import app.model.entities.MedioComunicacion;
-import app.model.entities.MedioDeContacto;
-import app.model.entities.Perfil;
-import app.model.entities.Rol;
-import app.model.entities.Seleccion;
-import app.model.entities.Subasta;
-import app.model.entities.Usuario;
+import app.model.entities.*;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPerfiles;
@@ -69,7 +60,7 @@ public class SubastaServiceTest {
         coleccionSinMessi, telegram("@lucas"), new ArrayList<>());
 
     Coleccion coleccionRepetidos = new Coleccion();
-    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, new ArrayList<>()));
+    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, MetodoIntercambio.INTERCAMBIO));
     sofia = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Sofía",
         coleccionRepetidos, telegram("@sofia"), new ArrayList<>());
   }

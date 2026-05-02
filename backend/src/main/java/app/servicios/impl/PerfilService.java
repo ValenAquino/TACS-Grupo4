@@ -1,6 +1,7 @@
 package app.servicios.impl;
 
 import app.dto.CalificacionDto;
+import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
@@ -97,16 +98,31 @@ public class PerfilService implements IPerfilService {
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
     List<Sugerencia> sugerencias = new ArrayList<>();
 
+    //TODO: Esto debe estar en el motor de la base de datos en el futuro
     perfiles.forEach(perfil -> {
-      Sugerencia sugerencia = new Sugerencia(perfil, new ArrayList<>());
+      Sugerencia sugerencia = new Sugerencia(perfil, new ArrayList<>(), new ArrayList<>());
 
-      perfil.getColeccion().getRepetidas().forEach(repetida -> {
-        if (perfilObjetivo.getColeccion().getFaltantes().contains(repetida.getFigurita())) {
-          sugerencia.getFiguritasSugeridas().add(repetida.getFigurita());
-        }
+      perfil.getColeccion().getRepetidas().forEach(miRepetida -> {
+
+        perfilObjetivo.getColeccion().getRepetidas().forEach(suRepetida -> {
+
+          boolean yoNecesito = perfilObjetivo
+              .getColeccion()
+              .getFaltantes()
+              .contains(miRepetida.getFigurita());
+
+          boolean elNecesita = perfil
+              .getColeccion()
+              .getFaltantes()
+              .contains(suRepetida.getFigurita());
+
+          if (yoNecesito && elNecesita) {
+            sugerencia.getFiguritasSugeridas().add(miRepetida.getFigurita());
+            sugerencia.getFiguritasNecesarias().add(suRepetida.getFigurita());
+          }
+        });
       });
-
-      if (!sugerencia.getFiguritasSugeridas().isEmpty()) {
+      if (!sugerencia.getFiguritasSugeridas().isEmpty() && !sugerencia.getFiguritasNecesarias().isEmpty()) {
         sugerencias.add(sugerencia);
       }
     });
@@ -114,9 +130,21 @@ public class PerfilService implements IPerfilService {
     return sugerencias.stream().map(SugerenciaDto::new).toList();
   }
 
-    @Override
-    public List<NotificacionesDto> obtenerNotificaciones(String userId) {
-        Perfil perfil = repositorioPerfiles.buscarPorId(userId);
+  @Override
+  public List<ContadorDto> obtenerContadores(String userId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(userId);
+
+    List<ContadorDto> contadores = new ArrayList<>();
+
+    contadores.add(new ContadorDto("repetidas",perfil.getColeccion().getRepetidas().size()));
+    contadores.add(new ContadorDto("faltantes",perfil.getColeccion().getFaltantes().size()));
+
+    return contadores;
+  }
+
+  @Override
+  public List<NotificacionesDto> obtenerNotificaciones(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
     return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
   }

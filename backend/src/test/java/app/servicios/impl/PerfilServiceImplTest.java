@@ -211,10 +211,13 @@ class PerfilServiceImplTest {
   @Test
   void obtenerSugerencias_conCoincidencias_retornaSugerencias() {
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita diMaria   = new Figurita("ARG-11", 11, "Di María",  Seleccion.ARGENTINA);
     usuario.getColeccion().getFaltantes().add(messi);
+    usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(diMaria, 2, new ArrayList<>()));
 
     Coleccion coleccionOtro = new Coleccion();
     coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, new ArrayList<>()));
+    coleccionOtro.getFaltantes().add(diMaria);
     Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO), "Juan",
         coleccionOtro, telegram("@juan"), new ArrayList<>());
 

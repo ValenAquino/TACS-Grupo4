@@ -15,7 +15,13 @@ const Sugerencias = () => {
             id; (string)
             nombre; (string)
             }
-        figuritas: [{
+        figuritasRecomendadas: [{
+            id: (string)
+            numero: (string)
+            jugador: (string)
+            seleccion: (string)
+        }],
+        figuritasNecesarias:[{
             id: (string)
             numero: (string)
             jugador: (string)

@@ -1,14 +1,35 @@
 import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
 import StatCard from "../../../components/ui/statcard/statcard.jsx";
 import styles from './sugerencias.module.css';
+import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
+import TodosSugerencias from "./tabs/todos/todosSugerencias.jsx";
 
 const Sugerencias = () => {
+
+    const TABS = [
+        { key: 'todos', label: 'Todos', component: TodosSugerencias, props: { } }
+    ];
+
+    {/*
+        perfil:{
+            id; (string)
+            nombre; (string)
+            }
+        figuritas: [{
+            id: (string)
+            numero: (string)
+            jugador: (string)
+            seleccion: (string)
+        }]
+    */}
+
     return (
         <div>
             <Breadcrumb crumbs={[{name: "Explorar", to: "/explorar"}, {name: "Sugerencias", to: "/sugerencias"}]}/>
 
             <h2>Sugerencias</h2>
-            <h4>Coincidencias entre tus faltantes y los repetidos de otros usuarios, y viceversa</h4>
+            <p className="fs-5 opacity-75">Coincidencias entre tus faltantes y los repetidos de otros usuarios, y viceversa</p>
+
             <hr/>
 
             <div className="d-flex flex-column flex-nowrap gap-3">
@@ -27,8 +48,9 @@ const Sugerencias = () => {
                             de todos los usuarios.</p>
                     </div>
                 </div>
-            </div>
 
+                <TabsContainer tabs={TABS}/>
+            </div>
         </div>
     )
 }

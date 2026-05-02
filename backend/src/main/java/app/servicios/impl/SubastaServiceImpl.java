@@ -87,4 +87,11 @@ public class SubastaServiceImpl implements ISubastaService {
 
     return new SubastaDto(subasta);
   }
+
+  @Override
+  public SubastaDto obtenerSubasta(String subastaId) {
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+
+    return new SubastaDto(subasta);
+  }
 }

@@ -1,4 +1,4 @@
-import SugerenciaCard from "../../sugerenciaCard.jsx";
+import SugerenciaCard from "../../sugerencia-card.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "../../../../../services/perfilService.js";
 

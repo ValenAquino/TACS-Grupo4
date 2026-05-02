@@ -2,7 +2,7 @@ import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
 import ContadorCard from "../../../components/ui/contador-card/contador-card.jsx";
 import styles from './sugerencias.module.css';
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
-import TodosSugerencias from "./tabs/todos/todosSugerencias.jsx";
+import TodosSugerencias from "./tabs/todos/todos-sugerencias.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarContadores} from "../../../services/perfilService.js";
 

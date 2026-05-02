@@ -1,6 +1,7 @@
 import Button from "../../../components/ui/button/button.jsx";
-import styles from "./sugerenciaCard.module.css";
-import FiguritaRecomendadaCard from "./figuritaRecomendadaCard.jsx";
+import styles from "./sugerencia-card.module.css";
+import FiguritaRecomendadaCard from "./figurita-recomendada-card.jsx";
+import PerfilSimple from "../../../components/ui/perfil-simple/perfil-simple.jsx";
 
 const SugerenciaCard = ({perfil, figuritasRecomendadas, figuritasNecesarias}) => {
     return (
@@ -9,10 +10,7 @@ const SugerenciaCard = ({perfil, figuritasRecomendadas, figuritasNecesarias}) =>
             {/* HEADER */}
             <div className="d-flex align-items-center justify-content-between">
 
-                <div className="d-flex align-items-center gap-2">
-                    <div className={styles.avatar}>{perfil.nombre.slice(0,1).toUpperCase()}</div>
-                    <p>{perfil.nombre}</p>
-                </div>
+                <PerfilSimple perfil={perfil}/>
             </div>
 
             <hr className="my-3"/>

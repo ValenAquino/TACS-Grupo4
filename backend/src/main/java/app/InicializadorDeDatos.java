@@ -154,9 +154,15 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Perfil sofia  = perfiles.buscarPorId("1001");
         Perfil matias = perfiles.buscarPorId("1002");
 
-        subastas.guardar(new Subasta("3000", sofia,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2),
-            griezmann, new ArrayList<>(), new ArrayList<>(), 0, false));
+
+        Propuesta unaOferta = new Propuesta("4000", matias, sofia, List.of(vinicius), griezmann);
+        Propuesta otraOfertaDistinta = new Propuesta("4000", matias, sofia, List.of(vinicius), griezmann);
+
+        Subasta unaSubasta = new Subasta("3000", sofia,
+            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(1).plusMinutes(20).plusSeconds(33) ,
+            griezmann, List.of(unaOferta, otraOfertaDistinta), new ArrayList<>(), 0, false);
+
+        subastas.guardar(unaSubasta);
 
         subastas.guardar(new Subasta("3001", matias,
             LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1),

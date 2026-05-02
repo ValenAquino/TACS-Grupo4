@@ -4,19 +4,6 @@
     background-color: #fff;
 }
 
-/* avatar */
-.avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: #d1e7dd;
-    color: #0f5132;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-}
-
 /* items */
 .itemGreen {
     background-color: rgba(25, 135, 84, 0.1);

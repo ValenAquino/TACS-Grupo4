@@ -23,4 +23,6 @@ public interface ISubastaService {
      */
     SubastaDto ofertarEnSubasta(String userId, String usuarioDestinoId,
                                 String subastaId, List<String> rawFiguritasId);
+
+    SubastaDto obtenerSubasta(String subastaId);
 }

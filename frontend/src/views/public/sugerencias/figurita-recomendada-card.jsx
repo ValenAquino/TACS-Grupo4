@@ -1,4 +1,4 @@
-import styles from "./sugerenciaCard.module.css";
+import styles from "./sugerencia-card.module.css";
 
 const FiguritaRecomendadaCard = ({fig, verde=true}) => {
     return (

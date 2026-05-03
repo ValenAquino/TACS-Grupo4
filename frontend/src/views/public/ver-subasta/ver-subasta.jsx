@@ -7,9 +7,11 @@ import SectionCard from "../../../components/ui/section-card/section-card.jsx";
 import SectionTitle from "../../../components/ui/section-title/section-title.jsx";
 import PerfilSimple from "../../../components/ui/perfil-simple/perfil-simple.jsx";
 import OfertaCard from "./oferta-card.jsx";
+import TuOfertaCard from "./tu-oferta-card.jsx";
+import Button from "../../../components/ui/button/button.jsx";
 
 const VerSubasta = () => {
-    const subId = useParams()
+    const {subId} = useParams()
     const [cargando, setCargando] = useState(true)
     const [subasta, setSubasta] = useState(undefined)
 
@@ -23,10 +25,21 @@ const VerSubasta = () => {
         return `${horas.toString().padStart(2,"0")}:${minutos.toString().padStart(2,"0")}:${segundos.toString().padStart(2,"0")}`
     }
 
+    const mostrarOfertaDeUsuario = (ofertas) => {
+        const ofertaPropia = ofertas.find(o => o.autor.id === "1002") //Mismo Id que la sesion
+
+        return ofertaPropia !== undefined ? <TuOfertaCard oferta={ofertaPropia}/> :
+            <div className={"d-flex flex-row justify-content-center align-items-center gap-2"}>
+                <p>¿Aún no ofertaste?</p>
+                <Button >Proponer Intercambio</Button>
+            </div>
+    }
+
     const cargarSubasta = async () => {
         try {
             setCargando(true)
-            const payload = await buscarSubasta(subId);
+            const payload = await buscarSubasta({subId});
+            console.log(payload)
             setSubasta(payload)
         } catch (err){
             console.log(err)
@@ -83,12 +96,14 @@ const VerSubasta = () => {
                     </SectionCard.Section>
                 </SectionCard>
 
+                {/*
                 <SectionCard>
                     <SectionTitle>CONDICIONES PARA OFERTAR</SectionTitle>
                     <SectionCard.Section>
                         ??
                     </SectionCard.Section>
                 </SectionCard>
+                */}
 
                 <SectionCard>
                     <SectionTitle>OFERTAS ACTUALES ({subasta.ofertas.length})</SectionTitle>
@@ -97,8 +112,9 @@ const VerSubasta = () => {
                             {subasta.ofertas.map((oferta,index) => <OfertaCard key={index} position={index+1} propuesta={oferta} />)}
                         </div>
                     </SectionCard.Section>
+                    <SectionTitle>TU OFERTA</SectionTitle>
                     <SectionCard.Section>
-                        <div className="w-100 h-100">a</div>
+                        {mostrarOfertaDeUsuario(subasta.ofertas)}
                     </SectionCard.Section>
                 </SectionCard>
             </>

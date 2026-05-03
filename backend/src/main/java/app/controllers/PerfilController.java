@@ -6,12 +6,14 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
+import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.servicios.IPerfilService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,8 +62,8 @@ public class PerfilController {
         );
     }
     @GetMapping("/{user_id}/sugerencias")
-    public ResponseEntity<List<SugerenciaDto>> obtenerSugerencias(@PathVariable String user_id) {
-        List<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id);
+    public ResponseEntity<List<SugerenciaDto>> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
+        List<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
 
         return ResponseEntity.accepted().body(sugerenciasDto);
     }

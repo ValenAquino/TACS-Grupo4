@@ -24,24 +24,6 @@ const UnoAUnoSugerencias = () => {
     useEffect(() => {
         cargarSugerencias()
     }, []);
-    /*
-        perfil:{
-            id; (string)
-            nombre; (string)
-            }
-        figuritasRecomendadas: [{
-            id: (string)
-            numero: (string)
-            jugador: (string)
-            seleccion: (string)
-        }],
-        figuritasNecesarias:[{
-            id: (string)
-            numero: (string)
-            jugador: (string)
-            seleccion: (string)
-        }]
-    */
 
     const mostrarSugerencias = () => {
         return (

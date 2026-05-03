@@ -6,6 +6,7 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
+import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
@@ -93,7 +94,7 @@ public class PerfilService implements IPerfilService {
   }
 
   @Override
-  public List<SugerenciaDto> obtenerSugerencias(String userId) {
+  public List<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtro) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorId(userId);
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
     List<Sugerencia> sugerencias = new ArrayList<>();
@@ -127,7 +128,9 @@ public class PerfilService implements IPerfilService {
       }
     });
 
-    return sugerencias.stream().map(SugerenciaDto::new).toList();
+    List<Sugerencia> sugerenciasFiltradas = sugerencias.stream().filter(filtro::verifica).toList();
+
+    return sugerenciasFiltradas.stream().map(SugerenciaDto::new).toList();
   }
 
   @Override

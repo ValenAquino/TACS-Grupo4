@@ -14,15 +14,38 @@ const VerSubasta = () => {
     const {subId} = useParams()
     const [cargando, setCargando] = useState(true)
     const [subasta, setSubasta] = useState(undefined)
+    const [tiempo, setTiempo] = useState(0)
 
     const procesarDuracion = () => {
-        const horas = Math.floor(subasta.duracion / 60)
 
-        const minutos = subasta.duracion - horas * 60
-
-        const segundos = (subasta.duracion - Math.floor(subasta.duracion)) * 60
+        const horas = Math.floor(tiempo / 3600)
+        const minutos = Math.floor((tiempo % 3600) / 60)
+        const segundos = tiempo % 60
 
         return `${horas.toString().padStart(2,"0")}:${minutos.toString().padStart(2,"0")}:${segundos.toString().padStart(2,"0")}`
+    }
+
+    const calcularDuracionTotal = () => {
+        const inicio = new Date(subasta.inicio)
+        const cierre = new Date(subasta.cierre)
+
+        const diffMs = cierre - inicio
+
+        const horas = Math.floor(diffMs / (1000 * 60 * 60))
+        const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+
+        return `${horas}h ${minutos}m`
+    }
+
+    const formatearFecha = (fecha) => {
+        const f = new Date(fecha)
+
+        const dia = f.getDate()
+        const mes = f.toLocaleString('es-AR', { month: 'short' }) // abr, may, etc
+        const horas = f.getHours().toString().padStart(2, "0")
+        const minutos = f.getMinutes().toString().padStart(2, "0")
+
+        return `${dia} ${mes}, ${horas}:${minutos}`
     }
 
     const mostrarOfertaDeUsuario = (ofertas) => {
@@ -41,6 +64,7 @@ const VerSubasta = () => {
             const payload = await buscarSubasta({subId});
             console.log(payload)
             setSubasta(payload)
+            setTiempo(payload.tiempo_restante)
         } catch (err){
             console.log(err)
         } finally {
@@ -51,6 +75,16 @@ const VerSubasta = () => {
     useEffect(() => {
         cargarSubasta()
     }, []);
+
+    useEffect(() => {
+        if (!tiempo) return
+
+        const interval = setInterval(() => {
+            setTiempo(prev => Math.max(prev - 1, 0))
+        }, 1000)
+
+        return () => clearInterval(interval)
+    }, [tiempo])
 
     const mostrarSubasta = () => {
         return (
@@ -76,14 +110,30 @@ const VerSubasta = () => {
                 <SectionCard>
                     <SectionTitle>DETALLES DE LA SUBASTA</SectionTitle>
                     <SectionCard.Section>
-                        <div className="d-flex flex-row  flex-wrap">
-                            <div className="d-flex justify-content-between flex-row w-100">
-                                <p className="w-50">Inicio</p>
-                                <p className="w-50">Cierre</p>
+                        <div className="d-flex flex-column gap-3">
+
+                            {/* FILA 1 */}
+                            <div className="d-flex">
+                                <div className="w-50">
+                                    <h5>Inicio</h5>
+                                    <p>{formatearFecha(subasta.inicio)}</p>
+                                </div>
+                                <div className="w-50">
+                                    <h5>Cierre</h5>
+                                    <p>{formatearFecha(subasta.cierre)}</p>
+                                </div>
                             </div>
-                            <div className="d-flex justify-content-between flex-row w-100">
-                                <p className="w-50">Duracion</p>
-                                <p className="w-50">Ofertas</p>
+
+                            {/* FILA 2 */}
+                            <div className="d-flex">
+                                <div className="w-50">
+                                    <h5>Duración</h5>
+                                    <p>{calcularDuracionTotal()}</p>
+                                </div>
+                                <div className="w-50">
+                                    <h5>Ofertas recibidas</h5>
+                                    <p>{subasta.ofertas.length} ofertas</p>
+                                </div>
                             </div>
                         </div>
                     </SectionCard.Section>

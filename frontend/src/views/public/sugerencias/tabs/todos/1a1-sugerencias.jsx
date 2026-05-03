@@ -1,8 +1,9 @@
 import SugerenciaCard from "../../sugerencia-card.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "../../../../../services/perfilService.js";
+import ExtraInfo from "../../../../../components/ui/extra-info/extra-info.jsx";
 
-const TodosSugerencias = () => {
+const UnoAUnoSugerencias = () => {
 
     const [cargando, setCargando] = useState(true)
     const [sugerencias, setSugerencias] = useState([])
@@ -10,7 +11,7 @@ const TodosSugerencias = () => {
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias({userId:1001})
+            const payload = await buscarSugerencias({userId:1001, tipo: "1a1"})
             setSugerencias(payload)
 
         } catch (error) {
@@ -45,11 +46,14 @@ const TodosSugerencias = () => {
     const mostrarSugerencias = () => {
         return (
             <>
+                <ExtraInfo>
+                    <p>Sugerencias de intercambio uno a uno, para obtener dicha figurita solo se necesita una de las tuyas!</p>
+                </ExtraInfo>
                 {
                     sugerencias.length > 0 ?
                         sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}
-                                                     figuritasNecesarias = {s.figuritas_necesarias}
-                                                     figuritasRecomendadas = {s.figuritas_recomendadas}/>
+                                                             figuritasNecesarias = {s.figuritas_necesarias}
+                                                             figuritasRecomendadas = {s.figuritas_recomendadas}/>
                         ) : <h2>No pudimos encontrar sugerencias!</h2>
                 }
             </>
@@ -63,4 +67,4 @@ const TodosSugerencias = () => {
     )
 }
 
-export default TodosSugerencias
+export default UnoAUnoSugerencias

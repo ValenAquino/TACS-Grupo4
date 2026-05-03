@@ -27,7 +27,6 @@ const VerSubasta = () => {
         try {
             setCargando(true)
             const payload = await buscarSubasta(subId);
-            console.log(payload)
             setSubasta(payload)
         } catch (err){
             console.log(err)
@@ -97,6 +96,9 @@ const VerSubasta = () => {
                         <div className="d-flex flex-column gap-2">
                             {subasta.ofertas.map((oferta,index) => <OfertaCard key={index} position={index+1} propuesta={oferta} />)}
                         </div>
+                    </SectionCard.Section>
+                    <SectionCard.Section>
+                        <div className="w-100 h-100">a</div>
                     </SectionCard.Section>
                 </SectionCard>
             </>

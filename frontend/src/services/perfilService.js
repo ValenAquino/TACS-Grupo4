@@ -14,10 +14,11 @@ export const buscarContadores = async ({userId}) => {
     }
 };
 
-export const buscarSugerencias = async ({userId}) => {
+export const buscarSugerencias = async ({userId, tipo}) => {
     try {
         const { data } = await api.get(
-            `${PERFIL_URL}/${userId}/sugerencias`
+            `${PERFIL_URL}/${userId}/sugerencias`,
+            {params: {tipo}}
         );
         return data;
     } catch (error) {

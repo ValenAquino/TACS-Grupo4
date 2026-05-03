@@ -28,6 +28,7 @@ const Repetidas = ({ colId }) => {
                     pagina,
                     limite: 10,
                 });
+                console.log(repetidasApi);
 
                 setRepetidas(repetidasApi);
             } catch (err) {

@@ -3,14 +3,14 @@ import SectionCard from "../../../components/ui/section-card/section-card.jsx";
 import AutocompleteInput from "../../../components/ui/autocomplete-input/autocomplete-input.jsx";
 import Button from "../../../components/ui/button/button.jsx";
 import {buscarFiguritas} from "../../../services/figuritaService.js";
-import {agregarFaltante, agregarRepetida} from "../../../services/coleccionService.js";
+import {agregarRepetida} from "../../../services/coleccionService.js";
 
 const NuevaRepetida = () => {
     const [figurita, setFigurita] = useState(undefined);
     const [numero, setNumero]   = useState('');
     const [jugador, setJugador] = useState('');
     const [cantidad, setCantidad] = useState(0);
-    const [modoIntercambio, setModoIntercambio] = useState(undefined);
+    const [modosIntercambio, setModosIntercambio] = useState([]);
 
     const colId = "2"
 
@@ -27,6 +27,14 @@ const NuevaRepetida = () => {
     const buscarPorNumero = async (texto) => {
         const resultado = await buscarFiguritas({ id: texto });
         handleSelect(resultado[0]);
+    };
+
+    const toggleMetodo = (metodo) => {
+        setModosIntercambio((prev) =>
+            prev.includes(metodo)
+                ? prev.filter((m) => m !== metodo)
+                : [...prev, metodo]
+        );
     };
 
     return (
@@ -105,35 +113,63 @@ const NuevaRepetida = () => {
 
                         </div>
 
-                        <label
-                            className="form-label text-muted"
-                            style={{ fontSize: '0.85rem' }}
-                        >
-                            Modo de intercambio
-                        </label>
+                        <div>
+                            <label className="form-label text-muted">
+                                Métodos de intercambio
+                            </label>
 
-                        <select
-                            className="form-select"
-                            value={modoIntercambio}
-                            onChange={(e) => setModoIntercambio(e.target.value)}
-                        >
-                            <option value="">Elegir modo de intercambio</option>
-                            <option value="SUBASTA">SUBASTA</option>
-                            <option value="INTERCAMBIO">INTERCAMBIO</option>
-                            <option value="SUBASTA_E_INTERCAMBIO">AMBOS</option>
-                        </select>
+                            <div className="d-flex flex-column gap-2">
+
+                                <div className="form-check">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="subasta"
+                                        checked={modosIntercambio.includes("SUBASTA")}
+                                        onChange={() =>
+                                            toggleMetodo("SUBASTA")
+                                        }
+                                    />
+                                    <label
+                                        className="form-check-label"
+                                        htmlFor="subasta"
+                                    >
+                                        Subasta
+                                    </label>
+                                </div>
+
+                                <div className="form-check">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="intercambio"
+                                        checked={modosIntercambio.includes("INTERCAMBIO")}
+                                        onChange={() =>
+                                            toggleMetodo("INTERCAMBIO")
+                                        }
+                                    />
+                                    <label
+                                        className="form-check-label"
+                                        htmlFor="intercambio"
+                                    >
+                                        Intercambio
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </SectionCard.Section>
             </SectionCard>
 
             <Button
                 label="Publicar Repetida ↗"
-                disabled={!figurita}
+                disabled={!figurita || modosIntercambio.length === 0}
                 onClick={() => {
-                    agregarRepetida(colId, {id: figurita.id, cantidad: cantidad, modoIntercambio: modoIntercambio});
+                    agregarRepetida(colId, {id: figurita.id, cantidad: cantidad, modosIntercambio: modosIntercambio});
                     alert("Se guardo la repetida")
                     setNumero('')
                     setJugador('')
+                    setModosIntercambio([])
                     setFigurita(undefined)
                 }}
             />

@@ -42,13 +42,12 @@ export const agregarFaltante = async (colId, faltante) => {
 
 export const agregarRepetida = async (colId, repetida) => {
     try {
-        console.log("Repetida", repetida);
         const { data } = await api.post(
             `${COLECCIONES_URL}/${colId}/repetidas`,
             {
                 fig_id: repetida.id,
                 cantidad_existente: repetida.cantidad,
-                modo_intercambio: repetida.modoIntercambio
+                modos_intercambio: repetida.modosIntercambio
             }
         );
 

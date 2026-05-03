@@ -23,7 +23,7 @@ public interface IColeccionService {
      * que la tienen en su lista de faltantes.
      */
     void agregarRepetida(String colId, String figId, Integer
-        cantidadDisponible, MetodoIntercambio modosIntercambio);
+        cantidadDisponible, List<MetodoIntercambio> modosIntercambio);
 
     /**
      * Busca las figuritas faltantes de la coleccion con la opcion de aplicar filtros.

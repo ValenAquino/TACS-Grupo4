@@ -25,13 +25,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class FiguritaServiceTest {
   @Mock
   RepositorioFiguritas repositorioFiguritas;
-  @Mock
-  RepositorioFiguritasIntercambiables repositorioIntercambiables;
+
   @InjectMocks
   FiguritaService figuritaService;
   Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-  FiguritaIntercambiable intercambiable = new FiguritaIntercambiable(
-      messi, 2, MetodoIntercambio.INTERCAMBIO, "1000");
+
   @Test
   void buscarFiguritasPorSeleccionDevuelveResultados() {
     FiguritasFiltro filtros = new FiguritasFiltro(null, null, Seleccion.ARGENTINA, null);

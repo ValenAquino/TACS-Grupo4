@@ -33,7 +33,8 @@ class ColeccionTest {
   @Test
   void agregarNuevaRepetida() {
     Coleccion coleccion = new Coleccion("10");
-    MetodoIntercambio metodoIntercambio = MetodoIntercambio.SUBASTA;
+    List<MetodoIntercambio> metodoIntercambio = List.of(MetodoIntercambio.SUBASTA);
+
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
         messi, 2, metodoIntercambio);
@@ -53,7 +54,7 @@ class ColeccionTest {
   @Test
   void agregarNuevaRepetidaDuplicada() {
     Coleccion coleccion = new Coleccion("10");
-    MetodoIntercambio metodoIntercambio = MetodoIntercambio.SUBASTA;
+    List<MetodoIntercambio> metodoIntercambio = List.of(MetodoIntercambio.SUBASTA);
 
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(

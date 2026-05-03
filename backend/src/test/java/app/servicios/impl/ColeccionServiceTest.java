@@ -83,7 +83,7 @@ class ColeccionServiceTest {
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
     when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(interesado));
 
-    service.agregarRepetida("col-1",  "ARG-10", 2, MetodoIntercambio.INTERCAMBIO);
+    service.agregarRepetida("col-1",  "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     assertEquals(1, coleccion.getRepetidas().size());
     verify(repositorioColecciones).guardar(coleccion);
@@ -96,7 +96,7 @@ class ColeccionServiceTest {
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
     when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of());
 
-    service.agregarRepetida("col-1", "ARG-10", 2, MetodoIntercambio.INTERCAMBIO);
+    service.agregarRepetida("col-1", "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     verify(notificacionService).notificarInteresados(eq(List.of()), anyString());
   }

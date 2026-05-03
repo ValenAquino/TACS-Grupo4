@@ -73,7 +73,7 @@ class PerfilServiceImplTest {
 
   @Test
   void getOperacionesUsuario_usuarioExistente_retornaOperaciones() {
-    usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(null, 1, MetodoIntercambio.INTERCAMBIO));
+    usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(null, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
 
     Propuesta oferta = propuesta("p-3", otro, usuario, EstadoProceso.ACEPTADO);
     Subasta subastaActiva = new Subasta("s-1", usuario,
@@ -119,7 +119,7 @@ class PerfilServiceImplTest {
   @Test
   void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
     Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-    FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, MetodoIntercambio.INTERCAMBIO);
+    FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
     when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("u-1")).thenReturn(List.of(fi));
@@ -201,7 +201,7 @@ class PerfilServiceImplTest {
     usuario.getColeccion().getFaltantes().add(messi);
 
     Coleccion coleccionOtro = new Coleccion();
-    coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, MetodoIntercambio.INTERCAMBIO));
+    coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
     Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO), "Juan",
         coleccionOtro, telegram("@juan"), new ArrayList<>());
 

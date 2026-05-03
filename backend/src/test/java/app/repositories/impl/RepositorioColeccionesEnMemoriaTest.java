@@ -107,9 +107,9 @@ public class RepositorioColeccionesEnMemoriaTest {
     Coleccion coleccion = new Coleccion("10");
 
     coleccion.getRepetidas().addAll(List.of(
-        new FiguritaIntercambiable(messi, 2, MetodoIntercambio.SUBASTA),
-        new FiguritaIntercambiable(diMaria, 3, MetodoIntercambio.INTERCAMBIO),
-        new FiguritaIntercambiable(dybala, 1, MetodoIntercambio.SUBASTA_E_INTERCAMBIO)
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
     ));
 
     repositorio.guardar(coleccion);
@@ -130,9 +130,9 @@ public class RepositorioColeccionesEnMemoriaTest {
     Coleccion coleccion = new Coleccion("10");
 
     coleccion.getRepetidas().addAll(List.of(
-        new FiguritaIntercambiable(messi, 2, MetodoIntercambio.SUBASTA),
-        new FiguritaIntercambiable(diMaria, 3, MetodoIntercambio.INTERCAMBIO),
-        new FiguritaIntercambiable(dybala, 1, MetodoIntercambio.SUBASTA_E_INTERCAMBIO)
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
     ));
 
     repositorio.guardar(coleccion);
@@ -151,9 +151,9 @@ public class RepositorioColeccionesEnMemoriaTest {
     Coleccion coleccion = new Coleccion("10");
 
     coleccion.getRepetidas().addAll(List.of(
-        new FiguritaIntercambiable(messi, 2, MetodoIntercambio.SUBASTA),
-        new FiguritaIntercambiable(diMaria, 3, MetodoIntercambio.INTERCAMBIO),
-        new FiguritaIntercambiable(dybala, 1, MetodoIntercambio.SUBASTA_E_INTERCAMBIO)
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
     ));
 
     repositorio.guardar(coleccion);
@@ -163,8 +163,8 @@ public class RepositorioColeccionesEnMemoriaTest {
         new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, 10, 1)
     );
 
-    assertEquals(2, dto.getResultados());
-    assertEquals(2, dto.getData().size());
+    assertEquals(1, dto.getResultados());
+    assertEquals(1, dto.getData().size());
   }
 
   @Test
@@ -172,9 +172,9 @@ public class RepositorioColeccionesEnMemoriaTest {
     Coleccion coleccion = new Coleccion("10");
 
     coleccion.getRepetidas().addAll(List.of(
-        new FiguritaIntercambiable(messi, 1, MetodoIntercambio.SUBASTA),
-        new FiguritaIntercambiable(diMaria, 1, MetodoIntercambio.SUBASTA),
-        new FiguritaIntercambiable(dybala, 1, MetodoIntercambio.SUBASTA)
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
     ));
 
     repositorio.guardar(coleccion);

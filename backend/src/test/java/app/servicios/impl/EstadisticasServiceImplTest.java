@@ -59,11 +59,11 @@ class EstadisticasServiceImplTest {
     @Test
     void getEstadisticas_conDatos_retornaValoresCorrectos() {
         Coleccion coleccionConDos = new Coleccion();
-        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 1, MetodoIntercambio.INTERCAMBIO));
-        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 2, MetodoIntercambio.INTERCAMBIO));
+        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
+        coleccionConDos.getRepetidas().add(new FiguritaIntercambiable(null, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
 
         Coleccion coleccionConUna = new Coleccion();
-        coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, MetodoIntercambio.INTERCAMBIO));
+        coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, List.of(MetodoIntercambio.INTERCAMBIO)));
 
         Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
         Perfil u2 = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO), "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());

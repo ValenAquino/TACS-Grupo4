@@ -16,7 +16,7 @@ public class FiguritaIntercambiableDto {
   private Seleccion seleccion;
   private Integer cantidadExistente;
   private Integer cantidadReservada;
-  private MetodoIntercambio metodo;
+  private List<MetodoIntercambio> metodos;
   @Experimental
   private String usuarioId;
 
@@ -27,7 +27,7 @@ public class FiguritaIntercambiableDto {
     this.seleccion = f.getFigurita().getSeleccion();
     this.cantidadExistente = f.getCantidadExistente();
     this.cantidadReservada = f.getCantidadReservada();
-    this.metodo = f.getMetodo();
+    this.metodos = f.getMetodos();
     this.usuarioId = f.getPerfilId();
   }
 }

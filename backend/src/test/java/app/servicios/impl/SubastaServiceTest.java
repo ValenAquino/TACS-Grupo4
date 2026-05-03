@@ -60,7 +60,7 @@ public class SubastaServiceTest {
         coleccionSinMessi, telegram("@lucas"), new ArrayList<>());
 
     Coleccion coleccionRepetidos = new Coleccion();
-    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, MetodoIntercambio.INTERCAMBIO));
+    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
     sofia = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Sofía",
         coleccionRepetidos, telegram("@sofia"), new ArrayList<>());
   }

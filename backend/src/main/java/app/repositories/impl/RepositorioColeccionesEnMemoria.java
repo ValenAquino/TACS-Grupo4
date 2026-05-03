@@ -54,15 +54,13 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
 
     if (Objects.equals(filtros.metodoIntercambio(), MetodoIntercambio.SUBASTA)) {
       repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodo().equals(MetodoIntercambio.SUBASTA)
-              || fig.getMetodo().equals(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
+          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.SUBASTA))
           .toList();
     }
 
     if (Objects.equals(filtros.metodoIntercambio(), MetodoIntercambio.INTERCAMBIO)) {
       repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodo().equals(MetodoIntercambio.INTERCAMBIO)
-              || fig.getMetodo().equals(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
+          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.INTERCAMBIO))
           .toList();
     }
 

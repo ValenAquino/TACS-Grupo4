@@ -16,6 +16,6 @@ public record RepetidaRequest (
   @JsonProperty("fig_id")
   String figId,
 
-  @JsonProperty("modo_intercambio")
-  MetodoIntercambio modoIntercambio
+  @JsonProperty("modos_intercambio")
+  List<MetodoIntercambio> modosIntercambio
 ) {}

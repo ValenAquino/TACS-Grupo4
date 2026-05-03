@@ -44,7 +44,7 @@ public class ColeccionController {
         @RequestBody RepetidaRequest request) {
 
         coleccionService.agregarRepetida(col_id,
-            request.figId(), request.cantidadExistente(), request.modoIntercambio());
+            request.figId(), request.cantidadExistente(), request.modosIntercambio());
 
         return ResponseEntity.status(201).build();
     }

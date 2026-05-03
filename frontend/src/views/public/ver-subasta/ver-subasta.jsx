@@ -93,8 +93,8 @@ const VerSubasta = () => {
                     <div className={styles.figuritaImagen + " bg-white rounded-3 "}>
                     </div>
 
-                    <h4>{subasta.figurita.jugador}</h4>
-                    <h6>{subasta.figurita.seleccion}</h6>
+                    <h4 className={"text-white"}>{subasta.figurita.jugador}</h4>
+                    <h6 className={"text-white"}>{subasta.figurita.seleccion}</h6>
 
                 </div>
                <SectionCard>

@@ -2,13 +2,10 @@ import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
 import ContadorCard from "../../../components/ui/contador-card/contador-card.jsx";
 import styles from './sugerencias.module.css';
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
-import TodosSugerencias from "./tabs/todos/todos-sugerencias.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarContadores} from "../../../services/perfilService.js";
-import UnoAUnoSugerencias from "./tabs/todos/1a1-sugerencias.jsx";
 import ExtraInfo from "../../../components/ui/extra-info/extra-info.jsx";
-import NAUnoSugerencias from "./tabs/todos/na1-sugerencias.jsx";
-import UnoANSugerencias from "./tabs/todos/1an-sugerencias.jsx";
+import MostradorSugerencias from "./tabs/todos/mostrador-sugerencias.jsx";
 
 const Sugerencias = () => {
 
@@ -16,10 +13,10 @@ const Sugerencias = () => {
     const [contadores, setContadores] = useState([])
 
     const TABS = [
-        { key: 'todos', label: 'Todos', component: TodosSugerencias, props: {} },
-        { key:"1a1", label: "1 a 1", component: UnoAUnoSugerencias, props: {} },
-        { key:"na1", label: "N a 1", component: NAUnoSugerencias, props: {} },
-        { key:"1an", label: "1 a N", component: UnoANSugerencias, props: {}}
+        { key: 'todos', label: 'Todos', component: MostradorSugerencias, props: {} },
+        { key:"1a1", label: "1 a 1", component: MostradorSugerencias, props: {tipo: "1a1", extraInfoChildren:<p>Sugerencias de intercambio uno a uno, para obtener dicha figurita solo se necesita una de las tuyas!</p>} },
+        { key:"na1", label: "N a 1", component: MostradorSugerencias, props: {tipo: "Na1" , extraInfoChildren: <p>Sugerencias de intercambio muchos a uno, para obtener la figurita se necesitan mas de una de las tuyas!</p>} },
+        { key:"1an", label: "1 a N", component: MostradorSugerencias, props: {tipo: "1aN", extraInfoChildren: <p>Sugerencias de intercambio uno a muchos, podrias obtener mas de una figurita a cambio de una de las tuyas!</p>}}
     ];
 
     const cargarContadores = useCallback(async () => {

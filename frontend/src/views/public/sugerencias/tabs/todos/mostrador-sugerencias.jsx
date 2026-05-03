@@ -3,7 +3,7 @@ import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "../../../../../services/perfilService.js";
 import ExtraInfo from "../../../../../components/ui/extra-info/extra-info.jsx";
 
-const NAUnoSugerencias = () => {
+const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
 
     const [cargando, setCargando] = useState(true)
     const [sugerencias, setSugerencias] = useState([])
@@ -11,7 +11,7 @@ const NAUnoSugerencias = () => {
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias({userId:1001, tipo: "Na1"})
+            const payload = await buscarSugerencias({userId:1001, tipo})
             setSugerencias(payload)
 
         } catch (error) {
@@ -23,19 +23,39 @@ const NAUnoSugerencias = () => {
 
     useEffect(() => {
         cargarSugerencias()
-    }, []);
+    }, [tipo]);
+    /*
+        perfil:{
+            id; (string)
+            nombre; (string)
+            }
+        figuritasRecomendadas: [{
+            id: (string)
+            numero: (string)
+            jugador: (string)
+            seleccion: (string)
+        }],
+        figuritasNecesarias:[{
+            id: (string)
+            numero: (string)
+            jugador: (string)
+            seleccion: (string)
+        }]
+    */
 
     const mostrarSugerencias = () => {
         return (
             <>
-                <ExtraInfo>
-                    <p>Sugerencias de intercambio muchos a uno, para obtener la figurita se necesitan mas de una de las tuyas!</p>
-                </ExtraInfo>
+                {
+                    extraInfoChildren ? <ExtraInfo>
+                        {extraInfoChildren}
+                    </ExtraInfo> : null
+                }
                 {
                     sugerencias.length > 0 ?
                         sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}
-                                                             figuritasNecesarias = {s.figuritas_necesarias}
-                                                             figuritasRecomendadas = {s.figuritas_recomendadas}/>
+                                                     figuritasNecesarias = {s.figuritas_necesarias}
+                                                     figuritasRecomendadas = {s.figuritas_recomendadas}/>
                         ) : <h2>No pudimos encontrar sugerencias!</h2>
                 }
             </>
@@ -49,4 +69,4 @@ const NAUnoSugerencias = () => {
     )
 }
 
-export default NAUnoSugerencias
+export default MostradorSugerencias

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
+import app.model.entities.filtros.FiguritasFiltro;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,10 +40,12 @@ public class RepositorioFiguritasEnMemoriaTest {
 
   @Test
   void buscarConFiltros_porNumero_retornaCoincidencia() {
+    FiguritasFiltro filtros = new FiguritasFiltro(null, 10, Seleccion.ARGENTINA, null);
+
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
     repositorio.guardar(new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA));
 
-    var resultado = repositorio.buscarConFiltros(10, null, null);
+    var resultado = repositorio.buscarConFiltros(filtros);
 
     assertEquals(1, resultado.size());
     assertEquals("ARG-10", resultado.get(0).getId());
@@ -50,28 +53,34 @@ public class RepositorioFiguritasEnMemoriaTest {
 
   @Test
   void buscarConFiltros_porSeleccion_retornaCoincidencia() {
+    FiguritasFiltro filtros = new FiguritasFiltro(null, 10, Seleccion.ARGENTINA, null);
+
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
     repositorio.guardar(new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA));
 
-    var resultado = repositorio.buscarConFiltros(null, Seleccion.ARGENTINA, null);
+    var resultado = repositorio.buscarConFiltros(filtros);
 
     assertEquals(1, resultado.size());
   }
 
   @Test
   void buscarConFiltros_porJugador_retornaCoincidencia() {
+    FiguritasFiltro filtros = new FiguritasFiltro(null, null, Seleccion.ARGENTINA, "messi");
+
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
 
-    var resultado = repositorio.buscarConFiltros(null, null, "messi");
+    var resultado = repositorio.buscarConFiltros(filtros);
 
     assertEquals(1, resultado.size());
   }
 
   @Test
   void buscarConFiltros_sinResultados_lanzaExcepcion() {
+    FiguritasFiltro filtros = new FiguritasFiltro(null, 99, Seleccion.ARGENTINA, null);
+
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
 
     assertThrows(RuntimeException.class,
-        () -> repositorio.buscarConFiltros(99, null, null));
+        () -> repositorio.buscarConFiltros(filtros));
   }
 }

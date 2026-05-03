@@ -9,14 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import app.exceptions.FiguritaDuplicadaException;
-import app.model.entities.Coleccion;
-import app.model.entities.Figurita;
-import app.model.entities.MedioComunicacion;
-import app.model.entities.MedioDeContacto;
-import app.model.entities.Perfil;
-import app.model.entities.Rol;
-import app.model.entities.Seleccion;
-import app.model.entities.Usuario;
+import app.model.entities.*;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
@@ -88,10 +81,9 @@ class ColeccionServiceTest {
 
     when(repositorioColecciones.buscarPorId("col-1")).thenReturn(coleccion);
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(lucas);
     when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(interesado));
 
-    service.agregarRepetida("col-1", "u-1", "ARG-10", 2, List.of("INTERCAMBIO"));
+    service.agregarRepetida("col-1",  "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     assertEquals(1, coleccion.getRepetidas().size());
     verify(repositorioColecciones).guardar(coleccion);
@@ -102,10 +94,9 @@ class ColeccionServiceTest {
   void agregarRepetida_sinInteresados_noNotifica() {
     when(repositorioColecciones.buscarPorId("col-1")).thenReturn(coleccion);
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(lucas);
     when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of());
 
-    service.agregarRepetida("col-1", "u-1", "ARG-10", 2, List.of("INTERCAMBIO"));
+    service.agregarRepetida("col-1", "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     verify(notificacionService).notificarInteresados(eq(List.of()), anyString());
   }

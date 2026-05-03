@@ -1,16 +1,22 @@
 package app.servicios.impl;
 
+import app.dto.FaltantesDto;
+import app.dto.RepetidasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
+import app.model.entities.filtros.FaltantesFiltro;
+import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.servicios.IColeccionService;
 import app.servicios.INotificacionService;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,17 +40,14 @@ public class ColeccionService implements IColeccionService {
   }
 
   @Override
-  public void agregarRepetida(String colId, String usuarioId, String figId, Integer
-      cantidadExistente, List<String> modosIntercambio) {
+  public void agregarRepetida(String colId, String figId, Integer
+      cantidadExistente, List<MetodoIntercambio> modosIntercambio) {
+
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
     Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
 
-    Perfil perfil = this.repositorioUsuarios.buscarPorUsuarioId(usuarioId);
-
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
-        figurita, cantidadExistente, modosIntercambio.stream()
-        .map(MetodoIntercambio::fromString)
-        .toList(), perfil.getId());
+        figurita, cantidadExistente, modosIntercambio);
 
     coleccion.agregarRepetida(repetida);
     repositorioColecciones.guardar(coleccion);
@@ -57,35 +60,14 @@ public class ColeccionService implements IColeccionService {
     this.notificacionService.notificarInteresados(interesados, cuerpo);
   }
 
-  public List<Figurita> buscarFaltantes(String colId) {
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
-    return coleccion.getFaltantes();
+  @Override
+  public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {
+    return this.repositorioColecciones.buscarFaltantes(colId, filtros);
+
   }
 
-  public List<FiguritaIntercambiable> buscarRepetidas(String colId, boolean subasta, boolean intercambio, boolean ambos) {
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
-    List<FiguritaIntercambiable> repetidas = coleccion.getRepetidas();
-
-    if (subasta) {
-      repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.SUBASTA)
-              || fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
-          .toList();
-    }
-
-    if (intercambio) {
-      repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.INTERCAMBIO)
-              || fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
-          .toList();
-    }
-
-    if (ambos) {
-      repetidas = repetidas.stream()
-          .filter(fig -> fig.getMetodos().contains(MetodoIntercambio.SUBASTA_E_INTERCAMBIO))
-          .toList();
-    }
-
-    return repetidas;
+  @Override
+  public RepetidasDto buscarRepetidas(String colId, RepetidasFiltro filtros) {
+    return this.repositorioColecciones.buscarRepetidas(colId, filtros);
   }
 }

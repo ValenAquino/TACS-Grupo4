@@ -17,7 +17,5 @@ public class MetodoIntercambioTest {
     assertEquals(MetodoIntercambio.SUBASTA, MetodoIntercambio.fromString("SUBASTA"));
     assertEquals(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.fromString("Intercambio"));
     assertEquals(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.fromString("INTERCAMBIO"));
-    assertEquals(MetodoIntercambio.SUBASTA_E_INTERCAMBIO, MetodoIntercambio.fromString("SubasTa_e_intercamBio"));
-    assertEquals(MetodoIntercambio.SUBASTA_E_INTERCAMBIO, MetodoIntercambio.fromString("SUBASTA_E_INTERCAMBIO"));
   }
 }

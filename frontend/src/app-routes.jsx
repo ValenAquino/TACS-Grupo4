@@ -2,6 +2,8 @@ import { Route, Routes } from 'react-router-dom';
 import Home from "./views/public/home/home"
 import Layout from './components/layouts/layout/layout';
 import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
+import NuevaFaltante from "./views/public/nueva-faltante/nueva-faltante.jsx";
+import NuevaRepetida from "./views/public/nueva-repetida/nueva-repetida.jsx";
 
 
 const publics = [
@@ -12,6 +14,14 @@ const publics = [
     {
         path: '/mis-figuritas',
         element: <MisFiguritas />
+    },
+    {
+        path: '/mis-figuritas/nueva-faltante',
+        element: <NuevaFaltante />
+    },
+    {
+        path: '/mis-figuritas/nueva-repetida',
+        element: <NuevaRepetida />
     }
 ];
 

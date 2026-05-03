@@ -68,6 +68,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Figurita mbappe    = new Figurita("FRA-10", 10, "Mbappé",    Seleccion.FRANCIA);
         Figurita griezmann = new Figurita("FRA-7",   7, "Griezmann", Seleccion.FRANCIA);
         Figurita vinicius  = new Figurita("BRA-10", 10, "Vinicius",  Seleccion.BRASIL);
+        Figurita neymar    = new Figurita("BRA-11", 10, "Vinicius",  Seleccion.BRASIL);
         Figurita pedri     = new Figurita("ESP-10", 10, "Pedri",     Seleccion.ESPAÑA);
         Figurita kroos     = new Figurita("GER-8",   8, "Kroos",     Seleccion.ALEMANIA);
 
@@ -75,15 +76,16 @@ public class InicializadorDeDatos implements CommandLineRunner {
         figuritas.guardar(diMaria);
         figuritas.guardar(lautaro);
         figuritas.guardar(vinicius);
+        figuritas.guardar(neymar);
 
-        cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);
+        cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos, neymar);
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);
         cargarSubastas(griezmann, vinicius);
     }
 
     private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
-                                Figurita pedri, Figurita kroos) {
+                                Figurita pedri, Figurita kroos, Figurita neymar) {
         // Lucas
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
@@ -104,8 +106,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionSofia.setId("2");
         FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
         FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
+        FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
         coleccionSofia.getRepetidas().add(interMbappe);
         coleccionSofia.getRepetidas().add(interGriezmann);
+        coleccionSofia.getRepetidas().add(interNeymar);
         coleccionSofia.getFaltantes().add(messi);
         coleccionSofia.getFaltantes().add(lautaro);
         intercambiables.guardar(interMbappe);

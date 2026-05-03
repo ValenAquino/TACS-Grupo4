@@ -9,7 +9,7 @@ import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 const Repetidas = ({ colId }) => {
     const [repetidas, setRepetidas] = useState({});
     const [filtros, setFiltros] = useState({
-        metodoIntercambio: "SUBASTA_E_INTERCAMBIO",
+        metodoIntercambio: "",
     });
 
     const [loading, setLoading] = useState(true);
@@ -95,10 +95,10 @@ const Repetidas = ({ colId }) => {
                     label="Todas"
                     selected={
                         filtros.metodoIntercambio ===
-                        "SUBASTA_E_INTERCAMBIO"
+                        ""
                     }
                     onClick={() =>
-                        cambiarFiltro("SUBASTA_E_INTERCAMBIO")
+                        cambiarFiltro("")
                     }
                 />
 

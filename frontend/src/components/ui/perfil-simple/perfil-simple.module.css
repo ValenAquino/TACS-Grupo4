@@ -13,3 +13,16 @@
 .avatarContainer:hover {
     cursor: pointer;
 }
+
+.stars {
+    display: flex;
+    gap: 2px;
+}
+
+.filled {
+    color: gold;
+}
+
+.empty {
+    color: #ccc;
+}

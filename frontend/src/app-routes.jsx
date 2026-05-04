@@ -22,7 +22,9 @@ const publics = [
     },
     {
         path: '/mis-figuritas/nueva-repetida',
-        element: <NuevaRepetida />
+        element: <NuevaRepetida/>
+    },
+    {
         path: '/sugerencias',
         element: <Sugerencias />
     },

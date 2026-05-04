@@ -6,6 +6,7 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
+import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.servicios.IPerfilService;
@@ -62,10 +63,12 @@ public class PerfilController {
         );
     }
     @GetMapping("/{user_id}/sugerencias")
-    public ResponseEntity<List<SugerenciaDto>> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
-        List<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
+    public ResponseEntity<SugerenciaPaginadaDto> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
 
-        return ResponseEntity.accepted().body(sugerenciasDto);
+        System.out.println(filtro);
+        SugerenciaPaginadaDto sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
+
+        return ResponseEntity.ok().body(sugerenciasDto);
     }
 
     @GetMapping("/{user_id}/contadores")

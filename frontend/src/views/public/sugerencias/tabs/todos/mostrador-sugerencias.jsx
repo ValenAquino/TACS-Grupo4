@@ -2,17 +2,21 @@ import SugerenciaCard from "../../sugerencia-card.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "../../../../../services/perfilService.js";
 import ExtraInfo from "../../../../../components/ui/extra-info/extra-info.jsx";
+import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 
 const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
 
     const [cargando, setCargando] = useState(true)
     const [sugerencias, setSugerencias] = useState([])
+    const [pagina, setPagina] = useState(1)
+    const [paginasTotales, setPaginasTotales] = useState(1)
 
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias({userId:1001, tipo})
-            setSugerencias(payload)
+            const payload = await buscarSugerencias({userId:1001, tipo, pagina: pagina, limite:10})
+            setPaginasTotales(payload.paginas_totales)
+            setSugerencias(payload.data)
 
         } catch (error) {
             console.log(error)
@@ -24,24 +28,6 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     useEffect(() => {
         cargarSugerencias()
     }, [tipo]);
-    /*
-        perfil:{
-            id; (string)
-            nombre; (string)
-            }
-        figuritasRecomendadas: [{
-            id: (string)
-            numero: (string)
-            jugador: (string)
-            seleccion: (string)
-        }],
-        figuritasNecesarias:[{
-            id: (string)
-            numero: (string)
-            jugador: (string)
-            seleccion: (string)
-        }]
-    */
 
     const mostrarSugerencias = () => {
         return (
@@ -58,6 +44,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
                                                      figuritasRecomendadas = {s.figuritas_recomendadas}/>
                         ) : <h2>No pudimos encontrar sugerencias!</h2>
                 }
+                <Paginacion page={pagina} totalPages={paginasTotales} onChange={setPagina}/>
             </>
         )
     }

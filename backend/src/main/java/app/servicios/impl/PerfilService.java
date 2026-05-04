@@ -6,6 +6,7 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
+import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
@@ -94,7 +95,7 @@ public class PerfilService implements IPerfilService {
   }
 
   @Override
-  public List<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtro) {
+  public SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorId(userId);
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
     List<Sugerencia> sugerencias = new ArrayList<>();
@@ -128,9 +129,16 @@ public class PerfilService implements IPerfilService {
       }
     });
 
-    List<Sugerencia> sugerenciasFiltradas = sugerencias.stream().filter(filtro::verifica).toList();
 
-    return sugerenciasFiltradas.stream().map(SugerenciaDto::new).toList();
+    List<Sugerencia> sugerenciasFiltradas = sugerencias.stream().filter(filtros::verifica).toList();
+
+    int resultados = sugerenciasFiltradas.size();
+    int paginaActual = filtros.paginaActual();
+    int limite = filtros.limite();
+
+    List<SugerenciaDto> sugerenciasDto = sugerenciasFiltradas.stream().map(SugerenciaDto::new).toList();
+
+    return new SugerenciaPaginadaDto(sugerenciasDto, resultados, paginaActual, limite);
   }
 
   @Override

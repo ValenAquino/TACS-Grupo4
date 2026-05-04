@@ -139,11 +139,34 @@ La aplicación queda disponible en `http://localhost:8080`.
 
 ### Figuritas
 
-| Método | Endpoint     | Descripción                                            |
-|--------|--------------|--------------------------------------------------------|
-| GET    | `/figuritas` | Lista figuritas intercambiables con filtros opcionales |
+| Método | Endpoint     | Descripción                                                       |
+|--------|--------------|-------------------------------------------------------------------|
+| GET    | `/figuritas` | Lista figuritas intercambiables con filtros opcionales y paginación |
 
-**Query params opcionales:** `numero`, `seleccion`, `jugador`
+**Query params:**
+
+| Param           | Tipo    | Requerido | Default | Descripción                                          |
+|-----------------|---------|-----------|---------|------------------------------------------------------|
+| `numero`        | Integer | No        | —       | Número exacto de figurita                            |
+| `seleccion`     | Enum    | No        | —       | `ARGENTINA`, `BRASIL`, `FRANCIA`, `ESPAÑA`, `ALEMANIA` |
+| `jugador`       | String  | No        | —       | Nombre del jugador (contains, case-insensitive)      |
+| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos   |
+| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                        |
+| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                         |
+
+**Respuesta:**
+
+```json
+{
+  "contenido":            [ ...figuritas... ],
+  "cantidad_de_elementos": 247,
+  "cantidad_de_paginas":   21,
+  "numero":                0,
+  "tamanio":               12
+}
+```
+
+Cuando no hay resultados se retorna `200` con `content: []` y `total_elements: 0`.
 
 ### Administrador
 

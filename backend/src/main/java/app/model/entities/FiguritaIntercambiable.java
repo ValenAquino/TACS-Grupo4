@@ -24,6 +24,10 @@ public class FiguritaIntercambiable {
         this(figurita, cantidadDisponible,0, metodos, perfilId);
     }
 
+    public boolean soporta(MetodoIntercambio tipo) {
+        return metodos.stream().anyMatch(m -> m == tipo || m == MetodoIntercambio.SUBASTA_E_INTERCAMBIO);
+    }
+
     public boolean hayCantidadDisponible(){
       return this.cantidadExistente - this.cantidadReservada != 0;
     }

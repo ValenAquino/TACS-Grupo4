@@ -1,9 +1,10 @@
 package app.controllers;
 
 import app.dto.FiguritaIntercambiableDto;
+import app.dto.PaginaResultado;
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 import app.servicios.IFiguritaService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +17,17 @@ public class FiguritaController {
     private final IFiguritaService figuritaService;
 
     @GetMapping("/figuritas")
-    public ResponseEntity<List<FiguritaIntercambiableDto>> obtenerFiguritas(
+    public ResponseEntity<PaginaResultado<FiguritaIntercambiableDto>> obtenerFiguritas(
         @RequestParam(required = false) Integer numero,
         @RequestParam(required = false) Seleccion seleccion,
-        @RequestParam(required = false) String jugador
+        @RequestParam(required = false) String jugador,
+        @RequestParam(required = false) MetodoIntercambio tipo,
+        @RequestParam(defaultValue = "0") int pagina,
+        @RequestParam(defaultValue = "12") int tamanioPagina
     ) {
-        return ResponseEntity.ok(figuritaService.buscarFiguritas(numero, seleccion, jugador));
+        int tamanioDePaginaAcotado = Math.min(tamanioPagina, 40);
+        return ResponseEntity.ok(
+            figuritaService.buscarFiguritas(numero, seleccion, jugador, tipo, pagina, tamanioDePaginaAcotado)
+        );
     }
 }

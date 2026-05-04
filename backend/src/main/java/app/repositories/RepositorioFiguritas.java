@@ -5,8 +5,17 @@ import app.model.entities.Seleccion;
 import java.util.List;
 
 public interface RepositorioFiguritas {
-  public Figurita buscarPorId(String id);
-  public List<Figurita> buscarConFiltros(Integer numero, Seleccion seleccion, String jugador);
-  public void guardar(Figurita figurita);
 
+  /** @throws app.exceptions.NotFoundException si no existe figurita con ese id */
+  Figurita buscarPorId(String id);
+
+  /**
+   * Retorna las figuritas que cumplan los filtros provistos.
+   * Los parámetros nulos se ignoran. {@code jugador} usa contains case-insensitive.
+   *
+   * @throws app.exceptions.NotFoundException si ninguna figurita coincide con los filtros
+   */
+  List<Figurita> buscarConFiltros(Integer numero, Seleccion seleccion, String jugador);
+
+  void guardar(Figurita figurita);
 }

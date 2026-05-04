@@ -18,23 +18,30 @@ public class RepositorioFiguritasEnMemoriaTest {
   }
 
   @Test
-  void findByIdNoEncuentraYtiraExcepcion() {
+  void buscarPorId_idValido_retornaFigurita() {
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-
     repositorio.guardar(messi);
 
-    assertThrows(RuntimeException.class, () -> {
-      repositorio.buscarPorId("11");
-    });
+    assertEquals("ARG-10", repositorio.buscarPorId("ARG-10").getId());
   }
 
   @Test
-  void findByIdValido() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+  void buscarPorId_idInexistente_lanzaExcepcion() {
+    repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
 
-    repositorio.guardar(messi);
+    assertThrows(RuntimeException.class, () -> repositorio.buscarPorId("INEXISTENTE"));
+  }
 
-    assertEquals(messi.getId(), repositorio.buscarPorId("ARG-10").getId());
+  // --- buscarConFiltros: casos felices ---
+
+  @Test
+  void buscarConFiltros_sinFiltros_retornaTodo() {
+    repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
+    repositorio.guardar(new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA));
+
+    var resultado = repositorio.buscarConFiltros(null, null, null);
+
+    assertEquals(2, resultado.size());
   }
 
   @Test
@@ -56,22 +63,49 @@ public class RepositorioFiguritasEnMemoriaTest {
     var resultado = repositorio.buscarConFiltros(null, Seleccion.ARGENTINA, null);
 
     assertEquals(1, resultado.size());
+    assertEquals("ARG-10", resultado.get(0).getId());
   }
 
   @Test
-  void buscarConFiltros_porJugador_retornaCoincidencia() {
+  void buscarConFiltros_porJugadorExacto_retornaCoincidencia() {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
 
-    var resultado = repositorio.buscarConFiltros(null, null, "messi");
+    var resultado = repositorio.buscarConFiltros(null, null, "Messi");
 
     assertEquals(1, resultado.size());
   }
 
   @Test
-  void buscarConFiltros_sinResultados_lanzaExcepcion() {
+  void buscarConFiltros_porJugadorParcial_retornaCoincidencia() {
+    repositorio.guardar(new Figurita("ARG-10", 10, "Lionel Messi", Seleccion.ARGENTINA));
+    repositorio.guardar(new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA));
+
+    var resultado = repositorio.buscarConFiltros(null, null, "messi");
+
+    assertEquals(1, resultado.size());
+    assertEquals("ARG-10", resultado.get(0).getId());
+  }
+
+  @Test
+  void buscarConFiltros_porJugadorCaseInsensitive_retornaCoincidencia() {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
 
-    assertThrows(RuntimeException.class,
-        () -> repositorio.buscarConFiltros(99, null, null));
+    var resultado = repositorio.buscarConFiltros(null, null, "MESSI");
+
+    assertEquals(1, resultado.size());
+  }
+
+  // --- buscarConFiltros: casos tristes ---
+
+  @Test
+  void buscarConFiltros_sinResultados_lanzaNotFoundException() {
+    repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA));
+
+    assertThrows(RuntimeException.class, () -> repositorio.buscarConFiltros(99, null, null));
+  }
+
+  @Test
+  void buscarConFiltros_repositorioVacio_lanzaNotFoundException() {
+    assertThrows(RuntimeException.class, () -> repositorio.buscarConFiltros(null, null, null));
   }
 }

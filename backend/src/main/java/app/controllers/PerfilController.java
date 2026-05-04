@@ -2,6 +2,7 @@ package app.controllers;
 
 import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
+import app.dto.FiguritaDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
@@ -33,6 +34,16 @@ public class PerfilController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(operaciones);
+    }
+
+    @GetMapping("/{user_id}/faltantes")
+    public ResponseEntity<List<FiguritaDto>> obtenerFaltantes(@PathVariable String user_id) {
+        return ResponseEntity.ok(perfilService.obtenerFaltantes(user_id));
+    }
+
+    @GetMapping("/{user_id}/repetidas")
+    public ResponseEntity<List<FiguritaIntercambiableDto>> obtenerRepetidas(@PathVariable String user_id) {
+        return ResponseEntity.ok(perfilService.obtenerRepetidas(user_id));
     }
 
     @PostMapping("/{perfil_id}/calificaciones")

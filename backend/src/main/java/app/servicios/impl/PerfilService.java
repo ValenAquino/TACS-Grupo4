@@ -1,6 +1,7 @@
 package app.servicios.impl;
 
 import app.dto.CalificacionDto;
+import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
@@ -53,6 +54,21 @@ public class PerfilService implements IPerfilService {
         .toList();
 
         return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
+    }
+
+    @Override
+    public List<FiguritaDto> obtenerFaltantes(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+      return perfil.getColeccion().getFaltantes().stream()
+          .map(FiguritaDto::new)
+          .toList();
+    }
+    @Override
+    public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+      return perfil.getColeccion().getRepetidas().stream()
+          .map(FiguritaIntercambiableDto::new)
+          .toList();
     }
 
     @Override

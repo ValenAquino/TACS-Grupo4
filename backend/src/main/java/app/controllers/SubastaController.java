@@ -23,8 +23,15 @@ public class SubastaController {
     private final ISubastaService subastaService;
 
     @PostMapping
-    public ResponseEntity<Void> crearSubasta(@RequestHeader("user_id") String id, @RequestBody CrearSubastaRequest body) {
-        this.subastaService.crearSubasta(id, body.getFiguritaId(), body.getDuracionEnHoras());
+    public ResponseEntity<Void> crearSubasta(@RequestHeader("user_id") String id,
+                                             @RequestBody CrearSubastaRequest body) {
+        this.subastaService.crearSubasta(
+            id,
+            body.getFiguritaId(),
+            body.getDuracionEnHoras(),
+            body.getFiguritasDeseadasIds(),
+            body.getCalificacionMinima()
+        );
         return ResponseEntity.ok().build();
     }
 

@@ -12,7 +12,8 @@ public interface ISubastaService {
      * Crea una subasta para la figurita indicada y notifica a los usuarios
      * que la tienen en su lista de faltantes.
      */
-    void crearSubasta(String userId, String figuritaId, Integer duracion);
+    void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
+                      List<String> figuritasDeseadasIds, Integer calificacionMinima);
 
     /**
      * Registra una oferta en la subasta. Valida que no haya figuritas ofrecidas duplicadas

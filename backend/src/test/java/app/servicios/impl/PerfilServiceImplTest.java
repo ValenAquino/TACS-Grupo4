@@ -225,4 +225,47 @@ class PerfilServiceImplTest {
 
     assertEquals(0, resultado.size());
   }
+  @Test
+  void obtenerFaltantes_usuarioExistente_retornaLista() {
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    usuario.getColeccion().getFaltantes().add(messi);
+
+    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);
+
+    var resultado = service.obtenerFaltantes("u-1");
+
+    assertEquals(1, resultado.size());
+  }
+
+  @Test
+  void obtenerFaltantes_usuarioInexistente_lanzaNotFoundException() {
+    when(repositorioPerfiles.buscarPorUsuarioId("u-99"))
+        .thenThrow(new NotFoundException("Perfil no encontrado para el usuario: u-99"));
+
+    assertThrows(NotFoundException.class,
+        () -> service.obtenerFaltantes("u-99"));
+  }
+
+  @Test
+  void obtenerRepetidas_usuarioInexistente_lanzaNotFoundException() {
+    when(repositorioPerfiles.buscarPorUsuarioId("u-99"))
+        .thenThrow(new NotFoundException("Perfil no encontrado para el usuario: u-99"));
+
+    assertThrows(NotFoundException.class,
+        () -> service.obtenerRepetidas("u-99"));
+  }
+
+  @Test
+  void obtenerRepetidas_usuarioExistente_retornaLista() {
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    usuario.getColeccion().getRepetidas().add(
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
+
+    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);
+
+    var resultado = service.obtenerRepetidas("u-1");
+
+    assertEquals(1, resultado.size());
+  }
+
 }

@@ -69,8 +69,7 @@ public class SubastaServiceTest {
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
     when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(lucas));
 
-    service.crearSubasta("u-2", "ARG-10", 30);
-
+    service.crearSubasta("u-2", "ARG-10", 30, List.of(), 0);
     assertEquals(1, repositorioNotificaciones.buscarPorUsuario(lucas).size());
   }
 
@@ -82,8 +81,7 @@ public class SubastaServiceTest {
     when(repositorioFiguritas.buscarPorId("ARG-11")).thenReturn(diMaria);
     when(repositorioPerfiles.buscarPorFiguritaFaltante(diMaria)).thenReturn(List.of());
 
-    service.crearSubasta("u-2", "ARG-11", 30);
-
+    service.crearSubasta("u-2", "ARG-11", 30, List.of(), 0);
     assertEquals(0, repositorioNotificaciones.buscarPorUsuario(lucas).size());
   }
 

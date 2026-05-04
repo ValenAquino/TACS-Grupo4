@@ -38,4 +38,22 @@ public interface IPerfilService {
     List<SugerenciaDto> obtenerSugerencias(String userId);
 
     List<NotificacionesDto> obtenerNotificaciones(String userId);
+
+    /**
+     * Retorna las figuritas faltantes de la colección del perfil.
+     * Lanza {@link app.exceptions.NotFoundException} si el perfil no existe.
+     *
+     * @param userId  id del usuario cuyas faltantes se quieren obtener
+     * @return        lista de {@link app.dto.FiguritaDto} correspondientes a las faltantes
+     */
+    List<app.dto.FiguritaDto> obtenerFaltantes(String userId);
+
+    /**
+     * Retorna las figuritas repetidas de la colección del perfil.
+     * Lanza {@link app.exceptions.NotFoundException} si el perfil no existe.
+     *
+     * @param userId  id del usuario cuyas repetidas se quieren obtener
+     * @return        lista de {@link FiguritaIntercambiableDto} correspondientes a las repetidas
+     */
+    List<FiguritaIntercambiableDto> obtenerRepetidas(String userId);
 }

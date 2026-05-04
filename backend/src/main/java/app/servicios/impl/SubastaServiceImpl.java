@@ -33,25 +33,32 @@ public class SubastaServiceImpl implements ISubastaService {
   private final INotificacionService notificacionService;
 
   @Override
-  public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras) {
+  public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
+                           List<String> figuritasDeseadasIds, Integer calificacionMinima) {
     Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
+    List<Figurita> figuritasDeseadas = figuritasDeseadasIds.stream()
+        .map(this.repoFigurita::buscarPorId)
+        .toList();
+
     LocalDateTime fechaInicio = LocalDateTime.now();
-    LocalDateTime fechaFin = fechaInicio.plusMinutes(duracionEnHoras.longValue());
+    LocalDateTime fechaFin = fechaInicio.plusHours(duracionEnHoras.longValue());
 
     Subasta nuevaSubasta = new Subasta(
         UUID.randomUUID().toString(),
         perfil,
         fechaInicio,
         fechaFin,
-        figuritaSubastada
+        figuritaSubastada,
+        figuritasDeseadas,
+        calificacionMinima
     );
 
     this.repoSubasta.guardar(nuevaSubasta);
 
     List<Perfil> interesados = this.repositorioPerfiles
-        .buscarPorFiguritaFaltante(nuevaSubasta.getFiguritaSubastada());
+        .buscarPorFiguritaFaltante(figuritaSubastada);
 
     this.notificacionService.notificarInteresados(
         interesados, "Encontramos una subasta de una figurita que te falta!");

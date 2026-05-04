@@ -1,7 +1,13 @@
 package app.servicios;
 
+import app.dto.FaltantesDto;
+import app.dto.RepetidasDto;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
+import app.model.entities.filtros.FaltantesFiltro;
+import app.model.entities.filtros.RepetidasFiltro;
+
 import java.util.List;
 
 public interface IColeccionService {
@@ -16,9 +22,16 @@ public interface IColeccionService {
      * Agrega una figurita repetida a la colección y notifica a los usuarios
      * que la tienen en su lista de faltantes.
      */
-    void agregarRepetida(String colId, String userId, String figId, Integer
-        cantidadDisponible, List<String> modosIntercambio);
+    void agregarRepetida(String colId, String figId, Integer
+        cantidadDisponible, List<MetodoIntercambio> modosIntercambio);
 
-    List<Figurita> buscarFaltantes(String colId);
-    List<FiguritaIntercambiable> buscarRepetidas(String colId, boolean subasta, boolean intercambio, boolean ambos);
+    /**
+     * Busca las figuritas faltantes de la coleccion con la opcion de aplicar filtros.
+     */
+    FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros);
+
+    /**
+     * Busca las figuritas faltantes de la coleccion con la opcion de aplicar filtros.
+     */
+    RepetidasDto buscarRepetidas(String colId, RepetidasFiltro filtros);
 }

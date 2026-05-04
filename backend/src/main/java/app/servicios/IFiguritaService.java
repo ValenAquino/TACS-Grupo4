@@ -1,15 +1,16 @@
 package app.servicios;
 
 import app.dto.FiguritaIntercambiableDto;
+import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
+import app.model.entities.filtros.FiguritasFiltro;
+
 import java.util.List;
 
 public interface IFiguritaService {
 
     /**
-     * Busca figuritas intercambiables aplicando filtros opcionales por número, selección y jugador.
-     * Primero filtra en el repositorio de figuritas y luego cruza con las intercambiables disponibles.
+     * Busca figuritas aplicando filtros opcionales por número, selección y jugador.
      */
-    List<FiguritaIntercambiableDto> buscarFiguritas(Integer numero, Seleccion seleccion,
-                                                    String jugador);
+    List<Figurita> buscarFiguritas(FiguritasFiltro filtros);
 }

@@ -28,6 +28,10 @@ public class FiguritaIntercambiable {
       return this.cantidadExistente - this.cantidadReservada != 0;
     }
 
+    public int getCantidadDisponible() {
+        return this.cantidadExistente - this.cantidadReservada;
+    }
+
     public void reservarFiguritaIntercambiable() {
         if (cantidadExistente - cantidadReservada <= 0) {
             throw new RuntimeException("No hay figuritas disponibles para reservar");

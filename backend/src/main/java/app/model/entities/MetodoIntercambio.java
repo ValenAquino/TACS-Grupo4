@@ -2,8 +2,7 @@ package app.model.entities;
 
 public enum MetodoIntercambio {
   SUBASTA,
-  INTERCAMBIO,
-  SUBASTA_E_INTERCAMBIO;
+  INTERCAMBIO;
 
   /**
    * Convierte un string al enum correspondiente (case-insensitive).

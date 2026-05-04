@@ -43,7 +43,7 @@ class RepositorioSubastasEnMemoriaTest {
         repositorio.guardar(s1);
         repositorio.guardar(s2);
 
-        List<Subasta> resultado = repositorio.buscarPorPerfilId("1");
+        List<Subasta> resultado = repositorio.buscarPorAutorUserId("1");
 
         assertEquals(1, resultado.size());
         assertEquals("s-1", resultado.get(0).getId());
@@ -51,6 +51,6 @@ class RepositorioSubastasEnMemoriaTest {
 
     @Test
     void findByUsuarioId_sinResultados_retornaListaVacia() {
-        assertTrue(repositorio.buscarPorPerfilId("u-99").isEmpty());
+        assertTrue(repositorio.buscarPorAutorUserId("u-99").isEmpty());
     }
 }

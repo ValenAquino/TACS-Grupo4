@@ -34,7 +34,7 @@ public class PerfilService implements IPerfilService {
   private final RepositorioSubastas repositorioSubastas;
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
-
+//TODO ya no es necesario este metodo, eliminar
   @Override
   public OperacionesDto obtenerOperacionesPerfil(String userId) {
     Perfil usuario = repositorioPerfiles.buscarPorId(userId);
@@ -47,7 +47,7 @@ public class PerfilService implements IPerfilService {
     List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(userId);
     List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(userId);
 
-    List<Subasta> subastasActivas = repositorioSubastas.buscarPorPerfilId(userId)
+    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUserId(userId)
         .stream()
         .filter(Subasta::estaActivo)
         .toList();

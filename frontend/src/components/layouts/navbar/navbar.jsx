@@ -71,9 +71,11 @@ const Navbar = () => {
             <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill navbar-badge">3</span>
           </button>
 
+          <Link to="/perfil" className="navbar-avatar-link">
           <div className="rounded-circle d-flex align-items-center justify-content-center fw-bold navbar-avatar">
             MG
           </div>
+          </Link>
         </div>
 
       </div>

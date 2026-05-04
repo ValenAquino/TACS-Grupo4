@@ -4,6 +4,7 @@ import Layout from './components/layouts/layout/layout';
 import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
 import NuevaFaltante from "./views/public/nueva-faltante/nueva-faltante.jsx";
 import NuevaRepetida from "./views/public/nueva-repetida/nueva-repetida.jsx";
+import Perfil from "./views/public/perfil/perfil.jsx";
 
 
 const publics = [
@@ -22,6 +23,10 @@ const publics = [
     {
         path: '/mis-figuritas/nueva-repetida',
         element: <NuevaRepetida />
+    },
+    {
+        path: '/perfil',
+        element: <Perfil />
     }
 ];
 

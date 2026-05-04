@@ -1,8 +1,9 @@
 package app.servicios;
 
-import app.dto.SubastaParticipoDto;
+import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.MisSubastasResponseDto;
 import app.dto.subasta.SubastaDto;
+import app.dto.subasta.SubastasParticipoResponseDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,5 +53,5 @@ public interface ISubastaService {
     /**
      * Obtiene las subastas donde el usuario logueado tiene al menos una oferta.
      */
-    List<SubastaParticipoDto> obtenerSubastasParticipo(String userId);
+    SubastasParticipoResponseDto obtenerSubastasParticipo(String userId);
 }

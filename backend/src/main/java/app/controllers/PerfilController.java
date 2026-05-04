@@ -47,19 +47,21 @@ public class PerfilController {
     }
 
     @PostMapping("/{perfil_id}/calificaciones")
-    public ResponseEntity<CalificacionDto> calificarPerfil(
+    public ResponseEntity<Void> calificarPerfil(
         @PathVariable String perfil_id,
         @RequestHeader String autor_id,
         @RequestBody CalificacionRequest body) {
 
-        CalificacionDto calificacion = this.perfilService.agregarCalificacion(
+        this.perfilService.agregarCalificacion(
             autor_id,
             perfil_id,
             body.getValor(),
-            body.getDescripcion()
+            body.getDescripcion(),
+            body.getTransactionId(),
+            body.getTipoTransaccion()
         );
 
-        return ResponseEntity.ok(calificacion);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{user_id}/intercambiables")

@@ -1,9 +1,9 @@
 package app.controllers;
 
-import app.dto.SubastaParticipoDto;
 import app.dto.request.CrearSubastaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.MisSubastasResponseDto;
+import app.dto.subasta.SubastasParticipoResponseDto;
 import app.servicios.ISubastaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +71,7 @@ public class SubastaController {
     }
 
     @GetMapping("/participo")
-    public ResponseEntity<List<SubastaParticipoDto>> obtenerSubastasParticipo(@RequestHeader("user_id") String userId) {
+    public ResponseEntity<SubastasParticipoResponseDto> obtenerSubastasParticipo(@RequestHeader("user_id") String userId) {
         return ResponseEntity.ok(this.subastaService.obtenerSubastasParticipo(userId));
     }
 }

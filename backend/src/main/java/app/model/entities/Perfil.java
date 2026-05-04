@@ -26,4 +26,8 @@ public class Perfil {
             .average()
             .orElse(0.0);
     }
+
+    public void agregarNuevaCalificacion(Calificacion calificacion){
+        this.calificaciones.add(calificacion);
+    }
 }

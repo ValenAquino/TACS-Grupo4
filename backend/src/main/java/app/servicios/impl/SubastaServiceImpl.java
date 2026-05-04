@@ -1,10 +1,9 @@
 package app.servicios.impl;
 
-import app.dto.FiguritaDto;
 import app.dto.subasta.MiSubastaDto;
 import app.dto.subasta.MisSubastasResponseDto;
-import app.dto.subasta.OfertaSubastaDto;
-import app.dto.SubastaParticipoDto;
+import app.dto.subasta.SubastaParticipoDto;
+import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
 import app.model.entities.EstadoProceso;
 import app.model.entities.EstadoPropuesta;
@@ -14,7 +13,6 @@ import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
-import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.servicios.INotificacionService;
 import app.servicios.ISubastaService;
@@ -190,15 +188,26 @@ public class SubastaServiceImpl implements ISubastaService {
   }
 
   @Override
-  public List<SubastaParticipoDto> obtenerSubastasParticipo(String userId) {
-    return this.repoSubasta.buscarDondeParticipa(userId).stream()
-        .map(s -> {
-          Propuesta tuOferta = s.getOfertas().stream()
-              .filter(p -> p.getAutor().getUsuario().getId().equals(userId))
-              .findFirst()
-              .get();
-          return new SubastaParticipoDto(s, tuOferta);
-        })
+  public SubastasParticipoResponseDto obtenerSubastasParticipo(String userId) {
+    List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(userId);
+
+    List<SubastaParticipoDto> activas = subastas.stream()
+        .filter(Subasta::estaActivo)
+        .map(s -> new SubastaParticipoDto(s, obtenerOferta(s, userId)))
         .toList();
+
+    List<SubastaParticipoDto> finalizadas = subastas.stream()
+        .filter(s -> !s.estaActivo())
+        .map(s -> new SubastaParticipoDto(s, obtenerOferta(s, userId)))
+        .toList();
+
+    return new SubastasParticipoResponseDto(activas, finalizadas);
   }
+  private Propuesta obtenerOferta(Subasta subasta, String userId) {
+    return subasta.getOfertas().stream()
+        .filter(p -> p.getAutor().getUsuario().getId().equals(userId))
+        .findFirst()
+        .get();
+  }
+
 }

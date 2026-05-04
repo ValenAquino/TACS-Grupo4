@@ -10,6 +10,7 @@ import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Sugerencia;
@@ -82,29 +83,39 @@ public class PerfilService implements IPerfilService {
             .toList();
     }
 
-    @Override
-    public CalificacionDto agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {
-        if (valor == null) {
-            throw new BadRequestException("El valor de la calificación no puede ser nulo");
-        }
-        if (valor < 1 || valor > 5) {
-            throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
-        }
+  @Override
+  public void agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
+    if (valor == null) {
+      throw new BadRequestException("El valor de la calificación no puede ser nulo");
+    }
+    if (valor < 1 || valor > 5) {
+      throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
+    }
 
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
+    if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
+
     Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
+    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + autorId);
+
+    boolean yaCalifico = perfilDestino.getCalificaciones().stream()
+        .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
+            && transactionId.equals(c.getTransactionId())
+            && c.getTipoTransaccion() == tipoTransaccion);
+
+    if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
 
     Calificacion calificacion = new Calificacion(
-        UUID.randomUUID().toString(), //TODO ver
+        UUID.randomUUID().toString(),
         autor,
         valor,
-        descripcion
+        descripcion,
+        transactionId,
+        tipoTransaccion
     );
 
-    perfilDestino.getCalificaciones().add(calificacion);
-
+    perfilDestino.agregarNuevaCalificacion(calificacion);
     this.repositorioPerfiles.guardar(perfilDestino);
-    return new CalificacionDto(calificacion, perfilDestino.obtenerCalificacionMedia());
   }
 
   @Override

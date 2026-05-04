@@ -8,10 +8,12 @@ import java.util.List;
 @Getter
 public class SugerenciaDto {
   PerfilDto perfil;
-  List<Figurita> figuritas;
+  List<Figurita> figuritasRecomendadas;
+  List<Figurita> figuritasNecesarias;
 
   public SugerenciaDto(Sugerencia sugerencia) {
     this.perfil = new PerfilDto(sugerencia.getDestinatario());
-    this.figuritas = sugerencia.getFiguritasSugeridas();
+    this.figuritasRecomendadas = sugerencia.getFiguritasSugeridas();
+    this.figuritasNecesarias = sugerencia.getFiguritasNecesarias();
   }
 }

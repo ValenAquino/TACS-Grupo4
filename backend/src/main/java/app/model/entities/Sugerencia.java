@@ -11,4 +11,5 @@ import java.util.List;
 public class Sugerencia {
   Perfil destinatario;
   List<Figurita> figuritasSugeridas;
+  List<Figurita> figuritasNecesarias;
 }

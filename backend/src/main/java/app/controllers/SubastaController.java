@@ -6,6 +6,7 @@ import app.servicios.ISubastaService;
 import app.dto.SubastaDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,5 +40,12 @@ public class SubastaController {
         SubastaDto subastaDto = this.subastaService.ofertarEnSubasta(id, body.getUsuarioId(), sub_id, body.getFiguritasOfrecidasId());
 
         return ResponseEntity.ok().body(subastaDto);
+    }
+
+    @GetMapping("/{sub_id}")
+    public ResponseEntity<SubastaDto> obtenerSubasta(@PathVariable String sub_id) {
+        SubastaDto subasta = this.subastaService.obtenerSubasta(sub_id);
+
+        return ResponseEntity.ok().body(subasta);
     }
 }

@@ -1,0 +1,36 @@
+.card {
+    border: 1px solid #8FD3C1;
+    border-radius: 12px;
+    background-color: #fff;
+}
+
+/* items */
+.itemGreen {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.itemBlue {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+/* icono central */
+.swapIcon {
+    margin: 0 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #6c757d;
+}

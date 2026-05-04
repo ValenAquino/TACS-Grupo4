@@ -1,39 +1,48 @@
-import { useState } from 'react';
-import useFiguritas from '@/hooks/useFiguritas';
-import ExplorarSearch from './search/explorar-search';
-import SugerenciasBanner from './sugerencias-banner/sugerencias-banner';
-import ExplorarFiltros from './filtros/explorar-filtros';
-import ExplorarResultados from './resultados/explorar-resultados';
-import styles from './explorar.module.css';
+import { useState } from 'react'
+import useFiguritas from '@/hooks/useFiguritas'
+import ExplorarSearch from './search/explorar-search'
+import SugerenciasBanner from './sugerencias-banner/sugerencias-banner'
+import ExplorarFiltros from './filtros/explorar-filtros'
+import ExplorarResultados from './resultados/explorar-resultados'
+import styles from './explorar.module.css'
+
+const FILTROS_INICIAL = { tipo: 'todos', jugador: '', seleccion: '', numero: '' }
 
 const Explorar = () => {
-  const [jugador, setjugador] = useState('');
-  const [seleccion, setSeleccion] = useState('');
-  const [numero, setNumero] = useState('');
-  const [tipo, setTipo] = useState('todos');
-  const [ordenar, setOrdenar] = useState('recientes');
+  const [filtros, setFiltros] = useState(FILTROS_INICIAL)
+  const [ordenar, setOrdenar] = useState('recientes')
+  const [page, setPage] = useState(0)
 
-  const { figuritas, loading, error } = useFiguritas(jugador, seleccion, numero, tipo);
+  const { figuritas, totalPages, totalElements, loading, error } = useFiguritas(
+    filtros.jugador,
+    filtros.seleccion,
+    filtros.numero,
+    filtros.tipo,
+    page,
+    ordenar,
+  )
+
+  const handleAplicar = (nuevosFiltros) => {
+    setFiltros(nuevosFiltros)
+    setPage(0)
+  }
 
   const handleAction = (fig) => {
-    console.warn('acción pendiente de implementar', fig.id);
-  };
+    console.warn('acción pendiente de implementar', fig.id)
+  }
 
   return (
     <main className={styles.page}>
-      <ExplorarSearch query={jugador} onQueryChange={setjugador} />
+      <ExplorarSearch onQueryChange={(jugador) => handleAplicar({ ...filtros, jugador })} />
       <div className={styles.container}>
         <SugerenciasBanner />
-        <ExplorarFiltros
-          tipo={tipo}
-          onTipoChange={setTipo}
-          seleccion={seleccion}
-          onSeleccionChange={setSeleccion}
-          numero={numero}
-          onNumeroChange={setNumero}
-        />
+        <ExplorarFiltros onAplicar={handleAplicar} />
         <ExplorarResultados
           figuritas={figuritas}
+          totalElements={totalElements}
+          totalPages={totalPages}
+          page={page}
+          onPageChange={setPage}
           ordenar={ordenar}
           onOrdenarChange={setOrdenar}
           onAction={handleAction}
@@ -42,7 +51,7 @@ const Explorar = () => {
         />
       </div>
     </main>
-  );
-};
+  )
+}
 
-export default Explorar;
+export default Explorar

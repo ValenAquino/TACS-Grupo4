@@ -69,13 +69,41 @@ const MOCK_FIGURITAS = [
   },
 ];
 
-export const explorarFiguritas = async ({ jugador, seleccion, numero, tipo } = {}) => {
-  try {
-    const { data } = await api.get('/figuritas', { params: { jugador, seleccion, numero, tipo } });
-    return data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
-};
+const filtrarMock = ({ jugador, seleccion, numero, tipo }) =>
+  MOCK_FIGURITAS.filter((f) => {
+    if (jugador && !f.name.toLowerCase().includes(jugador.toLowerCase())) return false
+    if (seleccion && !f.subtitle.toLowerCase().includes(seleccion.toLowerCase())) return false
+    if (numero && f.number !== parseInt(numero)) return false
+    if (tipo && tipo !== 'todos' && f.type !== tipo) return false
+    return true
+  })
 
-export { MOCK_FIGURITAS };
+const paginarMock = (items, page, size) => {
+  const start = page * size
+  return {
+    content: items.slice(start, start + size),
+    totalElements: items.length,
+    totalPages: Math.ceil(items.length / size),
+    number: page,
+    size,
+  }
+}
+
+const ordenarMock = (items, ordenar) => {
+  const copia = [...items]
+  if (ordenar === 'numero') return copia.sort((a, b) => a.number - b.number)
+  if (ordenar === 'reputacion') return copia.sort((a, b) => (b.user?.stars ?? 0) - (a.user?.stars ?? 0))
+  return copia.sort((a, b) => b.id.localeCompare(a.id))
+}
+
+export const explorarFiguritas = async ({ jugador, seleccion, numero, tipo, page = 0, size = 4, ordenar = 'recientes' } = {}) => {
+  try {
+    const { data } = await api.get('/figuritas', { params: { jugador, seleccion, numero, tipo, page, size, ordenar } })
+    return data
+  } catch {
+    // TODO: eliminar fallback cuando se integre el backend
+    const filtradas = filtrarMock({ jugador, seleccion, numero, tipo })
+    const ordenadas = ordenarMock(filtradas, ordenar)
+    return paginarMock(ordenadas, page, size)
+  }
+}

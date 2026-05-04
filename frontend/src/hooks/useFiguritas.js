@@ -1,31 +1,34 @@
-import { useEffect, useState } from 'react';
-import { explorarFiguritas, MOCK_FIGURITAS } from '@/services/explorarService';
+import { useEffect, useState } from 'react'
+import { explorarFiguritas } from '@/services/explorarService'
 
-const useFiguritas = (jugador, seleccion, numero, tipo) => {
-  const [figuritas, setFiguritas] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+const useFiguritas = (jugador, seleccion, numero, tipo, page, ordenar) => {
+  const [figuritas, setFiguritas] = useState([])
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        setLoading(true);
-        setError(false);
-        const data = await explorarFiguritas({ jugador, seleccion, numero, tipo });
-        setFiguritas(data);
+        setLoading(true)
+        setError(false)
+        const data = await explorarFiguritas({ jugador, seleccion, numero, tipo, page, ordenar })
+        setFiguritas(data.content)
+        setTotalPages(data.totalPages)
+        setTotalElements(data.totalElements)
       } catch {
-        // TODO: eliminar fallback cuando se integre el backend
-        setFiguritas(MOCK_FIGURITAS);
+        setError(true)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    const debounce = setTimeout(cargar, 300);
-    return () => clearTimeout(debounce);
-  }, [jugador, seleccion, numero, tipo]);
+    const debounce = setTimeout(cargar, 300)
+    return () => clearTimeout(debounce)
+  }, [jugador, seleccion, numero, tipo, page, ordenar])
 
-  return { figuritas, loading, error };
-};
+  return { figuritas, totalPages, totalElements, loading, error }
+}
 
-export default useFiguritas;
+export default useFiguritas

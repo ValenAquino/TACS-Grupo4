@@ -2,7 +2,7 @@ package app.dto.filtros;
 import app.model.entities.Sugerencia;
 import java.util.Objects;
 
-public record SugerenciasFiltro (String tipo) {
+public record SugerenciasFiltro (String tipo, Integer paginaActual, Integer limite) {
 
   public boolean verifica(Sugerencia sugerencia) {
     if(Objects.equals(this.tipo, "1a1")) {

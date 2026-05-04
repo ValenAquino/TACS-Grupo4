@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.OperacionesDto;
+import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
@@ -211,9 +212,9 @@ class PerfilServiceImplTest {
     when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));
 
-    var resultado = service.obtenerSugerencias("u-1");
+    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null,1,10));
 
-    assertEquals(1, resultado.size());
+    assertEquals(1, resultado.data().size());
   }
 
   @Test
@@ -224,8 +225,8 @@ class PerfilServiceImplTest {
     when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otro));
 
-    var resultado = service.obtenerSugerencias("u-1");
+    var resultado = service.obtenerSugerencias("u-1",  new SugerenciasFiltro(null,1,10));
 
-    assertEquals(0, resultado.size());
+    assertEquals(0, resultado.data().size());
   }
 }

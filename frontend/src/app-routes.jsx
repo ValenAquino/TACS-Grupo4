@@ -5,6 +5,7 @@ import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
 import NuevaFaltante from "./views/public/nueva-faltante/nueva-faltante.jsx";
 import NuevaRepetida from "./views/public/nueva-repetida/nueva-repetida.jsx";
 import Perfil from "./views/public/perfil/perfil.jsx";
+ import Intercambios from "./views/public/intercambios/intercambios.jsx";
 
 
 const publics = [
@@ -27,6 +28,10 @@ const publics = [
     {
         path: '/perfil',
         element: <Perfil />
+    },
+    {
+        path: '/intercambios',
+        element: <Intercambios />
     }
 ];
 

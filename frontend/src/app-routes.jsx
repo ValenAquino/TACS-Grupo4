@@ -5,6 +5,7 @@ import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
 import NuevaFaltante from "./views/public/nueva-faltante/nueva-faltante.jsx";
 import NuevaRepetida from "./views/public/nueva-repetida/nueva-repetida.jsx";
 import Subastas from "./views/public/subastas/subastas.jsx";
+import CrearSubasta from "./views/public/crear-subasta/crear-subasta.jsx";
 
 const publics = [
   {
@@ -26,6 +27,10 @@ const publics = [
   {
     path: "/subastas",
     element: <Subastas />,
+  },
+  {
+    path: "/subastas/crear",
+    element: <CrearSubasta />,
   },
 ];
 

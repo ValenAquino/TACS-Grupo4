@@ -40,7 +40,7 @@ const MisSubastas = () => {
       <div className="d-flex justify-content-end">
         <Button
           label="Crear subasta ↗"
-          onClick={() => navigate("/subastas/nueva")}
+          onClick={() => navigate("/subastas/crear")}
         />
       </div>
 

@@ -2,6 +2,16 @@ import { api, handleAxiosError } from "./api.js";
 
 const SUBASTAS_URL = "/subastas";
 
+export const crearSubasta = async (userId, body) => {
+  try {
+    await api.post("/subastas", body, {
+      headers: { user_id: userId },
+    });
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+
 // export const buscarMisSubastas = async (filtros) => {
 //     try {
 //         const { data } = await api.get(

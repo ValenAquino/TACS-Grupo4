@@ -20,8 +20,8 @@ public class Perfil {
      * Calcula el promedio de las calificaciones recibidas.
      * Retorna 0 si el perfil aún no tiene calificaciones.
      */
-    public Float obtenerCalificacionMedia() {
-        return (float) calificaciones.stream()
+    public double obtenerCalificacionMedia() {
+        return calificaciones.stream()
             .mapToInt(Calificacion::getValor)
             .average()
             .orElse(0.0);

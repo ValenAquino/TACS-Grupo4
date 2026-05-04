@@ -46,6 +46,10 @@ public class Subasta {
         this.calificacionMinimaSolicitada = 0;
     }
 
+    public void agregarOferta(Propuesta oferta) {
+        this.ofertas.add(oferta);
+    }
+
     /**
      * Retorna {@code true} si la subasta está dentro de su ventana de tiempo
      */

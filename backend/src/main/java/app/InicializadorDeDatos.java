@@ -149,22 +149,38 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Perfil sofia  = perfiles.buscarPorId("1001");
         Perfil matias = perfiles.buscarPorId("1002");
 
-        propuestas.guardar(propuesta("2000", lucas,  sofia,  List.of(messi),     mbappe,   EstadoProceso.PENDIENTE));
-        propuestas.guardar(propuesta("2001", sofia,  matias, List.of(griezmann), vinicius, EstadoProceso.ACEPTADO));
-        propuestas.guardar(propuesta("2002", matias, lucas,  List.of(vinicius),  diMaria,  EstadoProceso.RECHAZADO));
+        List<Figurita> figuritas = new ArrayList<>();
+        figuritas.add(messi);
+
+        propuestas.guardar(propuesta("2000", lucas,  sofia,  figuritas,     mbappe,   EstadoProceso.PENDIENTE));
+
+        figuritas = new ArrayList<>();
+        figuritas.add(griezmann);
+        propuestas.guardar(propuesta("2001", sofia,  matias, figuritas, vinicius, EstadoProceso.ACEPTADO));
+
+        figuritas = new ArrayList<>();
+        figuritas.add(vinicius);
+        propuestas.guardar(propuesta("2002", matias, lucas,  figuritas,  diMaria,  EstadoProceso.RECHAZADO));
     }
 
     private void cargarSubastas(Figurita griezmann, Figurita vinicius) {
         Perfil sofia  = perfiles.buscarPorId("1001");
         Perfil matias = perfiles.buscarPorId("1002");
 
+        List<Figurita> figuritas = new ArrayList<>();
+        figuritas.add(vinicius);
+        Propuesta unaOferta = new Propuesta("4000", matias, sofia, figuritas, griezmann);
+        figuritas = new ArrayList<>();
+        figuritas.add(vinicius);
+        Propuesta otraOfertaDistinta = new Propuesta("4000", matias, sofia, figuritas, griezmann);
 
-        Propuesta unaOferta = new Propuesta("4000", matias, sofia, List.of(vinicius), griezmann);
-        Propuesta otraOfertaDistinta = new Propuesta("4000", matias, sofia, List.of(vinicius), griezmann);
+        List<Propuesta> propuestas = new ArrayList<>();
+        propuestas.add(unaOferta);
+        propuestas.add(otraOfertaDistinta);
 
         Subasta unaSubasta = new Subasta("3000", sofia,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(1).plusMinutes(20).plusSeconds(33) ,
-            griezmann, List.of(unaOferta, otraOfertaDistinta), new ArrayList<>(), 0, false);
+            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(1).plusMinutes(20).plusSeconds(33),
+            griezmann, propuestas, new ArrayList<>(), 0, false);
 
         subastas.guardar(unaSubasta);
 

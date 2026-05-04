@@ -63,7 +63,6 @@ public class SubastaServiceImpl implements ISubastaService {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-
     Figurita figuritaBuscada = subasta.getFiguritaSubastada();
 
     if (rawFiguritasId.size() != rawFiguritasId.stream().distinct().count()) {
@@ -82,7 +81,7 @@ public class SubastaServiceImpl implements ISubastaService {
         figuritaBuscada
     );
 
-    subasta.getOfertas().add(nuevaPropuesta);
+    subasta.agregarOferta(nuevaPropuesta);
     this.repoSubasta.guardar(subasta);
 
     return new SubastaDto(subasta);

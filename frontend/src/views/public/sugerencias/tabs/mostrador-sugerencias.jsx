@@ -1,8 +1,8 @@
-import SugerenciaCard from "../../sugerencia-card.jsx";
+import SugerenciaCard from "../sugerencia-card.jsx";
 import {useCallback, useEffect, useState} from "react";
-import {buscarSugerencias} from "../../../../../services/perfilService.js";
-import ExtraInfo from "../../../../../components/ui/extra-info/extra-info.jsx";
-import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
+import {buscarSugerencias} from "../../../../services/perfilService.js";
+import ExtraInfo from "../../../../components/ui/extra-info/extra-info.jsx";
+import Paginacion from "../../../../components/ui/paginacion/paginacion.jsx";
 
 const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
 

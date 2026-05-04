@@ -134,11 +134,11 @@ public class PerfilService implements IPerfilService {
 
     int resultados = sugerenciasFiltradas.size();
     int paginaActual = filtros.paginaActual();
-    int limite = filtros.limite();
+    int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
 
     List<SugerenciaDto> sugerenciasDto = sugerenciasFiltradas.stream().map(SugerenciaDto::new).toList();
 
-    return new SugerenciaPaginadaDto(sugerenciasDto, resultados, paginaActual, limite);
+    return new SugerenciaPaginadaDto(sugerenciasDto, resultados, paginaActual, paginasTotales);
   }
 
   @Override

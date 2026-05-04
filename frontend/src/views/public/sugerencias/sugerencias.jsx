@@ -5,7 +5,7 @@ import TabsContainer from "../../../components/ui/tabs-container/tabs-container.
 import {useCallback, useEffect, useState} from "react";
 import {buscarContadores} from "../../../services/perfilService.js";
 import ExtraInfo from "../../../components/ui/extra-info/extra-info.jsx";
-import MostradorSugerencias from "./tabs/todos/mostrador-sugerencias.jsx";
+import MostradorSugerencias from "./tabs/mostrador-sugerencias.jsx";
 
 const Sugerencias = () => {
 

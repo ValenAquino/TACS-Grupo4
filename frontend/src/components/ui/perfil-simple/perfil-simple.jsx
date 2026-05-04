@@ -22,10 +22,10 @@ const PerfilSimple = ({perfil}) => {
             <div className={styles.avatar}>{perfil.nombre.slice(0,1).toUpperCase()}</div>
             <div>
                 <h5 className="m-0">{perfil.nombre}</h5>
-                <p className="fs-6 d-flex align-items-center gap-2">
+                <div className="fs-6 d-flex align-items-center gap-2">
                     {renderStars(perfil.puntuacion)}
                     <span>{perfil.puntuacion}</span>
-                </p>
+                </div>
             </div>
         </div>
     )

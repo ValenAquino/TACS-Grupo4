@@ -9,6 +9,8 @@ import {
 } from "../../../services/subastasService.js";
 import { calificarPerfil } from "../../../services/perfilService.js";
 import { derivarTiempo } from "../../../utils/subastasTiempo.js";
+import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+
 
 const BADGE_ESTADO = {
   activa: { label: "Activa", className: "text-success bg-success-subtle" },
@@ -30,10 +32,13 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
     ofertas,
     cantidadOfertas,
     ganador,
+    ya_calificado: yaCalificado,
   } = subasta;
 
   const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } =
     derivarTiempo({ fechaCierre });
+
+  const { userId } = useUsuarioActual();
 
   const [modal, setModal] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
@@ -70,7 +75,8 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
   };
 
   const handleCalificar = async ({ valor, descripcion }) => {
-    await calificarPerfil(ganador.perfilId, { valor, descripcion });
+    await calificarPerfil(userId, ganador.perfilId, { valor, descripcion, transactionId: subastaId,
+    tipoTransaccion: "SUBASTA"});
     setMostrarCalificar(false);
     onRefresh();
   };
@@ -278,7 +284,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
               >
                 Ver resumen
               </button>
-              {ganador && (
+              {ganador && !yaCalificado &&(
                 <button
                   className="btn btn-outline-secondary flex-fill"
                   style={{ fontSize: "0.85rem" }}

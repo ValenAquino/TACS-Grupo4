@@ -22,16 +22,21 @@ export const buscarSugerencias = async ({ userId, tipo }) => {
   }
 };
 
-export const calificarPerfil = async (perfilId, { valor, descripcion }) => {
-  try {
-    const { data } = await api.post(`${PERFIL_URL}/${perfilId}/calificar`, {
+export const calificarPerfil = async (
+  autorId,
+  perfilId,
+  { valor, descripcion, transactionId, tipoTransaccion },
+) => {
+  await api.post(
+    `/perfil/${perfilId}/calificaciones`,
+    {
       valor,
       descripcion,
-    });
-    return data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
+      transaction_id: transactionId,
+      tipo_transaccion: tipoTransaccion,
+    },
+    { headers: { autor_id: autorId } },
+  );
 };
 
 // export const buscarFaltantes = async (userId) => {

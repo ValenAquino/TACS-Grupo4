@@ -78,19 +78,11 @@ export const cerrarSubasta = async (subastaId) => {
 //////////////////
 const ahora = new Date();
 const en45min = new Date(ahora.getTime() + 45 * 60 * 1000).toISOString();
-const en2dias = new Date(
-  ahora.getTime() + 2 * 24 * 60 * 60 * 1000,
-).toISOString();
-const hace2dias = new Date(
-  ahora.getTime() - 2 * 24 * 60 * 60 * 1000,
-).toISOString();
+const en2dias = new Date(ahora.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString();
+const hace2dias = new Date(ahora.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString();
 const en2h = new Date(ahora.getTime() + 2 * 60 * 60 * 1000).toISOString();
-const en1dia = new Date(
-  ahora.getTime() + 1 * 24 * 60 * 60 * 1000,
-).toISOString();
-const hace5dias = new Date(
-  ahora.getTime() - 5 * 24 * 60 * 60 * 1000,
-).toISOString();
+const en1dia = new Date(ahora.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString();
+const hace5dias = new Date(ahora.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString();
 
 export const buscarMisSubastas = async (_filtros) => {
   return {
@@ -103,7 +95,7 @@ export const buscarMisSubastas = async (_filtros) => {
           numero: 88,
         },
         fechaInicio: ahora.toISOString(),
-        fechaCierre: en45min, // → finalizaPronto: true
+        fechaCierre: en45min,
         cantidadOfertas: 3,
         ofertas: [
           {
@@ -132,6 +124,7 @@ export const buscarMisSubastas = async (_filtros) => {
           },
         ],
         ganador: null,
+        ya_calificado: false,
       },
       {
         id: "2",
@@ -141,10 +134,11 @@ export const buscarMisSubastas = async (_filtros) => {
           numero: 23,
         },
         fechaInicio: ahora.toISOString(),
-        fechaCierre: en2dias, // → activa normal
+        fechaCierre: en2dias,
         cantidadOfertas: 0,
         ofertas: [],
         ganador: null,
+        ya_calificado: false,
       },
     ],
     finalizadas: [
@@ -156,7 +150,7 @@ export const buscarMisSubastas = async (_filtros) => {
           numero: 14,
         },
         fechaInicio: hace2dias,
-        fechaCierre: hace2dias, // → finalizada: true
+        fechaCierre: hace2dias,
         cantidadOfertas: 5,
         ofertas: [],
         ganador: {
@@ -164,6 +158,25 @@ export const buscarMisSubastas = async (_filtros) => {
           usuario: "rodrigo_l",
           label: "Messi Brillante + Álvarez #9",
         },
+        ya_calificado: false, // → debe mostrar botón "Calificar usuario"
+      },
+      {
+        id: "7",
+        figuritaSubastada: {
+          jugador: "Mac Allister",
+          seleccion: { nombre: "Argentina" },
+          numero: 6,
+        },
+        fechaInicio: hace5dias,
+        fechaCierre: hace5dias,
+        cantidadOfertas: 2,
+        ofertas: [],
+        ganador: {
+          perfilId: "456",
+          usuario: "caro_r",
+          label: "De Bruyne #10",
+        },
+        ya_calificado: true, // → NO debe mostrar botón
       },
     ],
     paginas_totales: 1,
@@ -172,52 +185,66 @@ export const buscarMisSubastas = async (_filtros) => {
 
 export const buscarSubastasParticipo = async (_filtros) => {
   return {
-    activas_count: 2,
-    seleccionadas_count: 1,
-    resultados: 3,
-    paginas_totales: 1,
-    data: [
+    activas: [
       {
         id: "4",
-        autor: { nombre: "pedro_f" },
+        autor: { nombre: "pedro_f", perfilId: "p1" },
         figuritaSubastada: {
           jugador: "Vinicius Jr.",
           seleccion: { nombre: "Brasil" },
           numero: 7,
         },
         fechaInicio: ahora.toISOString(),
-        fechaCierre: en2h, // → finalizaPronto: true
+        fechaCierre: en2h,
         tuOferta: {
           label: "Coman #11 + Griezmann Dorado",
           estado: "SELECCIONADO",
         },
+        ya_calificado: false,
       },
       {
         id: "5",
-        autor: { nombre: "sofi_v" },
+        autor: { nombre: "sofi_v", perfilId: "p2" },
         figuritaSubastada: {
           jugador: "Messi Brillante",
           seleccion: { nombre: "Argentina" },
           numero: 10,
         },
         fechaInicio: ahora.toISOString(),
-        fechaCierre: en1dia, // → activa normal
+        fechaCierre: en1dia,
         tuOferta: {
           label: "Di María #11 + Dybala Especial",
           estado: "RECHAZADO",
         },
+        ya_calificado: false,
       },
+    ],
+    finalizadas: [
       {
         id: "6",
-        autor: { nombre: "juani_m" },
+        autor: { nombre: "juani_m", perfilId: "p3" },
         figuritaSubastada: {
           jugador: "Neymar Brillante",
           seleccion: { nombre: "Brasil" },
           numero: 45,
         },
         fechaInicio: hace5dias,
-        fechaCierre: hace5dias, // → finalizada: true
+        fechaCierre: hace5dias,
         tuOferta: { label: "Mbappé #7 + Giroud #9", estado: "ACEPTADO" },
+        ya_calificado: false,
+      },
+      {
+        id: "8",
+        autor: { nombre: "sofi_v", perfilId: "p2" },
+        figuritaSubastada: {
+          jugador: "Griezmann",
+          seleccion: { nombre: "Francia" },
+          numero: 11,
+        },
+        fechaInicio: hace5dias,
+        fechaCierre: hace5dias,
+        tuOferta: { label: "Benzema Dorado #9", estado: "ACEPTADO" },
+        ya_calificado: true,
       },
     ],
   };

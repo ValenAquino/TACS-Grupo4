@@ -66,8 +66,15 @@ const CalificarModal = ({ show, usuario, onConfirmar, onCancelar }) => {
                 rows={3}
                 style={{ fontSize: "0.88rem", resize: "none" }}
                 value={descripcion}
+                maxLength={255}
                 onChange={(e) => setDescripcion(e.target.value)}
               />
+              <small
+                className="text-muted d-block text-end mt-1"
+                style={{ fontSize: "0.75rem" }}
+              >
+                {descripcion.length}/255
+              </small>
             </div>
           </div>
           <div className="modal-footer border-0 pt-0 gap-2">

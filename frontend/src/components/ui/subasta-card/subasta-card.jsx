@@ -1,4 +1,8 @@
 import { derivarTiempo } from "../../../utils/subastasTiempo.js";
+import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+import { calificarPerfil } from "../../../services/perfilService.js";
+import CalificarModal from "../calificar-modal/calificar-modal.jsx";
+import { useState } from "react";
 
 const BADGE_OFERTA = {
   SELECCIONADO: {
@@ -15,7 +19,9 @@ const SubastaCard = ({
   onMejorarOferta,
   onVerResumen,
 }) => {
-  const { autor, figuritaSubastada, fechaCierre, tuOferta } = subasta;
+  const { userId } = useUsuarioActual();
+  const { id, autor, figuritaSubastada, fechaCierre, tuOferta } = subasta;
+  const [mostrarCalificar, setMostrarCalificar] = useState(false);
 
   const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } =
     derivarTiempo({ fechaCierre });
@@ -30,6 +36,13 @@ const SubastaCard = ({
       : { label: "Activa", className: "text-success bg-success-subtle" };
 
   const badgeOferta = tuOferta ? (BADGE_OFERTA[tuOferta.estado] ?? null) : null;
+
+  const handleCalificar = async ({ valor, descripcion }) => {
+    await calificarPerfil(userId, autor.perfilId, { valor, descripcion, transactionId: id, tipoTransaccion: "SUBASTA" });
+    setMostrarCalificar(false);
+  };
+
+  const puedoCalificar = finalizada && tuOferta?.estado === "ACEPTADO" && !subasta.ya_calificado;
 
   return (
     <div className="border rounded-3 overflow-hidden bg-white">
@@ -67,7 +80,6 @@ const SubastaCard = ({
           </span>
         )}
       </div>
-
       {/* Tiempo + autor */}
       <div
         className="px-3 py-2 d-flex justify-content-between align-items-center"
@@ -88,7 +100,6 @@ const SubastaCard = ({
           Publicada por <strong>{autor.nombre}</strong>
         </span>
       </div>
-
       {/* Tu oferta — solo visible en tab Participo */}
       {tuOferta && (
         <div className="px-3 py-2 d-flex justify-content-between align-items-center border-top">
@@ -108,17 +119,27 @@ const SubastaCard = ({
           </div>
         </div>
       )}
-
       {/* Acciones */}
       <div className="px-3 py-2 d-flex gap-2 border-top">
         {finalizada ? (
-          <button
-            className="btn btn-outline-secondary w-100"
-            style={{ fontSize: "0.85rem" }}
-            onClick={onVerResumen}
-          >
-            Ver resumen
-          </button>
+          <>
+            <button
+              className="btn btn-outline-secondary flex-fill"
+              style={{ fontSize: "0.85rem" }}
+              onClick={onVerResumen}
+            >
+              Ver resumen
+            </button>
+            {puedoCalificar && (
+              <button
+                className="btn btn-outline-secondary flex-fill"
+                style={{ fontSize: "0.85rem" }}
+                onClick={() => setMostrarCalificar(true)}
+              >
+                Calificar usuario
+              </button>
+            )}
+          </>
         ) : (
           <>
             <button
@@ -140,6 +161,12 @@ const SubastaCard = ({
           </>
         )}
       </div>
+      <CalificarModal
+        show={mostrarCalificar}
+        usuario={autor.nombre}
+        onConfirmar={handleCalificar}
+        onCancelar={() => setMostrarCalificar(false)}
+      />
     </div>
   );
 };

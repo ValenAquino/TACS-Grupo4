@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 import { buscarMisSubastas } from "../../../../../services/subastasService.js";
 import MiSubastaCard from "../../../../../components/ui/subasta-card/mi-subasta-card.jsx";
 import Button from "../../../../../components/ui/button/button.jsx";
-import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import { useNavigate } from "react-router";
 
 const MisSubastas = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [pagina, setPagina] = useState(1);
   const [refresh, setRefresh] = useState(0);
   const navigate = useNavigate();
 
@@ -17,7 +15,7 @@ const MisSubastas = () => {
     const cargar = async () => {
       try {
         setLoading(true);
-        const res = await buscarMisSubastas({ pagina, limite: 10 });
+        const res = await buscarMisSubastas();
         setData(res);
       } catch {
         setError(true);
@@ -26,7 +24,7 @@ const MisSubastas = () => {
       }
     };
     cargar();
-  }, [pagina, refresh]);
+  }, [refresh]);
 
   if (error)
     return (
@@ -71,8 +69,7 @@ const MisSubastas = () => {
                   key={sub.id}
                   subasta={sub}
                   onVerDetalle={() => navigate(`/subastas/${sub.id}`)}
-                  onCancelar={() => navigate(`/subastas/${sub.id}/cancelar`)}
-                  onCerrar={() => navigate(`/subastas/${sub.id}/cerrar`)}
+                  onVerResumen={() => navigate(`/subastas/${sub.id}/resumen`)}
                   onRefresh={() => setRefresh((r) => r + 1)}
                 />
               ))}
@@ -91,8 +88,9 @@ const MisSubastas = () => {
                 <MiSubastaCard
                   key={sub.id}
                   subasta={sub}
+                  onVerDetalle={() => navigate(`/subastas/${sub.id}`)}
                   onVerResumen={() => navigate(`/subastas/${sub.id}/resumen`)}
-                  onCalificar={() => navigate(`/subastas/${sub.id}/calificar`)}
+                  onRefresh={() => setRefresh((r) => r + 1)}
                 />
               ))}
             </div>
@@ -104,14 +102,6 @@ const MisSubastas = () => {
               <p className="mb-0">No tenés subastas todavía</p>
             </div>
           )}
-
-          <div className="pt-3 d-flex justify-content-center">
-            <Paginacion
-              page={pagina}
-              totalPages={data.paginas_totales ?? 1}
-              onChange={setPagina}
-            />
-          </div>
         </>
       )}
     </div>

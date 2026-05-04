@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/subastas")
@@ -25,19 +23,39 @@ public class SubastaController {
 
     @PostMapping
     public ResponseEntity<SubastaDto> crearSubasta(@RequestHeader("user_id") String id, @RequestBody CrearSubastaRequest body) {
-        LocalDateTime fechaInicio =  LocalDateTime.now();
+        LocalDateTime fechaInicio = LocalDateTime.now();
         LocalDateTime fechaFin = fechaInicio.plusMinutes(body.getDuracion().longValue());
-
         SubastaDto subastaDto = this.subastaService.crearSubasta(id, fechaInicio, fechaFin, body.getFiguritaId());
-
         return ResponseEntity.ok(subastaDto);
     }
 
     @PostMapping("/{sub_id}/propuestas")
     public ResponseEntity<SubastaDto> ofertarEnSubasta(@PathVariable String sub_id, @RequestHeader("user_id") String id, @RequestBody OfertarEnSubastaRequest body) {
-
         SubastaDto subastaDto = this.subastaService.ofertarEnSubasta(id, body.getUsuarioId(), sub_id, body.getFiguritasOfrecidasId());
-
         return ResponseEntity.ok().body(subastaDto);
+    }
+
+    @PostMapping("/{sub_id}/ofertas/{oferta_id}/seleccionar")
+    public ResponseEntity<SubastaDto> seleccionarOferta(@PathVariable String sub_id, @PathVariable String oferta_id) {
+        SubastaDto subastaDto = this.subastaService.seleccionarOferta(sub_id, oferta_id);
+        return ResponseEntity.ok(subastaDto);
+    }
+
+    @PostMapping("/{sub_id}/ofertas/{oferta_id}/rechazar")
+    public ResponseEntity<SubastaDto> rechazarOferta(@PathVariable String sub_id, @PathVariable String oferta_id) {
+        SubastaDto subastaDto = this.subastaService.rechazarOferta(sub_id, oferta_id);
+        return ResponseEntity.ok(subastaDto);
+    }
+
+    @PostMapping("/{sub_id}/cancelar")
+    public ResponseEntity<SubastaDto> cancelarSubasta(@PathVariable String sub_id) {
+        SubastaDto subastaDto = this.subastaService.cancelarSubasta(sub_id);
+        return ResponseEntity.ok(subastaDto);
+    }
+
+    @PostMapping("/{sub_id}/cerrar")
+    public ResponseEntity<SubastaDto> cerrarSubasta(@PathVariable String sub_id) {
+        SubastaDto subastaDto = this.subastaService.cerrarSubasta(sub_id);
+        return ResponseEntity.ok(subastaDto);
     }
 }

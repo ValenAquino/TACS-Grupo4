@@ -2,10 +2,12 @@ package app.servicios.impl;
 
 import app.dto.SubastaDto;
 import app.exceptions.BadRequestException;
+import app.model.entities.EstadoPropuesta;
 import app.model.entities.Figurita;
 import app.model.entities.Perfil;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
+import app.model.entities.EstadoProceso;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
@@ -28,8 +30,7 @@ public class SubastaServiceImpl implements ISubastaService {
   private final INotificacionService notificacionService;
 
   @Override
-  public SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin,
-                                 String figuritaId) {
+  public SubastaDto crearSubasta(String userId, LocalDateTime fechaInicio, LocalDateTime fechaFin, String figuritaId) {
     Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
@@ -53,8 +54,7 @@ public class SubastaServiceImpl implements ISubastaService {
   }
 
   @Override
-  public SubastaDto ofertarEnSubasta(String userId, String perfilDestinoId,
-                                     String subastaId, List<String> rawFiguritasId) {
+  public SubastaDto ofertarEnSubasta(String userId, String perfilDestinoId, String subastaId, List<String> rawFiguritasId) {
     Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Perfil destinatario = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
@@ -62,7 +62,6 @@ public class SubastaServiceImpl implements ISubastaService {
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
     }
-
 
     Figurita figuritaBuscada = subasta.getFiguritaSubastada();
 
@@ -83,6 +82,92 @@ public class SubastaServiceImpl implements ISubastaService {
     );
 
     subasta.getOfertas().add(nuevaPropuesta);
+    this.repoSubasta.guardar(subasta);
+
+    return new SubastaDto(subasta);
+  }
+
+  @Override
+  public SubastaDto seleccionarOferta(String subastaId, String ofertaId) {
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+
+    subasta.getOfertas().stream()
+        .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
+        .findFirst()
+        .ifPresent(p -> p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE)));
+
+    Propuesta propuesta = subasta.getOfertas().stream()
+        .filter(p -> p.getId().equals(ofertaId))
+        .findFirst()
+        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+
+    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
+    this.repoSubasta.guardar(subasta);
+
+    return new SubastaDto(subasta);
+  }
+
+  @Override
+  public SubastaDto rechazarOferta(String subastaId, String ofertaId) {
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+
+    Propuesta propuesta = subasta.getOfertas().stream()
+        .filter(p -> p.getId().equals(ofertaId))
+        .findFirst()
+        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+
+    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
+    this.repoSubasta.guardar(subasta);
+
+    return new SubastaDto(subasta);
+  }
+
+  @Override
+  public SubastaDto cancelarSubasta(String subastaId) {
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+
+    subasta.getOfertas().forEach(p ->
+        p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO))
+    );
+    subasta.setFechaCierre(LocalDateTime.now());
+    this.repoSubasta.guardar(subasta);
+
+    return new SubastaDto(subasta);
+  }
+
+  @Override
+  public SubastaDto cerrarSubasta(String subastaId) {
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+
+    Propuesta seleccionada = subasta.getOfertas().stream()
+        .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
+        .findFirst()
+        .orElseThrow(() -> new BadRequestException("No hay una oferta seleccionada"));
+
+    subasta.getOfertas().forEach(p -> {
+      EstadoProceso nuevoEstado = p.getId().equals(seleccionada.getId())
+          ? EstadoProceso.ACEPTADO
+          : EstadoProceso.RECHAZADO;
+      p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), nuevoEstado));
+    });
+
+    subasta.setFechaCierre(LocalDateTime.now());
     this.repoSubasta.guardar(subasta);
 
     return new SubastaDto(subasta);

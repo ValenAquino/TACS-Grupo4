@@ -1,28 +1,32 @@
-import { Route, Routes } from 'react-router-dom';
-import Home from "./views/public/home/home"
-import Layout from './components/layouts/layout/layout';
+import { Route, Routes } from "react-router-dom";
+import Home from "./views/public/home/home";
+import Layout from "./components/layouts/layout/layout";
 import MisFiguritas from "./views/public/mis-figuritas/mis-figuritas.jsx";
 import NuevaFaltante from "./views/public/nueva-faltante/nueva-faltante.jsx";
 import NuevaRepetida from "./views/public/nueva-repetida/nueva-repetida.jsx";
-
+import Subastas from "./views/public/subastas/subastas.jsx";
 
 const publics = [
-    {
-        path: '/',
-        element: <Home />,
-    },
-    {
-        path: '/mis-figuritas',
-        element: <MisFiguritas />
-    },
-    {
-        path: '/mis-figuritas/nueva-faltante',
-        element: <NuevaFaltante />
-    },
-    {
-        path: '/mis-figuritas/nueva-repetida',
-        element: <NuevaRepetida />
-    }
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/mis-figuritas",
+    element: <MisFiguritas />,
+  },
+  {
+    path: "/mis-figuritas/nueva-faltante",
+    element: <NuevaFaltante />,
+  },
+  {
+    path: "/mis-figuritas/nueva-repetida",
+    element: <NuevaRepetida />,
+  },
+  {
+    path: "/subastas",
+    element: <Subastas />,
+  },
 ];
 
 const privates = [];
@@ -31,10 +35,10 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
-        {publics.map(route => (
+        {publics.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
-        {privates.map(route => (
+        {privates.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
       </Route>

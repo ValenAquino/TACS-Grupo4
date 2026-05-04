@@ -1,3 +1,5 @@
+import { derivarTiempo } from "../../../utils/subastasTiempo.js";
+
 const BADGE_OFERTA = {
   SELECCIONADO: {
     label: "Mejor oferta",
@@ -13,15 +15,10 @@ const SubastaCard = ({
   onMejorarOferta,
   onVerResumen,
 }) => {
-  const {
-    autor,
-    figuritaSubastada,
-    tiempoRestante,
-    finalizadaHace,
-    finalizada,
-    finalizaPronto,
-    tuOferta, // { label: string, estado: "PENDIENTE" | "SELECCIONADO" | "ACEPTADO" | "RECHAZADO" } | null
-  } = subasta;
+  const { autor, figuritaSubastada, fechaCierre, tuOferta } = subasta;
+
+  const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } =
+    derivarTiempo({ fechaCierre });
 
   const badgeEstado = finalizada
     ? null

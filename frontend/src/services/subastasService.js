@@ -66,6 +66,21 @@ export const cerrarSubasta = async (subastaId) => {
   }
 };
 //////////////////
+const ahora = new Date();
+const en45min = new Date(ahora.getTime() + 45 * 60 * 1000).toISOString();
+const en2dias = new Date(
+  ahora.getTime() + 2 * 24 * 60 * 60 * 1000,
+).toISOString();
+const hace2dias = new Date(
+  ahora.getTime() - 2 * 24 * 60 * 60 * 1000,
+).toISOString();
+const en2h = new Date(ahora.getTime() + 2 * 60 * 60 * 1000).toISOString();
+const en1dia = new Date(
+  ahora.getTime() + 1 * 24 * 60 * 60 * 1000,
+).toISOString();
+const hace5dias = new Date(
+  ahora.getTime() - 5 * 24 * 60 * 60 * 1000,
+).toISOString();
 
 export const buscarMisSubastas = async (_filtros) => {
   return {
@@ -77,9 +92,8 @@ export const buscarMisSubastas = async (_filtros) => {
           seleccion: { nombre: "Francia" },
           numero: 88,
         },
-        tiempoRestante: "45 min",
-        finalizada: false,
-        finalizaPronto: true,
+        fechaInicio: ahora.toISOString(),
+        fechaCierre: en45min, // → finalizaPronto: true
         cantidadOfertas: 3,
         ofertas: [
           {
@@ -116,9 +130,8 @@ export const buscarMisSubastas = async (_filtros) => {
           seleccion: { nombre: "Estadios" },
           numero: 23,
         },
-        tiempoRestante: "2 días 14 h",
-        finalizada: false,
-        finalizaPronto: false,
+        fechaInicio: ahora.toISOString(),
+        fechaCierre: en2dias, // → activa normal
         cantidadOfertas: 0,
         ofertas: [],
         ganador: null,
@@ -132,9 +145,8 @@ export const buscarMisSubastas = async (_filtros) => {
           seleccion: { nombre: "Argentina" },
           numero: 14,
         },
-        finalizadaHace: "2 días",
-        finalizada: true,
-        finalizaPronto: false,
+        fechaInicio: hace2dias,
+        fechaCierre: hace2dias, // → finalizada: true
         cantidadOfertas: 5,
         ofertas: [],
         ganador: {
@@ -163,9 +175,8 @@ export const buscarSubastasParticipo = async (_filtros) => {
           seleccion: { nombre: "Brasil" },
           numero: 7,
         },
-        tiempoRestante: "2 h 14 min",
-        finalizada: false,
-        finalizaPronto: true,
+        fechaInicio: ahora.toISOString(),
+        fechaCierre: en2h, // → finalizaPronto: true
         tuOferta: {
           label: "Coman #11 + Griezmann Dorado",
           estado: "SELECCIONADO",
@@ -179,9 +190,8 @@ export const buscarSubastasParticipo = async (_filtros) => {
           seleccion: { nombre: "Argentina" },
           numero: 10,
         },
-        tiempoRestante: "1 día 8 h",
-        finalizada: false,
-        finalizaPronto: false,
+        fechaInicio: ahora.toISOString(),
+        fechaCierre: en1dia, // → activa normal
         tuOferta: {
           label: "Di María #11 + Dybala Especial",
           estado: "RECHAZADO",
@@ -195,9 +205,8 @@ export const buscarSubastasParticipo = async (_filtros) => {
           seleccion: { nombre: "Brasil" },
           numero: 45,
         },
-        finalizadaHace: "5 días",
-        finalizada: true,
-        finalizaPronto: false,
+        fechaInicio: hace5dias,
+        fechaCierre: hace5dias, // → finalizada: true
         tuOferta: { label: "Mbappé #7 + Giroud #9", estado: "ACEPTADO" },
       },
     ],

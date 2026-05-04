@@ -8,6 +8,7 @@ import {
   cerrarSubasta,
 } from "../../../services/subastasService.js";
 import { calificarPerfil } from "../../../services/perfilService.js";
+import { derivarTiempo } from "../../../utils/subastasTiempo.js";
 
 const BADGE_ESTADO = {
   activa: { label: "Activa", className: "text-success bg-success-subtle" },
@@ -25,14 +26,14 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
   const {
     id: subastaId,
     figuritaSubastada,
-    tiempoRestante,
-    finalizadaHace,
-    finalizada,
-    finalizaPronto,
+    fechaCierre,
     ofertas,
     cantidadOfertas,
     ganador,
   } = subasta;
+
+  const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } =
+    derivarTiempo({ fechaCierre });
 
   const [modal, setModal] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);

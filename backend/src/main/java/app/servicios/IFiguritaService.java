@@ -23,7 +23,11 @@ public interface IFiguritaService {
      * @param pagina    número de página 0-indexed
      * @param tamanioPagina elementos por página; el controller acota a 40 antes de llamar aquí
      */
+    /**
+     * @param ordenar criterio de orden: {@code "numero"} (asc), {@code "reputacion"} (desc),
+     *                o {@code null} para orden indeterminado
+     */
     PaginaResultado<FiguritaIntercambiableDto> buscarFiguritas(
         Integer numero, Seleccion seleccion, String jugador, MetodoIntercambio tipo,
-        int pagina, int tamanioPagina);
+        String ordenar, int pagina, int tamanioPagina);
 }

@@ -153,16 +153,30 @@ La aplicación queda disponible en `http://localhost:8080`.
 | `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos   |
 | `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                        |
 | `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                         |
+| `ordenar`       | String  | No        | `numero` | `numero` (asc) o `reputacion` (desc)                |
 
 **Respuesta:**
 
 ```json
 {
-  "contenido":            [ ...figuritas... ],
+  "contenido": [
+    {
+      "figurita_id": "ARG-10",
+      "numero": 10,
+      "jugador": "Messi",
+      "posicion": "Delantero",
+      "seleccion": "ARGENTINA",
+      "cantidad_existente": 3,
+      "cantidad_reservada": 0,
+      "metodos": ["INTERCAMBIO"],
+      "usuario_id": "1000",
+      "nombre_usuario": "Lucas",
+      "reputacion": 4
+    }
+  ],
   "cantidad_de_elementos": 247,
-  "cantidad_de_paginas":   21,
-  "numero":                0,
-  "tamanio":               12
+  "cantidad_de_paginas": 21,
+  "numero": 0
 }
 ```
 

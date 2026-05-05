@@ -6,12 +6,10 @@ import static org.mockito.Mockito.when;
 
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.PaginaResultado;
-import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
-import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
@@ -24,35 +22,28 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FiguritaServiceTest {
 
-  @Mock
-  RepositorioFiguritas repositorioFiguritas;
-  @Mock
-  RepositorioFiguritasIntercambiables repositorioIntercambiables;
-  @Mock
-  RepositorioPerfiles repositorioPerfiles;
-  @InjectMocks
-  FiguritaService figuritaService;
+  @Mock RepositorioFiguritasIntercambiables repositorioIntercambiables;
+  @Mock RepositorioPerfiles repositorioPerfiles;
+  @InjectMocks FiguritaService figuritaService;
 
-  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
-  Figurita mbappe = new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, null);
+  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
+  Figurita mbappe = new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, "Delantero");
 
   FiguritaIntercambiable intercambiable = new FiguritaIntercambiable(
       messi, 2, List.of(MetodoIntercambio.INTERCAMBIO), "usuario-1");
-  FiguritaIntercambiable subasta = new FiguritaIntercambiable(
+  FiguritaIntercambiable soloSubasta = new FiguritaIntercambiable(
       mbappe, 1, List.of(MetodoIntercambio.SUBASTA), "usuario-2");
   FiguritaIntercambiable ambos = new FiguritaIntercambiable(
-      new Figurita("BRA-9", 9, "Neymar", Seleccion.BRASIL, null),
+      new Figurita("BRA-9", 9, "Neymar", Seleccion.BRASIL, "Delantero"),
       3, List.of(MetodoIntercambio.SUBASTA_E_INTERCAMBIO), "usuario-3");
 
   @Test
   void buscarFiguritas_sinFiltros_retornaTodasPaginadas() {
-    when(repositorioFiguritas.buscarConFiltros(null, null, null))
-        .thenReturn(List.of(messi, mbappe));
-    when(repositorioIntercambiables.buscarPorFiguritaIds(List.of("ARG-10", "FRA-7")))
-        .thenReturn(List.of(intercambiable, subasta));
+    when(repositorioIntercambiables.buscarConFiltros(null, null, null, null, 0, 12))
+        .thenReturn(new PaginaResultado<>(List.of(intercambiable, soloSubasta), 2, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, null, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, null, null, 0, 12);
 
     assertEquals(2, resultado.cantidadDeElementos());
     assertEquals(2, resultado.contenido().size());
@@ -61,14 +52,12 @@ class FiguritaServiceTest {
   }
 
   @Test
-  void buscarFiguritas_filtroTipoIntercambio_noIncluyeSoloSubasta() {
-    when(repositorioFiguritas.buscarConFiltros(null, null, null))
-        .thenReturn(List.of(messi, mbappe));
-    when(repositorioIntercambiables.buscarPorFiguritaIds(List.of("ARG-10", "FRA-7")))
-        .thenReturn(List.of(intercambiable, subasta));
+  void buscarFiguritas_filtroTipoIntercambio_excluyeSoloSubasta() {
+    when(repositorioIntercambiables.buscarConFiltros(null, null, null, MetodoIntercambio.INTERCAMBIO, 0, 12))
+        .thenReturn(new PaginaResultado<>(List.of(intercambiable), 1, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, null, 0, 12);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals("ARG-10", resultado.contenido().get(0).getFiguritaId());
@@ -76,14 +65,11 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_filtroTipoIntercambio_incluyeSubastaEIntercambio() {
-    Figurita bra = ambos.getFigurita();
-    when(repositorioFiguritas.buscarConFiltros(null, null, null))
-        .thenReturn(List.of(messi, bra));
-    when(repositorioIntercambiables.buscarPorFiguritaIds(List.of("ARG-10", "BRA-9")))
-        .thenReturn(List.of(intercambiable, ambos));
+    when(repositorioIntercambiables.buscarConFiltros(null, null, null, MetodoIntercambio.INTERCAMBIO, 0, 12))
+        .thenReturn(new PaginaResultado<>(List.of(intercambiable, ambos), 2, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, null, 0, 12);
 
     assertEquals(2, resultado.cantidadDeElementos());
   }
@@ -97,15 +83,15 @@ class FiguritaServiceTest {
     FiguritaIntercambiable fi2 = new FiguritaIntercambiable(f2, 1, List.of(MetodoIntercambio.INTERCAMBIO), "u2");
     FiguritaIntercambiable fi3 = new FiguritaIntercambiable(f3, 1, List.of(MetodoIntercambio.INTERCAMBIO), "u3");
 
-    when(repositorioFiguritas.buscarConFiltros(null, null, null))
-        .thenReturn(List.of(f1, f2, f3));
-    when(repositorioIntercambiables.buscarPorFiguritaIds(List.of("F-1", "F-2", "F-3")))
-        .thenReturn(List.of(fi1, fi2, fi3));
+    when(repositorioIntercambiables.buscarConFiltros(null, null, null, null, 0, 2))
+        .thenReturn(new PaginaResultado<>(List.of(fi1, fi2), 3, 2, 0));
+    when(repositorioIntercambiables.buscarConFiltros(null, null, null, null, 1, 2))
+        .thenReturn(new PaginaResultado<>(List.of(fi3), 3, 2, 1));
 
     PaginaResultado<FiguritaIntercambiableDto> pagina0 =
-        figuritaService.buscarFiguritas(null, null, null, null, 0, 2);
+        figuritaService.buscarFiguritas(null, null, null, null, null, 0, 2);
     PaginaResultado<FiguritaIntercambiableDto> pagina1 =
-        figuritaService.buscarFiguritas(null, null, null, null, 1, 2);
+        figuritaService.buscarFiguritas(null, null, null, null, null, 1, 2);
 
     assertEquals(3, pagina0.cantidadDeElementos());
     assertEquals(2, pagina0.cantidadDePaginas());
@@ -115,11 +101,11 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_sinResultados_retornaPaginaVacia() {
-    when(repositorioFiguritas.buscarConFiltros(null, null, null))
-        .thenThrow(new NotFoundException("No se encontraron figuritas con esos filtros"));
+    when(repositorioIntercambiables.buscarConFiltros(null, null, null, null, 0, 12))
+        .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, null, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, null, null, 0, 12);
 
     assertEquals(0, resultado.cantidadDeElementos());
     assertEquals(0, resultado.cantidadDePaginas());
@@ -128,13 +114,11 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_paginaFueraDeRango_retornaContenidoVacio() {
-    when(repositorioFiguritas.buscarConFiltros(null, null, null))
-        .thenReturn(List.of(messi));
-    when(repositorioIntercambiables.buscarPorFiguritaIds(List.of("ARG-10")))
-        .thenReturn(List.of(intercambiable));
+    when(repositorioIntercambiables.buscarConFiltros(null, null, null, null, 99, 12))
+        .thenReturn(new PaginaResultado<>(List.of(), 1, 1, 99));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, null, 99, 12);
+        figuritaService.buscarFiguritas(null, null, null, null, null, 99, 12);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().isEmpty());

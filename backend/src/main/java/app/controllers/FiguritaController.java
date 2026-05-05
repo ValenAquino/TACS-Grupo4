@@ -22,12 +22,13 @@ public class FiguritaController {
         @RequestParam(required = false) Seleccion seleccion,
         @RequestParam(required = false) String jugador,
         @RequestParam(required = false) MetodoIntercambio tipo,
+        @RequestParam(required = false) String ordenar,
         @RequestParam(defaultValue = "0") int pagina,
         @RequestParam(defaultValue = "12") int tamanioPagina
     ) {
         int tamanioDePaginaAcotado = Math.min(tamanioPagina, 40);
         return ResponseEntity.ok(
-            figuritaService.buscarFiguritas(numero, seleccion, jugador, tipo, pagina, tamanioDePaginaAcotado)
+            figuritaService.buscarFiguritas(numero, seleccion, jugador, tipo, ordenar, pagina, tamanioDePaginaAcotado)
         );
     }
 }

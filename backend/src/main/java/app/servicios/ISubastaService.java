@@ -1,5 +1,7 @@
 package app.servicios;
 
+import app.dto.request.MejorarOfertaRequest;
+import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.MisSubastasResponseDto;
 import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
@@ -18,9 +20,9 @@ public interface ISubastaService {
      * Registra una oferta en la subasta. Valida que no haya figuritas ofrecidas duplicadas
      * y crea una propuesta asociada a la subasta.
      */
-    void ofertarEnSubasta(String userId, String usuarioDestinoId,
-                                String subastaId, List<String> rawFiguritasId);
+    void ofertarEnSubasta(String userId, String subastaId, List<String> rawFiguritasId);
 
+    void mejorarOfertaEnSubasta(String subastaId, String ofertaId, MejorarOfertaRequest body);
     /**
      * Marca la oferta indicada como SELECCIONADO. Si había otra en SELECCIONADO,
      * la pasa a PENDIENTE.

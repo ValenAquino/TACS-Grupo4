@@ -13,14 +13,6 @@ import app.model.entities.MetodoIntercambio;
 import java.util.List;
 
 public interface IPerfilService {
-
-    /**
-     * Retorna el resumen de operaciones del perfil: figuritas publicadas,
-     * propuestas enviadas, propuestas recibidas y subastas activas.
-     * Retorna {@code null} si el perfil no existe.
-     */
-    OperacionesDto obtenerOperacionesPerfil(String userId);
-
     /**
      * Retorna las figuritas intercambiables del perfil.
      * Lanza {@link app.exceptions.NotFoundException} si el perfil no existe.

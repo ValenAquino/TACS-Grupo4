@@ -42,52 +42,34 @@ public class PerfilService implements IPerfilService {
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
 //TODO ya no es necesario este metodo, eliminar
+
+
   @Override
-  public OperacionesDto obtenerOperacionesPerfil(String userId) {
-    Perfil usuario = repositorioPerfiles.buscarPorId(userId);
-    if (usuario == null) {
-      return null;
-    }
-
-    List<FiguritaIntercambiable> figuritasPublicadas = usuario.getColeccion().getRepetidas();
-
-    List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(userId);
-    List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(userId);
-
-    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUserId(userId)
-        .stream()
-        .filter(Subasta::estaActivo)
+  public List<FiguritaDto> obtenerFaltantes(String userId) {
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+    return perfil.getColeccion().getFaltantes().stream()
+        .map(FiguritaDto::new)
         .toList();
+  }
+  //TODO que se filtren las que cantidadExistentes == 0
+  @Override
+  public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+    return perfil.getColeccion().getRepetidas().stream()
+        .map(FiguritaIntercambiableDto::new)
+        .toList();
+  }
 
-        return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
-    }
+  @Override
+  public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
+      if (perfil == null) throw new NotFoundException("Perfil no encontrado");
 
-    @Override
-    public List<FiguritaDto> obtenerFaltantes(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
-      return perfil.getColeccion().getFaltantes().stream()
-          .map(FiguritaDto::new)
-          .toList();
-    }
-    //TODO que se filtren las que cantidadExistentes == 0
-    @Override
-    public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
-      return perfil.getColeccion().getRepetidas().stream()
+      return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
+          .stream()
           .map(FiguritaIntercambiableDto::new)
           .toList();
-    }
-
-    @Override
-    public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
-        Perfil perfil = repositorioPerfiles.buscarPorId(userId);
-        if (perfil == null) throw new NotFoundException("Perfil no encontrado");
-
-        return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
-            .stream()
-            .map(FiguritaIntercambiableDto::new)
-            .toList();
-    }
+  }
 
   @Override
   public void agregarCalificacion(String userAutorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {

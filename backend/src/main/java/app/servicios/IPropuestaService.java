@@ -1,6 +1,8 @@
 package app.servicios;
 
 import app.dto.PropuestaDto;
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.model.entities.Propuesta;
 
@@ -23,4 +25,6 @@ public interface IPropuestaService {
      * y delega la validación de permisos y estado en {@link app.model.entities.Propuesta#rechazar}.
      */
     void rechazar(String id, String usuarioId);
+
+    PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros);
 }

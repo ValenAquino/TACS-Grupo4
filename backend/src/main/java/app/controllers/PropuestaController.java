@@ -2,17 +2,13 @@ package app.controllers;
 
 import app.dto.PropuestaDto;
 import app.dto.TemporalDto;
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.servicios.IPropuestaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -37,5 +33,13 @@ public class PropuestaController {
                                       @RequestHeader String usuario_id) {
         propuestaService.rechazar(prop_id, usuario_id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping()
+    public ResponseEntity<PropuestasDto> obtenerPropuestas(
+        @RequestParam String user_id,
+        @ModelAttribute PropuestasFiltro filtros
+        ) {
+        return ResponseEntity.ok(this.propuestaService.buscarPropuestas(user_id, filtros));
     }
 }

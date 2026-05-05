@@ -25,16 +25,6 @@ public class PerfilController {
 
     private final IPerfilService perfilService;
 
-    //Todo: Eliminar en el futuro
-    @GetMapping("/{user_id}/operaciones")
-    public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {
-        OperacionesDto operaciones = perfilService.obtenerOperacionesPerfil(user_id);
-        if (operaciones == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(operaciones);
-    }
-
     @GetMapping("/{user_id}/faltantes")
     public ResponseEntity<List<FiguritaDto>> obtenerFaltantes(@PathVariable String user_id) {
         return ResponseEntity.ok(perfilService.obtenerFaltantes(user_id));

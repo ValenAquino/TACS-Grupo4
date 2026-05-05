@@ -6,6 +6,7 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.FiguritaDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
+import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
@@ -95,5 +96,10 @@ public class PerfilController {
     @GetMapping("/{user_id}/notificaciones")
     public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(@PathVariable String user_id) {
         return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(user_id));
+    }
+
+    @GetMapping("/{user_id}")
+    public ResponseEntity<PerfilDto> obtenerPerfil(@PathVariable String user_id) {
+        return ResponseEntity.ok(this.perfilService.obtenerPerfil(user_id));
     }
 }

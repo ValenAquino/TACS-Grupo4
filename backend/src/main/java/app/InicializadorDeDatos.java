@@ -125,9 +125,15 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
         FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interLautaro   = new FiguritaIntercambiable(lautaro,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interGriezmann1   = new FiguritaIntercambiable(griezmann,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interMbappe   = new FiguritaIntercambiable(mbappe,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
         FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
         coleccionLucas.getRepetidas().add(interMessi);
         coleccionLucas.getRepetidas().add(interDiMaria);
+        coleccionLucas.getRepetidas().add(interLautaro);
+        coleccionLucas.getRepetidas().add(interGriezmann1);
+        coleccionLucas.getRepetidas().add(interMbappe);
         coleccionLucas.getFaltantes().add(mbappe);
         coleccionLucas.getFaltantes().add(vinicius);
         intercambiables.guardar(interMessi);
@@ -139,10 +145,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // Sofía
         Coleccion coleccionSofia = new Coleccion();
         coleccionSofia.setId("2");
-        FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
+        FiguritaIntercambiable interMbappe2    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
         FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
       FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
-        coleccionSofia.getRepetidas().add(interMbappe);
+        coleccionSofia.getRepetidas().add(interMbappe2);
         coleccionSofia.getRepetidas().add(interGriezmann);
       coleccionSofia.getRepetidas().add(interNeymar);
         coleccionSofia.getFaltantes().add(messi);
@@ -254,7 +260,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             LocalDateTime.now().plusMinutes(45),
             mbappe,
             new ArrayList<>(List.of(ofertaSofia, ofertaPedro, ofertaLu)),
-            new ArrayList<>(), 0, false);
+            new ArrayList<>(), 2, false);
         subastas.guardar(subasta1);
 
         // id=2 | Activa, cierra en 2 días, sin ofertas
@@ -336,7 +342,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             LocalDateTime.now().plusHours(5),
             neymar,
             new ArrayList<>(),
-            new ArrayList<>(), 0, true);
+            new ArrayList<>(), 4, true);
         subastas.guardar(subasta6);
     }
 }

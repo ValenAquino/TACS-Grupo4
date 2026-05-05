@@ -12,17 +12,33 @@ export const crearSubasta = async (userId, body) => {
   }
 };
 
-// export const buscarMisSubastas = async (filtros) => {
-//     try {
-//         const { data } = await api.get(
-//             `${SUBASTAS_URL}/mis-subastas`,
-//             { params: filtros }
-//         );
-//         return data;
-//     } catch (error) {
-//         handleAxiosError(error);
-//     }
-// };
+export const buscarSubasta = async ({subId}) => {
+    try {
+        const { data } = await api.get(
+            `${SUBASTAS_URL}/${subId}`,
+            {}
+        );
+        return data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
+
+export const buscarMisSubastas = async (userId, filtros) => {
+    try {
+        const { data } = await api.get(
+            `${SUBASTAS_URL}/mis-subastas`,
+            { params: {
+                ...filtros,
+                    userId
+                }
+            }
+        );
+        return data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
 
 // export const buscarSubastasParticipo = async (filtros) => {
 //     try {
@@ -77,111 +93,9 @@ export const cerrarSubasta = async (subastaId) => {
 };
 //////////////////
 const ahora = new Date();
-const en45min = new Date(ahora.getTime() + 45 * 60 * 1000).toISOString();
-const en2dias = new Date(ahora.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString();
-const hace2dias = new Date(ahora.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString();
 const en2h = new Date(ahora.getTime() + 2 * 60 * 60 * 1000).toISOString();
 const en1dia = new Date(ahora.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString();
 const hace5dias = new Date(ahora.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString();
-
-export const buscarMisSubastas = async (_filtros) => {
-  return {
-    activas: [
-      {
-        id: "1",
-        figuritaSubastada: {
-          jugador: "Mbappé Brillante",
-          seleccion: { nombre: "Francia" },
-          numero: 88,
-        },
-        fechaInicio: ahora.toISOString(),
-        fechaCierre: en45min,
-        cantidadOfertas: 3,
-        ofertas: [
-          {
-            id: "o1",
-            usuario: "caro_r",
-            iniciales: "CR",
-            calificacion: 4.8,
-            label: "Neymar Brillante #45 + Vinicius #7",
-            seleccionada: true,
-          },
-          {
-            id: "o2",
-            usuario: "pedro_m",
-            iniciales: "PM",
-            calificacion: 4.0,
-            label: "De Bruyne #10 + Benzema Dorado",
-            seleccionada: false,
-          },
-          {
-            id: "o3",
-            usuario: "lu_figueiras",
-            iniciales: "LU",
-            calificacion: 3.2,
-            label: "Griezmann #11 + Giroud #9",
-            seleccionada: false,
-          },
-        ],
-        ganador: null,
-        ya_calificado: false,
-      },
-      {
-        id: "2",
-        figuritaSubastada: {
-          jugador: "Lusail Stadium",
-          seleccion: { nombre: "Estadios" },
-          numero: 23,
-        },
-        fechaInicio: ahora.toISOString(),
-        fechaCierre: en2dias,
-        cantidadOfertas: 0,
-        ofertas: [],
-        ganador: null,
-        ya_calificado: false,
-      },
-    ],
-    finalizadas: [
-      {
-        id: "3",
-        figuritaSubastada: {
-          jugador: "Dibu Martínez",
-          seleccion: { nombre: "Argentina" },
-          numero: 14,
-        },
-        fechaInicio: hace2dias,
-        fechaCierre: hace2dias,
-        cantidadOfertas: 5,
-        ofertas: [],
-        ganador: {
-          perfilId: "123",
-          usuario: "rodrigo_l",
-          label: "Messi Brillante + Álvarez #9",
-        },
-        ya_calificado: false, // → debe mostrar botón "Calificar usuario"
-      },
-      {
-        id: "7",
-        figuritaSubastada: {
-          jugador: "Mac Allister",
-          seleccion: { nombre: "Argentina" },
-          numero: 6,
-        },
-        fechaInicio: hace5dias,
-        fechaCierre: hace5dias,
-        cantidadOfertas: 2,
-        ofertas: [],
-        ganador: {
-          perfilId: "456",
-          usuario: "caro_r",
-          label: "De Bruyne #10",
-        },
-        ya_calificado: true, // → NO debe mostrar botón
-      },
-    ],
-    paginas_totales: 1,
-  };
-};
 
 export const buscarSubastasParticipo = async (_filtros) => {
   return {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,7 +71,8 @@ public class SubastaController {
     }
 
     @GetMapping("/mis-subastas")
-    public ResponseEntity<MisSubastasResponseDto> obtenerMisSubastas(@RequestHeader("user_id") String userId) {
+    public ResponseEntity<MisSubastasResponseDto> obtenerMisSubastas(@RequestParam String userId) {
+        System.out.println(userId);
         return ResponseEntity.ok(this.subastaService.obtenerMisSubastas(userId));
     }
 

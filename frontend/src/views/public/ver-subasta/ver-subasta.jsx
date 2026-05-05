@@ -1,7 +1,7 @@
 import styles from "./ver-subasta.module.css"
 import {useParams} from "react-router";
 import {useEffect, useState} from "react";
-import {buscarSubasta} from "../../../services/subastaService.js";
+import {buscarSubasta} from "../../../services/subastasService.js";
 import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
 import SectionCard from "../../../components/ui/section-card/section-card.jsx";
 import SectionTitle from "../../../components/ui/section-title/section-title.jsx";
@@ -9,6 +9,7 @@ import PerfilSimple from "../../../components/ui/perfil-simple/perfil-simple.jsx
 import OfertaCard from "./oferta-card.jsx";
 import TuOfertaCard from "./tu-oferta-card.jsx";
 import Button from "../../../components/ui/button/button.jsx";
+import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
 
 const VerSubasta = () => {
     const {subId} = useParams()
@@ -62,8 +63,7 @@ const VerSubasta = () => {
     const cargarSubasta = async () => {
         try {
             setCargando(true)
-            const payload = await buscarSubasta({userId});
-            console.log(payload)
+            const payload = await buscarSubasta({subId});
             setSubasta(payload)
             setTiempo(payload.tiempo_restante)
         } catch (err){
@@ -148,12 +148,28 @@ const VerSubasta = () => {
                 </SectionCard>
 
 
-                <SectionCard>
-                    <SectionTitle>CONDICIONES PARA OFERTAR</SectionTitle>
-                    <SectionCard.Section>
-                        ??
-                    </SectionCard.Section>
-                </SectionCard>
+                { subasta.figuritas_solicitadas.length > 0 &&
+                  subasta.calificacion_minima > 0 &&
+                  subasta.calificacion_minima <= 5 &&
+                    <SectionCard>
+                        <SectionTitle>CONDICIONES PARA OFERTAR</SectionTitle>
+                        <SectionCard.Section>
+                            <ul>
+                                {subasta.figuritas_solicitadas.length > 0 &&
+                                    <li>Requiere de una de estas figuritas: {
+                                        subasta.figuritas_solicitadas.map((fd, index) => <p
+                                            key={index}>{fd.jugador}</p>)
+                                    }</li>
+                                }
+                                {subasta.calificacion_minima > 0 && subasta.calificacion_minima <= 5 &&
+                                    <li>
+                                        Requiere de calificacion minima: {subasta.calificacion_minima}
+                                    </li>
+                                }
+                            </ul>
+                        </SectionCard.Section>
+                    </SectionCard>
+                }
 
 
                 <SectionCard>

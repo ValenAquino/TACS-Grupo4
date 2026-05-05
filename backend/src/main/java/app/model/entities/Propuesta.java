@@ -50,20 +50,30 @@ public class Propuesta {
 
     /**
      * Acepta la propuesta. Valida que {@code usuario} sea el destinatario
-     * y que la propuesta esté en estado PENDIENTE.
+     * y que la propuesta esté en estado ACEPTADO.
      */
-    public void aceptar(Perfil usuario) {
-        validarUsuarioDestino(usuario);
+    public void aceptar(Perfil perfil) {
+        validarUsuarioDestino(perfil);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
     }
 
     /**
-     * Rechaza la propuesta. Valida que {@code usuario} sea el destinatario
-     * y que la propuesta esté en estado PENDIENTE.
+     * Se selecciona la propuesta. Valida que {@code usuario} sea el destinatario
+     * y que la propuesta esté en estado SELECCIONADO. (En una subasta)
      */
-    public void rechazar(Perfil usuario) {
-        validarUsuarioDestino(usuario);
+    public void seleccionar(Perfil perfil) {
+        validarUsuarioDestino(perfil);
+        validarPendiente();
+        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
+    }
+
+    /**
+     * Rechaza la propuesta. Valida que {@code usuario} sea el destinatario
+     * y que la propuesta esté en estado RECHAZADO.
+     */
+    public void rechazar(Perfil perfil) {
+        validarUsuarioDestino(perfil);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
     }
@@ -74,8 +84,8 @@ public class Propuesta {
         }
     }
 
-    private void validarUsuarioDestino(Perfil usuario) {
-        if (!this.destinatario.getId().equals(usuario.getId())) {
+    private void validarUsuarioDestino(Perfil perfil) {
+        if (!this.destinatario.getId().equals(perfil.getId())) {
             throw new PropuestaException("Solo el destinatario puede responder la propuesta");
         }
     }

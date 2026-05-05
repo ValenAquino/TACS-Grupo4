@@ -13,6 +13,9 @@ public class CalificacionRequest {
   @JsonProperty("valor")
   private Integer valor;
 
+  @JsonProperty("user_id")
+  private String userId;
+
   @JsonProperty("descripcion")
   private String descripcion;
 

@@ -6,6 +6,7 @@ import {useCallback, useEffect, useState} from "react";
 import {buscarContadores} from "../../../services/perfilService.js";
 import ExtraInfo from "../../../components/ui/extra-info/extra-info.jsx";
 import MostradorSugerencias from "./tabs/mostrador-sugerencias.jsx";
+import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
 
 const Sugerencias = () => {
 

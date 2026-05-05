@@ -52,11 +52,13 @@ public class PerfilController {
     @PostMapping("/{perfil_id}/calificaciones")
     public ResponseEntity<Void> calificarPerfil(
         @PathVariable String perfil_id,
-        @RequestHeader String autor_id,
         @RequestBody CalificacionRequest body) {
 
+        System.out.println(body.getUserId());
+        System.out.println(perfil_id);
+
         this.perfilService.agregarCalificacion(
-            autor_id,
+            body.getUserId(),
             perfil_id,
             body.getValor(),
             body.getDescripcion(),

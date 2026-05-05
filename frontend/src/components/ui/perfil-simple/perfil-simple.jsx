@@ -23,8 +23,8 @@ const PerfilSimple = ({perfil}) => {
             <div>
                 <h5 className="m-0">{perfil.nombre}</h5>
                 <div className="fs-6 d-flex align-items-center gap-2">
-                    {renderStars(perfil.puntuacion)}
-                    <span>{perfil.puntuacion}</span>
+                    {renderStars(perfil.calificacion)}
+                    <span>{perfil.calificacion}</span>
                 </div>
             </div>
         </div>

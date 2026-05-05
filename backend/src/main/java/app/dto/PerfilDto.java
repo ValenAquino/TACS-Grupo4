@@ -8,11 +8,19 @@ import lombok.Getter;
 public class PerfilDto {
   private String id;
   private String nombre;
-  private Number puntuacion;
+  private Number calificacion;
+  private String iniciales;
 
   public PerfilDto(Perfil perfil) {
     this.id = perfil.getId();
     this.nombre = perfil.getNombre();
-    this.puntuacion = perfil.obtenerCalificacionMedia();
+    this.calificacion = perfil.obtenerCalificacionMedia();
+    this.iniciales = calcularIniciales(nombre);
+  }
+
+  private String calcularIniciales(String nombre) {
+    String[] partes = nombre.trim().split("\\s+");
+    if (partes.length == 1) return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();
+    return (partes[0].charAt(0) + "" + partes[1].charAt(0)).toUpperCase();
   }
 }

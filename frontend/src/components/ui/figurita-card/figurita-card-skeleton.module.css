@@ -1,0 +1,56 @@
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding-bottom: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bone {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 6px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Tamaños de huesos */
+.boneXs {
+    height: 12px;
+    width: 60px;
+}
+
+.boneSm {
+    height: 16px;
+    width: 72px;
+    border-radius: 999px;
+}
+
+.boneMd {
+    height: 14px;
+    width: 120px;
+}
+
+.boneEmoji {
+    height: 80px;
+}
+
+.boneUser {
+    height: 12px;
+    width: 100px;
+}
+
+.boneBtn {
+    height: 34px;
+    width: 100%;
+}

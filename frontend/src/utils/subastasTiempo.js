@@ -31,12 +31,12 @@ export function calcularFinalizaPronto(fechaCierre, umbralHoras = 2) {
 }
 
 // Devuelve todos los derivados de tiempo a partir de las fechas crudas
-export function derivarTiempo({ fechaCierre }) {
-  const finalizada = new Date(fechaCierre) <= new Date();
+export function derivarTiempo({ fecha_cierre }) {
+  const finalizada = new Date(fecha_cierre) <= new Date();
   return {
     finalizada,
-    tiempoRestante: finalizada ? null : calcularTiempoRestante(fechaCierre),
-    finalizadaHace: finalizada ? calcularFinalizadaHace(fechaCierre) : null,
-    finalizaPronto: finalizada ? false : calcularFinalizaPronto(fechaCierre),
+    tiempoRestante: finalizada ? null : calcularTiempoRestante(fecha_cierre),
+    finalizadaHace: finalizada ? calcularFinalizadaHace(fecha_cierre) : null,
+    finalizaPronto: finalizada ? false : calcularFinalizaPronto(fecha_cierre),
   };
 }

@@ -1,5 +1,6 @@
 package app;
 
+import app.model.entities.Calificacion;
 import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.EstadoPropuesta;
@@ -65,12 +66,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Figurita messi     = new Figurita("ARG-10", 10, "Messi",     Seleccion.ARGENTINA);
         Figurita diMaria   = new Figurita("ARG-11", 11, "Di María",  Seleccion.ARGENTINA);
         Figurita lautaro   = new Figurita("ARG-9",   9, "Lautaro",   Seleccion.ARGENTINA);
-        Figurita mbappe    = new Figurita("FRA-10", 10, "Mbappé",    Seleccion.FRANCIA);
-        Figurita griezmann = new Figurita("FRA-7",   7, "Griezmann", Seleccion.FRANCIA);
-        Figurita vinicius  = new Figurita("BRA-10", 10, "Vinicius",  Seleccion.BRASIL);
-        Figurita neymar    = new Figurita("BRA-11", 10, "Vinicius",  Seleccion.BRASIL);
-        Figurita pedri     = new Figurita("ESP-10", 10, "Pedri",     Seleccion.ESPAÑA);
-        Figurita kroos     = new Figurita("GER-8",   8, "Kroos",     Seleccion.ALEMANIA);
+        Figurita mbappe    = new Figurita("FRA-10", 20, "Mbappé",    Seleccion.FRANCIA);
+        Figurita griezmann = new Figurita("FRA-7",   27, "Griezmann", Seleccion.FRANCIA);
+        Figurita vinicius  = new Figurita("BRA-10", 30, "Vinicius",  Seleccion.BRASIL);
+        Figurita neymar    = new Figurita("BRA-11", 31, "Vinicius",  Seleccion.BRASIL);
+        Figurita pedri     = new Figurita("ESP-10", 40, "Pedri",     Seleccion.ESPAÑA);
+        Figurita kroos     = new Figurita("GER-8",   58, "Kroos",     Seleccion.ALEMANIA);
 
         figuritas.guardar(messi);
         figuritas.guardar(diMaria);
@@ -80,7 +81,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
         cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos, neymar);
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);
-        cargarSubastas(griezmann, vinicius);
+        cargarSubastas(griezmann, vinicius, lautaro, mbappe, griezmann, vinicius, pedri, kroos, neymar);
     }
 
     private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
@@ -89,8 +90,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // Lucas
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
-        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.SUBASTA),     "1000");
+        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
         coleccionLucas.getRepetidas().add(interMessi);
         coleccionLucas.getRepetidas().add(interDiMaria);
         coleccionLucas.getFaltantes().add(mbappe);
@@ -163,29 +164,121 @@ public class InicializadorDeDatos implements CommandLineRunner {
         propuestas.guardar(propuesta("2002", matias, lucas,  figuritas,  diMaria,  EstadoProceso.RECHAZADO));
     }
 
-    private void cargarSubastas(Figurita griezmann, Figurita vinicius) {
+    private void cargarSubastas(Figurita messi, Figurita diMaria, Figurita lautaro,
+                                Figurita mbappe, Figurita griezmann, Figurita vinicius,
+                                Figurita pedri, Figurita kroos, Figurita neymar) {
+
+        Perfil lucas  = perfiles.buscarPorId("1000");
         Perfil sofia  = perfiles.buscarPorId("1001");
         Perfil matias = perfiles.buscarPorId("1002");
+        Perfil juan   = perfiles.buscarPorId("1003");
+        if (lucas == null) throw new RuntimeException("Lucas es null");
+        if (sofia == null) throw new RuntimeException("Sofía es null");
+        if (matias == null) throw new RuntimeException("Matías es null");
+        if (juan == null) throw new RuntimeException("Juan es null");
 
-        List<Figurita> figuritas = new ArrayList<>();
-        figuritas.add(vinicius);
-        Propuesta unaOferta = new Propuesta("4000", matias, sofia, figuritas, griezmann);
-        figuritas = new ArrayList<>();
-        figuritas.add(vinicius);
-        Propuesta otraOfertaDistinta = new Propuesta("4000", matias, sofia, figuritas, griezmann);
+        // ─── MIS SUBASTAS (autor = Lucas) ────────────────────────────────────────
 
-        List<Propuesta> propuestas = new ArrayList<>();
-        propuestas.add(unaOferta);
-        propuestas.add(otraOfertaDistinta);
+        // id=1 | Activa, cierra en ~45 min, 3 ofertas
+        Propuesta ofertaSofia = new Propuesta("o1", sofia, lucas,
+            List.of(neymar, vinicius), mbappe);
+        Propuesta ofertaPedro = new Propuesta("o2", matias, lucas,
+            List.of(pedri, kroos), mbappe);
+        Propuesta ofertaLu = new Propuesta("o3", juan, lucas,
+            List.of(griezmann, lautaro), mbappe);
 
-        Subasta unaSubasta = new Subasta("3000", sofia,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(1).plusMinutes(20).plusSeconds(33),
-            griezmann, propuestas, new ArrayList<>(), 0, false);
+        ofertaSofia.seleccionar(lucas);
 
-        subastas.guardar(unaSubasta);
+        Subasta subasta1 = new Subasta("1", lucas,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusMinutes(45),
+            mbappe,
+            new ArrayList<>(List.of(ofertaSofia, ofertaPedro, ofertaLu)),
+            new ArrayList<>(), 0, false);
+        subastas.guardar(subasta1);
 
-        subastas.guardar(new Subasta("3001", matias,
-            LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1),
-            vinicius, new ArrayList<>(), new ArrayList<>(), 0, false));
+        // id=2 | Activa, cierra en 2 días, sin ofertas
+        Subasta subasta2 = new Subasta("2", lucas,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(2),
+            pedri);
+        subastas.guardar(subasta2);
+
+        // id=3 | Finalizada hace 2 días, ganador: matias, sin calificar
+        Propuesta ofertaGanadora3 = new Propuesta("o4", matias, lucas,
+            List.of(messi, lautaro), diMaria);
+        Subasta subasta3 = new Subasta("3", lucas,
+            LocalDateTime.now().minusDays(2),
+            LocalDateTime.now().minusDays(2),
+            diMaria,
+            new ArrayList<>(List.of(ofertaGanadora3)),
+            new ArrayList<>(), 0, true);
+
+        ofertaGanadora3.aceptar(lucas);
+        subastas.guardar(subasta3);
+
+        // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
+        Propuesta ofertaGanadora7 = new Propuesta("o5", sofia, lucas,
+            List.of(pedri), griezmann);
+        Subasta subasta7 = new Subasta("7", lucas,
+            LocalDateTime.now().minusDays(5),
+            LocalDateTime.now().minusDays(5),
+            griezmann,
+            new ArrayList<>(List.of(ofertaGanadora7)),
+            new ArrayList<>(), 0, true);
+        subastas.guardar(subasta7);
+
+        // ─── SUBASTAS DONDE LUCAS PARTICIPÓ (autor = otro perfil) ────────────────
+
+        // id=4 | Activa, cierra en 2h, oferta de lucas SELECCIONADA
+        Propuesta ofertaLucas4 = new Propuesta("o6", lucas, sofia,
+            List.of(griezmann, kroos), vinicius);
+        Subasta subasta4 = new Subasta("4", sofia,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusHours(2),
+            vinicius,
+            new ArrayList<>(List.of(ofertaLucas4)),
+            new ArrayList<>(), 0, false);
+        ofertaLucas4.seleccionar(sofia);
+        subastas.guardar(subasta4);
+
+        // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
+        Propuesta ofertaLucas5 = new Propuesta("o7", lucas, matias,
+            List.of(diMaria, messi), messi);
+        Subasta subasta5 = new Subasta("5", matias,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(1),
+            messi,
+            new ArrayList<>(List.of(ofertaLucas5)),
+            new ArrayList<>(), 0, false);
+        subastas.guardar(subasta5);
+
+
+
+        // id=8 | Finalizada hace 5 días, oferta de lucas ACEPTADA, ya calificada
+        Propuesta ofertaLucas8 = new Propuesta("o9", lucas, sofia,
+            List.of(kroos), griezmann);
+        Propuesta ofertaJuan1 = new Propuesta("o10", juan, sofia,
+            List.of(kroos), griezmann);
+        Subasta subasta8 = new Subasta("8", sofia,
+            LocalDateTime.now().minusDays(5),
+            LocalDateTime.now().minusDays(5),
+            griezmann,
+            new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)),
+            new ArrayList<>(), 0, true);
+        ofertaJuan1.aceptar(sofia);
+        sofia.agregarNuevaCalificacion(new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA));
+        subastas.guardar(subasta8);
+
+        // ─── SUBASTAS DONDE LUCAS NO PARTICIPÓ ────────────────
+
+        // id=6 | Finalizada hace 5 días, oferta de lucas ACEPTADA, sin calificar
+        Subasta subasta6 = new Subasta("6", juan,
+            LocalDateTime.now().minusDays(5),
+            LocalDateTime.now().minusDays(5),
+            neymar,
+            new ArrayList<>(),
+            new ArrayList<>(), 0, true);
+        subastas.guardar(subasta6);
     }
 }

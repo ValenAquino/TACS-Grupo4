@@ -6,11 +6,13 @@ import {useCallback, useEffect, useState} from "react";
 import {buscarContadores} from "../../../services/perfilService.js";
 import ExtraInfo from "../../../components/ui/extra-info/extra-info.jsx";
 import MostradorSugerencias from "./tabs/mostrador-sugerencias.jsx";
+import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
 
 const Sugerencias = () => {
 
     const [cargando, setCargando] = useState(true)
     const [contadores, setContadores] = useState([])
+    const {userId} = useUsuarioActual()
 
     const TABS = [
         { key: 'todos', label: 'Todos', component: MostradorSugerencias, props: {} },
@@ -22,7 +24,7 @@ const Sugerencias = () => {
     const cargarContadores = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarContadores({userId:1001})
+            const payload = await buscarContadores({userId})
             setContadores(payload)
 
         } catch (error) {
@@ -51,7 +53,7 @@ const Sugerencias = () => {
     }
 
     return (
-        <div className={styles.sugerenciasBody}>
+        <div className={styles.sugerenciasBody + " container py-4 px-3 px-md-4"}>
             <Breadcrumb className={styles.left}
                         crumbs={[{name: "Explorar", to: "/explorar"}, {name: "Sugerencias", to: "/sugerencias"}]}/>
 

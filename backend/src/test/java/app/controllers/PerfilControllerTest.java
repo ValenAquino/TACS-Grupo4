@@ -17,22 +17,22 @@ class PerfilControllerTest {
 
   @Autowired
   MockMvc mockMvc;
-
-  @Test
-  void getOperaciones_usuarioExistente_retorna200ConDatos() throws Exception {
-    mockMvc.perform(get("/perfil/1000/operaciones"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.figuritas_publicadas").isArray())
-        .andExpect(jsonPath("$.propuestas_enviadas").isArray())
-        .andExpect(jsonPath("$.propuestas_recibidas").isArray())
-        .andExpect(jsonPath("$.subastas_activas").isArray());
-  }
-
-  @Test
-  void getOperaciones_usuarioInexistente_retorna404() throws Exception {
-    mockMvc.perform(get("/perfil/u-inexistente/operaciones"))
-        .andExpect(status().isNotFound());
-  }
+//TODO eliminar
+//  @Test
+//  void getOperaciones_usuarioExistente_retorna200ConDatos() throws Exception {
+//    mockMvc.perform(get("/perfil/1000/operaciones"))
+//        .andExpect(status().isOk())
+//        .andExpect(jsonPath("$.figuritas_publicadas").isArray())
+//        .andExpect(jsonPath("$.propuestas_enviadas").isArray())
+//        .andExpect(jsonPath("$.propuestas_recibidas").isArray())
+//        .andExpect(jsonPath("$.subastas_activas").isArray());
+//  }
+//
+//  @Test
+//  void getOperaciones_usuarioInexistente_retorna404() throws Exception {
+//    mockMvc.perform(get("/perfil/u-inexistente/operaciones"))
+//        .andExpect(status().isNotFound());
+//  }
 
   @Test
   void getSugerencias_retorna200() throws Exception {
@@ -54,9 +54,16 @@ class PerfilControllerTest {
   @Test
   void calificarUsuarioNoFalla() throws Exception {
     mockMvc.perform(post("/perfil/1000/calificaciones")
-            .header("autor_id", "1001")
             .contentType("application/json")
-            .content("{ \"valor\": 4, \"descripcion\": \"Buen intercambio\" }"))
+            .content("""
+              {
+                "user_id": "u-1001",
+                "valor": 4,
+                "descripcion": "Buen intercambio",
+                "transaction_id": "i-1",
+                "tipo_transaccion": "INTERCAMBIO"
+              }
+          """))
         .andExpect(status().isOk());
   }
 

@@ -18,7 +18,6 @@ const calcularCierreEstimado = (horas) => {
   });
 };
 const CALIFICACION_MIN_OPTS = [
-  { label: "Sin mínimo", value: 0 },
   { label: "1+", value: 1 },
   { label: "2+", value: 2 },
   { label: "3+", value: 3 },
@@ -27,12 +26,10 @@ const CALIFICACION_MIN_OPTS = [
 ];
 
 // ─── Paso 1: Elegir figurita a subastar ───────────────────────────────────────
-const PasoFigurita = ({ seleccionada, onSeleccionar }) => {
+const PasoFigurita = ({ seleccionada, onSeleccionar, userId }) => {
   const [repetidas, setRepetidas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
-
-  const { userId } = useUsuarioActual();
 
   useEffect(() => {
     const cargar = async () => {
@@ -93,7 +90,7 @@ const PasoFigurita = ({ seleccionada, onSeleccionar }) => {
                 {seleccionada.jugador}
               </span>
             ) : (
-              "ninguna seleccionada"
+              "Ninguna seleccionada"
             )}
           </span>
         </div>
@@ -124,18 +121,38 @@ const PasoFigurita = ({ seleccionada, onSeleccionar }) => {
             filtradas.map((fig) => {
               const esSeleccionada =
                 seleccionada?.figurita_id === fig.figurita_id;
+              const reservadas = fig.cantidad_reservada;
+              const estaSeleccionada =
+                seleccionada?.figurita_id === fig.figurita_id;
+              const disponibles =
+                fig.cantidad_existente -
+                reservadas -
+                (estaSeleccionada ? 1 : 0);
+              const sinStock = disponibles === 0;
               return (
                 <button
                   key={fig.figurita_id}
                   className={`w-100 d-flex align-items-center gap-3 px-3 py-2 border-0 border-bottom text-start ${
-                    esSeleccionada ? "bg-success bg-opacity-10" : "bg-white"
+                    esSeleccionada
+                      ? "bg-success bg-opacity-10"
+                      : sinStock
+                        ? "bg-light"
+                        : "bg-white"
                   }`}
-                  onClick={() => onSeleccionar(esSeleccionada ? null : fig)}
+                  onClick={() =>
+                    !sinStock && onSeleccionar(esSeleccionada ? null : fig)
+                  }
+                  disabled={sinStock}
+                  style={{ cursor: sinStock ? "not-allowed" : "pointer" }}
                 >
                   {/* Radio visual */}
                   <div
                     className={`rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0 ${
-                      esSeleccionada ? "border-success" : "border-secondary"
+                      esSeleccionada
+                        ? "border-success"
+                        : sinStock
+                          ? "border-secondary opacity-25"
+                          : "border-secondary"
                     }`}
                     style={{ width: 18, height: 18 }}
                   >
@@ -148,7 +165,9 @@ const PasoFigurita = ({ seleccionada, onSeleccionar }) => {
                   </div>
 
                   {/* Info */}
-                  <div className="flex-grow-1">
+                  <div
+                    className={`flex-grow-1 ${sinStock ? "opacity-50" : ""}`}
+                  >
                     <p
                       className="mb-0 fw-semibold"
                       style={{ fontSize: "0.88rem" }}
@@ -163,16 +182,28 @@ const PasoFigurita = ({ seleccionada, onSeleccionar }) => {
                     </p>
                   </div>
 
-                  {/* Cantidad */}
+                  {/* Badge */}
                   <span
                     className="badge rounded-pill"
                     style={{
-                      backgroundColor: "#e1f5ee",
-                      color: "#0f6e56",
+                      backgroundColor: sinStock ? "#f3f4f6" : "#e1f5ee",
+                      color: sinStock ? "#9ca3af" : "#0f6e56",
                       fontSize: "0.72rem",
                     }}
                   >
-                    ×{fig.cantidadExistente}
+                    {sinStock ? (
+                      "Reservadas"
+                    ) : (
+                      <>
+                        ×{disponibles}
+                        {(reservadas > 0 || estaSeleccionada) && (
+                          <span style={{ opacity: 0.65 }}>
+                            {" "}
+                            de {fig.cantidad_existente}
+                          </span>
+                        )}
+                      </>
+                    )}
                   </span>
                 </button>
               );
@@ -226,12 +257,11 @@ const PasoCondiciones = ({
   onCambiarFiguritas,
   calificacionMin,
   onCambiarCalificacion,
+  userId,
 }) => {
   const [busqueda, setBusqueda] = useState("");
 
   const [figuritasFaltantes, setFiguritasFaltantes] = useState([]);
-
-  const { userId } = useUsuarioActual();
 
   useEffect(() => {
     buscarFaltantes(userId).then((res) => setFiguritasFaltantes(res ?? []));
@@ -413,7 +443,7 @@ const PasoCondiciones = ({
         </div>
 
         <p className="mb-0 text-muted" style={{ fontSize: "0.78rem" }}>
-          {calificacionMin === 0
+          {calificacionMin === 1
             ? "Cualquier usuario puede ofertar en tu subasta"
             : `Solo usuarios con ${calificacionMin}★ o más pueden ofertar`}
         </p>
@@ -489,7 +519,7 @@ const Resumen = ({
           {
             label: "Calificación mínima",
             valor:
-              calificacionMin === 0 ? (
+              calificacionMin === 1 ? (
                 <span className="text-muted">Sin mínimo</span>
               ) : (
                 <span className="fw-semibold">{calificacionMin}★ o más</span>
@@ -511,16 +541,16 @@ const Resumen = ({
 };
 
 // ─── Vista principal ──────────────────────────────────────────────────────────
-const CrearSubasta = ({ userId }) => {
+const CrearSubasta = () => {
   const navigate = useNavigate();
 
   const [figurita, setFigurita] = useState(null);
   const [duracion, setDuracion] = useState(6);
   const [figuritasDeseadas, setFiguritasDeseadas] = useState([]);
-  const [calificacionMin, setCalificacionMin] = useState(0);
+  const [calificacionMin, setCalificacionMin] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const { userId } = useUsuarioActual();
   const puedePublicar = figurita !== null && duracion !== null;
 
   const handlePublicar = async () => {
@@ -528,14 +558,20 @@ const CrearSubasta = ({ userId }) => {
     try {
       setLoading(true);
       setError(null);
-      await crearSubasta(userId, {
+
+      const payload = {
         figurita_id: figurita.figurita_id,
         duracion_en_horas: duracion,
         figuritas_deseadas_ids: figuritasDeseadas.map((f) => f.id),
         calificacion_minima: calificacionMin,
-      });
+        user_id: userId,
+      };
+      console.log("Payload subasta:", payload); // <---
+
+      await crearSubasta(userId, payload);
       navigate("/subastas");
-    } catch {
+    } catch (e) {
+      console.error("Error al publicar:", e); // <---
       setError("Ocurrió un error al publicar la subasta. Intentá de nuevo.");
     } finally {
       setLoading(false);
@@ -596,6 +632,7 @@ const CrearSubasta = ({ userId }) => {
                 <PasoFigurita
                   seleccionada={figurita}
                   onSeleccionar={setFigurita}
+                  userId={userId}
                 />
               )}
               {numero === 2 && (
@@ -607,6 +644,7 @@ const CrearSubasta = ({ userId }) => {
                   onCambiarFiguritas={setFiguritasDeseadas}
                   calificacionMin={calificacionMin}
                   onCambiarCalificacion={setCalificacionMin}
+                  userId={userId}
                 />
               )}
             </div>

@@ -3,6 +3,7 @@ import { buscarMisSubastas } from "../../../../../services/subastasService.js";
 import MiSubastaCard from "../../../../../components/ui/subasta-card/mi-subasta-card.jsx";
 import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
+import useUsuarioActual from "../../../../../hooks/useUsuarioActual.js";
 
 const MisSubastas = () => {
   const [data, setData] = useState({});
@@ -10,12 +11,13 @@ const MisSubastas = () => {
   const [error, setError] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const navigate = useNavigate();
+  const {userId} = useUsuarioActual()
 
   useEffect(() => {
     const cargar = async () => {
       try {
         setLoading(true);
-        const res = await buscarMisSubastas();
+        const res = await buscarMisSubastas(userId);
         setData(res);
       } catch {
         setError(true);
@@ -68,8 +70,6 @@ const MisSubastas = () => {
                 <MiSubastaCard
                   key={sub.id}
                   subasta={sub}
-                  onVerDetalle={() => navigate(`/subastas/${sub.id}`)}
-                  onVerResumen={() => navigate(`/subastas/${sub.id}/resumen`)}
                   onRefresh={() => setRefresh((r) => r + 1)}
                 />
               ))}

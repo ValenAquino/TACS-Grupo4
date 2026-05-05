@@ -111,7 +111,7 @@ public class SubastaServiceImpl implements ISubastaService {
         .findFirst()
         .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
-    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
+    propuesta.seleccionar(subasta.getAutor());
     this.repoSubasta.guardar(subasta);
   }
 

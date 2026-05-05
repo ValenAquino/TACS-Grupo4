@@ -5,6 +5,7 @@ import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
+import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
@@ -66,4 +67,10 @@ public interface IPerfilService {
      * @return        lista de {@link FiguritaIntercambiableDto} correspondientes a las repetidas
      */
     List<FiguritaIntercambiableDto> obtenerRepetidas(String userId);
+
+    /**
+     * Obtiene los datos básicos del perfil del usuario indicado,
+     * incluyendo nombre, iniciales y calificación promedio.
+     */
+    PerfilDto obtenerPerfil(String userId);
 }

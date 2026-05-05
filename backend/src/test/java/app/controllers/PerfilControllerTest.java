@@ -37,7 +37,7 @@ class PerfilControllerTest {
   @Test
   void getSugerencias_retorna200() throws Exception {
     mockMvc.perform(
-            get("/perfil/1000/sugerencias")
+            get("/perfil/u-1000/sugerencias")
                 .param("tipo", "1a1")
                 .param("paginaActual", "0")
                 .param("limite", "10")

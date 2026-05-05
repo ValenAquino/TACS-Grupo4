@@ -217,10 +217,10 @@ class PerfilServiceImplTest {
     Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO), "Juan",
         coleccionOtro, telegram("@juan"), new ArrayList<>());
 
-    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));
 
-    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
+    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(1, resultado.data().size());
   }
@@ -230,10 +230,10 @@ class PerfilServiceImplTest {
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
-    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otro));
 
-    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
+    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(0, resultado.data().size());
   }

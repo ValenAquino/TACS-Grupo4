@@ -16,7 +16,6 @@ const Participo = () => {
       try {
         setLoading(true);
         const res = await buscarSubastasParticipo(userId);
-        console.log(res);
         setData(res);
       } catch {
         setError(true);
@@ -94,9 +93,6 @@ const Participo = () => {
                 <SubastaCard
                   key={sub.id}
                   subasta={sub}
-                  onVerSubasta={() => navigate(`/subastas/${sub.id}`)}
-                  onMejorarOferta={() => navigate(`/subastas/${sub.id}/oferta`)}
-                  onVerResumen={() => navigate(`/subastas/${sub.id}/resumen`)}
                 />
               ))}
             </div>

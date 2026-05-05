@@ -10,6 +10,7 @@ import {
 import { calificarPerfil } from "../../../services/perfilService.js";
 import { derivarTiempo } from "../../../utils/subastasTiempo.js";
 import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+import {useNavigate} from "react-router";
 
 const BADGE_ESTADO = {
   activa: { label: "Activa", className: "text-success bg-success-subtle" },
@@ -23,7 +24,7 @@ const BADGE_ESTADO = {
   },
 };
 
-const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
+const MiSubastaCard = ({ subasta, onRefresh }) => {
   const {
     id: subastaId,
     figurita_subastada,
@@ -39,7 +40,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
     derivarTiempo({ fecha_cierre });
 
   const { userId } = useUsuarioActual();
-
+  const navigate = useNavigate();
   const [modal, setModal] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
   const [mostrarCalificar, setMostrarCalificar] = useState(false);
@@ -196,7 +197,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
                       fontWeight: 700,
                     }}
                   >
-                    {oferta.iniciales}
+                    {oferta.autor.iniciales}
                   </div>
 
                   {/* Info oferta */}
@@ -280,7 +281,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
               <button
                 className="btn btn-outline-secondary flex-fill"
                 style={{ fontSize: "0.85rem" }}
-                onClick={onVerResumen}
+                onClick={() => navigate(`/subastas/${subasta.id}`)}
               >
                 Ver resumen
               </button>
@@ -299,7 +300,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
               <button
                 className="btn btn-outline-secondary flex-fill"
                 style={{ fontSize: "0.85rem" }}
-                onClick={onVerDetalle}
+                onClick={() => navigate(`/subastas/${subasta.id}`)}
               >
                 Ver detalle
               </button>

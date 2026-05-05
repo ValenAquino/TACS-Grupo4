@@ -72,7 +72,6 @@ public class SubastaController {
 
     @GetMapping("/mis-subastas")
     public ResponseEntity<MisSubastasResponseDto> obtenerMisSubastas(@RequestParam String userId) {
-        System.out.println(userId);
         return ResponseEntity.ok(this.subastaService.obtenerMisSubastas(userId));
     }
 

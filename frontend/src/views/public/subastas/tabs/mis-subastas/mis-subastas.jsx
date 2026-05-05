@@ -70,8 +70,6 @@ const MisSubastas = () => {
                 <MiSubastaCard
                   key={sub.id}
                   subasta={sub}
-                  onVerDetalle={() => navigate(`/subastas/${sub.id}`)}
-                  onVerResumen={() => navigate(`/subastas/${sub.id}/resumen`)}
                   onRefresh={() => setRefresh((r) => r + 1)}
                 />
               ))}

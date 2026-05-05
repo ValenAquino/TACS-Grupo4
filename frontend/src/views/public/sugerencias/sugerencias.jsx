@@ -53,7 +53,7 @@ const Sugerencias = () => {
     }
 
     return (
-        <div className={styles.sugerenciasBody}>
+        <div className={styles.sugerenciasBody + " container py-4 px-3 px-md-4"}>
             <Breadcrumb className={styles.left}
                         crumbs={[{name: "Explorar", to: "/explorar"}, {name: "Sugerencias", to: "/sugerencias"}]}/>
 

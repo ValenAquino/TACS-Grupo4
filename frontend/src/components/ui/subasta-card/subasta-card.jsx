@@ -3,6 +3,8 @@ import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
 import { calificarPerfil } from "../../../services/perfilService.js";
 import CalificarModal from "../calificar-modal/calificar-modal.jsx";
 import { useState } from "react";
+import {useNavigate} from "react-router";
+import {mostrar_label} from "../../../utils/estandarizar.jsx";
 
 const BADGE_OFERTA = {
   SELECCIONADO: {
@@ -14,15 +16,11 @@ const BADGE_OFERTA = {
   ACEPTADO: { label: "Elegida", className: "text-success bg-success-subtle" },
 };
 
-const SubastaCard = ({
-  subasta,
-  onVerSubasta,
-  onMejorarOferta,
-  onVerResumen,
-}) => {
+const SubastaCard = ({subasta}) => {
   const { userId } = useUsuarioActual();
-  const { id, autor, figurita_subastada, fecha_cierre, tu_oferta_label, tu_oferta_estado } = subasta;
+  const { id, autor, figurita_subastada, fecha_cierre, tu_oferta } = subasta;
   const [mostrarCalificar, setMostrarCalificar] = useState(false);
+  const navigate = useNavigate();
 
   const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } =
     derivarTiempo({ fecha_cierre });
@@ -36,14 +34,14 @@ const SubastaCard = ({
         }
       : { label: "Activa", className: "text-success bg-success-subtle" };
 
-  const badgeOferta = tu_oferta_estado ? (BADGE_OFERTA[tu_oferta_estado] ?? null) : null;
+  const badgeOferta = tu_oferta.estado ? (BADGE_OFERTA[tu_oferta.estado] ?? null) : null;
 
   const handleCalificar = async ({ valor, descripcion }) => {
     await calificarPerfil(userId, autor.id, { valor, descripcion, transactionId: id, tipoTransaccion: "SUBASTA" });
     setMostrarCalificar(false);
   };
 
-  const puedoCalificar = finalizada && tu_oferta_estado === "ACEPTADO" && !subasta.ya_calificado;
+  const puedoCalificar = finalizada && tu_oferta.estado === "ACEPTADO" && !subasta.ya_calificado;
 
   return (
     <div className="border rounded-3 overflow-hidden bg-white">
@@ -102,13 +100,13 @@ const SubastaCard = ({
         </span>
       </div>
       {/* Tu oferta — solo visible en tab Participo */}
-      {tu_oferta_estado && (
+      {tu_oferta.estado && (
         <div className="px-3 py-2 d-flex justify-content-between align-items-center border-top">
           <span className="text-muted" style={{ fontSize: "0.82rem" }}>
             Tu oferta
           </span>
           <div className="d-flex align-items-center gap-2">
-            <span style={{ fontSize: "0.85rem" }}>{tu_oferta_label}</span>
+            <span style={{ fontSize: "0.85rem" }}>{mostrar_label(tu_oferta)}</span>
             {badgeOferta && (
               <span
                 className={`badge rounded-pill px-2 py-1 ${badgeOferta.className}`}
@@ -122,15 +120,15 @@ const SubastaCard = ({
       )}
       {/* Acciones */}
       <div className="px-3 py-2 d-flex gap-2 border-top">
-        {finalizada ? (
-          <>
-            <button
+          <button
               className="btn btn-outline-secondary flex-fill"
               style={{ fontSize: "0.85rem" }}
-              onClick={onVerResumen}
-            >
-              Ver resumen
-            </button>
+              onClick={() => navigate(`/subastas/${subasta.id}`)}
+          >
+              {finalizada ? "Ver resumen" : "Ver subasta"}
+          </button>
+        {finalizada ? (
+          <>
             {puedoCalificar && (
               <button
                 className="btn btn-outline-secondary flex-fill"
@@ -143,18 +141,11 @@ const SubastaCard = ({
           </>
         ) : (
           <>
-            <button
-              className="btn btn-outline-secondary flex-fill"
-              style={{ fontSize: "0.85rem" }}
-              onClick={onVerSubasta}
-            >
-              Ver subasta
-            </button>
-            {tu_oferta_label && (
+            {mostrar_label(tu_oferta) && (
               <button
                 className="btn btn-outline-secondary flex-fill"
                 style={{ fontSize: "0.85rem" }}
-                onClick={onMejorarOferta}
+                onClick={() => navigate(`/subastas/${subasta.id}/ofertas/${tu_oferta.id}`)}
               >
                 Mejorar oferta
               </button>

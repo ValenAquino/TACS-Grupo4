@@ -30,6 +30,7 @@ public class PerfilController {
 
     private final IPerfilService perfilService;
 
+    //Todo: Eliminar en el futuro
     @GetMapping("/{user_id}/operaciones")
     public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {
         OperacionesDto operaciones = perfilService.obtenerOperacionesPerfil(user_id);

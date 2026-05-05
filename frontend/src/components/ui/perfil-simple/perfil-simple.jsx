@@ -19,7 +19,7 @@ const PerfilSimple = ({perfil}) => {
 
     return (
         <div className={styles.avatarContainer + " d-flex align-items-center gap-2"} onClick={() => navigate(`/perfil/${perfil.id}`)}>
-            <div className={styles.avatar}>{perfil.nombre.slice(0,1).toUpperCase()}</div>
+            <div className={styles.avatar}>{perfil.iniciales}</div>
             <div>
                 <h5 className="m-0">{perfil.nombre}</h5>
                 <div className="fs-6 d-flex align-items-center gap-2">

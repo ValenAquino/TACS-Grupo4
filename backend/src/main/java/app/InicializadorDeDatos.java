@@ -82,7 +82,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos, neymar);
         cargarCalificaciones();
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);
-        cargarSubastas(griezmann, vinicius);
+        cargarSubastas(griezmann, vinicius, pedri, kroos, neymar, mbappe, diMaria, messi, lautaro);
         cargarFiguritasExtra(); // comentar para desactivar datos de prueba de paginación
     }
 

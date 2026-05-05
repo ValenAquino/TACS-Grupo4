@@ -43,7 +43,7 @@ class PropuestaControllerTest {
     }
 
     private Perfil perfil(String id, String usuarioId, String handle) {
-        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), "", null, telegram(handle), null);
+        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), "", null, telegram(handle), new ArrayList<>());
     }
 
     @Test

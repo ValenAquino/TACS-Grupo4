@@ -30,10 +30,10 @@ public class FiguritaIntercambiableDto {
     this.seleccion = f.getFigurita().getSeleccion();
     this.cantidadExistente = f.getCantidadExistente();
     this.cantidadReservada = f.getCantidadReservada();
-    this.metodos = new ArrayList<>(f.getMetodos());
+    this.metodos = f.getMetodos();
     this.usuarioId = f.getPerfilId();
     this.nombreUsuario = perfil != null ? perfil.getNombre() : null;
-    this.reputacion = perfil != null ? Math.round(perfil.obtenerCalificacionMedia()) : null;
+    this.reputacion = perfil != null ? (int) Math.round(perfil.obtenerCalificacionMedia()) : null;
   }
 
   public FiguritaIntercambiableDto(FiguritaIntercambiable f) {

@@ -4,10 +4,12 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
+import app.model.entities.filtros.FiguritasFiltro;
 import app.servicios.IFiguritaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 

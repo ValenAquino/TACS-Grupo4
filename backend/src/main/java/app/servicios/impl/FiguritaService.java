@@ -7,6 +7,7 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Seleccion;
+import app.model.entities.filtros.FiguritasFiltro;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import app.servicios.IFiguritaService;
@@ -25,8 +26,9 @@ public class FiguritaService implements IFiguritaService {
       Integer numero, Seleccion seleccion, String jugador,
       MetodoIntercambio tipo, int pagina, int tamanioPagina) {
 
+    FiguritasFiltro filtros = new FiguritasFiltro(null, numero, seleccion, jugador, tipo);
     PaginaResultado<FiguritaIntercambiable> paginaRepo =
-        repositorioIntercambiables.buscarConFiltros(numero, seleccion, jugador, tipo, pagina, tamanioPagina);
+        repositorioIntercambiables.buscarConFiltros(filtros, pagina, tamanioPagina);
 
     List<FiguritaIntercambiableDto> contenido = paginaRepo.contenido().stream()
         .map(fi -> new FiguritaIntercambiableDto(fi, buscarPerfil(fi.getPerfilId())))

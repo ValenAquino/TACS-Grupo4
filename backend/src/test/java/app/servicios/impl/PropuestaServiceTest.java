@@ -71,9 +71,9 @@ class PropuestaServiceTest {
 
     PropuestaDto resultado = propuestaService.crearPropuesta(request);
 
-    assertEquals("1000", resultado.getAutorId());
-    assertEquals("1001", resultado.getDestinatarioId());
-    assertEquals("ARG-10", resultado.getFiguritaBuscadaId());
+    assertEquals("1000", resultado.getAutor().getId());
+    assertEquals("1001", resultado.getDestinatario().getId());
+    assertEquals("ARG-10", resultado.getFiguritaBuscada().getId());
     assertEquals(EstadoProceso.PENDIENTE, resultado.getEstado());
     verify(repositorioPropuestas).guardar(any());
   }

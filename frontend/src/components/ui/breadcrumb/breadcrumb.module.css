@@ -1,0 +1,8 @@
+.crumb:hover {
+    background-color: #f3f4f6;
+}
+:global(.breadcrumb-item + .breadcrumb-item::before) {
+    content: ">";
+    padding: 0 0.5rem;
+    color: #6c757d;
+}

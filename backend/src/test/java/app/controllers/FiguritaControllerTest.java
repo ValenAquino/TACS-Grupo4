@@ -13,6 +13,8 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 import app.servicios.IFiguritaService;
+import app.model.entities.filtros.FiguritasFiltro;
+import app.servicios.impl.FiguritaService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

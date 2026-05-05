@@ -1,19 +1,21 @@
 package app.dto.request;
 
+import app.model.entities.MetodoIntercambio;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-public class RepetidaRequest {
+
+public record RepetidaRequest (
 
   @JsonProperty("cantidad_existente")
-  public Integer cantidadExistente;
+   Integer cantidadExistente,
 
   @JsonProperty("fig_id")
-  public String figId;
+  String figId,
 
   @JsonProperty("modos_intercambio")
-  public List<String> modosIntercambio;
-}
+  List<MetodoIntercambio> modosIntercambio
+) {}

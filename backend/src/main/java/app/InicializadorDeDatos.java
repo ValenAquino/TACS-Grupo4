@@ -71,13 +71,15 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Figurita vinicius = new Figurita("BRA-10", 10, "Vinicius", Seleccion.BRASIL, "Extremo");
         Figurita pedri = new Figurita("ESP-10", 10, "Pedri", Seleccion.ESPAÑA, "Mediocampista");
         Figurita kroos = new Figurita("GER-8", 8, "Kroos", Seleccion.ALEMANIA, "Mediocampista");
+      Figurita neymar = new Figurita("BRA-11", 10, "Neymar", Seleccion.BRASIL, "Delantero");
 
         figuritas.guardar(messi);
         figuritas.guardar(diMaria);
         figuritas.guardar(lautaro);
         figuritas.guardar(vinicius);
+      figuritas.guardar(neymar);
 
-        cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos);
+        cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos, neymar);
         cargarCalificaciones();
         cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius);
         cargarSubastas(griezmann, vinicius);
@@ -94,8 +96,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         };
         MetodoIntercambio[] metodos = {
             MetodoIntercambio.INTERCAMBIO,
-            MetodoIntercambio.SUBASTA,
-            MetodoIntercambio.SUBASTA_E_INTERCAMBIO
+            MetodoIntercambio.SUBASTA
         };
         String[] perfilIds = {"1000", "1001", "1002", "1003"};
 
@@ -119,7 +120,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
     private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
-                                Figurita pedri, Figurita kroos) {
+                                Figurita pedri, Figurita kroos, Figurita neymar) {
         // Lucas
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
@@ -140,8 +141,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionSofia.setId("2");
         FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
         FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
+      FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
         coleccionSofia.getRepetidas().add(interMbappe);
         coleccionSofia.getRepetidas().add(interGriezmann);
+      coleccionSofia.getRepetidas().add(interNeymar);
         coleccionSofia.getFaltantes().add(messi);
         coleccionSofia.getFaltantes().add(lautaro);
         intercambiables.guardar(interMbappe);
@@ -182,21 +185,21 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Perfil juan   = perfiles.buscarPorId("1003");
 
         // Lucas: recibe 5 y 4 → promedio 4.5 → 5 estrellas
-        lucas.getCalificaciones().add(new Calificacion("C-1", sofia,  5, "Excelente trato, muy rápido"));
-        lucas.getCalificaciones().add(new Calificacion("C-2", matias, 4, "Todo bien, lo recomiendo"));
+      lucas.getCalificaciones().add(new Calificacion("C-1", sofia, 5, "Excelente trato, muy rápido", null, null));
+      lucas.getCalificaciones().add(new Calificacion("C-2", matias, 4, "Todo bien, lo recomiendo", null, null));
 
         // Sofía: recibe 4, 3 y 4 → promedio 3.67 → 4 estrellas
-        sofia.getCalificaciones().add(new Calificacion("C-3", lucas,  4, "Buena experiencia"));
-        sofia.getCalificaciones().add(new Calificacion("C-4", matias, 3, "Normal, sin problemas"));
-        sofia.getCalificaciones().add(new Calificacion("C-5", juan,   4, "Respondió rápido"));
+      sofia.getCalificaciones().add(new Calificacion("C-3", lucas, 4, "Buena experiencia", null, null));
+      sofia.getCalificaciones().add(new Calificacion("C-4", matias, 3, "Normal, sin problemas", null, null));
+      sofia.getCalificaciones().add(new Calificacion("C-5", juan, 4, "Respondió rápido", null, null));
 
         // Matías: recibe 2 y 3 → promedio 2.5 → 3 estrellas
-        matias.getCalificaciones().add(new Calificacion("C-6", lucas, 2, "Tardó bastante en responder"));
-        matias.getCalificaciones().add(new Calificacion("C-7", sofia, 3, "Aceptable"));
+      matias.getCalificaciones().add(new Calificacion("C-6", lucas, 2, "Tardó bastante en responder", null, null));
+      matias.getCalificaciones().add(new Calificacion("C-7", sofia, 3, "Aceptable", null, null));
 
         // Juan: recibe 1 y 2 → promedio 1.5 → 2 estrellas
-        juan.getCalificaciones().add(new Calificacion("C-8", lucas, 1, "No cumplió con el intercambio"));
-        juan.getCalificaciones().add(new Calificacion("C-9", sofia, 2, "Mala comunicación"));
+      juan.getCalificaciones().add(new Calificacion("C-8", lucas, 1, "No cumplió con el intercambio", null, null));
+      juan.getCalificaciones().add(new Calificacion("C-9", sofia, 2, "Mala comunicación", null, null));
     }
 
     private void cargarPropuestas(Figurita messi, Figurita diMaria,
@@ -205,18 +208,40 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Perfil sofia  = perfiles.buscarPorId("1001");
         Perfil matias = perfiles.buscarPorId("1002");
 
-        propuestas.guardar(propuesta("2000", lucas,  sofia,  List.of(messi),     mbappe,   EstadoProceso.PENDIENTE));
-        propuestas.guardar(propuesta("2001", sofia,  matias, List.of(griezmann), vinicius, EstadoProceso.ACEPTADO));
-        propuestas.guardar(propuesta("2002", matias, lucas,  List.of(vinicius),  diMaria,  EstadoProceso.RECHAZADO));
+      List<Figurita> figuritas = new ArrayList<>();
+      figuritas.add(messi);
+
+      propuestas.guardar(propuesta("2000", lucas, sofia, figuritas, mbappe, EstadoProceso.PENDIENTE));
+
+      figuritas = new ArrayList<>();
+      figuritas.add(griezmann);
+      propuestas.guardar(propuesta("2001", sofia, matias, figuritas, vinicius, EstadoProceso.ACEPTADO));
+
+      figuritas = new ArrayList<>();
+      figuritas.add(vinicius);
+      propuestas.guardar(propuesta("2002", matias, lucas, figuritas, diMaria, EstadoProceso.RECHAZADO));
     }
 
     private void cargarSubastas(Figurita griezmann, Figurita vinicius) {
         Perfil sofia  = perfiles.buscarPorId("1001");
         Perfil matias = perfiles.buscarPorId("1002");
 
-        subastas.guardar(new Subasta("3000", sofia,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2),
-            griezmann, new ArrayList<>(), new ArrayList<>(), 0, false));
+      List<Figurita> figuritas = new ArrayList<>();
+      figuritas.add(vinicius);
+      Propuesta unaOferta = new Propuesta("4000", matias, sofia, figuritas, griezmann);
+      figuritas = new ArrayList<>();
+      figuritas.add(vinicius);
+      Propuesta otraOfertaDistinta = new Propuesta("4000", matias, sofia, figuritas, griezmann);
+
+      List<Propuesta> propuestas = new ArrayList<>();
+      propuestas.add(unaOferta);
+      propuestas.add(otraOfertaDistinta);
+
+      Subasta unaSubasta = new Subasta("3000", sofia,
+          LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(1).plusMinutes(20).plusSeconds(33),
+          griezmann, propuestas, new ArrayList<>(), 0, false);
+
+      subastas.guardar(unaSubasta);
 
         subastas.guardar(new Subasta("3001", matias,
             LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1),

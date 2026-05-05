@@ -2,6 +2,8 @@ package app.repositories;
 
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
+import app.model.entities.filtros.FiguritasFiltro;
+
 import java.util.List;
 
 public interface RepositorioFiguritas {
@@ -15,7 +17,7 @@ public interface RepositorioFiguritas {
    *
    * @throws app.exceptions.NotFoundException si ninguna figurita coincide con los filtros
    */
-  List<Figurita> buscarConFiltros(Integer numero, Seleccion seleccion, String jugador);
+  List<Figurita> buscarConFiltros(FiguritasFiltro filtros);
 
   void guardar(Figurita figurita);
 }

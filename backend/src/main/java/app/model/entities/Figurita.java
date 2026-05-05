@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Figurita {
   private String id;
 
-  private Integer numero;
+  private int numero;
 
   private String jugador;
 

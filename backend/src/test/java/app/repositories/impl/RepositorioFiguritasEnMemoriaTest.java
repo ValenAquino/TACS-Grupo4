@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
+import app.model.entities.filtros.FiguritasFiltro;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +20,7 @@ public class RepositorioFiguritasEnMemoriaTest {
 
   @Test
   void buscarPorId_idValido_retornaFigurita() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
-    repositorio.guardar(messi);
+    repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
 
     assertEquals("ARG-10", repositorio.buscarPorId("ARG-10").getId());
   }
@@ -32,14 +32,12 @@ public class RepositorioFiguritasEnMemoriaTest {
     assertThrows(RuntimeException.class, () -> repositorio.buscarPorId("INEXISTENTE"));
   }
 
-  // --- buscarConFiltros: casos felices ---
-
   @Test
   void buscarConFiltros_sinFiltros_retornaTodo() {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
     repositorio.guardar(new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, null));
 
-    var resultado = repositorio.buscarConFiltros(null, null, null);
+    var resultado = repositorio.buscarConFiltros(new FiguritasFiltro(null, null, null, null, null));
 
     assertEquals(2, resultado.size());
   }
@@ -49,7 +47,7 @@ public class RepositorioFiguritasEnMemoriaTest {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
     repositorio.guardar(new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, null));
 
-    var resultado = repositorio.buscarConFiltros(10, null, null);
+    var resultado = repositorio.buscarConFiltros(new FiguritasFiltro(null, 10, null, null, null));
 
     assertEquals(1, resultado.size());
     assertEquals("ARG-10", resultado.get(0).getId());
@@ -60,7 +58,7 @@ public class RepositorioFiguritasEnMemoriaTest {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
     repositorio.guardar(new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, null));
 
-    var resultado = repositorio.buscarConFiltros(null, Seleccion.ARGENTINA, null);
+    var resultado = repositorio.buscarConFiltros(new FiguritasFiltro(null, null, Seleccion.ARGENTINA, null, null));
 
     assertEquals(1, resultado.size());
     assertEquals("ARG-10", resultado.get(0).getId());
@@ -70,7 +68,7 @@ public class RepositorioFiguritasEnMemoriaTest {
   void buscarConFiltros_porJugadorExacto_retornaCoincidencia() {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
 
-    var resultado = repositorio.buscarConFiltros(null, null, "Messi");
+    var resultado = repositorio.buscarConFiltros(new FiguritasFiltro(null, null, null, "Messi", null));
 
     assertEquals(1, resultado.size());
   }
@@ -80,7 +78,7 @@ public class RepositorioFiguritasEnMemoriaTest {
     repositorio.guardar(new Figurita("ARG-10", 10, "Lionel Messi", Seleccion.ARGENTINA, null));
     repositorio.guardar(new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null));
 
-    var resultado = repositorio.buscarConFiltros(null, null, "messi");
+    var resultado = repositorio.buscarConFiltros(new FiguritasFiltro(null, null, null, "messi", null));
 
     assertEquals(1, resultado.size());
     assertEquals("ARG-10", resultado.get(0).getId());
@@ -90,22 +88,22 @@ public class RepositorioFiguritasEnMemoriaTest {
   void buscarConFiltros_porJugadorCaseInsensitive_retornaCoincidencia() {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
 
-    var resultado = repositorio.buscarConFiltros(null, null, "MESSI");
+    var resultado = repositorio.buscarConFiltros(new FiguritasFiltro(null, null, null, "MESSI", null));
 
     assertEquals(1, resultado.size());
   }
-
-  // --- buscarConFiltros: casos tristes ---
 
   @Test
   void buscarConFiltros_sinResultados_lanzaNotFoundException() {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
 
-    assertThrows(RuntimeException.class, () -> repositorio.buscarConFiltros(99, null, null));
+    assertThrows(RuntimeException.class,
+        () -> repositorio.buscarConFiltros(new FiguritasFiltro(null, 99, null, null, null)));
   }
 
   @Test
   void buscarConFiltros_repositorioVacio_lanzaNotFoundException() {
-    assertThrows(RuntimeException.class, () -> repositorio.buscarConFiltros(null, null, null));
+    assertThrows(RuntimeException.class,
+        () -> repositorio.buscarConFiltros(new FiguritasFiltro(null, null, null, null, null)));
   }
 }

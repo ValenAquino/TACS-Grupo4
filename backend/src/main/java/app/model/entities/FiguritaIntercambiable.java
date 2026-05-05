@@ -25,11 +25,15 @@ public class FiguritaIntercambiable {
     }
 
     public boolean soporta(MetodoIntercambio tipo) {
-        return metodos.stream().anyMatch(m -> m == tipo || m == MetodoIntercambio.SUBASTA_E_INTERCAMBIO);
+        return metodos.contains(tipo);
     }
 
     public boolean hayCantidadDisponible(){
       return this.cantidadExistente - this.cantidadReservada != 0;
+    }
+
+    public int getCantidadDisponible() {
+        return this.cantidadExistente - this.cantidadReservada;
     }
 
     public void reservarFiguritaIntercambiable() {

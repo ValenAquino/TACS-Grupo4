@@ -55,6 +55,7 @@ const ExplorarResultados = ({
                 <FiguritaCard
                   number={fig.number}
                   type={fig.type}
+                  imageUrl={fig.imageUrl}
                   emoji={fig.emoji}
                   emojiBg={fig.emojiBg}
                   name={fig.name}

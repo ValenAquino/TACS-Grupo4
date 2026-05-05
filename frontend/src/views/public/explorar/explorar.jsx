@@ -37,9 +37,8 @@ const Explorar = () => {
     resultadosRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [page])
 
-  // Click en una figurita
-  const handleAction = (fig) => {
-    console.warn('acción pendiente de implementar', fig.id)
+  const handleAction = (fig, accion) => {
+    console.warn('acción pendiente de implementar', fig.id, accion)
   }
 
   return (

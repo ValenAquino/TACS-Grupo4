@@ -11,6 +11,7 @@ const FiguritaCard = ({
   type = 'intercambio',
   emoji,
   emojiBg,
+  imageUrl,
   name,
   subtitle,
   available,
@@ -33,7 +34,10 @@ const FiguritaCard = ({
 
       {/* Imagen / emoji */}
       <div className={styles.cardEmoji} style={emojiBg ? { background: emojiBg } : {}}>
-        {emoji}
+        {imageUrl
+          ? <img src={imageUrl} alt={name} className={styles.cardImage} />
+          : emoji
+        }
       </div>
 
       {/* Nombre y subtítulo */}
@@ -64,12 +68,23 @@ const FiguritaCard = ({
           </div>
         )}
 
-        <button
-          className={`${styles.actionBtn} ${type === 'subasta' ? styles.actionBtnSubasta : ''}`}
-          onClick={onAction}
-        >
-          {resolvedLabel}
-        </button>
+        {type === 'ambos' ? (
+          <>
+            <button className={styles.actionBtn} onClick={() => onAction('intercambio')}>
+              Proponer intercambio ↗
+            </button>
+            <button className={`${styles.actionBtn} ${styles.actionBtnSubasta}`} onClick={() => onAction('subasta')}>
+              Ver subasta ↗
+            </button>
+          </>
+        ) : (
+          <button
+            className={`${styles.actionBtn} ${type === 'subasta' ? styles.actionBtnSubasta : ''}`}
+            onClick={() => onAction(type)}
+          >
+            {resolvedLabel}
+          </button>
+        )}
 
       </div>
     </div>

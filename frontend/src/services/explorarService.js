@@ -1,5 +1,20 @@
 import { api, handleAxiosError } from './api.js'
 
+const EMOJIS = ['⚽', '🏆', '🥇', '⭐', '🌟', '🦁', '🦅', '🔥', '💫', '🎯', '🏅', '⚡']
+const EMOJI_BGS = [
+  '#dbeafe',
+  '#d1fae5',
+  '#ede9fe',
+  '#ffedd5',
+  '#fce7f3',
+  '#fef9c3',
+  '#ecfdf5',
+  '#fee2e2',
+]
+
+const randomEmoji = () => EMOJIS[Math.floor(Math.random() * EMOJIS.length)]
+const randomBg = () => EMOJI_BGS[Math.floor(Math.random() * EMOJI_BGS.length)]
+
 const TIPO_MAP = {
   ambos: 'SUBASTA_E_INTERCAMBIO',
   intercambio: 'INTERCAMBIO',
@@ -22,6 +37,9 @@ const mapFigurita = (f) => ({
   subtitle: `${f.seleccion} · ${f.posicion}`,
   type: resolverTipo(f.metodos),
   available: f.cantidad_existente,
+  imageUrl: f.str_cutout,
+  emoji: randomEmoji(),
+  emojiBg: randomBg(),
   user: f.nombre_usuario
     ? {
         initials: f.nombre_usuario.slice(0, 2).toUpperCase(),

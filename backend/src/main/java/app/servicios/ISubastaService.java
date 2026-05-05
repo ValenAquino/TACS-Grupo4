@@ -20,8 +20,7 @@ public interface ISubastaService {
      * Registra una oferta en la subasta. Valida que no haya figuritas ofrecidas duplicadas
      * y crea una propuesta asociada a la subasta.
      */
-    void ofertarEnSubasta(String userId, String usuarioDestinoId,
-                                String subastaId, List<String> rawFiguritasId);
+    void ofertarEnSubasta(String userId, String subastaId, List<String> rawFiguritasId);
 
     void mejorarOfertaEnSubasta(String subastaId, String ofertaId, MejorarOfertaRequest body);
     /**

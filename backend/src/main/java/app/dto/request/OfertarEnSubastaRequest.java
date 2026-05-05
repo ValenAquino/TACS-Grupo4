@@ -9,8 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class OfertarEnSubastaRequest {
-  @JsonProperty("destino_id")
-  private String destinoId;
   @JsonProperty("autor_id")
   private String autorId;
   @JsonProperty("figuritas_ofrecidas_id")

@@ -51,7 +51,7 @@ export const crearOferta = async (subastaId, userId, body) => {
   try {
     const { data } = await api.post(
       `${SUBASTAS_URL}/${subastaId}/ofertas`,
-      { ...body, user_id: userId }
+      { figuritas_ofrecidas_id:body, autor_id: userId }
     );
     return data;
   } catch (error) {

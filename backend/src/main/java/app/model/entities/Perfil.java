@@ -24,7 +24,7 @@ public class Perfil {
         return calificaciones.stream()
             .mapToInt(Calificacion::getValor)
             .average()
-            .orElse(0.0);
+            .orElse(1.0);
     }
 
     public void agregarNuevaCalificacion(Calificacion calificacion){

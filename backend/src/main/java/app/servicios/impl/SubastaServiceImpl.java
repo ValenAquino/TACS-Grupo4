@@ -66,10 +66,11 @@ public class SubastaServiceImpl implements ISubastaService {
   }
 
   @Override
-  public void ofertarEnSubasta(String userId, String perfilDestinoId, String subastaId, List<String> rawFiguritasId) {
+  public void ofertarEnSubasta(String userId, String subastaId, List<String> rawFiguritasId) {
     Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userId);
-    Perfil destinatario = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+
+    Perfil destinatario = subasta.getAutor();
 
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");

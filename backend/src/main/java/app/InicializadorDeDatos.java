@@ -121,6 +121,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
                                 Figurita pedri, Figurita kroos, Figurita neymar) {
+      Coleccion coleccionJuan = new Coleccion();
+        Perfil juan = new Perfil("1003", new Usuario("u-1003",  Rol.USUARIO), "Juan",
+            coleccionJuan, telegram("@juan"), new ArrayList<>());
+
         // Lucas
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
@@ -139,8 +143,11 @@ public class InicializadorDeDatos implements CommandLineRunner {
         intercambiables.guardar(interMessi);
         intercambiables.guardar(interDiMaria);
         colecciones.guardar(coleccionLucas);
+        Calificacion calificacion = new Calificacion("40002", juan, 4, "dasda", "612431", MetodoIntercambio.INTERCAMBIO);
+        List<Calificacion> calificaciones = new ArrayList<>();
+        calificaciones.add(calificacion);
         perfiles.guardar(new Perfil("1000", new Usuario("u-1000",  Rol.USUARIO), "Lucas",
-            coleccionLucas, telegram("@lucas"), new ArrayList<>()));
+            coleccionLucas, telegram("@lucas"), calificaciones));
 
         // Sofía
         Coleccion coleccionSofia = new Coleccion();
@@ -172,7 +179,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             coleccionMatias, telegram("@matias"), new ArrayList<>()));
 
         // Juan
-        Coleccion coleccionJuan = new Coleccion();
+
         coleccionJuan.setId("4");
         FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
         coleccionJuan.getRepetidas().add(interPedri);
@@ -180,8 +187,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionJuan.getFaltantes().add(kroos);
         intercambiables.guardar(interPedri);
         colecciones.guardar(coleccionJuan);
-        perfiles.guardar(new Perfil("1003", new Usuario("u-1003",  Rol.USUARIO), "Juan",
-            coleccionJuan, telegram("@juan"), new ArrayList<>()));
+        perfiles.guardar(juan);
     }
 
     private void cargarCalificaciones() {
@@ -342,7 +348,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             LocalDateTime.now().plusHours(5),
             neymar,
             new ArrayList<>(),
-            new ArrayList<>(), 4, true);
+            List.of(messi), 2, true);
         subastas.guardar(subasta6);
     }
 }

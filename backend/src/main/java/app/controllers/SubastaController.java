@@ -10,6 +10,7 @@ import app.dto.subasta.SubastaDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -40,11 +41,11 @@ public class SubastaController {
 
     @PostMapping("/{sub_id}/ofertas")
     public ResponseEntity<Void> ofertarEnSubasta(@PathVariable String sub_id, @RequestBody OfertarEnSubastaRequest body) {
-        this.subastaService.ofertarEnSubasta(body.getAutorId(), body.getDestinoId(), sub_id, body.getFiguritasOfrecidasId());
+        this.subastaService.ofertarEnSubasta(body.getAutorId(), sub_id, body.getFiguritasOfrecidasId());
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{sub_id}/ofertas/{oferta_id}")
+    @PatchMapping("/{sub_id}/ofertas/{oferta_id}")
     public ResponseEntity<Void> mejorarOfertaEnSubasta(@PathVariable String sub_id, @PathVariable String oferta_id, @RequestBody MejorarOfertaRequest body) {
         this.subastaService.mejorarOfertaEnSubasta(sub_id, oferta_id, body);
         return ResponseEntity.ok().build();

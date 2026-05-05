@@ -81,7 +81,6 @@ public class EstadisticasServiceImpl implements IEstadisticasService {
             .collect(Collectors.groupingBy(f -> f.getFigurita().getSeleccion().name(), Collectors.counting()))
             .entrySet().stream()
             .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .limit(3)
             .map(e -> new SeleccionCantidadDto(e.getKey(), e.getValue()))
             .collect(Collectors.toList());
     }

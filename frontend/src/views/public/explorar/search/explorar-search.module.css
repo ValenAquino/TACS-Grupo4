@@ -1,0 +1,136 @@
+.hero {
+    background: var(--color-secondary);
+    margin: -2rem -2rem 0;
+    padding: 48px 2rem;
+    text-align: center;
+}
+
+.heroContent {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.heroTitle {
+    color: var(--color-primary);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.heroSubtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 4px 4px 4px 14px;
+    gap: 8px;
+}
+
+.searchIcon {
+    font-size: 1rem;
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+.searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #374151;
+    padding: 8px 0;
+    font-family: var(--font-family);
+}
+
+.searchInput::placeholder {
+    color: #9ca3af;
+}
+
+.searchBtn {
+    padding: 10px 24px;
+    background: var(--color-terciary);
+    color: var(--color-primary);
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+
+.searchBtn:hover {
+    background: #b8851e;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    padding-top: 8px;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.statValue {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.statLabel {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 32px 1rem;
+    }
+
+    .heroTitle {
+        font-size: 1.4rem;
+    }
+
+    .heroSubtitle {
+        font-size: 0.9rem;
+    }
+
+    .searchBar {
+        flex-wrap: wrap;
+    }
+
+    .searchBtn {
+        width: 100%;
+    }
+
+    .stats {
+        gap: 16px;
+    }
+
+    .statValue {
+        font-size: 1.1rem;
+    }
+
+    .statLabel {
+        font-size: 0.55rem;
+    }
+}

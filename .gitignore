@@ -29,3 +29,20 @@ target/**
 # IJ files
 *.iml
 .idea/**
+
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Vite cache
+.vite/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store

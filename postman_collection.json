@@ -1,0 +1,726 @@
+{
+  "info": {
+    "name": "TACS - Figuritas Mundial",
+    "description": "Collection para testear todos los endpoints del TP de TACS - Intercambio de figuritas del Mundial",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Ping",
+      "item": [
+        {
+          "name": "GET /ping",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/ping",
+              "host": ["{{base_url}}"],
+              "path": ["ping"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Body es pong', () => pm.expect(pm.response.text()).to.eql('pong'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US1 - Publicar figurita para intercambio",
+      "item": [
+        {
+          "name": "POST /colecciones/{col_id}/repetidas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/colecciones/1/repetidas",
+              "host": ["{{base_url}}"],
+              "path": ["colecciones", "1", "repetidas"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "user_id", "value": "1000" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fig_id\": \"ARG-9\",\n  \"cantidad_disponible\": 2,\n  \"modos_intercambio\": [\"INTERCAMBIO\"]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /colecciones/{col_id}/repetidas - figurita inexistente (404)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/colecciones/1/repetidas",
+              "host": ["{{base_url}}"],
+              "path": ["colecciones", "1", "repetidas"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "user_id", "value": "1000" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fig_id\": \"XXX-99\",\n  \"cantidad_disponible\": 1,\n  \"modos_intercambio\": [\"SUBASTA\"]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US2 - Registrar figurita faltante",
+      "item": [
+        {
+          "name": "POST /colecciones/{col_id}/faltantes",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/colecciones/1/faltantes",
+              "host": ["{{base_url}}"],
+              "path": ["colecciones", "1", "faltantes"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fig_id\": \"ARG-11\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US3 - Buscar figuritas con filtros",
+      "item": [
+        {
+          "name": "GET /figuritas (sin filtro)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/figuritas",
+              "host": ["{{base_url}}"],
+              "path": ["figuritas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /figuritas?seleccion=ARGENTINA",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/figuritas?seleccion=ARGENTINA",
+              "host": ["{{base_url}}"],
+              "path": ["figuritas"],
+              "query": [
+                { "key": "seleccion", "value": "ARGENTINA" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Solo figuritas argentinas', () => {",
+                  "  pm.response.json().forEach(f => pm.expect(f.seleccion).to.eql('ARGENTINA'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /figuritas?numero=10",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/figuritas?numero=10",
+              "host": ["{{base_url}}"],
+              "path": ["figuritas"],
+              "query": [
+                { "key": "numero", "value": "10" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Solo numero 10', () => {",
+                  "  pm.response.json().forEach(f => pm.expect(f.numero).to.eql(10));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /figuritas?jugador=Messi",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/figuritas?jugador=Messi",
+              "host": ["{{base_url}}"],
+              "path": ["figuritas"],
+              "query": [
+                { "key": "jugador", "value": "Messi" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Solo Messi', () => {",
+                  "  pm.response.json().forEach(f => pm.expect(f.jugador).to.include('Messi'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US4 - Sugerencias de intercambio",
+      "item": [
+        {
+          "name": "GET /usuarios/{user_id}/sugerencias",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/usuarios/1000/sugerencias",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1000", "sugerencias"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 202', () => pm.response.to.have.status(202));",
+                  "pm.test('Retorna array de sugerencias', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.be.an('array');",
+                  "  if (json.length > 0) {",
+                  "    pm.expect(json[0]).to.have.property('usuario');",
+                  "    pm.expect(json[0]).to.have.property('figuritas');",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US5 - Propuesta de intercambio",
+      "item": [
+        {
+          "name": "POST /propuestas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/propuestas",
+              "host": ["{{base_url}}"],
+              "path": ["propuestas"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_origen_id\": \"1002\",\n  \"usuario_destino_id\": \"1000\",\n  \"figurita_buscada_id\": \"ARG-10\",\n  \"figuritas_ofrecidas_ids\": [\"ARG-9\"]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Propuesta creada con estado PENDIENTE', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json.estado).to.eql('PENDIENTE');",
+                  "  pm.expect(json.id).to.not.be.null;",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "  pm.collectionVariables.set('propuesta_id', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /propuestas - usuario inexistente (404)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/propuestas",
+              "host": ["{{base_url}}"],
+              "path": ["propuestas"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_origen_id\": \"xxx\",\n  \"usuario_destino_id\": \"1001\",\n  \"figurita_buscada_id\": \"ARG-10\",\n  \"figuritas_ofrecidas_ids\": [\"ARG-10\"]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US6 - Publicar figurita en subasta",
+      "item": [
+        {
+          "name": "POST /subastas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/subastas",
+              "host": ["{{base_url}}"],
+              "path": ["subastas"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "user_id", "value": "1001" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"figurita_id\": \"ARG-10\",\n  \"duracion\": 60\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Subasta creada con datos', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('usuario');",
+                  "  pm.expect(json).to.have.property('duracion');",
+                  "  pm.expect(json).to.have.property('figurita');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US7 - Ofertar en subasta activa",
+      "item": [
+        {
+          "name": "POST /subastas/{sub_id}/propuestas",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/subastas/3000/propuestas",
+              "host": ["{{base_url}}"],
+              "path": ["subastas", "3000", "propuestas"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "user_id", "value": "1000" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_id\": \"1001\",\n  \"figuritas_ofrecidas\": [\"ARG-10\", \"ARG-11\"]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Subasta con propuesta ganadora', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('propuesta_ganadora');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /subastas/{sub_id}/propuestas - figuritas repetidas (400)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/subastas/3000/propuestas",
+              "host": ["{{base_url}}"],
+              "path": ["subastas", "3000", "propuestas"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "user_id", "value": "1000" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_id\": \"1001\",\n  \"figuritas_ofrecidas\": [\"ARG-10\", \"ARG-10\"]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US8 - Ver operaciones del usuario",
+      "item": [
+        {
+          "name": "GET /usuarios/{user_id}/operaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/usuarios/1000/operaciones",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1000", "operaciones"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Tiene todas las secciones', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('figuritas_publicadas');",
+                  "  pm.expect(json).to.have.property('propuestas_enviadas');",
+                  "  pm.expect(json).to.have.property('propuestas_recibidas');",
+                  "  pm.expect(json).to.have.property('subastas_activas');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /usuarios/{user_id}/operaciones - inexistente (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/usuarios/u-99/operaciones",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "u-99", "operaciones"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US9 - Aceptar o rechazar propuestas",
+      "item": [
+        {
+          "name": "PATCH /propuestas/{prop_id}/aceptar",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}/propuestas/2000/aceptar",
+              "host": ["{{base_url}}"],
+              "path": ["propuestas", "2000", "aceptar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH /propuestas/{prop_id}/rechazar",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}/propuestas/{{propuesta_id}}/rechazar",
+              "host": ["{{base_url}}"],
+              "path": ["propuestas", "{{propuesta_id}}", "rechazar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US10 - Calificar usuario",
+      "item": [
+        {
+          "name": "POST /usuarios/{user_id}/calificaciones",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/usuarios/1000/calificaciones",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1000", "calificaciones"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calificacion\": 8\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /usuarios/{user_id}/calificaciones - invalida (400)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/usuarios/1000/calificaciones",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1000", "calificaciones"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calificacion\": 15\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US11 - Notificaciones",
+      "item": [
+        {
+          "name": "GET /usuarios/{user_id}/notificaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/usuarios/1000/notificaciones",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1000", "notificaciones"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "US12 - Admin estadisticas",
+      "item": [
+        {
+          "name": "GET /administrador/estadisticas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/administrador/estadisticas",
+              "host": ["{{base_url}}"],
+              "path": ["administrador", "estadisticas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Tiene campos de estadisticas', () => {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('total_usuarios');",
+                  "  pm.expect(json).to.have.property('total_figuritas_publicadas');",
+                  "  pm.expect(json).to.have.property('total_propuestas');",
+                  "  pm.expect(json).to.have.property('total_subastas_activas');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Usuarios - Intercambiables",
+      "item": [
+        {
+          "name": "GET /usuarios/{user_id}/intercambiables",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/usuarios/1000/intercambiables",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1000", "intercambiables"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Retorna array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET /usuarios/{user_id}/intercambiables - inexistente (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/usuarios/u-99/intercambiables",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "u-99", "intercambiables"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

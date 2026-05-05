@@ -1,6 +1,6 @@
-import FiguritaCard from '../../../../components/ui/figurita-card/figurita-card'
-import FiguritaCardSkeleton from '../../../../components/ui/figurita-card/figurita-card-skeleton'
-import Pagination from '../../../../components/ui/pagination/pagination'
+import FiguritaCard from '@/components/ui/figurita-card/figurita-card'
+import FiguritaCardSkeleton from '@/components/ui/figurita-card/figurita-card-skeleton'
+import Pagination from '@/components/ui/pagination/pagination'
 import styles from './explorar-resultados.module.css'
 
 const ExplorarResultados = ({

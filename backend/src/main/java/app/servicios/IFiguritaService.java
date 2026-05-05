@@ -24,4 +24,16 @@ public interface IFiguritaService {
     PaginaResultado<FiguritaIntercambiableDto> buscarFiguritas(
         Integer numero, Seleccion seleccion, String jugador, MetodoIntercambio tipo,
         int pagina, int tamanioPagina);
+
+    /**
+     * Búsqueda por texto libre con OR entre campos y AND entre términos.
+     *
+     * @param q             texto libre; los términos separados por espacio se combinan con AND,
+     *                      y cada término se busca en jugador, selección y número
+     * @param tipo          filtro de tipo de intercambio, o {@code null} para todos
+     * @param pagina        número de página 0-indexed
+     * @param tamanioPagina elementos por página; el controller acota a 40
+     */
+    PaginaResultado<FiguritaIntercambiableDto> buscarPorQuery(
+        String q, MetodoIntercambio tipo, int pagina, int tamanioPagina);
 }

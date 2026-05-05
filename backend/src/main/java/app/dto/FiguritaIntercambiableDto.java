@@ -6,7 +6,6 @@ import app.model.entities.Perfil;
 import app.model.entities.Seleccion;
 import java.util.ArrayList;
 import java.util.List;
-import jdk.jfr.Experimental;
 import lombok.Getter;
 
 @Getter
@@ -18,7 +17,6 @@ public class FiguritaIntercambiableDto {
   private Integer cantidadExistente;
   private Integer cantidadReservada;
   private List<MetodoIntercambio> metodos;
-  @Experimental
   private String usuarioId;
   private String nombreUsuario;
   private Integer reputacion;

@@ -18,6 +18,7 @@ public class FiguritaController {
 
     @GetMapping("/figuritas")
     public ResponseEntity<PaginaResultado<FiguritaIntercambiableDto>> obtenerFiguritas(
+        @RequestParam(required = false) String q,
         @RequestParam(required = false) Integer numero,
         @RequestParam(required = false) Seleccion seleccion,
         @RequestParam(required = false) String jugador,
@@ -26,6 +27,11 @@ public class FiguritaController {
         @RequestParam(defaultValue = "12") int tamanioPagina
     ) {
         int tamanioDePaginaAcotado = Math.min(tamanioPagina, 40);
+        if (q != null && !q.isBlank()) {
+            return ResponseEntity.ok(
+                figuritaService.buscarPorQuery(q, tipo, pagina, tamanioDePaginaAcotado)
+            );
+        }
         return ResponseEntity.ok(
             figuritaService.buscarFiguritas(numero, seleccion, jugador, tipo, pagina, tamanioDePaginaAcotado)
         );

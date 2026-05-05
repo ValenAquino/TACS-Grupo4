@@ -6,14 +6,16 @@ import ExplorarFiltros from './filtros/explorar-filtros'
 import ExplorarResultados from './resultados/explorar-resultados'
 import styles from './explorar.module.css'
 
-const FILTROS_INICIAL = { tipo: 'todos', jugador: '', seleccion: '', numero: '' }
+const FILTROS_INICIAL = { q: '', tipo: 'todos', jugador: '', seleccion: '', numero: '' }
 
 const Explorar = () => {
   const resultadosRef = useRef(null)
+  const heroInputRef = useRef(null)
   const [filtros, setFiltros] = useState(FILTROS_INICIAL)
   const [page, setPage] = useState(0)
 
   const { figuritas, totalPages, totalElements, loading, error } = useFiguritas(
+    filtros.q,
     filtros.jugador,
     filtros.seleccion,
     filtros.numero,
@@ -32,10 +34,15 @@ const Explorar = () => {
 
   return (
     <main className={styles.page}>
-      <ExplorarSearch onQueryChange={(jugador) => handleAplicar({ ...filtros, jugador })} />
+      <ExplorarSearch ref={heroInputRef} onQueryChange={(q) => handleAplicar({ ...FILTROS_INICIAL, q })} />
       <div className={styles.container}>
         <SugerenciasBanner />
-        <ExplorarFiltros onAplicar={handleAplicar} />
+        <ExplorarFiltros
+          onAplicar={(panelFiltros) => {
+            if (heroInputRef.current) heroInputRef.current.value = ''
+            handleAplicar({ ...FILTROS_INICIAL, ...panelFiltros })
+          }}
+        />
         <div ref={resultadosRef} />
         <ExplorarResultados
           figuritas={figuritas}

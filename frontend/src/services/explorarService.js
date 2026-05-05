@@ -50,16 +50,29 @@ const mapFigurita = (f) => ({
     : null,
 })
 
-const buildParams = ({ jugador, seleccion, numero, tipo, page, size }) => ({
-  jugador: jugador || undefined,
-  seleccion: seleccion ? seleccion.toUpperCase() : undefined,
-  numero: numero || undefined,
-  tipo: tipo && tipo !== 'todos' ? TIPO_MAP[tipo] : undefined,
-  pagina: page,
-  tamanioPagina: size,
-})
+const buildParams = ({ q, jugador, seleccion, numero, tipo, page, size }) => {
+  const tipoParam = tipo && tipo !== 'todos' ? TIPO_MAP[tipo] : undefined
+  if (q) {
+    return {
+      q: q,
+      tipo: tipoParam,
+      pagina: page,
+      tamanioPagina: size,
+    }
+  }
+
+  return {
+    jugador: jugador || undefined,
+    seleccion: seleccion ? seleccion.toUpperCase() : undefined,
+    numero: numero || undefined,
+    tipo: tipoParam,
+    pagina: page,
+    tamanioPagina: size,
+  }
+}
 
 export const explorarFiguritas = async ({
+  q,
   jugador,
   seleccion,
   numero,
@@ -69,7 +82,7 @@ export const explorarFiguritas = async ({
 } = {}) => {
   try {
     const { data } = await api.get('/figuritas', {
-      params: buildParams({ jugador, seleccion, numero, tipo, page, size }),
+      params: buildParams({ q, jugador, seleccion, numero, tipo, page, size }),
     })
     return {
       content: data.contenido.map(mapFigurita),

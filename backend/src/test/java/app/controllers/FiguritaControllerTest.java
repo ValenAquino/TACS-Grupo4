@@ -86,4 +86,34 @@ class FiguritaControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest());
   }
+
+  @Test
+  void obtenerFiguritas_conQ_usaBusquedaOrMultiTermino() throws Exception {
+    PaginaResultado<FiguritaIntercambiableDto> pagina =
+        new PaginaResultado<>(List.of(dto), 1, 1, 0);
+
+    when(figuritaService.buscarPorQuery("messi argentina", null, 0, 12)).thenReturn(pagina);
+
+    mockMvc.perform(get("/figuritas")
+            .param("q", "messi argentina")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.cantidad_de_elementos").value(1));
+
+    verify(figuritaService).buscarPorQuery("messi argentina", null, 0, 12);
+  }
+
+  @Test
+  void obtenerFiguritas_conQYTipo_combinaAmbos() throws Exception {
+    when(figuritaService.buscarPorQuery("messi", MetodoIntercambio.SUBASTA, 0, 12))
+        .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
+
+    mockMvc.perform(get("/figuritas")
+            .param("q", "messi")
+            .param("tipo", "SUBASTA")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+
+    verify(figuritaService).buscarPorQuery("messi", MetodoIntercambio.SUBASTA, 0, 12);
+  }
 }

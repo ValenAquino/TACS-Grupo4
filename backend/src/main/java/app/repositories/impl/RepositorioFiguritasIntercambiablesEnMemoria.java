@@ -5,6 +5,7 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 import app.repositories.RepositorioFiguritasIntercambiables;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,29 @@ public class RepositorioFiguritasIntercambiablesEnMemoria
         .filter(fi -> seleccion == null || fi.getFigurita().getSeleccion().equals(seleccion))
         .filter(fi -> jugador == null || fi.getFigurita().getJugador().toLowerCase().contains(jugador.toLowerCase()))
         .filter(fi -> tipo == null || fi.soporta(tipo))
+        .toList();
+
+    int total = filtradas.size();
+    int totalPages = total == 0 ? 0 : (int) Math.ceil((double) total / tamanioPagina);
+    int fromIndex = Math.min(pagina * tamanioPagina, total);
+    int toIndex = Math.min(fromIndex + tamanioPagina, total);
+
+    return new PaginaResultado<>(filtradas.subList(fromIndex, toIndex), total, totalPages, pagina);
+  }
+
+  @Override
+  public PaginaResultado<FiguritaIntercambiable> buscarPorQuery(
+      String q, MetodoIntercambio tipo, int pagina, int tamanioPagina) {
+
+    String[] terminos = q.trim().toLowerCase().split("\\s+");
+
+    List<FiguritaIntercambiable> filtradas = storage.values().stream()
+        .filter(fi -> tipo == null || fi.soporta(tipo))
+        .filter(fi -> Arrays.stream(terminos).allMatch(t ->
+            fi.getFigurita().getJugador().toLowerCase().contains(t) ||
+                fi.getFigurita().getSeleccion().name().toLowerCase().contains(t) ||
+                fi.getFigurita().getNumero().toString().equals(t)
+        ))
         .toList();
 
     int total = filtradas.size();

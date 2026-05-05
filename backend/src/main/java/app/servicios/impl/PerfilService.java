@@ -129,7 +129,7 @@ public class PerfilService implements IPerfilService {
 
   @Override
   public SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
-    Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorId(userId);
+    Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
     List<Sugerencia> sugerencias = new ArrayList<>();
 
@@ -176,7 +176,7 @@ public class PerfilService implements IPerfilService {
 
   @Override
   public List<ContadorDto> obtenerContadores(String userId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorId(userId);
+    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
 
     List<ContadorDto> contadores = new ArrayList<>();
 

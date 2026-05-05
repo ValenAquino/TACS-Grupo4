@@ -82,7 +82,6 @@ public class PerfilController {
     @GetMapping("/{user_id}/sugerencias")
     public ResponseEntity<SugerenciaPaginadaDto> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
 
-        System.out.println(filtro);
         SugerenciaPaginadaDto sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
 
         return ResponseEntity.ok().body(sugerenciasDto);

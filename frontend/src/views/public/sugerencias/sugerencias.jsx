@@ -3,7 +3,7 @@ import ContadorCard from "../../../components/ui/contador-card/contador-card.jsx
 import styles from './sugerencias.module.css';
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
 import {useCallback, useEffect, useState} from "react";
-import {buscarContadores} from "../../../services/perfilService.js";
+import {buscarContadoresSugerencias} from "@/services/perfilService.js";
 import ExtraInfo from "../../../components/ui/extra-info/extra-info.jsx";
 import MostradorSugerencias from "./tabs/mostrador-sugerencias.jsx";
 import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
@@ -24,7 +24,7 @@ const Sugerencias = () => {
     const cargarContadores = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarContadores({userId})
+            const payload = await buscarContadoresSugerencias({userId})
             setContadores(payload)
 
         } catch (error) {

@@ -2,7 +2,7 @@ import { api, handleAxiosError } from "./api.js";
 
 const PERFIL_URL = "/perfil";
 
-/*export const buscarContadores = async ({userId}) => {
+export const buscarContadoresSugerencias = async ({userId}) => {
     try {
         const { data } = await api.get(
             `${PERFIL_URL}/${userId}/contadores`,
@@ -13,7 +13,7 @@ const PERFIL_URL = "/perfil";
         handleAxiosError(error);
     }
 
-};*/
+};
 
 export const buscarSugerencias = async ({userId, tipo, pagina, limite}) => {
     try {
@@ -68,17 +68,6 @@ export const buscarRepetidas = async (userId) => {
   } catch (error) {
     handleAxiosError(error);
   }
-};
-
-export const buscarPerfil = async (userId) => {
-  // Mockeado por ahora.
-  return {
-    nombre: "Messi G.",
-    username: "messi_g",
-    iniciales: "MG",
-    promedio: 4.6,
-    totalCalificaciones: 4
-  };
 };
 
 export const buscarCalificaciones = async (userId) => {

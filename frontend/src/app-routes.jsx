@@ -11,6 +11,7 @@ import Explorar from './views/public/explorar/explorar.jsx'
 import Perfil from "./views/public/perfil/perfil.jsx";
 import Intercambios from "./views/public/intercambios/intercambios.jsx";
 import CrearOferta from "./views/public/ver-subasta/oferta/crear-oferta.jsx";
+import Administrador from './views/public/administrador/administrador.jsx'
 
 const publics = [
   {
@@ -42,25 +43,33 @@ const publics = [
     element: <CrearSubasta />,
   },
   {
-      path: '/sugerencias',
-      element: <Sugerencias />
+    path: '/sugerencias',
+    element: <Sugerencias />
   },
   {
-      path: '/perfil',
-      element: <Perfil />
+    path: '/perfil',
+    element: <Perfil />
   },
   {
-      path: '/intercambios',
-      element: <Intercambios />
+    path: '/intercambios',
+    element: <Intercambios />
   },
   {
-      path: '/subastas/:subId',
-      element: <VerSubasta />
+     path: '/subastas/:subId',
+     element: <VerSubasta />
   },
   {
     path: '/subastas/:subId/nuevaOferta',
     element: <CrearOferta />
-  }
+  },
+   {
+    path: '/subastas/:subId',
+    element: <VerSubasta />
+  },
+  {
+    path: '/administrador',
+    element: <Administrador />,
+  },
 ];
 
 const privates = []

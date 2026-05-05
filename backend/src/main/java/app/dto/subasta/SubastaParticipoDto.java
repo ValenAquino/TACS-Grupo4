@@ -1,6 +1,7 @@
 package app.dto.subasta;
 
 import app.dto.FiguritaDto;
+import app.dto.PerfilDto;
 import app.model.entities.EstadoProceso;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Propuesta;
@@ -11,8 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 public class SubastaParticipoDto {
   private String id;
-  private String autorNombre;
-  private String autorPerfilId;
+  private PerfilDto autor;
   private FiguritaDto figuritaSubastada;
   private LocalDateTime fechaInicio;
   private LocalDateTime fechaCierre;
@@ -22,8 +22,7 @@ public class SubastaParticipoDto {
 
   public SubastaParticipoDto(Subasta subasta, Propuesta tuOferta) {
     this.id = subasta.getId();
-    this.autorNombre = subasta.getAutor().getNombre();
-    this.autorPerfilId = subasta.getAutor().getId();
+    this.autor = new PerfilDto(subasta.getAutor());
     this.figuritaSubastada = new FiguritaDto(subasta.getFiguritaSubastada());
     this.fechaInicio = subasta.getFechaInicio();
     this.fechaCierre = subasta.getFechaCierre();

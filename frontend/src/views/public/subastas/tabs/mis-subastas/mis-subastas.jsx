@@ -18,7 +18,6 @@ const MisSubastas = () => {
       try {
         setLoading(true);
         const res = await buscarMisSubastas(userId);
-        console.log(res);
         setData(res);
       } catch {
         setError(true);

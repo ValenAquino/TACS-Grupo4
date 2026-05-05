@@ -77,7 +77,7 @@ public class SubastaController {
     }
 
     @GetMapping("/participo")
-    public ResponseEntity<SubastasParticipoResponseDto> obtenerSubastasParticipo(@RequestHeader("user_id") String userId) {
+    public ResponseEntity<SubastasParticipoResponseDto> obtenerSubastasParticipo(@RequestParam String userId) {
         return ResponseEntity.ok(this.subastaService.obtenerSubastasParticipo(userId));
     }
 

@@ -10,6 +10,7 @@ const BADGE_OFERTA = {
     className: "text-success bg-success-subtle",
   },
   RECHAZADO: { label: "No elegida", className: "text-danger bg-danger-subtle" },
+  PENDIENTE: { label: "No elegida", className: "text-danger bg-danger-subtle" },
   ACEPTADO: { label: "Elegida", className: "text-success bg-success-subtle" },
 };
 
@@ -20,11 +21,11 @@ const SubastaCard = ({
   onVerResumen,
 }) => {
   const { userId } = useUsuarioActual();
-  const { id, autor, figuritaSubastada, fechaCierre, tuOferta } = subasta;
+  const { id, autor, figurita_subastada, fecha_cierre, tu_oferta_label, tu_oferta_estado } = subasta;
   const [mostrarCalificar, setMostrarCalificar] = useState(false);
 
   const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } =
-    derivarTiempo({ fechaCierre });
+    derivarTiempo({ fecha_cierre });
 
   const badgeEstado = finalizada
     ? null
@@ -35,14 +36,14 @@ const SubastaCard = ({
         }
       : { label: "Activa", className: "text-success bg-success-subtle" };
 
-  const badgeOferta = tuOferta ? (BADGE_OFERTA[tuOferta.estado] ?? null) : null;
+  const badgeOferta = tu_oferta_estado ? (BADGE_OFERTA[tu_oferta_estado] ?? null) : null;
 
   const handleCalificar = async ({ valor, descripcion }) => {
-    await calificarPerfil(userId, autor.perfilId, { valor, descripcion, transactionId: id, tipoTransaccion: "SUBASTA" });
+    await calificarPerfil(userId, autor.id, { valor, descripcion, transactionId: id, tipoTransaccion: "SUBASTA" });
     setMostrarCalificar(false);
   };
 
-  const puedoCalificar = finalizada && tuOferta?.estado === "ACEPTADO" && !subasta.ya_calificado;
+  const puedoCalificar = finalizada && tu_oferta_estado === "ACEPTADO" && !subasta.ya_calificado;
 
   return (
     <div className="border rounded-3 overflow-hidden bg-white">
@@ -62,11 +63,11 @@ const SubastaCard = ({
           </div>
           <div>
             <p className="mb-0 fw-semibold" style={{ fontSize: "0.95rem" }}>
-              {figuritaSubastada.jugador}
+              {figurita_subastada.jugador}
             </p>
             <p className="mb-0 text-muted" style={{ fontSize: "0.75rem" }}>
-              {figuritaSubastada.seleccion?.nombre} · #
-              {figuritaSubastada.numero}
+              {figurita_subastada.seleccion?.nombre} · #
+              {figurita_subastada.numero}
             </p>
           </div>
         </div>
@@ -101,13 +102,13 @@ const SubastaCard = ({
         </span>
       </div>
       {/* Tu oferta — solo visible en tab Participo */}
-      {tuOferta && (
+      {tu_oferta_estado && (
         <div className="px-3 py-2 d-flex justify-content-between align-items-center border-top">
           <span className="text-muted" style={{ fontSize: "0.82rem" }}>
             Tu oferta
           </span>
           <div className="d-flex align-items-center gap-2">
-            <span style={{ fontSize: "0.85rem" }}>{tuOferta.label}</span>
+            <span style={{ fontSize: "0.85rem" }}>{tu_oferta_label}</span>
             {badgeOferta && (
               <span
                 className={`badge rounded-pill px-2 py-1 ${badgeOferta.className}`}
@@ -149,7 +150,7 @@ const SubastaCard = ({
             >
               Ver subasta
             </button>
-            {tuOferta && (
+            {tu_oferta_label && (
               <button
                 className="btn btn-outline-secondary flex-fill"
                 style={{ fontSize: "0.85rem" }}

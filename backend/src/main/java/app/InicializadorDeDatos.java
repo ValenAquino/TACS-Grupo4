@@ -1,5 +1,6 @@
 package app;
 
+import app.model.entities.Calificacion;
 import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.EstadoPropuesta;
@@ -208,6 +209,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
             diMaria,
             new ArrayList<>(List.of(ofertaGanadora3)),
             new ArrayList<>(), 0, true);
+
+        ofertaGanadora3.aceptar(lucas);
         subastas.guardar(subasta3);
 
         // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
@@ -232,6 +235,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             vinicius,
             new ArrayList<>(List.of(ofertaLucas4)),
             new ArrayList<>(), 0, false);
+        ofertaLucas4.seleccionar(sofia);
         subastas.guardar(subasta4);
 
         // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
@@ -254,17 +258,23 @@ public class InicializadorDeDatos implements CommandLineRunner {
             neymar,
             new ArrayList<>(List.of(ofertaLucas6)),
             new ArrayList<>(), 0, true);
+
+        ofertaLucas6.aceptar(juan);
         subastas.guardar(subasta6);
 
         // id=8 | Finalizada hace 5 días, oferta de lucas ACEPTADA, ya calificada
         Propuesta ofertaLucas8 = new Propuesta("o9", lucas, sofia,
             List.of(kroos), griezmann);
+        Propuesta ofertaJuan1 = new Propuesta("o10", juan, sofia,
+            List.of(kroos), griezmann);
         Subasta subasta8 = new Subasta("8", sofia,
             LocalDateTime.now().minusDays(5),
             LocalDateTime.now().minusDays(5),
             griezmann,
-            new ArrayList<>(List.of(ofertaLucas8)),
+            new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)),
             new ArrayList<>(), 0, true);
+        ofertaJuan1.aceptar(sofia);
+        sofia.agregarNuevaCalificacion(new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA));
         subastas.guardar(subasta8);
     }
 }

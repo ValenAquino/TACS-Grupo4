@@ -2,7 +2,7 @@ import { api, handleAxiosError } from "./api.js";
 
 const PERFIL_URL = "/perfil";
 
-export const buscarContadores = async ({userId}) => {
+/*export const buscarContadores = async ({userId}) => {
     try {
         const { data } = await api.get(
             `${PERFIL_URL}/${userId}/contadores`,
@@ -12,7 +12,8 @@ export const buscarContadores = async ({userId}) => {
     } catch (error) {
         handleAxiosError(error);
     }
-};
+
+};*/
 
 export const buscarSugerencias = async ({userId, tipo, pagina, limite}) => {
     try {
@@ -67,4 +68,53 @@ export const buscarRepetidas = async (userId) => {
   } catch (error) {
     handleAxiosError(error);
   }
+};
+
+export const buscarPerfil = async (userId) => {
+  // Mockeado por ahora.
+  return {
+    nombre: "Messi G.",
+    username: "messi_g",
+    iniciales: "MG",
+    promedio: 4.6,
+    totalCalificaciones: 4
+  };
+};
+
+export const buscarCalificaciones = async (userId) => {
+  return [
+    {
+      nombre: "carlos_r",
+      puntaje: 9,
+      comentario: "Muy buena operación, rápido y confiable.",
+      iniciales: "CR"
+    },
+    {
+      nombre: "juan123",
+      puntaje: 8,
+      comentario: "Todo ok.",
+      iniciales: "JU"
+    },
+    {
+      nombre: "Roberto_Carlos",
+      puntaje: 2,
+      comentario: "La figurita venia pegoteada.",
+      iniciales: "RC"
+    },
+    {
+      nombre: "Buscando_Bugs",
+      puntaje: 10,
+      comentario: "Susanita tiene un raton, un raton chiquitin.__________________________________________________________________________________________________",
+      iniciales: "BB"
+    }
+  ];
+};
+
+export const buscarContadores = async ({ userId }) => {
+  return {
+    intercambios: 24,
+    publicadas: 5,
+    faltantes: 12,
+    subastas: 3
+  };
 };

@@ -73,3 +73,16 @@
     align-items: center;
   }
 }
+
+.navbar-avatar-link {
+  text-decoration: none;
+}
+
+.navbar-avatar {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.navbar-avatar:hover {    /*Ver si sacar o no esto */
+  transform: scale(1.1);
+}

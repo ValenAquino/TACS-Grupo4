@@ -8,6 +8,8 @@ import CrearSubasta from './views/public/crear-subasta/crear-subasta.jsx'
 import Sugerencias from './views/public/sugerencias/sugerencias.jsx'
 import VerSubasta from './views/public/ver-subasta/ver-subasta.jsx'
 import Explorar from './views/public/explorar/explorar.jsx'
+import Perfil from "./views/public/perfil/perfil.jsx";
+import Intercambios from "./views/public/intercambios/intercambios.jsx";
 
 const publics = [
   {
@@ -39,14 +41,22 @@ const publics = [
     element: <CrearSubasta />,
   },
   {
-    path: '/sugerencias',
-    element: <Sugerencias />,
+      path: '/sugerencias',
+      element: <Sugerencias />
   },
   {
-    path: '/subastas/:subId',
-    element: <VerSubasta />,
+      path: '/perfil',
+      element: <Perfil />
   },
-]
+  {
+      path: '/intercambios',
+      element: <Intercambios />
+  },
+  {
+      path: '/subastas/:subId',
+      element: <VerSubasta />
+  }
+];
 
 const privates = []
 

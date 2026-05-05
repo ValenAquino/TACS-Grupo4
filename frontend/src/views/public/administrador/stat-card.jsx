@@ -1,4 +1,4 @@
-import styles from '../administrador.module.css'
+import styles from './administrador.module.css'
 
 const StatCard = ({ icono, numero, label, destacado }) => (
   <div className={styles.statCard}>

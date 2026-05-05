@@ -1,8 +1,8 @@
 import useEstadisticasAdmin from '../../../hooks/use-estadisticas-admin.js'
-import StatCard from './components/stat-card'
-import SeccionBarras from './components/seccion-barras'
-import TopSelecciones from './components/top-selecciones'
-import AdministradorSkeleton from './components/administrador-skeleton'
+import StatCard from './stat-card.jsx'
+import SeccionBarras from './seccion-barras.jsx'
+import TopSelecciones from './top-selecciones.jsx'
+import AdministradorSkeleton from './administrador-skeleton.jsx'
 import styles from './administrador.module.css'
 
 const TARJETAS = (stats) => [
@@ -92,7 +92,7 @@ const Administrador = () => {
           {/* Ranking de selecciones */}
           {stats.topSelecciones?.length > 0 && (
             <div className="row g-3">
-              <div className="col-12 col-md-6">
+              <div className="col-12">
                 <TopSelecciones data={stats.topSelecciones} />
               </div>
             </div>

@@ -1,5 +1,5 @@
-import StatCardSkeleton from './stat-card-skeleton'
-import SeccionSkeleton from './seccion-skeleton'
+import StatCardSkeleton from './stat-card-skeleton.jsx'
+import SeccionSkeleton from './seccion-skeleton.jsx'
 
 const AdministradorSkeleton = () => (
   <>

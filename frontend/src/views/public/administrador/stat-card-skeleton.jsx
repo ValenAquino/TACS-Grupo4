@@ -1,5 +1,5 @@
-import Box from './box'
-import styles from '../administrador.module.css'
+import Box from './box.jsx'
+import styles from './administrador.module.css'
 
 const StatCardSkeleton = () => (
   <div className={styles.skeletonCard}>

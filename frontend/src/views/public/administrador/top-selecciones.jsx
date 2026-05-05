@@ -1,5 +1,5 @@
-import BarraItem from './barra-item'
-import styles from '../administrador.module.css'
+import BarraItem from './barra-item.jsx'
+import styles from './administrador.module.css'
 
 const FLAG_MAP = {
   ARGENTINA: '🇦🇷',

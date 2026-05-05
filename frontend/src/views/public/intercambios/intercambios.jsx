@@ -36,6 +36,32 @@ const PENDIENTES = [
         tiempo: "Hace 3 h",
         esNueva: false,
     },
+    {
+        id: 99,
+        usuario: { iniciales: "XX", nombre: "mega_trade", estrellas: 5, intercambios: 999 },
+        pide: [
+            { numero: 1, nombre: "A", pais: "X" },
+            { numero: 2, nombre: "B", pais: "X" },
+            { numero: 3, nombre: "C", pais: "X" },
+            { numero: 4, nombre: "D", pais: "X" },
+            { numero: 5, nombre: "E", pais: "X" },
+            { numero: 6, nombre: "F", pais: "X" },
+        ],
+        ofrece: [
+            { numero: 7, nombre: "G", pais: "Y" },
+            { numero: 8, nombre: "H", pais: "Y" },
+            { numero: 9, nombre: "I", pais: "Y" },
+            { numero: 10, nombre: "J", pais: "Y" },
+            { numero: 11, nombre: "K", pais: "Y" },
+             { numero: 7, nombre: "L", pais: "Y" },
+             { numero: 8, nombre: "M", pais: "Y" },
+             { numero: 9, nombre: "N", pais: "Y" },
+             { numero: 10, nombre: "Ñ", pais: "Y" },
+             { numero: 11, nombre: "O", pais: "Y" },
+        ],
+        tiempo: "Hace 2 min",
+        esNueva: true,
+    },
 ];
 
 const RESUELTAS_RECIBIDAS = [

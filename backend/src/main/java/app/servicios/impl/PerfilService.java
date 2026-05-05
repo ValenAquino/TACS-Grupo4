@@ -1,6 +1,5 @@
 package app.servicios.impl;
 
-import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
 import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
@@ -9,6 +8,7 @@ import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
+import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
@@ -191,6 +191,11 @@ public class PerfilService implements IPerfilService {
       Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
     return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
+  }
+
+  @Override
+  public CalificacionesDto obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
+    return this.repositorioPerfiles.buscarCalificaciones(perfilId, pagina, limite);
   }
 
   @Override

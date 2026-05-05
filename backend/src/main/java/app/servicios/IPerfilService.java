@@ -1,15 +1,13 @@
 package app.servicios;
 
-import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
-import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
+import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
-import app.model.entities.Calificacion;
 
 import app.model.entities.MetodoIntercambio;
 import java.util.List;
@@ -73,4 +71,10 @@ public interface IPerfilService {
      * incluyendo nombre, iniciales y calificación promedio.
      */
     PerfilDto obtenerPerfil(String userId);
+
+    /**
+     * Obtiene las calificaciones del perfil del usuario indicado,
+     *
+     */
+    CalificacionesDto obtenerCalificaciones(String userId, Integer pagina, Integer limite);
 }

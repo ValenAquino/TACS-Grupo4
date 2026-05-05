@@ -9,20 +9,14 @@ import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
+import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.servicios.IPerfilService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/perfil")
@@ -69,6 +63,16 @@ public class PerfilController {
         );
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{perfil_id}/calificaciones")
+    public CalificacionesDto obtenerCalificaciones(
+        @PathVariable String perfil_id,
+        @RequestParam Integer pagina,
+        @RequestParam Integer limite
+
+    ) {
+        return this.perfilService.obtenerCalificaciones(perfil_id, pagina, limite);
     }
 
     @GetMapping("/{user_id}/intercambiables")

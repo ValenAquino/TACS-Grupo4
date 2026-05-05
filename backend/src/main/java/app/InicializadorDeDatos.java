@@ -184,22 +184,24 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Perfil matias = perfiles.buscarPorId("1002");
         Perfil juan   = perfiles.buscarPorId("1003");
 
+      if (lucas == null || sofia == null || matias == null || juan == null) return;
+
         // Lucas: recibe 5 y 4 → promedio 4.5 → 5 estrellas
-      lucas.getCalificaciones().add(new Calificacion("C-1", sofia, 5, "Excelente trato, muy rápido", null, null));
-      lucas.getCalificaciones().add(new Calificacion("C-2", matias, 4, "Todo bien, lo recomiendo", null, null));
+      lucas.getCalificaciones().add(new Calificacion("C-1", sofia, 5, "Excelente trato, muy rápido", "2000", MetodoIntercambio.INTERCAMBIO));
+      lucas.getCalificaciones().add(new Calificacion("C-2", matias, 4, "Todo bien, lo recomiendo", "2002", MetodoIntercambio.INTERCAMBIO));
 
         // Sofía: recibe 4, 3 y 4 → promedio 3.67 → 4 estrellas
-      sofia.getCalificaciones().add(new Calificacion("C-3", lucas, 4, "Buena experiencia", null, null));
-      sofia.getCalificaciones().add(new Calificacion("C-4", matias, 3, "Normal, sin problemas", null, null));
-      sofia.getCalificaciones().add(new Calificacion("C-5", juan, 4, "Respondió rápido", null, null));
+      sofia.getCalificaciones().add(new Calificacion("C-3", lucas, 4, "Buena experiencia", "2000", MetodoIntercambio.INTERCAMBIO));
+      sofia.getCalificaciones().add(new Calificacion("C-4", matias, 3, "Normal, sin problemas", "2001", MetodoIntercambio.INTERCAMBIO));
+      sofia.getCalificaciones().add(new Calificacion("C-5", juan, 4, "Respondió rápido", "3000", MetodoIntercambio.SUBASTA));
 
         // Matías: recibe 2 y 3 → promedio 2.5 → 3 estrellas
-      matias.getCalificaciones().add(new Calificacion("C-6", lucas, 2, "Tardó bastante en responder", null, null));
-      matias.getCalificaciones().add(new Calificacion("C-7", sofia, 3, "Aceptable", null, null));
+      matias.getCalificaciones().add(new Calificacion("C-6", lucas, 2, "Tardó bastante en responder", "2002", MetodoIntercambio.INTERCAMBIO));
+      matias.getCalificaciones().add(new Calificacion("C-7", sofia, 3, "Aceptable", "2001", MetodoIntercambio.INTERCAMBIO));
 
         // Juan: recibe 1 y 2 → promedio 1.5 → 2 estrellas
-      juan.getCalificaciones().add(new Calificacion("C-8", lucas, 1, "No cumplió con el intercambio", null, null));
-      juan.getCalificaciones().add(new Calificacion("C-9", sofia, 2, "Mala comunicación", null, null));
+      juan.getCalificaciones().add(new Calificacion("C-8", lucas, 1, "No cumplió con el intercambio", "3001", MetodoIntercambio.SUBASTA));
+      juan.getCalificaciones().add(new Calificacion("C-9", sofia, 2, "Mala comunicación", "3000", MetodoIntercambio.SUBASTA));
     }
 
     private void cargarPropuestas(Figurita messi, Figurita diMaria,

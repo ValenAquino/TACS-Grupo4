@@ -26,6 +26,7 @@ import app.repositories.RepositorioPerfiles;
 import app.servicios.IPerfilService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -103,7 +104,7 @@ public class PerfilService implements IPerfilService {
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
-            && transactionId.equals(c.getTransactionId())
+            && Objects.equals(transactionId, c.getTransactionId())
             && c.getTipoTransaccion() == tipoTransaccion);
 
     if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");

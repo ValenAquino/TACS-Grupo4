@@ -2,11 +2,11 @@ package app.dto;
 
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
+import app.model.entities.Perfil;
 import app.model.entities.Seleccion;
 import java.util.ArrayList;
-import jdk.jfr.Experimental;
-import lombok.Getter;
 import java.util.List;
+import lombok.Getter;
 
 @Getter
 public class FiguritaIntercambiableDto {
@@ -17,17 +17,26 @@ public class FiguritaIntercambiableDto {
   private Integer cantidadExistente;
   private Integer cantidadReservada;
   private List<MetodoIntercambio> metodos;
-  @Experimental
   private String usuarioId;
+  private String nombreUsuario;
+  private Integer reputacion;
+  private String posicion;
 
-  public FiguritaIntercambiableDto(FiguritaIntercambiable f) {
+  public FiguritaIntercambiableDto(FiguritaIntercambiable f, Perfil perfil) {
     this.figuritaId = f.getFigurita().getId();
     this.numero = f.getFigurita().getNumero();
     this.jugador = f.getFigurita().getJugador();
+    this.posicion = f.getFigurita().getPosicion();
     this.seleccion = f.getFigurita().getSeleccion();
     this.cantidadExistente = f.getCantidadExistente();
     this.cantidadReservada = f.getCantidadReservada();
     this.metodos = f.getMetodos();
     this.usuarioId = f.getPerfilId();
+    this.nombreUsuario = perfil != null ? perfil.getNombre() : null;
+    this.reputacion = perfil != null ? (int) Math.round(perfil.obtenerCalificacionMedia()) : null;
+  }
+
+  public FiguritaIntercambiableDto(FiguritaIntercambiable f) {
+    this(f, null);
   }
 }

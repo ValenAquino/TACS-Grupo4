@@ -24,6 +24,10 @@ public class FiguritaIntercambiable {
         this(figurita, cantidadExistente,0, metodos, perfilId);
     }
 
+    public boolean soporta(MetodoIntercambio tipo) {
+        return metodos.contains(tipo);
+    }
+
     public boolean hayCantidadDisponible(){
       return this.cantidadExistente - this.cantidadReservada != 0;
     }

@@ -139,11 +139,58 @@ La aplicación queda disponible en `http://localhost:8080`.
 
 ### Figuritas
 
-| Método | Endpoint     | Descripción                                            |
-|--------|--------------|--------------------------------------------------------|
-| GET    | `/figuritas` | Lista figuritas intercambiables con filtros opcionales |
+| Método | Endpoint     | Descripción                                                       |
+|--------|--------------|-------------------------------------------------------------------|
+| GET    | `/figuritas` | Lista figuritas intercambiables con filtros opcionales y paginación |
 
-**Query params opcionales:** `numero`, `seleccion`, `jugador`
+El endpoint soporta dos modos de búsqueda mutuamente excluyentes según si se envía `q`:
+
+**Modo búsqueda libre (`q` presente):** OR entre campos, AND entre términos.
+
+| Param           | Tipo    | Requerido | Default | Descripción                                                                 |
+|-----------------|---------|-----------|---------|-----------------------------------------------------------------------------|
+| `q`             | String  | Sí        | —       | Texto libre; términos separados por espacio se combinan con AND, cada uno busca en jugador, selección y número con OR |
+| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos                          |
+| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                                               |
+| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                                                |
+
+**Modo filtros estructurados (`q` ausente):** AND entre todos los parámetros.
+
+| Param           | Tipo    | Requerido | Default | Descripción                                          |
+|-----------------|---------|-----------|---------|------------------------------------------------------|
+| `numero`        | Integer | No        | —       | Número exacto de figurita                            |
+| `seleccion`     | Enum    | No        | —       | `ARGENTINA`, `BRASIL`, `FRANCIA`, `ESPAÑA`, `ALEMANIA` |
+| `jugador`       | String  | No        | —       | Nombre del jugador (contains, case-insensitive)      |
+| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos   |
+| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                        |
+| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                         |
+
+**Respuesta:**
+
+```json
+{
+  "contenido": [
+    {
+      "figurita_id": "ARG-10",
+      "numero": 10,
+      "jugador": "Messi",
+      "posicion": "Delantero",
+      "seleccion": "ARGENTINA",
+      "cantidad_existente": 3,
+      "cantidad_reservada": 0,
+      "metodos": ["INTERCAMBIO"],
+      "usuario_id": "1000",
+      "nombre_usuario": "Lucas",
+      "reputacion": 4
+    }
+  ],
+  "cantidad_de_elementos": 247,
+  "cantidad_de_paginas": 21,
+  "numero": 0
+}
+```
+
+Cuando no hay resultados se retorna `200` con `content: []` y `total_elements: 0`.
 
 ### Administrador
 

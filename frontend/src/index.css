@@ -31,6 +31,7 @@ body {
   font-family: var(--font-family);
   background-color: var(--color-background);
   color: var(--color-text);
+  scrollbar-gutter: stable;
 }
 
 #root {

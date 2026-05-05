@@ -120,8 +120,8 @@ class PerfilServiceImplTest {
 
   @Test
   void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
-    Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-    FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, List.of(MetodoIntercambio.INTERCAMBIO));
+    Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, new ArrayList<>());
 
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("1")).thenReturn(List.of(fi));
@@ -206,8 +206,8 @@ class PerfilServiceImplTest {
 
   @Test
   void obtenerSugerencias_conCoincidencias_retornaSugerencias() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-    Figurita diMaria   = new Figurita("ARG-11", 11, "Di María",  Seleccion.ARGENTINA);
+    Figurita messi   = new Figurita("ARG-10", 10, "Messi",   Seleccion.ARGENTINA, null);
+    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
     usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(diMaria, 2, new ArrayList<>()));
 
@@ -220,26 +220,27 @@ class PerfilServiceImplTest {
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));
 
-    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null,1,10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(1, resultado.data().size());
   }
 
   @Test
   void obtenerSugerencias_sinCoincidencias_retornaListaVacia() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otro));
 
-    var resultado = service.obtenerSugerencias("1",  new SugerenciasFiltro(null,1,10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(0, resultado.data().size());
   }
+
   @Test
   void obtenerFaltantes_usuarioExistente_retornaLista() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
     when(repositorioPerfiles.buscarPorUsuarioId("1")).thenReturn(usuario);
@@ -269,7 +270,7 @@ class PerfilServiceImplTest {
 
   @Test
   void obtenerRepetidas_usuarioExistente_retornaLista() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getRepetidas().add(
         new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
 

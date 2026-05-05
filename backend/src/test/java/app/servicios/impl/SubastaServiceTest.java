@@ -50,7 +50,7 @@ public class SubastaServiceTest {
     service = new SubastaServiceImpl(repositorioSubastas, repositorioPerfiles,
         repositorioFiguritas, serviceNotificacion);
 
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
 
     Coleccion coleccionSinMessi = new Coleccion();
     coleccionSinMessi.getFaltantes().add(messi);
@@ -75,7 +75,7 @@ public class SubastaServiceTest {
 
   @Test
   void crearSubastaNoNotificaUsuarios() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
+    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
     when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(sofia);
     when(repositorioFiguritas.buscarPorId("ARG-11")).thenReturn(diMaria);

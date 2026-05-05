@@ -52,7 +52,7 @@ class SubastaControllerTest {
 
     @BeforeEach
     void setUp() {
-        messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+        messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
 
         sofia = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Sofía",
             new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
@@ -91,7 +91,7 @@ class SubastaControllerTest {
 
     @Test
     void ofertarEnSubasta_retorna200() throws Exception {
-        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
+        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
         when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(lucas);
         when(repositorioPerfiles.buscarPorId("1")).thenReturn(sofia);

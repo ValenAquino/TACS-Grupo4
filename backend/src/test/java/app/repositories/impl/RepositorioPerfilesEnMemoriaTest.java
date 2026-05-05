@@ -48,8 +48,8 @@ class RepositorioPerfilesEnMemoriaTest {
         Perfil perfil2 = new Perfil("u-2", new Usuario("u-1001", Rol.USUARIO), "Juan",     new Coleccion(), telegram("@juan"),     new ArrayList<>());
         Perfil perfil3 = new Perfil("u-4", new Usuario("u-1002", Rol.USUARIO), "Cristina", new Coleccion(), telegram("@cristina"), new ArrayList<>());
 
-        Figurita messi   = new Figurita("ARG-10", 10, "Messi",   Seleccion.ARGENTINA);
-        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
+        Figurita messi   = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
         perfil.getColeccion().agregarFaltante(messi);
         perfil.getColeccion().agregarFaltante(diMaria);

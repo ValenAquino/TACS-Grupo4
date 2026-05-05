@@ -172,6 +172,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Perfil sofia  = perfiles.buscarPorId("1001");
         Perfil matias = perfiles.buscarPorId("1002");
         Perfil juan   = perfiles.buscarPorId("1003");
+        if (lucas == null) throw new RuntimeException("Lucas es null");
+        if (sofia == null) throw new RuntimeException("Sofía es null");
+        if (matias == null) throw new RuntimeException("Matías es null");
+        if (juan == null) throw new RuntimeException("Juan es null");
 
         // ─── MIS SUBASTAS (autor = Lucas) ────────────────────────────────────────
 

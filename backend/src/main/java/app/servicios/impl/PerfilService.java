@@ -88,7 +88,7 @@ public class PerfilService implements IPerfilService {
     }
 
   @Override
-  public void agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
+  public void agregarCalificacion(String userAutorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
       throw new BadRequestException("El valor de la calificación no puede ser nulo");
     }
@@ -99,8 +99,8 @@ public class PerfilService implements IPerfilService {
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
 
-    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(autorId);
-    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + autorId);
+    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
+    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())

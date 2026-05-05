@@ -10,7 +10,6 @@ import app.model.entities.Seleccion;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import app.servicios.IFiguritaService;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,22 +23,14 @@ public class FiguritaService implements IFiguritaService {
 
   public PaginaResultado<FiguritaIntercambiableDto> buscarFiguritas(
       Integer numero, Seleccion seleccion, String jugador,
-      MetodoIntercambio tipo, String ordenar, int pagina, int tamanioPagina) {
+      MetodoIntercambio tipo, int pagina, int tamanioPagina) {
 
     PaginaResultado<FiguritaIntercambiable> paginaRepo =
         repositorioIntercambiables.buscarConFiltros(numero, seleccion, jugador, tipo, pagina, tamanioPagina);
 
-    List<FiguritaIntercambiableDto> contenido = new ArrayList<>(paginaRepo.contenido().stream()
+    List<FiguritaIntercambiableDto> contenido = paginaRepo.contenido().stream()
         .map(fi -> new FiguritaIntercambiableDto(fi, buscarPerfil(fi.getPerfilId())))
-        .toList());
-
-    if ("reputacion".equalsIgnoreCase(ordenar)) {
-      contenido.sort((a, b) -> {
-        int repA = a.getReputacion() != null ? a.getReputacion() : 0;
-        int repB = b.getReputacion() != null ? b.getReputacion() : 0;
-        return Integer.compare(repB, repA);
-      });
-    }
+        .toList();
 
     return new PaginaResultado<>(contenido, paginaRepo.cantidadDeElementos(),
         paginaRepo.cantidadDePaginas(), paginaRepo.numero());

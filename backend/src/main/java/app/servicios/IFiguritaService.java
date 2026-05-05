@@ -9,25 +9,19 @@ public interface IFiguritaService {
 
     /**
      * Busca figuritas intercambiables aplicando filtros opcionales y paginación.
+     * Resultados ordenados por número de figurita (ascendente).
      *
-     * <p>Filtra en {@code RepositorioFiguritas} por {@code numero}, {@code seleccion}
-     * y {@code jugador} (contains, case-insensitive), cruza con las intercambiables,
-     * aplica el filtro {@code tipo} ({@code INTERCAMBIO}/{@code SUBASTA} incluyen
-     * {@code SUBASTA_E_INTERCAMBIO}), y enriquece cada resultado con nombre y reputación
-     * del ofertante vía {@code RepositorioPerfiles}. Sin resultados retorna página vacía.
+     * <p>Delega el filtrado, ordenamiento y paginación al repositorio de intercambiables,
+     * y enriquece cada resultado con nombre y reputación del ofertante.
      *
-     * @param numero    número exacto de figurita, o {@code null} para ignorar el filtro
-     * @param seleccion selección nacional, o {@code null} para ignorar el filtro
-     * @param jugador   fragmento del nombre del jugador, o {@code null} para ignorar el filtro
-     * @param tipo      tipo de intercambio deseado, o {@code null} para devolver todos
-     * @param pagina    número de página 0-indexed
-     * @param tamanioPagina elementos por página; el controller acota a 40 antes de llamar aquí
-     */
-    /**
-     * @param ordenar criterio de orden: {@code "numero"} (asc), {@code "reputacion"} (desc),
-     *                o {@code null} para orden indeterminado
+     * @param numero        número exacto de figurita, o {@code null} para ignorar
+     * @param seleccion     selección nacional, o {@code null} para ignorar
+     * @param jugador       fragmento del nombre (contains, case-insensitive), o {@code null}
+     * @param tipo          tipo de intercambio deseado, o {@code null} para devolver todos
+     * @param pagina        número de página 0-indexed
+     * @param tamanioPagina elementos por página; el controller acota a 40
      */
     PaginaResultado<FiguritaIntercambiableDto> buscarFiguritas(
         Integer numero, Seleccion seleccion, String jugador, MetodoIntercambio tipo,
-        String ordenar, int pagina, int tamanioPagina);
+        int pagina, int tamanioPagina);
 }

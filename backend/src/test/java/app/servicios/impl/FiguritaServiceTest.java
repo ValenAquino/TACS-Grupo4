@@ -43,7 +43,7 @@ class FiguritaServiceTest {
         .thenReturn(new PaginaResultado<>(List.of(intercambiable, soloSubasta), 2, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, null, null, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, null, 0, 12);
 
     assertEquals(2, resultado.cantidadDeElementos());
     assertEquals(2, resultado.contenido().size());
@@ -57,7 +57,7 @@ class FiguritaServiceTest {
         .thenReturn(new PaginaResultado<>(List.of(intercambiable), 1, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, null, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, 0, 12);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals("ARG-10", resultado.contenido().get(0).getFiguritaId());
@@ -69,7 +69,7 @@ class FiguritaServiceTest {
         .thenReturn(new PaginaResultado<>(List.of(intercambiable, ambos), 2, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, null, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, 0, 12);
 
     assertEquals(2, resultado.cantidadDeElementos());
   }
@@ -89,9 +89,9 @@ class FiguritaServiceTest {
         .thenReturn(new PaginaResultado<>(List.of(fi3), 3, 2, 1));
 
     PaginaResultado<FiguritaIntercambiableDto> pagina0 =
-        figuritaService.buscarFiguritas(null, null, null, null, null, 0, 2);
+        figuritaService.buscarFiguritas(null, null, null, null, 0, 2);
     PaginaResultado<FiguritaIntercambiableDto> pagina1 =
-        figuritaService.buscarFiguritas(null, null, null, null, null, 1, 2);
+        figuritaService.buscarFiguritas(null, null, null, null, 1, 2);
 
     assertEquals(3, pagina0.cantidadDeElementos());
     assertEquals(2, pagina0.cantidadDePaginas());
@@ -105,7 +105,7 @@ class FiguritaServiceTest {
         .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, null, null, 0, 12);
+        figuritaService.buscarFiguritas(null, null, null, null, 0, 12);
 
     assertEquals(0, resultado.cantidadDeElementos());
     assertEquals(0, resultado.cantidadDePaginas());
@@ -118,7 +118,7 @@ class FiguritaServiceTest {
         .thenReturn(new PaginaResultado<>(List.of(), 1, 1, 99));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, null, null, 99, 12);
+        figuritaService.buscarFiguritas(null, null, null, null, 99, 12);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().isEmpty());

@@ -153,7 +153,6 @@ La aplicación queda disponible en `http://localhost:8080`.
 | `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos   |
 | `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                        |
 | `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                         |
-| `ordenar`       | String  | No        | `numero` | `numero` (asc) o `reputacion` (desc)                |
 
 **Respuesta:**
 

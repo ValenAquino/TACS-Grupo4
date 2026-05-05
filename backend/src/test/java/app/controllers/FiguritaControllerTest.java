@@ -40,7 +40,7 @@ class FiguritaControllerTest {
         new PaginaResultado<>(List.of(dto), 1, 1, 0);
 
     when(figuritaService.buscarFiguritas(10, Seleccion.ARGENTINA, "Messi",
-        MetodoIntercambio.INTERCAMBIO, null, 0, 12)).thenReturn(pagina);
+        MetodoIntercambio.INTERCAMBIO, 0, 12)).thenReturn(pagina);
 
     mockMvc.perform(get("/figuritas")
             .param("numero", "10")
@@ -57,7 +57,7 @@ class FiguritaControllerTest {
     PaginaResultado<FiguritaIntercambiableDto> paginaVacia =
         new PaginaResultado<>(List.of(), 0, 0, 0);
 
-    when(figuritaService.buscarFiguritas(null, null, null, null, null, 0, 12))
+    when(figuritaService.buscarFiguritas(null, null, null, null, 0, 12))
         .thenReturn(paginaVacia);
 
     mockMvc.perform(get("/figuritas").contentType(MediaType.APPLICATION_JSON))
@@ -68,7 +68,7 @@ class FiguritaControllerTest {
 
   @Test
   void obtenerFiguritas_sizeMayorAlMaximo_acotaA40() throws Exception {
-    when(figuritaService.buscarFiguritas(null, null, null, null, null, 0, 40))
+    when(figuritaService.buscarFiguritas(null, null, null, null, 0, 40))
         .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
 
     mockMvc.perform(get("/figuritas")
@@ -76,7 +76,7 @@ class FiguritaControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
-    verify(figuritaService).buscarFiguritas(null, null, null, null, null, 0, 40);
+    verify(figuritaService).buscarFiguritas(null, null, null, null, 0, 40);
   }
 
   @Test

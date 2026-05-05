@@ -11,6 +11,7 @@ const Sugerencias = () => {
 
     const [cargando, setCargando] = useState(true)
     const [contadores, setContadores] = useState([])
+    const {userId} = useUsuarioActual()
 
     const TABS = [
         { key: 'todos', label: 'Todos', component: MostradorSugerencias, props: {} },
@@ -22,7 +23,7 @@ const Sugerencias = () => {
     const cargarContadores = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarContadores({userId:1001})
+            const payload = await buscarContadores({userId})
             setContadores(payload)
 
         } catch (error) {

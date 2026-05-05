@@ -10,11 +10,12 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     const [sugerencias, setSugerencias] = useState([])
     const [pagina, setPagina] = useState(1)
     const [paginasTotales, setPaginasTotales] = useState(1)
+    const {userId} = useSesionActual()
 
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias({userId:1001, tipo, pagina: pagina, limite:10})
+            const payload = await buscarSugerencias({userId, tipo, pagina: pagina, limite:10})
             setPaginasTotales(payload.paginas_totales)
             setSugerencias(payload.data)
 

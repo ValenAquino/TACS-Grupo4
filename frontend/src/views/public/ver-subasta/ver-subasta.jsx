@@ -12,6 +12,7 @@ import Button from "../../../components/ui/button/button.jsx";
 
 const VerSubasta = () => {
     const {subId} = useParams()
+    const {userId} = useUsuarioActual()
     const [cargando, setCargando] = useState(true)
     const [subasta, setSubasta] = useState(undefined)
     const [tiempo, setTiempo] = useState(0)
@@ -49,7 +50,7 @@ const VerSubasta = () => {
     }
 
     const mostrarOfertaDeUsuario = (ofertas) => {
-        const ofertaPropia = ofertas.find(o => o.autor.id === "1002") //Mismo Id que la sesion
+        const ofertaPropia = ofertas.find(o => o.autor.id === userId.toString()) //Mismo Id que la sesion
 
         return ofertaPropia !== undefined ? <TuOfertaCard oferta={ofertaPropia}/> :
             <div className={"d-flex flex-row justify-content-center align-items-center gap-2"}>
@@ -61,7 +62,7 @@ const VerSubasta = () => {
     const cargarSubasta = async () => {
         try {
             setCargando(true)
-            const payload = await buscarSubasta({subId});
+            const payload = await buscarSubasta({userId});
             console.log(payload)
             setSubasta(payload)
             setTiempo(payload.tiempo_restante)
@@ -146,14 +147,14 @@ const VerSubasta = () => {
                     </SectionCard.Section>
                 </SectionCard>
 
-                {/*
+
                 <SectionCard>
                     <SectionTitle>CONDICIONES PARA OFERTAR</SectionTitle>
                     <SectionCard.Section>
                         ??
                     </SectionCard.Section>
                 </SectionCard>
-                */}
+
 
                 <SectionCard>
                     <SectionTitle>OFERTAS ACTUALES ({subasta.ofertas.length})</SectionTitle>

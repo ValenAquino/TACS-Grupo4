@@ -1,28 +1,30 @@
+import Button from "../button/button.jsx";
+
 export const Paginacion = ({ page, totalPages, onChange }) => {
     return (
         <div className="d-flex align-items-center justify-content-center gap-3 flex-wrap">
 
-            <button
+            <Button
                 type="button"
                 className="btn btn-outline-secondary"
                 disabled={page <= 1}
                 onClick={() => onChange(page - 1)}
             >
                 Anterior
-            </button>
+            </Button>
 
             <span className="fw-semibold">
                 Página {page} de {totalPages}
             </span>
 
-            <button
+            <Button
                 type="button"
                 className="btn btn-outline-secondary"
                 disabled={page >= totalPages}
                 onClick={() => onChange(page + 1)}
             >
                 Siguiente
-            </button>
+            </Button>
 
         </div>
     );

@@ -1,0 +1,12 @@
+.figuritaSubastada {
+
+    background-color: var(--color-secondary);
+}
+
+.figuritaImagen{
+    min-height: 360px;
+    max-height: 480px;
+
+    min-width: 240px;
+    max-width: 360px;
+}

@@ -36,7 +36,12 @@ class PerfilControllerTest {
 
   @Test
   void getSugerencias_retorna200() throws Exception {
-    mockMvc.perform(get("/perfil/1000/sugerencias"))
+    mockMvc.perform(
+            get("/perfil/1000/sugerencias")
+                .param("tipo", "1a1")
+                .param("paginaActual", "0")
+                .param("limite", "10")
+        )
         .andExpect(status().is2xxSuccessful());
   }
 
@@ -66,6 +71,32 @@ class PerfilControllerTest {
   @Test
   void getIntercambiables_usuarioInexistente_retorna404() throws Exception {
     mockMvc.perform(get("/perfil/u-99/intercambiables"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void getFaltantes_usuarioExistente_retorna200() throws Exception {
+    mockMvc.perform(get("/perfil/u-1000/faltantes"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray());
+  }
+
+  @Test
+  void getFaltantes_usuarioInexistente_retorna404() throws Exception {
+    mockMvc.perform(get("/perfil/u-99/faltantes"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void getRepetidas_usuarioExistente_retorna200() throws Exception {
+    mockMvc.perform(get("/perfil/u-1000/repetidas"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$").isArray());
+  }
+
+  @Test
+  void getRepetidas_usuarioInexistente_retorna404() throws Exception {
+    mockMvc.perform(get("/perfil/u-99/repetidas"))
         .andExpect(status().isNotFound());
   }
 }

@@ -12,6 +12,7 @@ const PERFIL_URL = "/perfil";
     } catch (error) {
         handleAxiosError(error);
     }
+
 };*/
 
 export const buscarSugerencias = async ({userId, tipo, pagina, limite}) => {

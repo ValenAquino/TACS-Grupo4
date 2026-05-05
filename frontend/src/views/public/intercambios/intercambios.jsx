@@ -1,167 +1,56 @@
+import { useEffect, useState } from "react";
+import { buscarIntercambios } from "../../../services/intercambioService.js";
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
 import RecibidasTab from "./tabs/RecibidasTab.jsx";
 import EnviadasTab from "./tabs/EnviadasTab.jsx";
 import HistorialTab from "./tabs/HistorialTab.jsx";
 
-// ─── Datos Hardcodeados ───────────────────────────────────────────────────────
-
-const PENDIENTES = [
-    {
-        id: 1,
-        usuario: { iniciales: "RL", nombre: "rodrigo_l", estrellas: 5, intercambios: 48 },
-        pide: [{ numero: 14, nombre: "Dibu Martínez", pais: "Argentina" }],
-        ofrece: [
-            { numero: 10, nombre: "Messi Brillante", pais: "Argentina" },
-            { numero: 22, nombre: "De Bruyne", pais: "Bélgica" },
-        ],
-        ofreceMas: 0,
-        tiempo: "Hace 10 min",
-        esNueva: true,
-    },
-    {
-        id: 2,
-        usuario: { iniciales: "JM", nombre: "juani_m", estrellas: 3, intercambios: 12 },
-        pide: [{ numero: 23, nombre: "Lusail Stadium", pais: "Estadios" }],
-        ofrece: [{ numero: 7, nombre: "Vinicius Jr.", pais: "Brasil" }],
-        ofreceMas: 0,
-        tiempo: "Hace 1 h",
-        esNueva: true,
-    },
-    {
-        id: 3,
-        usuario: { iniciales: "SV", nombre: "sofi_v", estrellas: 5, intercambios: 91 },
-        pide: [{ numero: 10, nombre: "Messi", pais: "Argentina" }],
-        ofrece: [{ numero: 55, nombre: "Escudo España", pais: "España" }],
-        ofreceMas: 2,
-        tiempo: "Hace 3 h",
-        esNueva: false,
-    },
-    {
-        id: 99,
-        usuario: { iniciales: "XX", nombre: "mega_trade", estrellas: 5, intercambios: 999 },
-        pide: [
-            { numero: 1, nombre: "A", pais: "X" },
-            { numero: 2, nombre: "B", pais: "X" },
-            { numero: 3, nombre: "C", pais: "X" },
-            { numero: 4, nombre: "D", pais: "X" },
-            { numero: 5, nombre: "E", pais: "X" },
-            { numero: 6, nombre: "F", pais: "X" },
-        ],
-        ofrece: [
-            { numero: 7, nombre: "G", pais: "Y" },
-            { numero: 8, nombre: "H", pais: "Y" },
-            { numero: 9, nombre: "I", pais: "Y" },
-            { numero: 10, nombre: "J", pais: "Y" },
-            { numero: 11, nombre: "K", pais: "Y" },
-             { numero: 7, nombre: "L", pais: "Y" },
-             { numero: 8, nombre: "M", pais: "Y" },
-             { numero: 9, nombre: "N", pais: "Y" },
-             { numero: 10, nombre: "Ñ", pais: "Y" },
-             { numero: 11, nombre: "O", pais: "Y" },
-        ],
-        tiempo: "Hace 2 min",
-        esNueva: true,
-    },
-];
-
-const RESUELTAS_RECIBIDAS = [
-    {
-        id: 4,
-        usuario: { iniciales: "PF", nombre: "pedro_f", estrellas: 4, intercambios: 29 },
-        pedida: [{ numero: 14, nombre: "Dibu Martínez", pais: "Argentina" }],
-        ofrecida: [{ numero: 9, nombre: "Benzema", pais: "Francia" }],
-        tiempo: "Hace 5 h",
-        estado: "Rechazada",
-        colorEstado: "danger",
-        nota: "Rechazaste esta propuesta",
-    },
-];
-
-const ESPERANDO_ENVIADAS = [
-    {
-        id: 1,
-        usuario: { iniciales: "CR", nombre: "caro_r", estrellas: 5, intercambios: 67 },
-        pedis: [{ numero: 88, nombre: "Mbappé Brillante", pais: "Francia" }],
-        ofreces: [
-            { numero: 14, nombre: "Dibu Martínez", pais: "Argentina" },
-            { numero: 8, nombre: "Mac Allister", pais: "Argentina" },
-        ],
-        tiempo: "Enviada hace 30 min · Vista por el usuario",
-    },
-    {
-        id: 2,
-        usuario: { iniciales: "PM", nombre: "pedro_m", estrellas: 4, intercambios: 18 },
-        pedis: [{ numero: 31, nombre: "Wembley Stadium", pais: "Estadios" }],
-        ofreces: [{ numero: 11, nombre: "Griezmann", pais: "Francia" }],
-        tiempo: "Enviada hace 2 h · No vista aún",
-    },
-];
-
-const RESUELTAS_ENVIADAS = [
-    {
-        id: 3,
-        usuario: { iniciales: "LF", nombre: "lu_figueiras", estrellas: 3, intercambios: 8 },
-        pediste: [{ numero: 9, nombre: "Álvarez", pais: "Argentina" }],
-        ofreciste: [{ numero: 7, nombre: "Vinicius Jr.", pais: "Brasil" }],
-        tiempo: "Hace 1 día · Intercambio concretado",
-        estado: "Aceptada",
-        colorEstado: "success",
-        puedeCalificar: true,
-    },
-    {
-        id: 4,
-        usuario: { iniciales: "MG", nombre: "mari_g", estrellas: 4, intercambios: 22 },
-        pediste: [{ numero: 10, nombre: "Messi Brillante", pais: "Argentina" }],
-        ofreciste: [{ numero: 14, nombre: "Dibu Martínez", pais: "Argentina" }],
-        tiempo: "Hace 3 días · El usuario rechazó tu propuesta",
-        estado: "Rechazada",
-        colorEstado: "danger",
-        puedeCalificar: false,
-    },
-];
-
-const HISTORIAL = [
-    {
-        id: 1,
-        usuario: { iniciales: "RL", nombre: "rodrigo_l", estrellas: 5 },
-        recibiste: [{ numero: 10, nombre: "Messi Brillante", pais: "Argentina" }],
-        entregaste: [{ numero: 14, nombre: "Dibu Martínez", pais: "Argentina" }],
-        fecha: "20 abr 2026",
-        calificado: true,
-    },
-    {
-        id: 2,
-        usuario: { iniciales: "LF", nombre: "lu_figueiras", estrellas: 3 },
-        recibiste: [{ numero: 9, nombre: "Álvarez", pais: "Argentina" }],
-        entregaste: [{ numero: 7, nombre: "Vinicius Jr.", pais: "Brasil" }],
-        fecha: "18 abr 2026",
-        calificado: false,
-    },
-];
-
 // ─── Página ───────────────────────────────────────────────────────────────────
 
 const Intercambios = () => {
+
+    const [loading, setLoading] = useState(true);
+
+    const [data, setData] = useState({
+        pendientes: [],
+        enviadas: [],
+        historial: []
+    });
+
+    useEffect(() => {
+        const cargar = async () => {
+            try {
+                const res = await buscarIntercambios();
+                setData(res);
+            } finally {
+                setLoading(false);
+            }
+        };
+        cargar();
+    }, []);
+
     const tabs = [
         {
             key: "recibidas",
-            label: `Recibidas (${PENDIENTES.length})`,
+            label: `Recibidas (${data.pendientes.length})`,
             component: RecibidasTab,
-            props: { pendientes: PENDIENTES, resueltas: RESUELTAS_RECIBIDAS },
+            props: { pendientes: data.pendientes },
         },
         {
             key: "enviadas",
             label: "Enviadas",
             component: EnviadasTab,
-            props: { esperando: ESPERANDO_ENVIADAS, resueltas: RESUELTAS_ENVIADAS },
+            props: { esperando: data.enviadas },
         },
         {
             key: "historial",
             label: "Historial",
             component: HistorialTab,
-            props: { intercambios: HISTORIAL },
+            props: { intercambios: data.historial },
         },
     ];
+
+    if (loading) return <p>Cargando...</p>;
 
     return (
         <div className="container py-3" style={{ maxWidth: 900 }}>

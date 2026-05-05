@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import {buscarContadores,buscarPerfil,buscarCalificaciones} from "../../../services/perfilService.js";
+import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
 
 const renderStars = (score) => {
     const fullStars = Math.floor(score / 2);
@@ -26,47 +28,30 @@ const Perfil = () => {
     });
 
     /* Datos Hardcodeados */
+    const { userId } = useUsuarioActual();
+
     useEffect(() => {
-        setTimeout(() => {
-            const reviewsData = [
-                {
-                    nombre: "carlos_r",
-                    puntaje: 9,
-                    comentario: "Muy buena operación, rápido y confiable.",
-                    iniciales: "CR"
-                },
-                {
-                    nombre: "juan123",
-                    puntaje: 8,
-                    comentario: "Todo ok.",
-                    iniciales: "JU"
-                },
-                {
-                    nombre: "roberto_carlos",
-                    puntaje: 2,
-                    comentario: "La figurita venia manchada y era trucha.",
-                    iniciales: "RC"
-                },
-                {
-                    nombre: "buscando_bugs",
-                    puntaje: 10,
-                    comentario: "messi.",
-                    iniciales: "BB"
-                }
-            ];
+      const cargar = async () => {
+        try {
+          setLoading(true);
 
-            const statsData = {
-                intercambios: 24,
-                publicadas: 5,
-                faltantes: 12,
-                subastas: 3
-            };
+          const perfil = await buscarPerfil(userId);
+          const statsData = await buscarContadores({ userId });
+          const reviewsData = await buscarCalificaciones(userId);
 
-            setReviews(reviewsData);
-            setStats(statsData);
-            setLoading(false);
-        }, 800);
-    }, []);
+          setNombre(perfil.nombre);
+          setReviews(reviewsData);
+          setStats(statsData);
+
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      cargar();
+    }, [userId]);
 
     const promedio = reviews.length > 0
         ? (reviews.reduce((acc, r) => acc + r.puntaje, 0) / reviews.length).toFixed(1)

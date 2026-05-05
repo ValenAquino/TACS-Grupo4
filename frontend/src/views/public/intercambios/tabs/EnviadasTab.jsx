@@ -1,9 +1,20 @@
 import { useState } from "react";
 import IntercambioCard from "../../../../components/ui/intercambio-card/intercambio-card.jsx";
 import IntercambioModal from "../../../../components/ui/intercambio-modal/intercambio-modal.jsx";
+import { rechazarIntercambio } from "../../../../services/intercambioService.js";
 
  const EnviadasTab = ({ esperando }) => {
     const [selected, setSelected] = useState(null);
+    const [lista, setLista] = useState(esperando);
+
+    const handleCancelar = async (id) => {
+        try {
+            await rechazarIntercambio(id);
+            setLista(prev => prev.filter(i => i.id !== id));
+        } catch (e) {
+            console.error("Error al cancelar", e);
+        }
+    };
 
     return (
         <div>
@@ -21,9 +32,9 @@ import IntercambioModal from "../../../../components/ui/intercambio-modal/interc
                             }
                         `}</style>
 
-            <h6 className="fw-bold mt-3">ESPERANDO ({esperando.length})</h6>
+            <h6 className="fw-bold mt-3">ESPERANDO ({lista.length})</h6>
 
-            {esperando.map(i => (
+            {lista.map(i => (
                 <IntercambioCard
                     key={i.id}
                     intercambio={i}
@@ -37,7 +48,10 @@ import IntercambioModal from "../../../../components/ui/intercambio-modal/interc
                             <button onClick={() => setSelected(i)} className="btn btn-outline-dark btn-sm flex-fill">
                                 Ver detalle
                             </button>
-                            <button className="btn btn-sm flex-fill btn-rechazar">
+                            <button
+                                className="btn btn-sm flex-fill btn-rechazar"
+                                onClick={() => handleCancelar(i.id)}
+                            >
                                 Cancelar
                             </button>
                         </>

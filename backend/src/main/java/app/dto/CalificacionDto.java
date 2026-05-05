@@ -7,6 +7,7 @@ import lombok.Getter;
 public class CalificacionDto {
   private String id;
   private String autorId;
+  private String iniciales;
   private Integer valor;
   private String descripcion;
   private Number calificacionFinal;
@@ -14,6 +15,7 @@ public class CalificacionDto {
   public CalificacionDto(Calificacion c, Number calificacionFinal) {
     this.id = c.getId();
     this.autorId = c.getAutor().getId();
+    this.iniciales = c.getAutor().getIniciales();
     this.valor = c.getValor();
     this.descripcion = c.getDescripcion();
     this.calificacionFinal = calificacionFinal;

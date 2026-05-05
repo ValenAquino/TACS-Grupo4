@@ -5,8 +5,6 @@ import RecibidasTab from "./tabs/RecibidasTab.jsx";
 import EnviadasTab from "./tabs/EnviadasTab.jsx";
 import HistorialTab from "./tabs/HistorialTab.jsx";
 
-// ─── Página ───────────────────────────────────────────────────────────────────
-
 const Intercambios = () => {
 
     const [loading, setLoading] = useState(true);

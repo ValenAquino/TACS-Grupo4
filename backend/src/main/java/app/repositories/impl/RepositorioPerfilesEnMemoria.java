@@ -61,7 +61,7 @@ public class RepositorioPerfilesEnMemoria implements RepositorioPerfiles {
 
     @Override
     public CalificacionesDto buscarCalificaciones(String id, Integer pagina, Integer limite) {
-        Perfil perfil = this.buscarPorId(id);
+        Perfil perfil = this.buscarPorUsuarioId(id);
 
         List<Calificacion> calificaciones = perfil.getCalificaciones();
 

@@ -1,5 +1,7 @@
-package app.dto;
+package app.dto.subasta;
 
+import app.dto.PerfilDto;
+import app.dto.PropuestaDto;
 import app.model.entities.Figurita;
 import app.model.entities.Subasta;
 import lombok.Getter;

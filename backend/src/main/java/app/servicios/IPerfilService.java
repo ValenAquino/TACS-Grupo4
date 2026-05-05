@@ -10,6 +10,7 @@ import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.model.entities.Calificacion;
 
+import app.model.entities.MetodoIntercambio;
 import java.util.List;
 
 public interface IPerfilService {
@@ -28,11 +29,11 @@ public interface IPerfilService {
     List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId);
 
     /**
-     * Agrega una calificación de {@code autor} al perfil destino y retorna el nuevo promedio.
+     * Agrega una calificación de {@code autor} al perfil destino.
      * Valida que el valor esté entre 1 y 5 inclusive.
      */
-    CalificacionDto agregarCalificacion(String autorId, String perfilDestinoId, Integer valor,
-                                        String descripcion);
+    void agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion);
+
 
     /**
      * Sugiere perfiles que tienen repetidas figuritas que le faltan al usuario.
@@ -47,4 +48,22 @@ public interface IPerfilService {
     List<ContadorDto> obtenerContadores(String userId);
 
     List<NotificacionesDto> obtenerNotificaciones(String userId);
+
+    /**
+     * Retorna las figuritas faltantes de la colección del perfil.
+     * Lanza {@link app.exceptions.NotFoundException} si el perfil no existe.
+     *
+     * @param userId  id del usuario cuyas faltantes se quieren obtener
+     * @return        lista de {@link app.dto.FiguritaDto} correspondientes a las faltantes
+     */
+    List<app.dto.FiguritaDto> obtenerFaltantes(String userId);
+
+    /**
+     * Retorna las figuritas repetidas de la colección del perfil.
+     * Lanza {@link app.exceptions.NotFoundException} si el perfil no existe.
+     *
+     * @param userId  id del usuario cuyas repetidas se quieren obtener
+     * @return        lista de {@link FiguritaIntercambiableDto} correspondientes a las repetidas
+     */
+    List<FiguritaIntercambiableDto> obtenerRepetidas(String userId);
 }

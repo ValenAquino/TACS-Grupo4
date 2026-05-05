@@ -2,6 +2,7 @@ package app.servicios.impl;
 
 import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
+import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
@@ -12,6 +13,7 @@ import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Sugerencia;
@@ -37,7 +39,7 @@ public class PerfilService implements IPerfilService {
   private final RepositorioSubastas repositorioSubastas;
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
-
+//TODO ya no es necesario este metodo, eliminar
   @Override
   public OperacionesDto obtenerOperacionesPerfil(String userId) {
     Perfil usuario = repositorioPerfiles.buscarPorId(userId);
@@ -50,12 +52,27 @@ public class PerfilService implements IPerfilService {
     List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(userId);
     List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(userId);
 
-    List<Subasta> subastasActivas = repositorioSubastas.buscarPorPerfilId(userId)
+    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUserId(userId)
         .stream()
         .filter(Subasta::estaActivo)
         .toList();
 
         return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
+    }
+
+    @Override
+    public List<FiguritaDto> obtenerFaltantes(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+      return perfil.getColeccion().getFaltantes().stream()
+          .map(FiguritaDto::new)
+          .toList();
+    }
+    @Override
+    public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+      return perfil.getColeccion().getRepetidas().stream()
+          .map(FiguritaIntercambiableDto::new)
+          .toList();
     }
 
     @Override
@@ -69,29 +86,39 @@ public class PerfilService implements IPerfilService {
             .toList();
     }
 
-    @Override
-    public CalificacionDto agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion) {
-        if (valor == null) {
-            throw new BadRequestException("El valor de la calificación no puede ser nulo");
-        }
-        if (valor < 1 || valor > 5) {
-            throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
-        }
+  @Override
+  public void agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
+    if (valor == null) {
+      throw new BadRequestException("El valor de la calificación no puede ser nulo");
+    }
+    if (valor < 1 || valor > 5) {
+      throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
+    }
 
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
+    if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
+
     Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
+    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + autorId);
+
+    boolean yaCalifico = perfilDestino.getCalificaciones().stream()
+        .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
+            && transactionId.equals(c.getTransactionId())
+            && c.getTipoTransaccion() == tipoTransaccion);
+
+    if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
 
     Calificacion calificacion = new Calificacion(
-        UUID.randomUUID().toString(), //TODO ver
+        UUID.randomUUID().toString(),
         autor,
         valor,
-        descripcion
+        descripcion,
+        transactionId,
+        tipoTransaccion
     );
 
-    perfilDestino.getCalificaciones().add(calificacion);
-
+    perfilDestino.agregarNuevaCalificacion(calificacion);
     this.repositorioPerfiles.guardar(perfilDestino);
-    return new CalificacionDto(calificacion, perfilDestino.obtenerCalificacionMedia());
   }
 
   @Override

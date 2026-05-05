@@ -15,9 +15,9 @@ public class RepositorioSubastasEnMemoria implements RepositorioSubastas {
     private final Map<String, Subasta> storage = new HashMap<>();
 
     @Override
-    public List<Subasta> buscarPorPerfilId(String userId) {
+    public List<Subasta> buscarPorAutorUserId(String userId) {
         return storage.values().stream()
-                .filter(s -> s.getAutor().getId().equals(userId))
+                .filter(s -> s.getAutor().getUsuario().getId().equals(userId))
                 .collect(Collectors.toList());
     }
 
@@ -38,6 +38,14 @@ public class RepositorioSubastasEnMemoria implements RepositorioSubastas {
             throw new RuntimeException("Subasta no encontrada");
         }
         return subasta;
+    }
+
+    @Override
+    public List<Subasta> buscarDondeParticipa(String userId) {
+        return storage.values().stream()
+            .filter(s -> s.getOfertas().stream()
+                .anyMatch(p -> p.getAutor().getUsuario().getId().equals(userId)))
+            .collect(Collectors.toList());
     }
 
     @Override

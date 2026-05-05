@@ -2,6 +2,7 @@ package app.servicios.impl;
 
 import app.dto.subasta.MiSubastaDto;
 import app.dto.subasta.MisSubastasResponseDto;
+import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
@@ -88,7 +89,7 @@ public class SubastaServiceImpl implements ISubastaService {
         subasta.getFiguritaSubastada()
     );
 
-    subasta.getOfertas().add(nuevaPropuesta);
+    subasta.agregarOferta(nuevaPropuesta);
     this.repoSubasta.guardar(subasta);
   }
 
@@ -209,5 +210,10 @@ public class SubastaServiceImpl implements ISubastaService {
         .findFirst()
         .get();
   }
+  @Override
+  public SubastaDto obtenerSubasta(String subastaId) {
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
+    return new SubastaDto(subasta);
+  }
 }

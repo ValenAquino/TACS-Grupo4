@@ -1,0 +1,12 @@
+.statGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.left {
+    align-self: start;
+}
+
+.sugerenciasBody {
+    align-items: center;
+    gap: 20px;
+}

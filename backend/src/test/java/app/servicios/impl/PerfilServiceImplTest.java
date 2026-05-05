@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.OperacionesDto;
+import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
@@ -206,19 +207,22 @@ class PerfilServiceImplTest {
   @Test
   void obtenerSugerencias_conCoincidencias_retornaSugerencias() {
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita diMaria   = new Figurita("ARG-11", 11, "Di María",  Seleccion.ARGENTINA);
     usuario.getColeccion().getFaltantes().add(messi);
+    usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(diMaria, 2, new ArrayList<>()));
 
     Coleccion coleccionOtro = new Coleccion();
-    coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
+    coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, new ArrayList<>()));
+    coleccionOtro.getFaltantes().add(diMaria);
     Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO), "Juan",
         coleccionOtro, telegram("@juan"), new ArrayList<>());
 
     when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));
 
-    var resultado = service.obtenerSugerencias("u-1");
+    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null,1,10));
 
-    assertEquals(1, resultado.size());
+    assertEquals(1, resultado.data().size());
   }
 
   @Test
@@ -229,9 +233,9 @@ class PerfilServiceImplTest {
     when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otro));
 
-    var resultado = service.obtenerSugerencias("u-1");
+    var resultado = service.obtenerSugerencias("u-1",  new SugerenciasFiltro(null,1,10));
 
-    assertEquals(0, resultado.size());
+    assertEquals(0, resultado.data().size());
   }
   @Test
   void obtenerFaltantes_usuarioExistente_retornaLista() {

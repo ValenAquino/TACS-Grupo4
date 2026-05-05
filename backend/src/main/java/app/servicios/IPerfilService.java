@@ -1,10 +1,13 @@
 package app.servicios;
 
 import app.dto.CalificacionDto;
+import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.SugerenciaDto;
+import app.dto.SugerenciaPaginadaDto;
+import app.dto.filtros.SugerenciasFiltro;
 import app.model.entities.Calificacion;
 
 import app.model.entities.MetodoIntercambio;
@@ -32,11 +35,17 @@ public interface IPerfilService {
     void agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion);
 
 
-        /**
-         * Sugiere perfiles que tienen repetidas figuritas que le faltan al usuario.
-         * Recorre todos los perfiles y cruza sus repetidas contra los faltantes del usuario objetivo.
-         */
-    List<SugerenciaDto> obtenerSugerencias(String userId);
+    /**
+     * Sugiere perfiles que tienen repetidas figuritas que le faltan al usuario.
+     * Recorre todos los perfiles y cruza sus repetidas contra los faltantes del usuario objetivo.
+     */
+    SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtro);
+
+    /**
+     * Brinda estadisticas simples del perfil en cuestion.
+     * Las estadisticas son cantidad de repetidas y cantidad de faltantes.
+     */
+    List<ContadorDto> obtenerContadores(String userId);
 
     List<NotificacionesDto> obtenerNotificaciones(String userId);
 

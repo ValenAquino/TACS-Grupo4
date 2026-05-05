@@ -6,6 +6,8 @@ import NuevaFaltante from "./views/public/nueva-faltante/nueva-faltante.jsx";
 import NuevaRepetida from "./views/public/nueva-repetida/nueva-repetida.jsx";
 import Subastas from "./views/public/subastas/subastas.jsx";
 import CrearSubasta from "./views/public/crear-subasta/crear-subasta.jsx";
+import Sugerencias from "./views/public/sugerencias/sugerencias.jsx";
+import VerSubasta from "./views/public/ver-subasta/ver-subasta.jsx";
 
 const publics = [
   {
@@ -32,6 +34,14 @@ const publics = [
     path: "/subastas/crear",
     element: <CrearSubasta />,
   },
+    {
+        path: '/sugerencias',
+        element: <Sugerencias />
+    },
+    {
+        path: '/subastas/:subId',
+        element: <VerSubasta />
+    }
 ];
 
 const privates = [];

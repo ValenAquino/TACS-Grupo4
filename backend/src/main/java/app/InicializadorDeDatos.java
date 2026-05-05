@@ -253,18 +253,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             new ArrayList<>(), 0, false);
         subastas.guardar(subasta5);
 
-        // id=6 | Finalizada hace 5 días, oferta de lucas ACEPTADA, sin calificar
-        Propuesta ofertaLucas6 = new Propuesta("o8", lucas, juan,
-            List.of(mbappe, lautaro), neymar);
-        Subasta subasta6 = new Subasta("6", juan,
-            LocalDateTime.now().minusDays(5),
-            LocalDateTime.now().minusDays(5),
-            neymar,
-            new ArrayList<>(List.of(ofertaLucas6)),
-            new ArrayList<>(), 0, true);
 
-        ofertaLucas6.aceptar(juan);
-        subastas.guardar(subasta6);
 
         // id=8 | Finalizada hace 5 días, oferta de lucas ACEPTADA, ya calificada
         Propuesta ofertaLucas8 = new Propuesta("o9", lucas, sofia,
@@ -280,5 +269,16 @@ public class InicializadorDeDatos implements CommandLineRunner {
         ofertaJuan1.aceptar(sofia);
         sofia.agregarNuevaCalificacion(new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA));
         subastas.guardar(subasta8);
+
+        // ─── SUBASTAS DONDE LUCAS NO PARTICIPÓ ────────────────
+
+        // id=6 | Finalizada hace 5 días, oferta de lucas ACEPTADA, sin calificar
+        Subasta subasta6 = new Subasta("6", juan,
+            LocalDateTime.now().minusDays(5),
+            LocalDateTime.now().minusDays(5),
+            neymar,
+            new ArrayList<>(),
+            new ArrayList<>(), 0, true);
+        subastas.guardar(subasta6);
     }
 }

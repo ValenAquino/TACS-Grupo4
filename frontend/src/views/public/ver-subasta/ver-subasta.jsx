@@ -17,6 +17,7 @@ const VerSubasta = () => {
     const [cargando, setCargando] = useState(true)
     const [subasta, setSubasta] = useState(undefined)
     const [tiempo, setTiempo] = useState(0)
+    const [subastaAbierta, setSubastaAbierta] = useState(false)
 
     const procesarDuracion = () => {
 
@@ -52,7 +53,6 @@ const VerSubasta = () => {
 
     const mostrarOfertaDeUsuario = (ofertas) => {
         const ofertaPropia = ofertas.find(o => o.autor.usuario_id === userId.toString()) //Mismo Id que la sesion
-        const subastaAbierta = new Date(subasta.cierre) > new Date()
         return ofertaPropia !== undefined ? <TuOfertaCard oferta={ofertaPropia} subastaAbierta={subastaAbierta}/> :
             subastaAbierta &&
                 <div className={"d-flex flex-row justify-content-center align-items-center gap-2"}>
@@ -66,6 +66,7 @@ const VerSubasta = () => {
             setCargando(true)
             const payload = await buscarSubasta({subId});
             setSubasta(payload)
+            setSubastaAbierta(new Date(payload.cierre) > new Date())
             setTiempo(payload.tiempo_restante)
         } catch (err) {
             console.log(err)
@@ -176,7 +177,7 @@ const VerSubasta = () => {
 
 
                 <SectionCard>
-                    <SectionTitle>OFERTAS ACTUALES ({subasta.ofertas.length})</SectionTitle>
+                    <SectionTitle>OFERTAS {subastaAbierta ? "ACTUALES": "HISTORICAS"} ({subasta.ofertas.length})</SectionTitle>
                     <SectionCard.Section>
                         <div className="d-flex flex-column gap-2">
                             {subasta.ofertas.length > 0 ?
@@ -188,7 +189,7 @@ const VerSubasta = () => {
                         </div>
                     </SectionCard.Section>
                     {
-                        subasta.perfil.usuario_id !== userId ?
+                        subasta.perfil.usuario_id !== userId && subastaAbierta ?
                             <>
                                 <SectionTitle>TU OFERTA</SectionTitle>
                                 <SectionCard.Section>

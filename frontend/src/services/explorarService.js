@@ -16,16 +16,12 @@ const randomEmoji = () => EMOJIS[Math.floor(Math.random() * EMOJIS.length)]
 const randomBg = () => EMOJI_BGS[Math.floor(Math.random() * EMOJI_BGS.length)]
 
 const TIPO_MAP = {
-  ambos: 'SUBASTA_E_INTERCAMBIO',
   intercambio: 'INTERCAMBIO',
   subasta: 'SUBASTA',
 }
 
 const resolverTipo = (metodos) => {
-  if (
-    metodos.includes('SUBASTA_E_INTERCAMBIO') ||
-    (metodos.includes('INTERCAMBIO') && metodos.includes('SUBASTA'))
-  )
+  if (metodos.includes('INTERCAMBIO') && metodos.includes('SUBASTA'))
     return 'ambos'
   return metodos.includes('SUBASTA') ? 'subasta' : 'intercambio'
 }

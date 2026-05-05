@@ -5,7 +5,6 @@ const TIPOS = [
   { key: 'todos', label: 'Todos' },
   { key: 'intercambio', label: 'Intercambio' },
   { key: 'subasta', label: 'Subasta' },
-  { key: 'ambos', label: 'Ambos' },
 ]
 
 const ExplorarFiltros = ({ onAplicar }) => {

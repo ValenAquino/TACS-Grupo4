@@ -1,12 +1,15 @@
-import styles from './figurita-card.module.css';
+import styles from './figurita-card.module.css'
+import CardActionBtn from './card-action-buttons'
+import UserChip from '@/components/ui/user-chip/user-chip'
 
 const TYPE_LABELS = {
   intercambio: { label: 'intercambio', className: styles.badgeIntercambio },
   subasta:     { label: 'subasta',     className: styles.badgeSubasta },
   ambos:       { label: 'ambos',       className: styles.badgeAmbos },
-};
+}
 
 const FiguritaCard = ({
+  id,
   number,
   type = 'intercambio',
   emoji,
@@ -15,13 +18,10 @@ const FiguritaCard = ({
   name,
   subtitle,
   available,
-  actionLabel,
-  onAction,
   extra,
   user,
 }) => {
-  const badge = TYPE_LABELS[type] ?? TYPE_LABELS.intercambio;
-  const resolvedLabel = actionLabel ?? (type === 'subasta' ? 'Ver subasta ↗' : 'Proponer intercambio ↗');
+  const badge = TYPE_LABELS[type] ?? TYPE_LABELS.intercambio
 
   return (
     <div className={`${styles.card} ${type === 'subasta' ? styles.cardSubasta : ''}`}>
@@ -34,10 +34,7 @@ const FiguritaCard = ({
 
       {/* Imagen / emoji */}
       <div className={styles.cardEmoji} style={emojiBg ? { background: emojiBg } : {}}>
-        {imageUrl
-          ? <img src={imageUrl} alt={name} className={styles.cardImage} />
-          : emoji
-        }
+        {imageUrl ? <img src={imageUrl} alt={name} className={styles.cardImage} /> : emoji}
       </div>
 
       {/* Nombre y subtítulo */}
@@ -56,39 +53,18 @@ const FiguritaCard = ({
           )
         )}
 
-        {user && (
-          <div className={styles.userChip}>
-            <span className={styles.userAvatar} style={{ background: user.color }}>
-              {user.initials}
-            </span>
-            <span className={styles.userName}>{user.name}</span>
-            <span className={styles.userStars}>
-              {'★'.repeat(user.stars)}{'☆'.repeat(5 - user.stars)}
-            </span>
-          </div>
-        )}
+        {user && <UserChip user={user} />}
 
-        {type === 'ambos' ? (
-          <>
-            <button className={styles.actionBtn} onClick={() => onAction('intercambio')}>
-              Proponer intercambio ↗
-            </button>
-            <button className={`${styles.actionBtn} ${styles.actionBtnSubasta}`} onClick={() => onAction('subasta')}>
-              Ver subasta ↗
-            </button>
-          </>
-        ) : (
-          <button
-            className={`${styles.actionBtn} ${type === 'subasta' ? styles.actionBtnSubasta : ''}`}
-            onClick={() => onAction(type)}
-          >
-            {resolvedLabel}
-          </button>
+        {(type === 'intercambio' || type === 'ambos') && (
+          <CardActionBtn to={`/intercambios/nuevo?figurita=${id}`} label="Proponer intercambio ↗" />
         )}
-
+        {(type === 'subasta' || type === 'ambos') && (
+          <CardActionBtn to={`/subastas?figurita=${id}`} label="Ver subasta ↗" variant="subasta" />
+        )}
       </div>
-    </div>
-  );
-};
 
-export default FiguritaCard;
+    </div>
+  )
+}
+
+export default FiguritaCard

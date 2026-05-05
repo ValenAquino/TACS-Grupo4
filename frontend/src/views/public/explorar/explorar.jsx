@@ -11,7 +11,6 @@ const FILTROS_INICIAL = { tipo: 'todos', jugador: '', seleccion: '', numero: '' 
 const Explorar = () => {
   const resultadosRef = useRef(null)
   const [filtros, setFiltros] = useState(FILTROS_INICIAL)
-  const [ordenar, setOrdenar] = useState('')
   const [page, setPage] = useState(0)
 
   const { figuritas, totalPages, totalElements, loading, error } = useFiguritas(
@@ -20,7 +19,6 @@ const Explorar = () => {
     filtros.numero,
     filtros.tipo,
     page,
-    ordenar,
   )
 
   const handleAplicar = (nuevosFiltros) => {
@@ -28,18 +26,9 @@ const Explorar = () => {
     setPage(0)
   }
 
-  const handleOrdenar = (nuevoOrden) => {
-    setOrdenar(nuevoOrden)
-    setPage(0)
-  }
-
   useEffect(() => {
     resultadosRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [page])
-
-  const handleAction = (fig, accion) => {
-    console.warn('acción pendiente de implementar', fig.id, accion)
-  }
 
   return (
     <main className={styles.page}>
@@ -54,9 +43,6 @@ const Explorar = () => {
           totalPages={totalPages}
           page={page}
           onPageChange={setPage}
-          ordenar={ordenar}
-          onOrdenarChange={handleOrdenar}
-          onAction={handleAction}
           loading={loading}
           error={error}
         />

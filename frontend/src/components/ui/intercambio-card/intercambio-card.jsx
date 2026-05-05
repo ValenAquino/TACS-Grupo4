@@ -26,7 +26,7 @@ const IntercambioCard = ({
     botones
 }) => {
 
-    const izq = intercambio[izquierda] || [];
+    const izq = [intercambio.figurita_buscada] || [];
     const der = intercambio[derecha] || [];
 
     return (
@@ -34,7 +34,7 @@ const IntercambioCard = ({
             <div className="card-body">
 
                 <div className="d-flex justify-content-between">
-                    <strong>{intercambio.usuario.nombre}</strong>
+                    <strong>{intercambio.autor.nombre}</strong>
                     {badge && <BadgeEstado {...badge} />}
                 </div>
 

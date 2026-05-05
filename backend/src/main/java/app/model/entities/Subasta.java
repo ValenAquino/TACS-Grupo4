@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.BadRequestException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,13 @@ public class Subasta {
     }
 
     public void agregarOferta(Propuesta oferta) {
+        boolean tieneCondicionesSolicitadas = !this.figuritasSolicitadas.isEmpty();
+        boolean noOfertaLasSolicitadas = this.figuritasSolicitadas.stream().noneMatch(fs -> oferta.getFiguritasOfrecidas().contains(fs));
+
+        if(tieneCondicionesSolicitadas && (noOfertaLasSolicitadas || oferta.getAutor().obtenerCalificacionMedia() >= this.calificacionMinimaSolicitada)) {
+            throw new BadRequestException("No se cumplieron las condiciones minimas");
+        }
+
         this.ofertas.add(oferta);
     }
 

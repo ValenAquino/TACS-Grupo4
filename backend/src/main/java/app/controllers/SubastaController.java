@@ -1,6 +1,7 @@
 package app.controllers;
 
 import app.dto.request.CrearSubastaRequest;
+import app.dto.request.MejorarOfertaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.MisSubastasResponseDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
@@ -11,15 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping("/subastas")
@@ -39,9 +38,15 @@ public class SubastaController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{sub_id}/propuestas")
-    public ResponseEntity<Void> ofertarEnSubasta(@PathVariable String sub_id, @RequestHeader("user_id") String id, @RequestBody OfertarEnSubastaRequest body) {
-        this.subastaService.ofertarEnSubasta(id, body.getUsuarioId(), sub_id, body.getFiguritasOfrecidasId());
+    @PostMapping("/{sub_id}/ofertas")
+    public ResponseEntity<Void> ofertarEnSubasta(@PathVariable String sub_id, @RequestBody OfertarEnSubastaRequest body) {
+        this.subastaService.ofertarEnSubasta(body.getAutorId(), body.getDestinoId(), sub_id, body.getFiguritasOfrecidasId());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{sub_id}/ofertas/{oferta_id}")
+    public ResponseEntity<Void> mejorarOfertaEnSubasta(@PathVariable String sub_id, @PathVariable String oferta_id, @RequestBody MejorarOfertaRequest body) {
+        this.subastaService.mejorarOfertaEnSubasta(sub_id, oferta_id, body);
         return ResponseEntity.ok().build();
     }
 

@@ -47,6 +47,18 @@ export const buscarSubastasParticipo = async (userId, filtros = {}) => {
   }
 };
 
+export const crearOferta = async (subastaId, userId, body) => {
+  try {
+    const { data } = await api.post(
+      `${SUBASTAS_URL}/${subastaId}/ofertas`,
+      { ...body, user_id: userId }
+    );
+    return data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+};
+
 export const seleccionarOferta = async (subastaId, ofertaId) => {
   try {
     const { data } = await api.post(

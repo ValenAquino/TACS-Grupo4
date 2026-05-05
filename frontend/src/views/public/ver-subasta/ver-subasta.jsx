@@ -10,6 +10,7 @@ import OfertaCard from "./oferta-card.jsx";
 import TuOfertaCard from "./tu-oferta-card.jsx";
 import Button from "../../../components/ui/button/button.jsx";
 import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+import {useNavigate} from "react-router-dom";
 
 const VerSubasta = () => {
     const {subId} = useParams()
@@ -18,6 +19,7 @@ const VerSubasta = () => {
     const [subasta, setSubasta] = useState(undefined)
     const [tiempo, setTiempo] = useState(0)
     const [subastaAbierta, setSubastaAbierta] = useState(false)
+    const navigate = useNavigate()
 
     const procesarDuracion = () => {
 
@@ -57,7 +59,7 @@ const VerSubasta = () => {
             subastaAbierta &&
                 <div className={"d-flex flex-row justify-content-center align-items-center gap-2"}>
                     <p>¿Aún no ofertaste?</p>
-                    <Button>Proponer Intercambio</Button>
+                    <Button onClick={() => navigate(`/subastas/${subId}/nuevaOferta`)}>Proponer Oferta</Button>
                 </div>
     }
 

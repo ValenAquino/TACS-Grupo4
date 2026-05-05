@@ -333,7 +333,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // id=6 | Finalizada hace 5 días, oferta de lucas ACEPTADA, sin calificar
         Subasta subasta6 = new Subasta("6", juan,
             LocalDateTime.now().minusDays(5),
-            LocalDateTime.now().minusDays(5),
+            LocalDateTime.now().plusHours(5),
             neymar,
             new ArrayList<>(),
             new ArrayList<>(), 0, true);

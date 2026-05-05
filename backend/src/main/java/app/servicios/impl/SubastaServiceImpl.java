@@ -1,5 +1,7 @@
 package app.servicios.impl;
 
+import app.dto.request.MejorarOfertaRequest;
+import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.MiSubastaDto;
 import app.dto.subasta.MisSubastasResponseDto;
 import app.dto.subasta.SubastaDto;
@@ -91,6 +93,20 @@ public class SubastaServiceImpl implements ISubastaService {
 
     subasta.agregarOferta(nuevaPropuesta);
     this.repoSubasta.guardar(subasta);
+  }
+
+  @Override
+  public void mejorarOfertaEnSubasta(String subastaId, String ofertaId, MejorarOfertaRequest body){
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+    Propuesta oferta = subasta.getOfertas().stream()
+        .filter(o -> o.getId().equals(ofertaId))
+        .findFirst().orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+
+    List<Figurita> nuevas_figuritas = body.getFiguritasOfrecidasId().stream().map(
+        this.repoFigurita::buscarPorId
+    ).toList();
+
+    oferta.setFiguritasOfrecidas(nuevas_figuritas);
   }
 
   @Override

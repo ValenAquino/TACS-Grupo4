@@ -10,6 +10,7 @@ import VerSubasta from './views/public/ver-subasta/ver-subasta.jsx'
 import Explorar from './views/public/explorar/explorar.jsx'
 import Perfil from "./views/public/perfil/perfil.jsx";
 import Intercambios from "./views/public/intercambios/intercambios.jsx";
+import CrearOferta from "./views/public/ver-subasta/oferta/crear-oferta.jsx";
 
 const publics = [
   {
@@ -55,6 +56,10 @@ const publics = [
   {
       path: '/subastas/:subId',
       element: <VerSubasta />
+  },
+  {
+    path: '/subastas/:subId/nuevaOferta',
+    element: <CrearOferta />
   }
 ];
 

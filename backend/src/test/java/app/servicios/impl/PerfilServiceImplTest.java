@@ -220,7 +220,7 @@ class PerfilServiceImplTest {
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));
 
-    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null, 1, 10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(1, resultado.data().size());
   }
@@ -233,7 +233,7 @@ class PerfilServiceImplTest {
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otro));
 
-    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null, 1, 10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(0, resultado.data().size());
   }

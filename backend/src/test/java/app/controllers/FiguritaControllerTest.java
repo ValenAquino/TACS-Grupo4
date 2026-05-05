@@ -29,7 +29,7 @@ class FiguritaControllerTest {
   @Autowired MockMvc mockMvc;
   @MockBean IFiguritaService figuritaService;
 
-  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
   FiguritaIntercambiable intercambiable = new FiguritaIntercambiable(
       messi, 2, List.of(MetodoIntercambio.INTERCAMBIO), "usuario-1");
   FiguritaIntercambiableDto dto = new FiguritaIntercambiableDto(intercambiable);

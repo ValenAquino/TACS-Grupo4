@@ -131,7 +131,7 @@ class PerfilServiceImplTest {
 
   @Test
   void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
-    Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, new ArrayList<>());
 
     when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
@@ -210,7 +210,7 @@ class PerfilServiceImplTest {
 
   @Test
   void obtenerSugerencias_conCoincidencias_retornaSugerencias() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
     Coleccion coleccionOtro = new Coleccion();
@@ -228,7 +228,7 @@ class PerfilServiceImplTest {
 
   @Test
   void obtenerSugerencias_sinCoincidencias_retornaListaVacia() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
     when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);

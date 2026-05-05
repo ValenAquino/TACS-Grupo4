@@ -10,10 +10,11 @@ public interface IFiguritaService {
     /**
      * Busca figuritas intercambiables aplicando filtros opcionales y paginación.
      *
-     * <p>Filtra primero en {@code RepositorioFiguritas} por {@code numero}, {@code seleccion}
-     * y {@code jugador} (contains, case-insensitive), luego cruza con las intercambiables
-     * y aplica el filtro {@code tipo}: {@code INTERCAMBIO} y {@code SUBASTA} también incluyen
-     * figuritas con {@code SUBASTA_E_INTERCAMBIO}. Sin resultados retorna página vacía.
+     * <p>Filtra en {@code RepositorioFiguritas} por {@code numero}, {@code seleccion}
+     * y {@code jugador} (contains, case-insensitive), cruza con las intercambiables,
+     * aplica el filtro {@code tipo} ({@code INTERCAMBIO}/{@code SUBASTA} incluyen
+     * {@code SUBASTA_E_INTERCAMBIO}), y enriquece cada resultado con nombre y reputación
+     * del ofertante vía {@code RepositorioPerfiles}. Sin resultados retorna página vacía.
      *
      * @param numero    número exacto de figurita, o {@code null} para ignorar el filtro
      * @param seleccion selección nacional, o {@code null} para ignorar el filtro

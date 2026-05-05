@@ -15,4 +15,6 @@ public class Figurita {
   private String jugador;
 
   private Seleccion seleccion;
+
+  private String posicion;
 }

@@ -49,7 +49,7 @@ class ColeccionServiceTest {
     service = new ColeccionService(repositorioFiguritas, repositorioColecciones,
         repositorioPerfiles, notificacionService);
 
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
 
     coleccion = new Coleccion();
     coleccion.setId("col-1");

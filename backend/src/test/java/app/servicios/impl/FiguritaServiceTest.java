@@ -4,16 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import app.exceptions.NotFoundException;
-
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.PaginaResultado;
+import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
+import app.repositories.RepositorioPerfiles;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,18 +28,20 @@ class FiguritaServiceTest {
   RepositorioFiguritas repositorioFiguritas;
   @Mock
   RepositorioFiguritasIntercambiables repositorioIntercambiables;
+  @Mock
+  RepositorioPerfiles repositorioPerfiles;
   @InjectMocks
   FiguritaService figuritaService;
 
-  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-  Figurita mbappe = new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA);
+  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+  Figurita mbappe = new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, null);
 
   FiguritaIntercambiable intercambiable = new FiguritaIntercambiable(
       messi, 2, List.of(MetodoIntercambio.INTERCAMBIO), "usuario-1");
   FiguritaIntercambiable subasta = new FiguritaIntercambiable(
       mbappe, 1, List.of(MetodoIntercambio.SUBASTA), "usuario-2");
   FiguritaIntercambiable ambos = new FiguritaIntercambiable(
-      new Figurita("BRA-9", 9, "Neymar", Seleccion.BRASIL),
+      new Figurita("BRA-9", 9, "Neymar", Seleccion.BRASIL, null),
       3, List.of(MetodoIntercambio.SUBASTA_E_INTERCAMBIO), "usuario-3");
 
   @Test
@@ -88,9 +90,9 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_paginacion_retornaSoloPaginaSolicitada() {
-    Figurita f1 = new Figurita("F-1", 1, "Jugador1", Seleccion.ARGENTINA);
-    Figurita f2 = new Figurita("F-2", 2, "Jugador2", Seleccion.ARGENTINA);
-    Figurita f3 = new Figurita("F-3", 3, "Jugador3", Seleccion.ARGENTINA);
+    Figurita f1 = new Figurita("F-1", 1, "Jugador1", Seleccion.ARGENTINA, null);
+    Figurita f2 = new Figurita("F-2", 2, "Jugador2", Seleccion.ARGENTINA, null);
+    Figurita f3 = new Figurita("F-3", 3, "Jugador3", Seleccion.ARGENTINA, null);
     FiguritaIntercambiable fi1 = new FiguritaIntercambiable(f1, 1, List.of(MetodoIntercambio.INTERCAMBIO), "u1");
     FiguritaIntercambiable fi2 = new FiguritaIntercambiable(f2, 1, List.of(MetodoIntercambio.INTERCAMBIO), "u2");
     FiguritaIntercambiable fi3 = new FiguritaIntercambiable(f3, 1, List.of(MetodoIntercambio.INTERCAMBIO), "u3");

@@ -55,8 +55,8 @@ class PropuestaServiceTest {
         List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
     sofia = new Perfil("1001", new Usuario("u-1001", Rol.USUARIO), "Sofía", new Coleccion(),
         List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
-    messi  = new Figurita("ARG-10", 10, "Messi",  Seleccion.ARGENTINA);
-    mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA);
+    messi  = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, null);
   }
 
   @Test

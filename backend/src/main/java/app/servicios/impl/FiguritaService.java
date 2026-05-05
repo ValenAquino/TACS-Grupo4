@@ -5,9 +5,11 @@ import app.dto.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
+import app.model.entities.Perfil;
 import app.model.entities.Seleccion;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
+import app.repositories.RepositorioPerfiles;
 import app.servicios.IFiguritaService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class FiguritaService implements IFiguritaService {
 
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final RepositorioFiguritas repositorioFiguritas;
+  private final RepositorioPerfiles repositorioPerfiles;
 
   public PaginaResultado<FiguritaIntercambiableDto> buscarFiguritas(
       Integer numero, Seleccion seleccion, String jugador,
@@ -39,7 +42,7 @@ public class FiguritaService implements IFiguritaService {
         .buscarPorFiguritaIds(idsFiltrados)
         .stream()
         .filter(fi -> tipo == null || fi.soporta(tipo))
-        .map(FiguritaIntercambiableDto::new)
+        .map(fi -> new FiguritaIntercambiableDto(fi, buscarPerfil(fi.getPerfilId())))
         .toList();
 
     int total = todas.size();
@@ -48,5 +51,13 @@ public class FiguritaService implements IFiguritaService {
     int toIndex = Math.min(fromIndex + tamanioPagina, total);
 
     return new PaginaResultado<>(todas.subList(fromIndex, toIndex), total, totalPages, pagina);
+  }
+
+  private Perfil buscarPerfil(String perfilId) {
+    try {
+      return repositorioPerfiles.buscarPorId(perfilId);
+    } catch (NotFoundException e) {
+      return null;
+    }
   }
 }

@@ -9,9 +9,9 @@ const useFiguritas = (jugador, seleccion, numero, tipo, page, ordenar) => {
   const [error, setError] = useState(false)
 
   useEffect(() => {
+    setLoading(true)
     const cargar = async () => {
       try {
-        setLoading(true)
         setError(false)
         const data = await explorarFiguritas({ jugador, seleccion, numero, tipo, page, ordenar })
         setFiguritas(data.content)

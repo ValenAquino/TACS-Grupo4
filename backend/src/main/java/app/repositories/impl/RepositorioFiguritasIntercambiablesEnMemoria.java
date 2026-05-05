@@ -26,7 +26,6 @@ public class RepositorioFiguritasIntercambiablesEnMemoria
         .filter(fi -> seleccion == null || fi.getFigurita().getSeleccion().equals(seleccion))
         .filter(fi -> jugador == null || fi.getFigurita().getJugador().toLowerCase().contains(jugador.toLowerCase()))
         .filter(fi -> tipo == null || fi.soporta(tipo))
-        .sorted((a, b) -> Integer.compare(a.getFigurita().getNumero(), b.getFigurita().getNumero()))
         .toList();
 
     int total = filtradas.size();

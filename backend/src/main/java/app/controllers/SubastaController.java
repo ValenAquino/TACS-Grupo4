@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,10 +28,9 @@ public class SubastaController {
     private final ISubastaService subastaService;
 
     @PostMapping
-    public ResponseEntity<Void> crearSubasta(@RequestHeader("user_id") String id,
-                                             @RequestBody CrearSubastaRequest body) {
+    public ResponseEntity<Void> crearSubasta(@RequestBody CrearSubastaRequest body) {
         this.subastaService.crearSubasta(
-            id,
+            body.getUserId(),
             body.getFiguritaId(),
             body.getDuracionEnHoras(),
             body.getFiguritasDeseadasIds(),
@@ -70,12 +70,12 @@ public class SubastaController {
     }
 
     @GetMapping("/mis-subastas")
-    public ResponseEntity<MisSubastasResponseDto> obtenerMisSubastas(@RequestHeader("user_id") String userId) {
+    public ResponseEntity<MisSubastasResponseDto> obtenerMisSubastas(@RequestParam String userId) {
         return ResponseEntity.ok(this.subastaService.obtenerMisSubastas(userId));
     }
 
     @GetMapping("/participo")
-    public ResponseEntity<SubastasParticipoResponseDto> obtenerSubastasParticipo(@RequestHeader("user_id") String userId) {
+    public ResponseEntity<SubastasParticipoResponseDto> obtenerSubastasParticipo(@RequestParam String userId) {
         return ResponseEntity.ok(this.subastaService.obtenerSubastasParticipo(userId));
     }
 

@@ -16,12 +16,12 @@ public class FiguritaIntercambiable {
     private List<MetodoIntercambio> metodos;
     @Experimental
     private String perfilId;
-    public FiguritaIntercambiable(Figurita figurita, Integer cantidadDisponible, List<MetodoIntercambio> metodos) {
-        this(figurita, cantidadDisponible,0, metodos, null);
+    public FiguritaIntercambiable(Figurita figurita, Integer cantidadExistente, List<MetodoIntercambio> metodos) {
+        this(figurita, cantidadExistente,0, metodos, null);
     }
 
-    public FiguritaIntercambiable(Figurita figurita, Integer cantidadDisponible, List<MetodoIntercambio> metodos, String perfilId) {
-        this(figurita, cantidadDisponible,0, metodos, perfilId);
+    public FiguritaIntercambiable(Figurita figurita, Integer cantidadExistente, List<MetodoIntercambio> metodos, String perfilId) {
+        this(figurita, cantidadExistente,0, metodos, perfilId);
     }
 
     public boolean soporta(MetodoIntercambio tipo) {

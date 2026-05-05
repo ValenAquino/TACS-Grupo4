@@ -1,6 +1,6 @@
 const useUsuarioActual = () => {
   // TODO: reemplazar con contexto de autenticación real
-  return { userId: "user-123" };
+  return { userId:"u-1000", colecId:"1"};
 };
 
 export default useUsuarioActual;

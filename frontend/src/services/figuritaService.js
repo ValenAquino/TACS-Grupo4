@@ -13,12 +13,3 @@ export const buscarFiguritas = async (filtros) => {
         handleAxiosError(error);
     }
 };
-
-
-
-
-
-
-
-
-

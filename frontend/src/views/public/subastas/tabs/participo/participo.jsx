@@ -2,18 +2,20 @@ import { useEffect, useState } from "react";
 import { buscarSubastasParticipo } from "../../../../../services/subastasService.js";
 import SubastaCard from "../../../../../components/ui/subasta-card/subasta-card.jsx";
 import { useNavigate } from "react-router";
+import useUsuarioActual from "../../../../../hooks/useUsuarioActual.js";
 
 const Participo = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const {userId} = useUsuarioActual()
 
   useEffect(() => {
     const cargar = async () => {
       try {
         setLoading(true);
-        const res = await buscarSubastasParticipo();
+        const res = await buscarSubastasParticipo(userId);
         setData(res);
       } catch {
         setError(true);
@@ -91,9 +93,6 @@ const Participo = () => {
                 <SubastaCard
                   key={sub.id}
                   subasta={sub}
-                  onVerSubasta={() => navigate(`/subastas/${sub.id}`)}
-                  onMejorarOferta={() => navigate(`/subastas/${sub.id}/oferta`)}
-                  onVerResumen={() => navigate(`/subastas/${sub.id}/resumen`)}
                 />
               ))}
             </div>

@@ -6,6 +6,7 @@ import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
+import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
@@ -68,6 +69,7 @@ public class PerfilService implements IPerfilService {
           .map(FiguritaDto::new)
           .toList();
     }
+    //TODO que se filtren las que cantidadExistentes == 0
     @Override
     public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
       Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
@@ -88,7 +90,7 @@ public class PerfilService implements IPerfilService {
     }
 
   @Override
-  public void agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
+  public void agregarCalificacion(String userAutorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
       throw new BadRequestException("El valor de la calificación no puede ser nulo");
     }
@@ -99,8 +101,8 @@ public class PerfilService implements IPerfilService {
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
 
-    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
-    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + autorId);
+    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
+    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
@@ -117,8 +119,11 @@ public class PerfilService implements IPerfilService {
         transactionId,
         tipoTransaccion
     );
+    System.out.println(perfilDestino.obtenerCalificacionMedia());
 
     perfilDestino.agregarNuevaCalificacion(calificacion);
+
+    System.out.println(perfilDestino.obtenerCalificacionMedia());
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 
@@ -186,5 +191,12 @@ public class PerfilService implements IPerfilService {
       Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
     return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
+  }
+
+  @Override
+  public PerfilDto obtenerPerfil(String userId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+    if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + userId);
+    return new PerfilDto(perfil);
   }
 }

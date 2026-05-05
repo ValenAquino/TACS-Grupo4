@@ -1,12 +1,21 @@
 import OfertaCard from "./oferta-card.jsx";
 import Button from "../../../components/ui/button/button.jsx";
+import {useNavigate, useParams} from "react-router";
 
-const TuOfertaCard = ({oferta}) => {
+const TuOfertaCard = ({oferta, subastaAbierta}) => {
+    const navigate = useNavigate()
+    const {subId} = useParams()
+
     return (
         <div className="d-flex flex-column gap-3">
             <OfertaCard propuesta={oferta} />
-            <p>Podés mejorar tu oferta antes de que finalice!</p>
-            <Button>Mejorar oferta</Button>
+            {
+                subastaAbierta &&
+                    <>
+                        <p>Podés mejorar tu oferta antes de que finalice!</p>
+                        <Button onClick={() => navigate(`/subastas/${subId}/ofertas/${oferta.id}`)}>Mejorar oferta</Button>
+                    </>
+            }
         </div>
     )
 }

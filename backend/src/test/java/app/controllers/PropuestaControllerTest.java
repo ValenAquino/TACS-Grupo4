@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.InicializadorDeDatos;
 import app.model.entities.EstadoProceso;
 import app.model.entities.EstadoPropuesta;
 import app.model.entities.Figurita;
@@ -34,10 +35,14 @@ class PropuestaControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean RepositorioPerfiles repoUser;
-    @MockBean RepositorioFiguritas repoFigurita;
-    @MockBean RepositorioPropuestas repoPropuesta;
-
+    @MockBean
+    RepositorioPerfiles repoUser;
+    @MockBean
+    RepositorioFiguritas repoFigurita;
+    @MockBean
+    RepositorioPropuestas repoPropuesta;
+    @MockBean
+    InicializadorDeDatos inicializadorDeDatos;
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
     }
@@ -51,8 +56,8 @@ class PropuestaControllerTest {
         Perfil subastador    = perfil("1000", "u-1000", "@subastador");
         Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
 
-        Figurita buscada  = new Figurita("ARG-10", 2, null, null);
-        Figurita ofrecida = new Figurita("FRA-10", 2, null, null);
+        Figurita buscada  = new Figurita("ARG-10", 2, null, null, null);
+        Figurita ofrecida = new Figurita("FRA-10", 2, null, null, null);
 
         String json = """
         {

@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import app.exceptions.FiguritaDuplicadaException;
 import app.exceptions.NotFoundException;
-import app.servicios.impl.ColeccionService;
+import app.servicios.IColeccionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,7 +25,7 @@ class ColeccionControllerTest {
   MockMvc mockMvc;
 
   @MockBean
-  private ColeccionService serviceColeccion;
+  private IColeccionService serviceColeccion;
 
   @Test
   void agregarRepetidaNoFalla() throws Exception {

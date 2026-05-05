@@ -3,6 +3,7 @@ import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "../../../../services/perfilService.js";
 import ExtraInfo from "../../../../components/ui/extra-info/extra-info.jsx";
 import Paginacion from "../../../../components/ui/paginacion/paginacion.jsx";
+import useUsuarioActual from "../../../../hooks/useUsuarioActual.js";
 
 const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
 
@@ -10,11 +11,12 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     const [sugerencias, setSugerencias] = useState([])
     const [pagina, setPagina] = useState(1)
     const [paginasTotales, setPaginasTotales] = useState(1)
+    const {userId} = useUsuarioActual()
 
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias({userId:1001, tipo, pagina: pagina, limite:10})
+            const payload = await buscarSugerencias({userId, tipo, pagina: pagina, limite:10})
             setPaginasTotales(payload.paginas_totales)
             setSugerencias(payload.data)
 

@@ -1,11 +1,12 @@
 package app.model.entities.filtros;
 
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 
-public record FiguritasFiltro (
+public record FiguritasFiltro(
     String id,
     Integer numero,
     Seleccion seleccion,
-    String jugador
-) {
-}
+    String jugador,
+    MetodoIntercambio tipo
+) {}

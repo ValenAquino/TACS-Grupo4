@@ -1,9 +1,10 @@
 package app.model.entities.filtros;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import app.model.entities.Seleccion;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class FiguritasFiltroTest {
 
@@ -13,7 +14,8 @@ class FiguritasFiltroTest {
         "abc123",
         10,
         Seleccion.ARGENTINA,
-        "Messi"
+        "Messi",
+        null
     );
 
     assertEquals("abc123", filtro.id());
@@ -24,7 +26,7 @@ class FiguritasFiltroTest {
 
   @Test
   void deberiaAceptarValoresNull() {
-    FiguritasFiltro filtro = new FiguritasFiltro(null, null, null, null);
+    FiguritasFiltro filtro = new FiguritasFiltro(null, null, null, null, null);
 
     assertNull(filtro.id());
     assertNull(filtro.numero());
@@ -34,8 +36,8 @@ class FiguritasFiltroTest {
 
   @Test
   void deberiaSerIgualSiLosValoresSonIguales() {
-    FiguritasFiltro a = new FiguritasFiltro("1", 10, Seleccion.ARGENTINA, "Messi");
-    FiguritasFiltro b = new FiguritasFiltro("1", 10, Seleccion.ARGENTINA, "Messi");
+    FiguritasFiltro a = new FiguritasFiltro("1", 10, Seleccion.ARGENTINA, "Messi", null);
+    FiguritasFiltro b = new FiguritasFiltro("1", 10, Seleccion.ARGENTINA, "Messi", null);
 
     assertEquals(a, b);
   }

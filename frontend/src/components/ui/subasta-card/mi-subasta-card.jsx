@@ -10,7 +10,7 @@ import {
 import { calificarPerfil } from "../../../services/perfilService.js";
 import { derivarTiempo } from "../../../utils/subastasTiempo.js";
 import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
-
+import {useNavigate} from "react-router";
 
 const BADGE_ESTADO = {
   activa: { label: "Activa", className: "text-success bg-success-subtle" },
@@ -24,22 +24,23 @@ const BADGE_ESTADO = {
   },
 };
 
-const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
+const MiSubastaCard = ({ subasta, onRefresh }) => {
   const {
     id: subastaId,
-    figuritaSubastada,
-    fechaCierre,
+    figurita_subastada,
+    fecha_cierre,
     ofertas,
-    cantidadOfertas,
+    cantidad_ofertas,
     ganador,
+    ganador_label,
     ya_calificado: yaCalificado,
   } = subasta;
 
   const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } =
-    derivarTiempo({ fechaCierre });
+    derivarTiempo({ fecha_cierre });
 
   const { userId } = useUsuarioActual();
-
+  const navigate = useNavigate();
   const [modal, setModal] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
   const [mostrarCalificar, setMostrarCalificar] = useState(false);
@@ -75,7 +76,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
   };
 
   const handleCalificar = async ({ valor, descripcion }) => {
-    await calificarPerfil(userId, ganador.perfilId, { valor, descripcion, transactionId: subastaId,
+    await calificarPerfil(userId, ganador.id, { valor, descripcion, transactionId: subastaId,
     tipoTransaccion: "SUBASTA"});
     setMostrarCalificar(false);
     onRefresh();
@@ -129,11 +130,11 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
             </div>
             <div>
               <p className="mb-0 fw-semibold" style={{ fontSize: "0.95rem" }}>
-                {figuritaSubastada.jugador}
+                {figurita_subastada.jugador}
               </p>
               <p className="mb-0 text-muted" style={{ fontSize: "0.75rem" }}>
-                {figuritaSubastada.seleccion?.nombre} · #
-                {figuritaSubastada.numero}
+                {figurita_subastada.seleccion?.nombre} · #
+                {figurita_subastada.numero}
               </p>
             </div>
           </div>
@@ -162,8 +163,8 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
             )}
           </span>
           <span className="text-muted">
-            <strong>{cantidadOfertas}</strong>{" "}
-            {cantidadOfertas === 1 ? "oferta recibida" : "ofertas recibidas"}
+            <strong>{cantidad_ofertas}</strong>{" "}
+            {cantidad_ofertas === 1 ? "oferta recibida" : "ofertas recibidas"}
           </span>
         </div>
 
@@ -196,7 +197,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
                       fontWeight: 700,
                     }}
                   >
-                    {oferta.iniciales}
+                    {oferta.autor.iniciales}
                   </div>
 
                   {/* Info oferta */}
@@ -210,7 +211,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
                         className="ms-1 text-warning"
                         style={{ fontSize: "0.72rem" }}
                       >
-                        ★ {oferta.calificacion.toFixed(1)}
+                        ★ {oferta.autor.calificacion.toFixed(1)}
                       </span>
                     </p>
                     <p
@@ -268,8 +269,8 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
         {finalizada && ganador && (
           <div className="px-3 py-2 border-top" style={{ fontSize: "0.82rem" }}>
             <span className="text-muted">Ganador: </span>
-            <strong>{ganador.usuario}</strong>
-            <span className="text-muted"> · {ganador.label}</span>
+            <strong>{ganador.nombre}</strong>
+            <span className="text-muted"> · {ganador_label}</span>
           </div>
         )}
 
@@ -280,7 +281,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
               <button
                 className="btn btn-outline-secondary flex-fill"
                 style={{ fontSize: "0.85rem" }}
-                onClick={onVerResumen}
+                onClick={() => navigate(`/subastas/${subasta.id}`)}
               >
                 Ver resumen
               </button>
@@ -299,7 +300,7 @@ const MiSubastaCard = ({ subasta, onVerDetalle, onVerResumen, onRefresh }) => {
               <button
                 className="btn btn-outline-secondary flex-fill"
                 style={{ fontSize: "0.85rem" }}
-                onClick={onVerDetalle}
+                onClick={() => navigate(`/subastas/${subasta.id}`)}
               >
                 Ver detalle
               </button>

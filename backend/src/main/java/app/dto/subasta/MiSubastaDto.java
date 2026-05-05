@@ -1,6 +1,7 @@
 package app.dto.subasta;
 
 import app.dto.FiguritaDto;
+import app.dto.PerfilDto;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Subasta;
 import app.model.entities.EstadoProceso;
@@ -18,8 +19,7 @@ public class MiSubastaDto {
   // activas
   private List<OfertaSubastaDto> ofertas;
   // finalizadas
-  private String ganadorPerfilId;
-  private String ganadorUsuario;
+  private PerfilDto ganador;
   private String ganadorLabel;
   private boolean yaCalificado;
 
@@ -30,13 +30,14 @@ public class MiSubastaDto {
     this.figuritaSubastada = new FiguritaDto(subasta.getFiguritaSubastada());
     this.cantidadOfertas = subasta.getOfertas().size();
 
+    this.ofertas = subasta.getOfertas().stream().map(OfertaSubastaDto::new).toList();
+
     if (!subasta.estaActivo()) {
       subasta.getOfertas().stream()
           .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO)
           .findFirst()
           .ifPresent(p -> {
-            this.ganadorPerfilId = p.getAutor().getId();
-            this.ganadorUsuario = p.getAutor().getNombre();
+            this.ganador = new PerfilDto(p.getAutor());
             this.ganadorLabel = p.getFiguritasOfrecidas().stream()
                 .map(f -> f.getJugador() + " #" + f.getNumero())
                 .reduce((a, b) -> a + " + " + b)

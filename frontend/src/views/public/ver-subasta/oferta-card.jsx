@@ -1,5 +1,6 @@
 import PerfilSimple from "../../../components/ui/perfil-simple/perfil-simple.jsx";
 import styles from "./oferta-card.module.css"
+import {mostrar_label} from "../../../utils/estandarizar.jsx";
 
 const OfertaCard = ({propuesta, position=undefined}) => {
     return (
@@ -13,12 +14,7 @@ const OfertaCard = ({propuesta, position=undefined}) => {
             <div>
                 <PerfilSimple perfil={propuesta.autor}></PerfilSimple>
                 {
-                    propuesta.figuritas_ofrecidas.map((fig, index) => (
-                        <span key={index} className={styles.figuritaOfrecida}>
-                            {index > 0 && " + "}
-                            {fig.jugador} #{fig.numero}
-                        </span>
-                    ))
+                    mostrar_label(propuesta)
                 }
             </div>
         </div>

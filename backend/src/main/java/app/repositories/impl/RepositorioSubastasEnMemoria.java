@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.exceptions.NotFoundException;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioSubastas;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class RepositorioSubastasEnMemoria implements RepositorioSubastas {
     public Subasta buscarPorId(String id) {
         Subasta subasta = storage.get(id);
         if (subasta == null) {
-            throw new RuntimeException("Subasta no encontrada");
+            throw new NotFoundException("Subasta no encontrada");
         }
         return subasta;
     }

@@ -23,9 +23,9 @@ public class RepositorioColeccionesEnMemoriaTest {
   @BeforeEach
   void setUp() {
     repositorio = new RepositorioColeccionesEnMemoria();
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-    diMaria = new Figurita("ARG-11", 11, "Di maria", Seleccion.ARGENTINA);
-    dybala = new Figurita("ARG-21", 21, "Dybala", Seleccion.ARGENTINA);
+    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    diMaria = new Figurita("ARG-11", 11, "Di maria", Seleccion.ARGENTINA, null);
+    dybala = new Figurita("ARG-21", 21, "Dybala", Seleccion.ARGENTINA, null);
 
   }
 

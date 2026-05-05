@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,6 +8,7 @@ import lombok.Getter;
 @Getter
 public class Calificacion {
   private String id;
+  @JsonIgnore
   private Perfil autor;
   //valor es un entero de 1 a 5
   private Integer valor;

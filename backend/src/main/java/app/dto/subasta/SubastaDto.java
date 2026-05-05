@@ -15,6 +15,8 @@ public class SubastaDto {
   LocalDateTime cierre;
   Number tiempoRestante;
   Figurita figurita;
+  List<Figurita> figuritasSolicitadas;
+  Integer calificacionMinimaSolicitada;
   List<PropuestaDto> ofertas;
 
   public SubastaDto(Subasta subasta) {
@@ -32,5 +34,8 @@ public class SubastaDto {
     this.ofertas = subasta.getOfertas().stream()
         .map(PropuestaDto::new)
         .toList();
+
+    this.figuritasSolicitadas = subasta.getFiguritasSolicitadas();
+    this.calificacionMinimaSolicitada = subasta.getCalificacionMinimaSolicitada();
   }
 }

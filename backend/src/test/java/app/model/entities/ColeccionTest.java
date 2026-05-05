@@ -9,8 +9,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ColeccionTest {
-  Figurita messi = new Figurita("ARG-10", 10, "Messi",     Seleccion.ARGENTINA);
-  Figurita diMaria = new Figurita("ARG-11", 11, "Di María",  Seleccion.ARGENTINA);
+  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+  Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
   @Test
   void agregarNuevaFaltante() {

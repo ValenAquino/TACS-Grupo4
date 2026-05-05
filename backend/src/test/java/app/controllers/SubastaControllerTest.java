@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.InicializadorDeDatos;
 import app.model.entities.*;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
@@ -40,6 +41,9 @@ class SubastaControllerTest {
     @MockBean
     RepositorioFiguritas repositorioFiguritas;
 
+    @MockBean
+    InicializadorDeDatos inicializadorDeDatos;
+
     private Perfil sofia;
     private Perfil lucas;
     private Figurita messi;
@@ -48,7 +52,7 @@ class SubastaControllerTest {
 
     @BeforeEach
     void setUp() {
-        messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+        messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
 
         sofia = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Sofía",
             new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
@@ -87,7 +91,7 @@ class SubastaControllerTest {
 
     @Test
     void ofertarEnSubasta_retorna200() throws Exception {
-        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
+        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
         when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(lucas);
         when(repositorioPerfiles.buscarPorId("1")).thenReturn(sofia);
@@ -219,10 +223,11 @@ class SubastaControllerTest {
 
     @Test
     void obtenerMisSubastas_retorna200() throws Exception {
-        when(repositorioSubastas.buscarPorAutorUserId("u-1")).thenReturn(List.of(subastaActiva));
+        when(repositorioSubastas.buscarPorAutorUserId("u-1"))
+            .thenReturn(List.of(subastaActiva));
 
         mockMvc.perform(get("/subastas/mis-subastas")
-                .header("user_id", "u-1"))
+                .param("userId", "u-1"))
             .andExpect(status().isOk());
     }
 
@@ -231,10 +236,11 @@ class SubastaControllerTest {
         Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
         subastaActiva.getOfertas().add(propuesta);
 
-        when(repositorioSubastas.buscarDondeParticipa("u-2")).thenReturn(List.of(subastaActiva));
+        when(repositorioSubastas.buscarDondeParticipa("u-2"))
+            .thenReturn(List.of(subastaActiva));
 
         mockMvc.perform(get("/subastas/participo")
-                .header("user_id", "u-2"))
+                .param("userId", "u-2"))
             .andExpect(status().isOk());
     }
 }

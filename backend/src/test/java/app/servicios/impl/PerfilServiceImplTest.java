@@ -51,9 +51,9 @@ class PerfilServiceImplTest {
     service = new PerfilService(repositorioPerfiles, repositorioPropuestas,
         repositorioSubastas, repositorioFiguritasIntercambiables, repositorioNotificaciones);
 
-    usuario = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas",
+    usuario = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Lucas",
         new Coleccion(), telegram("@lucas"), new ArrayList<>());
-    otro = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO), "Sofía",
+    otro = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Sofía",
         new Coleccion(), telegram("@sofia"), new ArrayList<>());
   }
 
@@ -82,14 +82,14 @@ class PerfilServiceImplTest {
         LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
     subastaActiva.getOfertas().add(oferta);
 
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-    when(repositorioPropuestas.buscarPorAutorId("u-1")).thenReturn(
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPropuestas.buscarPorAutorId("1")).thenReturn(
         List.of(propuesta("p-1", usuario, otro, EstadoProceso.PENDIENTE)));
-    when(repositorioPropuestas.buscarPorDestinatarioId("u-1")).thenReturn(
+    when(repositorioPropuestas.buscarPorDestinatarioId("1")).thenReturn(
         List.of(propuesta("p-2", otro, usuario, EstadoProceso.RECHAZADO)));
-    when(repositorioSubastas.buscarPorAutorUserId("u-1")).thenReturn(List.of(subastaActiva));
+    when(repositorioSubastas.buscarPorAutorUserId("1")).thenReturn(List.of(subastaActiva));
 
-    OperacionesDto resultado = service.obtenerOperacionesPerfil("u-1");
+    OperacionesDto resultado = service.obtenerOperacionesPerfil("1");
 
     assertEquals(1, resultado.getFiguritasPublicadas().size());
     assertEquals(1, resultado.getPropuestasEnviadas().size());
@@ -107,12 +107,12 @@ class PerfilServiceImplTest {
     Subasta subastaVencida = new Subasta("s-2", usuario,
         LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null);
 
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-    when(repositorioPropuestas.buscarPorAutorId("u-1")).thenReturn(new ArrayList<>());
-    when(repositorioPropuestas.buscarPorDestinatarioId("u-1")).thenReturn(new ArrayList<>());
-    when(repositorioSubastas.buscarPorAutorUserId("u-1")).thenReturn(List.of(subastaActiva, subastaVencida));
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPropuestas.buscarPorAutorId("1")).thenReturn(new ArrayList<>());
+    when(repositorioPropuestas.buscarPorDestinatarioId("1")).thenReturn(new ArrayList<>());
+    when(repositorioSubastas.buscarPorAutorUserId("1")).thenReturn(List.of(subastaActiva, subastaVencida));
 
-    OperacionesDto resultado = service.obtenerOperacionesPerfil("u-1");
+    OperacionesDto resultado = service.obtenerOperacionesPerfil("1");
 
     assertEquals(1, resultado.getSubastasActivas().size());
     assertEquals("s-1", resultado.getSubastasActivas().get(0).getId());
@@ -120,13 +120,13 @@ class PerfilServiceImplTest {
 
   @Test
   void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
-    Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-    FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, List.of(MetodoIntercambio.INTERCAMBIO));
+    Figurita figurita = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, new ArrayList<>());
 
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-    when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("u-1")).thenReturn(List.of(fi));
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("1")).thenReturn(List.of(fi));
 
-    List<FiguritaIntercambiableDto> resultado = service.obtenerIntercambiablesPerfil("u-1");
+    List<FiguritaIntercambiableDto> resultado = service.obtenerIntercambiablesPerfil("1");
 
     assertEquals(1, resultado.size());
     assertEquals("ARG-10", resultado.get(0).getFiguritaId());
@@ -144,10 +144,10 @@ class PerfilServiceImplTest {
   void agregarCalificacion_valida_guardaCalificacion() {
     usuario.getCalificaciones().add(new Calificacion("c-0", otro, 4, "Buen intercambio", "t-0", MetodoIntercambio.INTERCAMBIO));
 
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
 
-    service.agregarCalificacion("u-2", "u-1", 2, "Tardó en responder", "t-1", MetodoIntercambio.INTERCAMBIO);
+    service.agregarCalificacion("u-2", "1", 2, "Tardó en responder", "t-1", MetodoIntercambio.INTERCAMBIO);
 
     verify(repositorioPerfiles).guardar(usuario);
   }
@@ -157,57 +157,57 @@ class PerfilServiceImplTest {
     Calificacion existente = new Calificacion("c-0", otro, 4, "Buen intercambio", "t-1", MetodoIntercambio.INTERCAMBIO);
     usuario.getCalificaciones().add(existente);
 
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
 
     assertThrows(BadRequestException.class,
-        () -> service.agregarCalificacion("u-2", "u-1", 3, "Otra vez", "t-1", MetodoIntercambio.INTERCAMBIO));
+        () -> service.agregarCalificacion("u-2", "1", 3, "Otra vez", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
   void agregarCalificacion_valorNegativo_lanzaExcepcion() {
     assertThrows(BadRequestException.class,
-        () -> service.agregarCalificacion("u-2", "u-1", -1, "Malo", "t-1", MetodoIntercambio.INTERCAMBIO));
+        () -> service.agregarCalificacion("2", "1", -1, "Malo", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
   void agregarCalificacion_valorCero_lanzaExcepcion() {
     assertThrows(BadRequestException.class,
-        () -> service.agregarCalificacion("u-2", "u-1", 0, "Malo", "t-1", MetodoIntercambio.INTERCAMBIO));
+        () -> service.agregarCalificacion("2", "1", 0, "Malo", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
   void agregarCalificacion_valorMayorACinco_lanzaExcepcion() {
     assertThrows(BadRequestException.class,
-        () -> service.agregarCalificacion("u-2", "u-1", 6, "Excelente", "t-1", MetodoIntercambio.INTERCAMBIO));
+        () -> service.agregarCalificacion("2", "1", 6, "Excelente", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
   void agregarCalificacion_valorNulo_lanzaExcepcion() {
     assertThrows(BadRequestException.class,
-        () -> service.agregarCalificacion("u-2", "u-1", null, "Sin valor", "t-1", MetodoIntercambio.INTERCAMBIO));
+        () -> service.agregarCalificacion("2", "1", null, "Sin valor", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
   void agregarCalificacion_valorLimiteMinimo_noLanzaExcepcion() {
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
 
-    assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "u-1", 1, "Muy malo", "t-1", MetodoIntercambio.INTERCAMBIO));
+    assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "1", 1, "Muy malo", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
   void agregarCalificacion_valorLimiteMaximo_noLanzaExcepcion() {
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
 
-    assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "u-1", 5, "Excelente", "t-1", MetodoIntercambio.INTERCAMBIO));
+    assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "1", 5, "Excelente", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
   void obtenerSugerencias_conCoincidencias_retornaSugerencias() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
-    Figurita diMaria   = new Figurita("ARG-11", 11, "Di María",  Seleccion.ARGENTINA);
+    Figurita messi   = new Figurita("ARG-10", 10, "Messi",   Seleccion.ARGENTINA, null);
+    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
     usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(diMaria, 2, new ArrayList<>()));
 
@@ -217,34 +217,35 @@ class PerfilServiceImplTest {
     Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO), "Juan",
         coleccionOtro, telegram("@juan"), new ArrayList<>());
 
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));
 
-    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null,1,10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(1, resultado.data().size());
   }
 
   @Test
   void obtenerSugerencias_sinCoincidencias_retornaListaVacia() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
-    when(repositorioPerfiles.buscarPorId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otro));
 
-    var resultado = service.obtenerSugerencias("u-1",  new SugerenciasFiltro(null,1,10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(0, resultado.data().size());
   }
+
   @Test
   void obtenerFaltantes_usuarioExistente_retornaLista() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
-    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("1")).thenReturn(usuario);
 
-    var resultado = service.obtenerFaltantes("u-1");
+    var resultado = service.obtenerFaltantes("1");
 
     assertEquals(1, resultado.size());
   }
@@ -269,13 +270,13 @@ class PerfilServiceImplTest {
 
   @Test
   void obtenerRepetidas_usuarioExistente_retornaLista() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getRepetidas().add(
         new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
 
-    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);
+    when(repositorioPerfiles.buscarPorUsuarioId("1")).thenReturn(usuario);
 
-    var resultado = service.obtenerRepetidas("u-1");
+    var resultado = service.obtenerRepetidas("1");
 
     assertEquals(1, resultado.size());
   }

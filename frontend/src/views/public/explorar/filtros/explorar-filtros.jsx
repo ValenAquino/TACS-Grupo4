@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react'
+import { useRef, useState } from 'react'
 import styles from './explorar-filtros.module.css'
 
 const TIPOS = [
   { key: 'todos', label: 'Todos' },
   { key: 'intercambio', label: 'Intercambio' },
   { key: 'subasta', label: 'Subasta' },
+  { key: 'ambos', label: 'Ambos' },
 ]
 
 const ExplorarFiltros = ({ onAplicar }) => {

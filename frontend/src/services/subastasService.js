@@ -4,56 +4,47 @@ const SUBASTAS_URL = "/subastas";
 
 export const crearSubasta = async (userId, body) => {
   try {
-    await api.post("/subastas", body, {
-      headers: { user_id: userId },
-    });
+    await api.post("/subastas", { ...body, user_id: userId });
   } catch (error) {
     handleAxiosError(error);
   }
 };
 
-export const buscarSubasta = async ({subId}) => {
-    try {
-        const { data } = await api.get(
-            `${SUBASTAS_URL}/${subId}`,
-            {}
-        );
-        return data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
+export const buscarSubasta = async ({ subId }) => {
+  try {
+    const { data } = await api.get(`${SUBASTAS_URL}/${subId}`, {});
+    return data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
 };
 
 export const buscarMisSubastas = async (userId, filtros) => {
-    try {
-        const { data } = await api.get(
-            `${SUBASTAS_URL}/mis-subastas`,
-            { params: {
-                ...filtros,
-                    userId
-                }
-            }
-        );
-        return data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
+  try {
+    const { data } = await api.get(`${SUBASTAS_URL}/mis-subastas`, {
+      params: {
+        ...filtros,
+        userId,
+      },
+    });
+    return data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
 };
 
-export const buscarSubastasParticipo = async (userId, filtros={}) => {
-    try {
-        const { data } = await api.get(
-            `${SUBASTAS_URL}/participo`,
-            { params: {
-                    ...filtros,
-                    userId
-                }
-            }
-        );
-        return data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
+export const buscarSubastasParticipo = async (userId, filtros = {}) => {
+  try {
+    const { data } = await api.get(`${SUBASTAS_URL}/participo`, {
+      params: {
+        ...filtros,
+        userId,
+      },
+    });
+    return data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
 };
 
 export const seleccionarOferta = async (subastaId, ofertaId) => {

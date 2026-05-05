@@ -66,12 +66,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
         Figurita messi     = new Figurita("ARG-10", 10, "Messi",     Seleccion.ARGENTINA);
         Figurita diMaria   = new Figurita("ARG-11", 11, "Di María",  Seleccion.ARGENTINA);
         Figurita lautaro   = new Figurita("ARG-9",   9, "Lautaro",   Seleccion.ARGENTINA);
-        Figurita mbappe    = new Figurita("FRA-10", 10, "Mbappé",    Seleccion.FRANCIA);
-        Figurita griezmann = new Figurita("FRA-7",   7, "Griezmann", Seleccion.FRANCIA);
-        Figurita vinicius  = new Figurita("BRA-10", 10, "Vinicius",  Seleccion.BRASIL);
-        Figurita neymar    = new Figurita("BRA-11", 10, "Vinicius",  Seleccion.BRASIL);
-        Figurita pedri     = new Figurita("ESP-10", 10, "Pedri",     Seleccion.ESPAÑA);
-        Figurita kroos     = new Figurita("GER-8",   8, "Kroos",     Seleccion.ALEMANIA);
+        Figurita mbappe    = new Figurita("FRA-10", 20, "Mbappé",    Seleccion.FRANCIA);
+        Figurita griezmann = new Figurita("FRA-7",   27, "Griezmann", Seleccion.FRANCIA);
+        Figurita vinicius  = new Figurita("BRA-10", 30, "Vinicius",  Seleccion.BRASIL);
+        Figurita neymar    = new Figurita("BRA-11", 31, "Vinicius",  Seleccion.BRASIL);
+        Figurita pedri     = new Figurita("ESP-10", 40, "Pedri",     Seleccion.ESPAÑA);
+        Figurita kroos     = new Figurita("GER-8",   58, "Kroos",     Seleccion.ALEMANIA);
 
         figuritas.guardar(messi);
         figuritas.guardar(diMaria);
@@ -90,8 +90,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // Lucas
         Coleccion coleccionLucas = new Coleccion();
         coleccionLucas.setId("1");
-        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.SUBASTA),     "1000");
+        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
         coleccionLucas.getRepetidas().add(interMessi);
         coleccionLucas.getRepetidas().add(interDiMaria);
         coleccionLucas.getFaltantes().add(mbappe);

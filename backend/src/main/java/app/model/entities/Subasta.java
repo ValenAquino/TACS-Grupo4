@@ -43,7 +43,7 @@ public class Subasta {
         this.figuritaSubastada = figuritaSubastada;
         this.ofertas = new ArrayList<>();
         this.figuritasSolicitadas = new ArrayList<>();
-        this.calificacionMinimaSolicitada = 0;
+        this.calificacionMinimaSolicitada = 1;
     }
 
     public void agregarOferta(Propuesta oferta) {

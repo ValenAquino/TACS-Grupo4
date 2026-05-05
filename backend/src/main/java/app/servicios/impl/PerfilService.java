@@ -68,6 +68,7 @@ public class PerfilService implements IPerfilService {
           .map(FiguritaDto::new)
           .toList();
     }
+    //TODO que se filtren las que cantidadExistentes == 0
     @Override
     public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
       Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);

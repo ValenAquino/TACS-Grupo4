@@ -65,24 +65,6 @@ import useUsuarioActual from "@/hooks/useUsuarioActual.js";
                         <IntercambioCard
                             key={i.id}
                             intercambio={i}
-                            izquierda="pedis"
-                            derecha="ofreces"
-                            labelIzq="Vos pedís"
-                            labelDer="Vos ofrecés"
-                            badge={{ etiqueta: "Enviada", color: "primary" }}
-                            // botones={
-                            //     <>
-                            //         <button onClick={() => setSelected(i)} className="btn btn-outline-dark btn-sm flex-fill">
-                            //             Ver detalle
-                            //         {/*</button>*/}
-                            //         {/*/!*<button*!/*/}
-                            //         {/*/!*    className="btn btn-sm flex-fill btn-rechazar"*!/*/}
-                            //         {/*/!*    onClick={() => handleCancelar(i.id)}*!/*/}
-                            //         {/*/!*>*!/*/}
-                            //         {/*    Cancelar*/}
-                            //         {/*</button>*/}
-                            //     </>
-                            // }
                         />
                     ))}
                 </>

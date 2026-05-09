@@ -1,91 +1,92 @@
+import Button from "@/components/ui/button/button.jsx";
+import SectionCard from "@/components/ui/section-card/section-card.jsx";
+import HeaderUsuarioEstado from "@/components/ui/intercambio-card/header-usuario-estado.jsx";
+
 const ChipFigurita = ({ figurita }) => (
     <div className="border rounded p-2 mb-1 d-flex align-items-center gap-2">
-        <small className="text-muted">#{figurita.numero}</small>
-        <span>{figurita.nombre}</span>
-        {figurita.pais && <small className="text-muted">· {figurita.pais}</small>}
+        <small className="text-muted">#{figurita.id}</small>
+        <span>{figurita.jugador}</span>
+        {figurita.seleccion && <small className="text-muted">· {figurita.seleccion}</small>}
     </div>
 );
 
-const BadgeEstado = ({ etiqueta, color }) => (
-    <span className={`badge text-bg-${color} ms-2`} style={{
+const BadgeEstado = ({ estado }) => (
+    <span className={`badge ms-2`} style={{
         fontSize: "0.85rem",
         padding: "6px 10px",
         borderRadius: "8px"
     }}>
-        {etiqueta}
+        {estado}
     </span>
 );
 
 const IntercambioCard = ({
-    intercambio,
-    izquierda,
-    derecha,
-    labelIzq,
-    labelDer,
-    badge,
-    botones
+    intercambio
 }) => {
 
     const izq = [intercambio.figurita_buscada] || [];
-    const der = intercambio[derecha] || [];
+    const der = intercambio.figuritas_ofrecidas || [];
+    const estado = intercambio.estado;
 
     return (
-        <div className="card mb-3 border-success border-2">
-            <div className="card-body">
+        <SectionCard >
+            <SectionCard.Section >
+                <HeaderUsuarioEstado
+                    estado={estado}
+                    destinatario={intercambio.destinatario}/>
+            </SectionCard.Section>
 
-                <div className="d-flex justify-content-between">
-                    <strong>{intercambio.autor.nombre}</strong>
-                    {badge && <BadgeEstado {...badge} />}
-                </div>
-
+            <SectionCard.Section >
                 <div className="row mt-2">
                     <div className="col">
                         <small className="text-uppercase text-muted fw-semibold">
-                            {labelIzq}
+                            Vos pedís
                         </small>
 
-                        {izq.slice(0, 3).map((f, i) => (
-                            <ChipFigurita key={i} figurita={f} />
+                        {izq.map((f) => (
+                            <ChipFigurita key={f.id} figurita={f} />
                         ))}
-
-                        {izq.length > 3 && (
-                            <small className="text-muted">
-                                +{izq.length - 3} más
-                            </small>
-                        )}
                     </div>
 
                     <div className="col-auto d-flex align-items-center">⇄</div>
 
                     <div className="col">
                         <small className="text-uppercase text-muted fw-semibold">
-                            {labelDer}
+                            Vos ofrecés
                         </small>
 
-                        {der.slice(0, 3).map((f, i) => (
-                            <ChipFigurita key={i} figurita={f} />
+                        {der.map((f) => (
+                            <ChipFigurita key={f.id} figurita={f} />
                         ))}
-
-                        {der.length > 3 && (
-                            <small className="text-muted">
-                                +{der.length - 3} más
-                            </small>
-                        )}
                     </div>
                 </div>
+            </SectionCard.Section>
 
-                {(intercambio.tiempo || intercambio.fecha) && (
-                    <small className="text-muted d-block mt-2">
-                        {intercambio.tiempo || intercambio.fecha}
-                    </small>
-                )}
-
+            <SectionCard.Section >
                 <div className="d-flex gap-2 mt-3">
-                    {botones}
+                    {estado === "PENDIENTE" ?
+                        <>
+                            <Button
+                                className={"w-50"}
+                                label={"Ver detalle"}/>
+                            <Button
+                                className={"w-50"}
+                                label={"Cancelar"}/>
+                        </> :
+                        <>
+                            <Button
+                                className={"w-50"}
+                                label={"⭐ Calificar usuario"}/>
+                            <Button
+                                className={"w-50"}
+                                label={"Ver detalle"}/>
+                        </>
+                    }
                 </div>
+            </SectionCard.Section>
+        </SectionCard>
 
-            </div>
-        </div>
+
     );
 };
 

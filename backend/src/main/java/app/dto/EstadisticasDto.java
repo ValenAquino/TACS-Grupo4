@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class EstadisticasDto {
-    private int totalUsuarios;
+    private long totalUsuarios;
     private int totalFiguritasPublicadas;
     private int totalPropuestas;
     private int totalSubastasActivas;

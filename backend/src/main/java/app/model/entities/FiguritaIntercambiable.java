@@ -16,6 +16,9 @@ public class FiguritaIntercambiable {
     private List<MetodoIntercambio> metodos;
     @Experimental
     private String perfilId;
+
+    public FiguritaIntercambiable() {}
+
     public FiguritaIntercambiable(Figurita figurita, Integer cantidadExistente, List<MetodoIntercambio> metodos) {
         this(figurita, cantidadExistente,0, metodos, null);
     }

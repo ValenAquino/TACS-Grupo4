@@ -11,6 +11,7 @@ import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
+import app.dto.request.PerfilRequest;
 import app.servicios.IPerfilService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class PerfilController {
 
     private final IPerfilService perfilService;
+
+    @PostMapping("")
+    public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {
+        return ResponseEntity.ok(perfilService.crearPerfil(body));
+    }
 
     //Todo: Eliminar en el futuro
     @GetMapping("/{user_id}/operaciones")

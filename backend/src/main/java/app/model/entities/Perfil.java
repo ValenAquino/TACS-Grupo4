@@ -4,11 +4,15 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
 @Getter
 @Setter
+@Document(collection = "perfiles")
 public class Perfil {
+    @Id
     private String id;
     private Usuario usuario;
     private String nombre;

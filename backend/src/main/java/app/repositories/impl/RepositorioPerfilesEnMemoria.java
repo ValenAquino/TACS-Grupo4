@@ -11,11 +11,10 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RepositorioPerfilesEnMemoria implements RepositorioPerfiles {
+public class RepositorioPerfilesEnMemoria {
 
     private final Map<String, Perfil> storage = new HashMap<>();
 
-    @Override
     public Perfil buscarPorId(String id) {
         if(!storage.containsKey(id)) {
             throw new NotFoundException("Perfil no encontrado");
@@ -23,7 +22,6 @@ public class RepositorioPerfilesEnMemoria implements RepositorioPerfiles {
         return storage.get(id);
     }
 
-    @Override
     public Perfil buscarPorUsuarioId(String usuarioId) {
         return storage.values().stream()
             .filter(p -> p.getUsuario().getId().equals(usuarioId))
@@ -31,7 +29,6 @@ public class RepositorioPerfilesEnMemoria implements RepositorioPerfiles {
             .orElseThrow(() -> new NotFoundException("Perfil no encontrado para el usuario: " + usuarioId));
     }
 
-    @Override
     public List<Perfil> buscarPorFiguritaFaltante(Figurita figurita) {
         return this.storage.values()
             .stream()
@@ -39,17 +36,14 @@ public class RepositorioPerfilesEnMemoria implements RepositorioPerfiles {
             .toList();
     }
 
-    @Override
     public List<Perfil> buscarTodos() {
         return new ArrayList<>(storage.values());
     }
 
-    @Override
     public int contar() {
         return storage.size();
     }
 
-    @Override
     public void guardar(Perfil perfil) {
         if(!storage.containsKey(perfil.getId())) {
             storage.put(perfil.getId(), perfil);

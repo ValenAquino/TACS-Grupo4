@@ -13,7 +13,7 @@ public class PerfilDto {
   private String iniciales;
 
   public PerfilDto(Perfil perfil) {
-    this.usuarioId = perfil.getUsuario().getId();
+    //this.usuarioId = perfil.getUsuario().getId();
     this.id = perfil.getId();
     this.nombre = perfil.getNombre();
     this.calificacion = perfil.obtenerCalificacionMedia();

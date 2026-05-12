@@ -10,9 +10,11 @@ import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
+import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
+import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Propuesta;
@@ -41,6 +43,16 @@ public class PerfilService implements IPerfilService {
   private final RepositorioSubastas repositorioSubastas;
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
+
+  @Override
+  public PerfilDto crearPerfil(PerfilRequest body){
+    Perfil perfil = new Perfil(null, null, body.getNombre(), new Coleccion(), new ArrayList<>(), new ArrayList<>());
+
+    this.repositorioPerfiles.guardar(perfil);
+
+    return new PerfilDto(perfil);
+  }
+
 //TODO ya no es necesario este metodo, eliminar
   @Override
   public OperacionesDto obtenerOperacionesPerfil(String userId) {

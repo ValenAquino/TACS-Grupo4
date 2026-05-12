@@ -9,12 +9,15 @@ import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
+import app.dto.request.PerfilRequest;
 import app.model.entities.Calificacion;
 
 import app.model.entities.MetodoIntercambio;
 import java.util.List;
 
 public interface IPerfilService {
+
+    PerfilDto crearPerfil(PerfilRequest perfil);
 
     /**
      * Retorna el resumen de operaciones del perfil: figuritas publicadas,

@@ -7,25 +7,11 @@ import HistorialTab from "./tabs/HistorialTab.jsx";
 
 const Intercambios = () => {
 
-    const [loading, setLoading] = useState(true);
-
     const [data, setData] = useState({
         pendientes: [],
         enviadas: [],
         historial: []
     });
-
-    useEffect(() => {
-        const cargar = async () => {
-            try {
-                const res = await buscarIntercambios();
-                setData(res);
-            } finally {
-                setLoading(false);
-            }
-        };
-        cargar();
-    }, []);
 
     const tabs = [
         {
@@ -47,8 +33,6 @@ const Intercambios = () => {
             props: { intercambios: data.historial },
         },
     ];
-
-    if (loading) return <p>Cargando...</p>;
 
     return (
         <div className="container py-3" style={{ maxWidth: 900 }}>

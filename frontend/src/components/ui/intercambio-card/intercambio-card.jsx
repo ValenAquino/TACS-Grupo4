@@ -1,6 +1,7 @@
 import Button from "@/components/ui/button/button.jsx";
 import SectionCard from "@/components/ui/section-card/section-card.jsx";
 import HeaderUsuarioEstado from "@/components/ui/intercambio-card/header-usuario-estado.jsx";
+import {useNavigate} from "react-router";
 
 const ChipFigurita = ({ figurita }) => (
     <div className="border rounded p-2 mb-1 d-flex align-items-center gap-2">
@@ -10,16 +11,6 @@ const ChipFigurita = ({ figurita }) => (
     </div>
 );
 
-const BadgeEstado = ({ estado }) => (
-    <span className={`badge ms-2`} style={{
-        fontSize: "0.85rem",
-        padding: "6px 10px",
-        borderRadius: "8px"
-    }}>
-        {estado}
-    </span>
-);
-
 const IntercambioCard = ({
     intercambio
 }) => {
@@ -27,6 +18,7 @@ const IntercambioCard = ({
     const izq = [intercambio.figurita_buscada] || [];
     const der = intercambio.figuritas_ofrecidas || [];
     const estado = intercambio.estado;
+    const navigate = useNavigate()
 
     return (
         <SectionCard >
@@ -68,7 +60,9 @@ const IntercambioCard = ({
                         <>
                             <Button
                                 className={"w-50"}
-                                label={"Ver detalle"}/>
+                                label={"Ver detalle"}
+                                onClick={() => navigate(`/intercambios/${intercambio.id}`)}
+                            />
                             <Button
                                 className={"w-50"}
                                 label={"Cancelar"}/>
@@ -79,7 +73,9 @@ const IntercambioCard = ({
                                 label={"⭐ Calificar usuario"}/>
                             <Button
                                 className={"w-50"}
-                                label={"Ver detalle"}/>
+                                label={"Ver detalle"}
+                                onClick={() => navigate(`/intercambios/${intercambio.id}`)}
+                            />
                         </>
                     }
                 </div>

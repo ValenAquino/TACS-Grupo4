@@ -83,7 +83,7 @@ public class PropuestaService implements IPropuestaService {
   }
 
   public PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros) {
-    if(filtros.tipo().equals("PENDIENTES")) {
+    if(filtros.tipo().equals("RECIBIDAS")) {
       return this.repositorioPropuestas.buscarPorDestinatarioId(userId, filtros);
     } else if (filtros.tipo().equals("ENVIADAS")) {
       return this.repositorioPropuestas.buscarPorAutorId(userId, filtros);

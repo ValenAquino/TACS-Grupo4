@@ -2,8 +2,8 @@ const BadgeEstado = ({ estado }) => {
 
     const colores = {
         PENDIENTE: "warning",
-        ACEPTADA: "success",
-        RECHAZADA: "danger",
+        ACEPTADO: "success",
+        RECHAZADO: "danger",
         ENVIADA: "primary"
     };
 
@@ -66,7 +66,6 @@ const HeaderUsuarioEstado = ({ destinatario, estado }) => {
                 </div>
             </div>
 
-            {/* DERECHA */}
             {estado && (
                 <BadgeEstado estado={estado} />
             )}

@@ -26,5 +26,8 @@ public interface IPropuestaService {
      */
     void rechazar(String id, String usuarioId);
 
+    /**
+     * Busca las propuestas con la opcion de filtros.
+     */
     PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros);
 }

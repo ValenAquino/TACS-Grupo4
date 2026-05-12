@@ -2,12 +2,18 @@ import { api, handleAxiosError } from "./api.js";
 
 const PROPUESTAS_URL = "/propuestas";
 
-export const buscarEnviadas = async (user_id, filtros) => {
+export const buscarPropuestas = async (user_id, filtros) => {
     try {
-        const {data} = await api.get(PROPUESTAS_URL,
-            {params: {user_id, ...filtros}}
+
+        const filtrosLimpios = Object.fromEntries(
+            Object.entries(filtros)
+                .filter(([_, value]) => value !== "" && value != null)
         );
-        console.log("data", data);
+
+        const {data} = await api.get(PROPUESTAS_URL,
+            {params: {user_id, ...filtrosLimpios}}
+        );
+
         return data
     } catch (error) {
         handleAxiosError(error);

@@ -2,14 +2,39 @@ import { useState, useEffect } from "react";
 import IntercambioCard from "../../../../components/ui/intercambio-card/intercambio-card.jsx";
 import IntercambioModal from "../../../../components/ui/intercambio-modal/intercambio-modal.jsx";
 import {aceptarIntercambio,rechazarIntercambio} from "../../../../services/intercambioService.js";
+import {buscarPropuestas} from "@/services/propuestasService.js";
+import useUsuarioActual from "@/hooks/useUsuarioActual.js";
+import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 
-const RecibidasTab = ({ pendientes }) => {
+const RecibidasTab = () => {
     const [selected, setSelected] = useState(null);
-    const [lista, setLista] = useState(pendientes);
+    const [loading, setLoading] = useState(true);
+    const [pagina, setPagina] = useState(1);
+    const [error, setError] = useState(false);
+    const [recibidas, setRecibidas] = useState([]);
+    const [filtros, setFiltros] = useState({
+        estado: "",
+        tipo: "RECIBIDAS"
+    });
+
+    const { userId} = useUsuarioActual()
+    const user_id = userId
 
     useEffect(() => {
-      setLista(pendientes);
-    }, [pendientes]);
+        const cargarRecibidas = async () => {
+            try {
+                setLoading(true);
+                const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
+                setRecibidas(enviadasApi)
+            } catch (e) {
+                setError(true)
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        cargarRecibidas();
+    }, [pagina, filtros]);
 
     const handleAceptar = async (id) => {
       await aceptarIntercambio(id);
@@ -51,39 +76,25 @@ const RecibidasTab = ({ pendientes }) => {
                             }
                         `}</style>
 
-            <h6 className="fw-bold mt-3">PENDIENTES ({lista.length})</h6>
 
-            {lista.map(i => (
-                <IntercambioCard
-                    key={i.id}
-                    intercambio={i}
-                    izquierda="pide"
-                    derecha="ofrece"
-                    labelIzq="Te pide"
-                    labelDer="Te ofrece"
-                    badge={i.esNueva && { etiqueta: "Nueva", color: "warning" }}
-                    botones={
-                        <>
-                            <button
-                              className="btn btn-sm flex-fill btn-aceptar"
-                              onClick={() => handleAceptar(i.id)}
-                            >
-                              ✓ Aceptar
-                            </button>
+            {loading ? <p>Cargando resultados...</p>
+                :
+                <>
+                    <h6 className="fw-bold mt-3">PENDIENTES ({`${recibidas.resultados}`})</h6>
+                    {recibidas.data.map(i => (
+                        <IntercambioCard
+                            key={i.id}
+                            intercambio={i}
+                        />
+                    ))}
+                </>
+            }
 
-                            <button
-                              className="btn btn-sm flex-fill btn-rechazar"
-                              onClick={() => handleRechazar(i.id)}
-                            >
-                              ✗ Rechazar
-                            </button>
-                            <button onClick={() => setSelected(i)} className="btn btn-outline-dark btn-sm flex-fill">
-                                Ver más
-                            </button>
-                        </>
-                    }
-                />
-            ))}
+            <Paginacion
+                page={pagina}
+                totalPages={recibidas.paginas_totales ?? 1}
+                onChange={setPagina}
+            />
 
             <IntercambioModal
                 selected={selected}

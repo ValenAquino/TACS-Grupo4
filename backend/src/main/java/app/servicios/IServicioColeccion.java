@@ -2,15 +2,13 @@ package app.servicios;
 
 import app.dto.FaltantesDto;
 import app.dto.RepetidasDto;
-import app.model.entities.Figurita;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 
 import java.util.List;
 
-public interface IColeccionService {
+public interface IServicioColeccion {
 
     /**
      * Agrega la figurita indicada a la lista de faltantes de la colección.

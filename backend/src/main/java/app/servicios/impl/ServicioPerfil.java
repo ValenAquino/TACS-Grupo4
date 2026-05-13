@@ -1,6 +1,5 @@
 package app.servicios.impl;
 
-import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
 import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
@@ -26,7 +25,7 @@ import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IPerfilService;
+import app.servicios.IServicioPerfil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +35,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PerfilService implements IPerfilService {
+public class ServicioPerfil implements IServicioPerfil {
 
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioPropuestas repositorioPropuestas;

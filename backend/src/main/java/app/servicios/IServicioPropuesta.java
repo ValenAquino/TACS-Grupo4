@@ -2,9 +2,8 @@ package app.servicios;
 
 import app.dto.PropuestaDto;
 import app.dto.request.CrearPropuestaRequest;
-import app.model.entities.Propuesta;
 
-public interface IPropuestaService {
+public interface IServicioPropuesta {
 
     /**
      * Crea una propuesta de intercambio. Valida que el usuario origen,

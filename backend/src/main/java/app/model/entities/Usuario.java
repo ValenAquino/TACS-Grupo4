@@ -11,4 +11,6 @@ public class Usuario {
   @Id
   private String id;
   private Rol rol;
+  private String nombre;
+  private String contrasenia;
 }

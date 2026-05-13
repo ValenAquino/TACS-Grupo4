@@ -10,14 +10,14 @@ import app.model.entities.Seleccion;
 import app.model.entities.filtros.FiguritasFiltro;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IFiguritaService;
+import app.servicios.IServicioFigurita;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class FiguritaService implements IFiguritaService {
+public class ServicioFigurita implements IServicioFigurita {
 
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final RepositorioPerfiles repositorioPerfiles;

@@ -1,18 +1,16 @@
 package app.controllers;
 
-import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.FiguritaDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
-import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.dto.request.PerfilRequest;
-import app.servicios.IPerfilService;
+import app.servicios.IServicioPerfil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +19,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/perfil")
 @RequiredArgsConstructor
-public class PerfilController {
+public class ControladorPerfil {
 
-    private final IPerfilService perfilService;
+    private final IServicioPerfil perfilService;
 
     @PostMapping("")
     public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {

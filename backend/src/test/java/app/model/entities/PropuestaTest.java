@@ -18,8 +18,8 @@ public class PropuestaTest {
 
   @BeforeEach
   void setUp() {
-    origen = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Origen", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@origen")), List.of());
-    destino = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Destino", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@destino")), List.of());
+    origen = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Origen", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@origen")), List.of());
+    destino = new Perfil("2", new Usuario("u-2", Rol.USUARIO,"lucas", "fiscella"), "Destino", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@destino")), List.of());
 
     propuesta = new Propuesta(
         "123",
@@ -61,14 +61,14 @@ public class PropuestaTest {
 
   @Test
   void noDeberiaAceptarSiNoEsElUsuarioDestino() {
-    Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO), "Otro", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
+    Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO,"lucas", "fiscella"), "Otro", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
 
     assertThrows(PropuestaException.class, () -> propuesta.aceptar(otro));
   }
 
   @Test
   void noDeberiaRechazarSiNoEsElUsuarioDestino() {
-    Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO), "Otro", null,
+    Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO,"lucas", "fiscella"), "Otro", null,
         List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
 
     assertThrows(PropuestaException.class, () -> propuesta.rechazar(otro));

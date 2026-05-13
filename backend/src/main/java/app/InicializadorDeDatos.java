@@ -24,6 +24,9 @@ import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import app.repositories.RepositorioUsuario;
+import app.repositories.implMongo.RepositorioUsuarioMongo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -36,19 +39,22 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioFiguritas figuritas;
     private final RepositorioColecciones colecciones;
     private final RepositorioFiguritasIntercambiables intercambiables;
+    private final RepositorioUsuario sesion;
 
     public InicializadorDeDatos(RepositorioPerfiles perfiles,
                                 RepositorioPropuestas propuestas,
                                 RepositorioSubastas subastas,
                                 RepositorioColecciones colecciones,
                                 RepositorioFiguritas figuritas,
-                                RepositorioFiguritasIntercambiables intercambiables) {
+                                RepositorioFiguritasIntercambiables intercambiables,
+                                RepositorioUsuario sesion) {
         this.perfiles = perfiles;
         this.propuestas = propuestas;
         this.subastas = subastas;
         this.colecciones = colecciones;
         this.figuritas = figuritas;
         this.intercambiables = intercambiables;
+        this.sesion = sesion;
     }
 
     private List<MedioDeContacto> telegram(String numero) {
@@ -133,7 +139,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
         intercambiables.guardar(interMessi);
         intercambiables.guardar(interDiMaria);
         colecciones.guardar(coleccionLucas);
-        perfiles.guardar(new Perfil("1000", new Usuario("u-1000",  Rol.USUARIO), "Lucas",
+        Usuario user = new Usuario("u-1000",  Rol.USUARIO,"lucas_fis","gordo123");
+        sesion.guardar(user);
+        perfiles.guardar(new Perfil("1000", user, "Lucas",
             coleccionLucas, telegram("@lucas"), new ArrayList<>()));
 
         // Sofía
@@ -150,7 +158,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
         intercambiables.guardar(interMbappe);
         intercambiables.guardar(interGriezmann);
         colecciones.guardar(coleccionSofia);
-        perfiles.guardar(new Perfil("1001", new Usuario("u-1001", Rol.USUARIO), "Sofía",
+        user = new Usuario("u-1001", Rol.USUARIO,"sofia_ape","password");
+        sesion.guardar(user);
+        perfiles.guardar(new Perfil("1001", user, "Sofía",
             coleccionSofia, telegram("@sofia"), new ArrayList<>()));
 
         // Matías
@@ -162,7 +172,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionMatias.getFaltantes().add(kroos);
         intercambiables.guardar(interVinicius);
         colecciones.guardar(coleccionMatias);
-        perfiles.guardar(new Perfil("1002", new Usuario("u-1002",  Rol.USUARIO), "Matías",
+        user = new Usuario("u-1002",  Rol.USUARIO,"mati_crim","wordpass");
+        sesion.guardar(user);
+        perfiles.guardar(new Perfil("1002", user, "Matías",
             coleccionMatias, telegram("@matias"), new ArrayList<>()));
 
         // Juan
@@ -174,7 +186,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
         coleccionJuan.getFaltantes().add(kroos);
         intercambiables.guardar(interPedri);
         colecciones.guardar(coleccionJuan);
-        perfiles.guardar(new Perfil("1003", new Usuario("u-1003",  Rol.USUARIO), "Juan",
+        user =  new Usuario("u-1003",  Rol.USUARIO, "juan_jose","una contrasenia");
+        sesion.guardar(user);
+        perfiles.guardar(new Perfil("1003", user, "Juan",
             coleccionJuan, telegram("@juan"), new ArrayList<>()));
     }
 

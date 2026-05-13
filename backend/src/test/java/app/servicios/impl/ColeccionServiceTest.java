@@ -13,7 +13,7 @@ import app.model.entities.*;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.INotificacionService;
+import app.servicios.IServicioNotificacion;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +29,9 @@ class ColeccionServiceTest {
   private RepositorioColecciones repositorioColecciones;
   @Mock private RepositorioFiguritas repositorioFiguritas;
   @Mock private RepositorioPerfiles repositorioPerfiles;
-  @Mock private INotificacionService notificacionService;
+  @Mock private IServicioNotificacion notificacionService;
 
-  private ColeccionService service;
+  private ServicioColeccion service;
 
   private Perfil lucas;
   private Figurita messi;
@@ -39,7 +39,7 @@ class ColeccionServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new ColeccionService(repositorioFiguritas, repositorioColecciones,
+    service = new ServicioColeccion(repositorioFiguritas, repositorioColecciones,
         repositorioPerfiles, notificacionService);
 
     messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
@@ -47,7 +47,7 @@ class ColeccionServiceTest {
     coleccion = new Coleccion();
     coleccion.setId("col-1");
 
-    lucas = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Lucas",
+    lucas = new Perfil("1", new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella"), "Lucas",
         coleccion, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
   }
 
@@ -76,7 +76,7 @@ class ColeccionServiceTest {
 
   @Test
   void agregarRepetida_agregaFiguritaYNotificaInteresados() {
-    Perfil interesado = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Sofía",
+    Perfil interesado = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
         new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
 
     when(repositorioColecciones.buscarPorId("col-1")).thenReturn(coleccion);

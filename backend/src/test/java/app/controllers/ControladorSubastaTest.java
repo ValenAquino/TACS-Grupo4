@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SubastaControllerTest {
+class ControladorSubastaTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -54,10 +54,10 @@ class SubastaControllerTest {
     void setUp() {
         messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
 
-        sofia = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Sofía",
+        sofia = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
             new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
 
-        lucas = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Lucas",
+        lucas = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Lucas",
             new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
 
         subastaActiva = new Subasta("s-1", sofia,

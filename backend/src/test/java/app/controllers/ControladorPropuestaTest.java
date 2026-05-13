@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PropuestaControllerTest {
+class ControladorPropuestaTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -48,7 +48,7 @@ class PropuestaControllerTest {
     }
 
     private Perfil perfil(String id, String usuarioId, String handle) {
-        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), "", null, telegram(handle), new ArrayList<>());
+        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella"), "", null, telegram(handle), new ArrayList<>());
     }
 
     @Test

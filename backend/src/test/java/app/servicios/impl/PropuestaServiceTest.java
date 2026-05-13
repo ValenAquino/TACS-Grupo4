@@ -22,7 +22,7 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.INotificacionService;
+import app.servicios.IServicioNotificacion;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,10 +39,11 @@ class PropuestaServiceTest {
   @Mock RepositorioPerfiles repositorioUsuarios;
   @Mock RepositorioFiguritas repositorioFiguritas;
   @Mock RepositorioFiguritasIntercambiables repositorioIntercambiables;
-  @Mock INotificacionService notificacionesService;
+  @Mock
+  IServicioNotificacion notificacionesService;
 
   @InjectMocks
-  PropuestaService propuestaService;
+  ServicioPropuesta propuestaService;
 
   private Perfil lucas;
   private Perfil sofia;
@@ -51,9 +52,9 @@ class PropuestaServiceTest {
 
   @BeforeEach
   void setUp() {
-    lucas = new Perfil("1000", new Usuario("u-1000", Rol.USUARIO), "Lucas", new Coleccion(),
+    lucas = new Perfil("1000", new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella"), "Lucas", new Coleccion(),
         List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
-    sofia = new Perfil("1001", new Usuario("u-1001", Rol.USUARIO), "Sofía", new Coleccion(),
+    sofia = new Perfil("1001", new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella"), "Sofía", new Coleccion(),
         List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
     messi  = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, null);

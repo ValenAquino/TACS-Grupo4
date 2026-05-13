@@ -5,13 +5,13 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IEstadisticasService;
+import app.servicios.IServicioEstadisticas;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EstadisticasServiceImpl implements IEstadisticasService {
+public class ServicioEstadisticasImpl implements IServicioEstadisticas {
 
     private final RepositorioPerfiles repositorioUsuarios;
     private final RepositorioPropuestas repositorioPropuestas;
@@ -19,7 +19,7 @@ public class EstadisticasServiceImpl implements IEstadisticasService {
 
     @Override
     public EstadisticasDto obtenerEstadisticas() {
-        int totalUsuarios = repositorioUsuarios.contar();
+        long totalUsuarios = repositorioUsuarios.contar();
 
         int totalFiguritasPublicadas = repositorioUsuarios.buscarTodos().stream()
                 .mapToInt(u -> u.getColeccion().getRepetidas().size())

@@ -5,7 +5,7 @@ import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import java.util.List;
 
-public interface ISubastaService {
+public interface IServicioSubasta {
 
     /**
      * Crea una subasta para la figurita indicada y notifica a los usuarios

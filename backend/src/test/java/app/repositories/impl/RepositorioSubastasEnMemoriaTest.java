@@ -29,8 +29,8 @@ class RepositorioSubastasEnMemoriaTest {
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioSubastasEnMemoria();
-        p1 = new Perfil("1", new Usuario("u-1000", Rol.USUARIO), "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
-        p2 = new Perfil("2", new Usuario("u-1001", Rol.USUARIO), "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
+        p1 = new Perfil("1", new Usuario("u-1000", Rol.USUARIO,"lucas", "fiscella"), "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
+        p2 = new Perfil("2", new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella"), "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
     }
 
     @Test

@@ -25,25 +25,25 @@ class EstadisticasServiceImplTest {
     @Mock private RepositorioPropuestas repositorioPropuestas;
     @Mock private RepositorioSubastas repositorioSubastas;
 
-    private EstadisticasServiceImpl service;
+    private ServicioEstadisticasImpl service;
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
     }
 
     private Perfil perfil(String id, String usuarioId, String nombre) {
-        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO), nombre,
+        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella"), nombre,
             new Coleccion(), telegram("@" + nombre.toLowerCase()), new ArrayList<>());
     }
 
     @BeforeEach
     void setUp() {
-        service = new EstadisticasServiceImpl(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
+        service = new ServicioEstadisticasImpl(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
     }
 
     @Test
     void getEstadisticas_sinDatos_retornaTodosCeros() {
-        when(repositorioUsuarios.contar()).thenReturn(0);
+        when(repositorioUsuarios.contar()).thenReturn(0L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
         when(repositorioPropuestas.contar()).thenReturn(0);
         when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
@@ -65,13 +65,13 @@ class EstadisticasServiceImplTest {
         Coleccion coleccionConUna = new Coleccion();
         coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, List.of(MetodoIntercambio.INTERCAMBIO)));
 
-        Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
-        Perfil u2 = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO), "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());
+        Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella"), "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
+        Perfil u2 = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());
 
         Subasta subastaActiva = new Subasta("s-1", u1,
             LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
 
-        when(repositorioUsuarios.contar()).thenReturn(2);
+        when(repositorioUsuarios.contar()).thenReturn(2L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1, u2));
         when(repositorioPropuestas.contar()).thenReturn(4);
         when(repositorioSubastas.buscarTodos()).thenReturn(List.of(subastaActiva));
@@ -93,7 +93,7 @@ class EstadisticasServiceImplTest {
         Subasta vencida = new Subasta("s-2", u1,
             LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null);
 
-        when(repositorioUsuarios.contar()).thenReturn(1);
+        when(repositorioUsuarios.contar()).thenReturn(1L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
         when(repositorioPropuestas.contar()).thenReturn(0);
         when(repositorioSubastas.buscarTodos()).thenReturn(List.of(activa, vencida));

@@ -2,7 +2,7 @@ package app.servicios;
 
 import app.dto.EstadisticasDto;
 
-public interface IEstadisticasService {
+public interface IServicioEstadisticas {
 
     /**
      * Retorna estadísticas globales: total de usuarios, figuritas publicadas

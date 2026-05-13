@@ -4,7 +4,7 @@ import app.model.entities.Perfil;
 import app.model.notificador.Mensaje;
 import app.model.notificador.Notificacion;
 import app.repositories.RepositorioNotificaciones;
-import app.servicios.INotificacionService;
+import app.servicios.IServicioNotificacion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 @RequiredArgsConstructor
 @Service
-public class NotificacionService implements INotificacionService {
+public class ServicioNotificacion implements IServicioNotificacion {
 
   private final RepositorioNotificaciones repositorioNotificaciones;
 

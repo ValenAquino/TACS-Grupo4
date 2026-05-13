@@ -10,8 +10,8 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
-import app.servicios.INotificacionService;
-import app.servicios.IPropuestaService;
+import app.servicios.IServicioNotificacion;
+import app.servicios.IServicioPropuesta;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PropuestaService implements IPropuestaService {
+public class ServicioPropuesta implements IServicioPropuesta {
 
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
-  private final INotificacionService notificacionService;
+  private final IServicioNotificacion notificacionService;
 
   /**
    * Crea una propuesta de intercambio. Valida que el usuario origen,

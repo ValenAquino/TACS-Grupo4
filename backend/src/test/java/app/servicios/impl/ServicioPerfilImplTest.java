@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.OperacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
@@ -29,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class PerfilServiceImplTest {
+class ServicioPerfilImplTest {
 
   @Mock
   private RepositorioPerfiles repositorioPerfiles;
@@ -42,18 +41,18 @@ class PerfilServiceImplTest {
   @Mock
   private RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
 
-  private PerfilService service;
+  private ServicioPerfil service;
   private Perfil usuario;
   private Perfil otro;
 
   @BeforeEach
   void setUp() {
-    service = new PerfilService(repositorioPerfiles, repositorioPropuestas,
+    service = new ServicioPerfil(repositorioPerfiles, repositorioPropuestas,
         repositorioSubastas, repositorioFiguritasIntercambiables, repositorioNotificaciones);
 
-    usuario = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Lucas",
+    usuario = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Lucas",
         new Coleccion(), telegram("@lucas"), new ArrayList<>());
-    otro = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Sofía",
+    otro = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
         new Coleccion(), telegram("@sofia"), new ArrayList<>());
   }
 
@@ -214,7 +213,7 @@ class PerfilServiceImplTest {
     Coleccion coleccionOtro = new Coleccion();
     coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, new ArrayList<>()));
     coleccionOtro.getFaltantes().add(diMaria);
-    Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO), "Juan",
+    Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO, "lucas", "fiscella"), "Juan",
         coleccionOtro, telegram("@juan"), new ArrayList<>());
 
     when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);

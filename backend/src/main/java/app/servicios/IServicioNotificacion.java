@@ -3,7 +3,7 @@ package app.servicios;
 import app.model.entities.Perfil;
 import java.util.List;
 
-public interface INotificacionService {
+public interface IServicioNotificacion {
 
     /**
      * Persiste una notificación por cada perfil interesado.

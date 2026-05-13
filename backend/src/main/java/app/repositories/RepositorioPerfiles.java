@@ -12,7 +12,7 @@ public interface RepositorioPerfiles {
 
     List<Perfil> buscarTodos();
 
-    int contar();
+    long contar();
 
     List<Perfil> buscarPorFiguritaFaltante(Figurita figurita);
 

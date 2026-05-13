@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 class NotificadorTest {
 
   private Perfil perfil() {
-    return new Perfil("p-1", new Usuario("u-1", Rol.USUARIO), "Lucas",
+    return new Perfil("p-1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Lucas",
         new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")),
         new ArrayList<>());
   }

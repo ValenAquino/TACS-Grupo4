@@ -5,7 +5,7 @@ import app.dto.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 
-public interface IFiguritaService {
+public interface IServicioFigurita {
 
     /**
      * Busca figuritas intercambiables aplicando filtros opcionales y paginación.

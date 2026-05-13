@@ -1,15 +1,12 @@
 package app.controllers;
 
 import app.dto.FaltantesDto;
-import app.dto.FiguritaIntercambiableDto;
 import app.dto.RepetidasDto;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
-import app.model.entities.Figurita;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
-import app.servicios.IColeccionService;
+import app.servicios.IServicioColeccion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/colecciones")
 @RequiredArgsConstructor
-public class ColeccionController {
+public class ControladorColeccion {
 
-    private final IColeccionService coleccionService;
+    private final IServicioColeccion coleccionService;
 
     @PostMapping("/{col_id}/faltantes")
     public ResponseEntity<Void> agregarFaltante(

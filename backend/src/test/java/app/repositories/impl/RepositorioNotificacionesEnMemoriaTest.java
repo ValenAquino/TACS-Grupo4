@@ -35,8 +35,8 @@ public class RepositorioNotificacionesEnMemoriaTest {
     LocalDateTime fecha = LocalDateTime.now();
     Mensaje mensaje = new Mensaje("Mensaje1", fecha);
 
-    Perfil user1 = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Juan",   new Coleccion(), telegram("@juan"),   new ArrayList<>());
-    Perfil user2 = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Miguel", new Coleccion(), telegram("@miguel"), new ArrayList<>());
+    Perfil user1 = new Perfil("1", new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella"), "Juan",   new Coleccion(), telegram("@juan"),   new ArrayList<>());
+    Perfil user2 = new Perfil("2", new Usuario("u-2", Rol.USUARIO,"lucas", "fiscella"), "Miguel", new Coleccion(), telegram("@miguel"), new ArrayList<>());
 
     Notificacion notificacion1 = new Notificacion(mensaje, user1);
     Notificacion notificacion2 = new Notificacion(mensaje, user1);

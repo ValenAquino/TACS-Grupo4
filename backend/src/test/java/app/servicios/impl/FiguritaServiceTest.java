@@ -27,7 +27,8 @@ class FiguritaServiceTest {
 
   @Mock RepositorioFiguritasIntercambiables repositorioIntercambiables;
   @Mock RepositorioPerfiles repositorioPerfiles;
-  @InjectMocks FiguritaService figuritaService;
+  @InjectMocks
+  ServicioFigurita figuritaService;
 
   Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
   Figurita mbappe = new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, "Delantero");

@@ -1,21 +1,18 @@
 package app.servicios;
 
-import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
-import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.PerfilRequest;
-import app.model.entities.Calificacion;
 
 import app.model.entities.MetodoIntercambio;
 import java.util.List;
 
-public interface IPerfilService {
+public interface IServicioPerfil {
 
     PerfilDto crearPerfil(PerfilRequest perfil);
 

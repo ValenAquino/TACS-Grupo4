@@ -15,8 +15,8 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
-import app.servicios.INotificacionService;
-import app.servicios.ISubastaService;
+import app.servicios.IServicioNotificacion;
+import app.servicios.IServicioSubasta;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,11 +25,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SubastaServiceImpl implements ISubastaService {
+public class ServicioSubastaImpl implements IServicioSubasta {
   private final RepositorioSubastas repoSubasta;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repoFigurita;
-  private final INotificacionService notificacionService;
+  private final IServicioNotificacion notificacionService;
 
   @Override
   public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,

@@ -32,9 +32,9 @@ class RepositorioPropuestasEnMemoriaTest {
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioPropuestasEnMemoria();
-        u1 = new Perfil("u-1",new Usuario("u-1000",  Rol.USUARIO), "Lucas",  new Coleccion(), telegram("@lucas"),  new ArrayList<>());
-        u2 = new Perfil("u-2",new Usuario("u-1001",  Rol.USUARIO), "Sofía",  new Coleccion(), telegram("@sofia"),  new ArrayList<>());
-        u3 = new Perfil("u-3",new Usuario("u-1002",  Rol.USUARIO), "Matías", new Coleccion(), telegram("@matias"), new ArrayList<>());
+        u1 = new Perfil("u-1",new Usuario("u-1000",  Rol.USUARIO, "lucas", "fiscella"), "Lucas",  new Coleccion(), telegram("@lucas"),  new ArrayList<>());
+        u2 = new Perfil("u-2",new Usuario("u-1001",  Rol.USUARIO, "lucas", "fiscella"), "Sofía",  new Coleccion(), telegram("@sofia"),  new ArrayList<>());
+        u3 = new Perfil("u-3",new Usuario("u-1002",  Rol.USUARIO,"lucas", "fiscella"), "Matías", new Coleccion(), telegram("@matias"), new ArrayList<>());
     }
 
     @Test

@@ -15,7 +15,7 @@ class SubastaTest {
 
     @BeforeEach
     void setUp() {
-        usuario = new Perfil("u-1", new Usuario("u-1000", Rol.USUARIO), "Lucas", new Coleccion(),
+        usuario = new Perfil("u-1", new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella"), "Lucas", new Coleccion(),
             List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
     }
 

@@ -4,7 +4,7 @@ import app.dto.request.CrearSubastaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.MisSubastasResponseDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
-import app.servicios.ISubastaService;
+import app.servicios.IServicioSubasta;
 import app.dto.subasta.SubastaDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +16,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/subastas")
 @RequiredArgsConstructor
-public class SubastaController {
-    private final ISubastaService subastaService;
+public class ControladorSubasta {
+    private final IServicioSubasta subastaService;
 
     @PostMapping
     public ResponseEntity<Void> crearSubasta(@RequestBody CrearSubastaRequest body) {

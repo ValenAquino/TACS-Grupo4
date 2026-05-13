@@ -12,21 +12,20 @@ import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IColeccionService;
-import app.servicios.INotificacionService;
+import app.servicios.IServicioColeccion;
+import app.servicios.IServicioNotificacion;
 import java.util.List;
-import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ColeccionService implements IColeccionService {
+public class ServicioColeccion implements IServicioColeccion {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioPerfiles repositorioUsuarios;
-  private final INotificacionService notificacionService;
+  private final IServicioNotificacion notificacionService;
 
   @Override
   public void agregarFaltante(String colId, String figId) {

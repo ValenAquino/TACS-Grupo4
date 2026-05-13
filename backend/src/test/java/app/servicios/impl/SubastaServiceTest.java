@@ -12,7 +12,7 @@ import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
 import app.repositories.impl.RepositorioNotificacionesEnMemoria;
-import app.servicios.ISubastaService;
+import app.servicios.IServicioSubasta;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class SubastaServiceTest {
   private RepositorioFiguritas repositorioFiguritas;
 
   private RepositorioNotificaciones repositorioNotificaciones;
-  private ISubastaService service;
+  private IServicioSubasta service;
 
   private Perfil lucas;
   private Perfil sofia;
@@ -46,20 +46,20 @@ public class SubastaServiceTest {
   @BeforeEach
   void setUp() {
     this.repositorioNotificaciones = new RepositorioNotificacionesEnMemoria();
-    NotificacionService serviceNotificacion = new NotificacionService(repositorioNotificaciones);
-    service = new SubastaServiceImpl(repositorioSubastas, repositorioPerfiles,
+    ServicioNotificacion serviceNotificacion = new ServicioNotificacion(repositorioNotificaciones);
+    service = new ServicioSubastaImpl(repositorioSubastas, repositorioPerfiles,
         repositorioFiguritas, serviceNotificacion);
 
     messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
 
     Coleccion coleccionSinMessi = new Coleccion();
     coleccionSinMessi.getFaltantes().add(messi);
-    lucas = new Perfil("1", new Usuario("u-1", Rol.USUARIO), "Lucas",
+    lucas = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Lucas",
         coleccionSinMessi, telegram("@lucas"), new ArrayList<>());
 
     Coleccion coleccionRepetidos = new Coleccion();
     coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
-    sofia = new Perfil("2", new Usuario("u-2", Rol.USUARIO), "Sofía",
+    sofia = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
         coleccionRepetidos, telegram("@sofia"), new ArrayList<>());
   }
 

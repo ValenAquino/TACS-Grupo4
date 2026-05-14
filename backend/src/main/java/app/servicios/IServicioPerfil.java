@@ -33,7 +33,9 @@ public interface IServicioPerfil {
      * Agrega una calificación de {@code autor} al perfil destino.
      * Valida que el valor esté entre 1 y 5 inclusive.
      */
-    void agregarCalificacion(String autorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion);
+    void agregarCalificacion(String autorId, String perfilDestinoId,
+                             Integer valor, String descripcion,
+                             String transactionId, MetodoIntercambio tipoTransaccion);
 
 
     /**

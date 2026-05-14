@@ -13,6 +13,7 @@ import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
+import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPerfiles;
@@ -40,6 +41,8 @@ class ServicioPerfilImplTest {
   private RepositorioNotificaciones repositorioNotificaciones;
   @Mock
   private RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
+  @Mock
+  private RepositorioCalificacion repositorioCalificacion;
 
   private ServicioPerfil service;
   private Perfil usuario;
@@ -47,13 +50,20 @@ class ServicioPerfilImplTest {
 
   @BeforeEach
   void setUp() {
-    service = new ServicioPerfil(repositorioPerfiles, repositorioPropuestas,
+    service = new ServicioPerfil(repositorioCalificacion, repositorioPerfiles, repositorioPropuestas,
         repositorioSubastas, repositorioFiguritasIntercambiables, repositorioNotificaciones);
 
-    usuario = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Lucas",
-        new Coleccion(), telegram("@lucas"), new ArrayList<>());
-    otro = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
-        new Coleccion(), telegram("@sofia"), new ArrayList<>());
+    Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
+    usuario = Perfil.builder()
+        .id("1").usuario(user).nombre("Lucas")
+        .mediosDeContacto(telegram("@lucas"))
+        .build();
+
+    user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
+    otro = Perfil.builder()
+        .id("otro").usuario(user).nombre("Sofía")
+        .mediosDeContacto(telegram("@sofía"))
+        .build();
   }
 
   private List<MedioDeContacto> telegram(String numero) {
@@ -213,8 +223,13 @@ class ServicioPerfilImplTest {
     Coleccion coleccionOtro = new Coleccion();
     coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, new ArrayList<>()));
     coleccionOtro.getFaltantes().add(diMaria);
-    Perfil otroConMessi = new Perfil("u-3", new Usuario("usr-3", Rol.USUARIO, "lucas", "fiscella"), "Juan",
-        coleccionOtro, telegram("@juan"), new ArrayList<>());
+
+    Usuario user = new Usuario("usr-3", Rol.USUARIO, "lucas", "fiscella");
+    Perfil otroConMessi = Perfil.builder()
+        .id("3").usuario(user).nombre("Juan")
+        .coleccion(coleccionOtro)
+        .mediosDeContacto(telegram("@juan"))
+        .build();
 
     when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(usuario);
     when(repositorioPerfiles.buscarTodos()).thenReturn(List.of(usuario, otroConMessi));

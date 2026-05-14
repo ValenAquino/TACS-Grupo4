@@ -32,8 +32,11 @@ class EstadisticasServiceImplTest {
     }
 
     private Perfil perfil(String id, String usuarioId, String nombre) {
-        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella"), nombre,
-            new Coleccion(), telegram("@" + nombre.toLowerCase()), new ArrayList<>());
+        Usuario user = new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella");
+        return Perfil.builder()
+            .id(id).usuario(user).nombre("nombre")
+            .mediosDeContacto(telegram("@" + nombre.toLowerCase()))
+            .build();
     }
 
     @BeforeEach
@@ -65,8 +68,19 @@ class EstadisticasServiceImplTest {
         Coleccion coleccionConUna = new Coleccion();
         coleccionConUna.getRepetidas().add(new FiguritaIntercambiable(null, 3, List.of(MetodoIntercambio.INTERCAMBIO)));
 
-        Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella"), "Lucas", coleccionConDos, telegram("@lucas"), new ArrayList<>());
-        Perfil u2 = new Perfil("u-2", new Usuario("usr-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía", coleccionConUna, telegram("@sofia"), new ArrayList<>());
+        Usuario user =  new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
+        Perfil u1 = Perfil.builder()
+            .id("u-1").usuario(user).nombre("Lucas")
+            .mediosDeContacto(telegram("@lucas"))
+            .coleccion(coleccionConDos)
+            .build();
+
+        user = new Usuario("usr-2", Rol.USUARIO, "lucas", "fiscella");
+        Perfil u2 = Perfil.builder()
+            .id("u-2").usuario(user).nombre("Sofía")
+            .mediosDeContacto(telegram("@sofia"))
+            .coleccion(coleccionConUna)
+            .build();
 
         Subasta subastaActiva = new Subasta("s-1", u1,
             LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);

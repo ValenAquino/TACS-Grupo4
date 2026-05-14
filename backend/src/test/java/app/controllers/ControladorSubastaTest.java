@@ -54,11 +54,17 @@ class ControladorSubastaTest {
     void setUp() {
         messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
 
-        sofia = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
-            new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
+        Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
+        sofia = Perfil.builder()
+            .id("1").usuario(user).nombre("Sofía")
+            .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")))
+            .build();
 
-        lucas = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Lucas",
-            new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
+        user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
+        lucas = Perfil.builder()
+            .id("2").usuario(user).nombre("Lucas")
+            .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")))
+            .build();
 
         subastaActiva = new Subasta("s-1", sofia,
             LocalDateTime.now().minusHours(1),

@@ -47,8 +47,10 @@ class ColeccionServiceTest {
     coleccion = new Coleccion();
     coleccion.setId("col-1");
 
-    lucas = new Perfil("1", new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella"), "Lucas",
-        coleccion, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
+    Usuario user = new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella");
+    lucas = Perfil.builder()
+        .id("1").usuario(user).nombre("Lucas").coleccion(coleccion)
+        .build();
   }
 
   @Test
@@ -76,8 +78,10 @@ class ColeccionServiceTest {
 
   @Test
   void agregarRepetida_agregaFiguritaYNotificaInteresados() {
-    Perfil interesado = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
-        new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
+    Usuario user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
+    Perfil interesado = Perfil.builder()
+        .id("2").usuario(user).nombre("Sofía")
+        .build();
 
     when(repositorioColecciones.buscarPorId("col-1")).thenReturn(coleccion);
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);

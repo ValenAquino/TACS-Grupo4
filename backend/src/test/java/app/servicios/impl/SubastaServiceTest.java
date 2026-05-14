@@ -54,13 +54,24 @@ public class SubastaServiceTest {
 
     Coleccion coleccionSinMessi = new Coleccion();
     coleccionSinMessi.getFaltantes().add(messi);
-    lucas = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Lucas",
-        coleccionSinMessi, telegram("@lucas"), new ArrayList<>());
+
+    Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
+    lucas = Perfil.builder()
+        .id("1").usuario(user).nombre("Lucas")
+        .coleccion(coleccionSinMessi)
+        .mediosDeContacto(telegram("@lucas"))
+        .build();
+
 
     Coleccion coleccionRepetidos = new Coleccion();
     coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
-    sofia = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
-        coleccionRepetidos, telegram("@sofia"), new ArrayList<>());
+
+    user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
+    sofia = Perfil.builder()
+        .id("2").usuario(user).nombre("Sofía")
+        .coleccion(coleccionRepetidos)
+        .mediosDeContacto(telegram("@sofia"))
+        .build();
   }
 
   @Test
@@ -121,7 +132,7 @@ public class SubastaServiceTest {
         messi);
 
     Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
-    subasta.getOfertas().add(propuesta);
+    subasta.agregarOferta(propuesta);
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
 

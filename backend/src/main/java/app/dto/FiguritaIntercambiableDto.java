@@ -33,7 +33,7 @@ public class FiguritaIntercambiableDto {
     this.metodos = f.getMetodos();
     this.usuarioId = f.getPerfilId();
     this.nombreUsuario = perfil != null ? perfil.getNombre() : null;
-    this.reputacion = perfil != null ? (int) Math.round(perfil.obtenerCalificacionMedia()) : null;
+    this.reputacion = perfil != null ? (int) Math.round(perfil.getCalificacionMedia()) : null;
   }
 
   public FiguritaIntercambiableDto(FiguritaIntercambiable f) {

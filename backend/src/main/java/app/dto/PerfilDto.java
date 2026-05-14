@@ -16,7 +16,7 @@ public class PerfilDto {
     this.usuarioId = perfil.getUsuario().getId();
     this.id = perfil.getId();
     this.nombre = perfil.getNombre();
-    this.calificacion = perfil.obtenerCalificacionMedia();
+    this.calificacion = perfil.getCalificacionMedia();
     this.iniciales = calcularIniciales(nombre);
   }
 

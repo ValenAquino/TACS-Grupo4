@@ -48,7 +48,11 @@ class ControladorPropuestaTest {
     }
 
     private Perfil perfil(String id, String usuarioId, String handle) {
-        return new Perfil(id, new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella"), "", null, telegram(handle), new ArrayList<>());
+        Usuario user = new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella");
+        return Perfil.builder()
+            .id(id).usuario(user).nombre("")
+            .mediosDeContacto(telegram(handle))
+            .build();
     }
 
     @Test

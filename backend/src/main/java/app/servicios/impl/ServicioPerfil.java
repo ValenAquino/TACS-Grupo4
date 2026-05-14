@@ -20,6 +20,7 @@ import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
+import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ServicioPerfil implements IServicioPerfil {
 
+  private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioSubastas repositorioSubastas;
@@ -45,7 +47,8 @@ public class ServicioPerfil implements IServicioPerfil {
 
   @Override
   public PerfilDto crearPerfil(PerfilRequest body){
-    Perfil perfil = new Perfil(null, null, body.getNombre(), new Coleccion(), new ArrayList<>(), new ArrayList<>());
+    //Todo: buscar sesion y mandarselo por parametro al perfil
+    Perfil perfil = Perfil.builder().usuario(null).nombre(body.getNombre()).build();
 
     this.repositorioPerfiles.guardar(perfil);
 
@@ -101,7 +104,9 @@ public class ServicioPerfil implements IServicioPerfil {
     }
 
   @Override
-  public void agregarCalificacion(String userAutorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
+  public void agregarCalificacion(String userAutorId, String perfilDestinoId,
+                                  Integer valor, String descripcion, String transactionId,
+                                  MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
       throw new BadRequestException("El valor de la calificación no puede ser nulo");
     }
@@ -110,10 +115,8 @@ public class ServicioPerfil implements IServicioPerfil {
     }
 
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
-    if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
 
     Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
-    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
@@ -122,19 +125,13 @@ public class ServicioPerfil implements IServicioPerfil {
 
     if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
 
-    Calificacion calificacion = new Calificacion(
-        UUID.randomUUID().toString(),
-        autor,
-        valor,
-        descripcion,
-        transactionId,
-        tipoTransaccion
-    );
-    System.out.println(perfilDestino.obtenerCalificacionMedia());
+    Calificacion calificacion = Calificacion.builder()
+        .autor(autor).valor(valor).descripcion(descripcion)
+        .tipoTransaccion(tipoTransaccion).transactionId(transactionId).build();
 
     perfilDestino.agregarNuevaCalificacion(calificacion);
 
-    System.out.println(perfilDestino.obtenerCalificacionMedia());
+    this.repositorioCalificacion.guardar(calificacion);
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 
@@ -151,6 +148,8 @@ public class ServicioPerfil implements IServicioPerfil {
       perfil.getColeccion().getRepetidas().forEach(miRepetida -> {
 
         perfilObjetivo.getColeccion().getRepetidas().forEach(suRepetida -> {
+
+          System.out.println(perfilObjetivo.getNombre());
 
           boolean yoNecesito = perfilObjetivo
               .getColeccion()

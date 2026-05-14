@@ -30,7 +30,11 @@ class RepositorioPerfilesEnMemoriaTest {
 
     @Test
     void save_y_findById_retornaPerfil() {
-        Perfil perfil = new Perfil("u-1",new Usuario("u-1000",  Rol.USUARIO, "lucas", "fiscella"), "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
+        Usuario user = new Usuario("u-1000",  Rol.USUARIO, "lucas", "fiscella");
+        Perfil perfil = Perfil.builder()
+            .id("u-1").usuario(user).nombre("Lucas")
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
 
         repositorio.guardar(perfil);
 
@@ -44,9 +48,23 @@ class RepositorioPerfilesEnMemoriaTest {
 
     @Test
     void buscarPorFiguritaFaltanteDevuelve2() {
-        Perfil perfil  = new Perfil("u-1", new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella"), "Lucas",    new Coleccion(), telegram("@lucas"),    new ArrayList<>());
-        Perfil perfil2 = new Perfil("u-2", new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella"), "Juan",     new Coleccion(), telegram("@juan"),     new ArrayList<>());
-        Perfil perfil3 = new Perfil("u-4", new Usuario("u-1002", Rol.USUARIO, "lucas", "fiscella"), "Cristina", new Coleccion(), telegram("@cristina"), new ArrayList<>());
+        Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
+        Perfil perfil = Perfil.builder()
+            .id("u-1").usuario(user).nombre("Lucas")
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        user = new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella");
+        Perfil perfil2 = Perfil.builder()
+            .id("u-2").usuario(user).nombre("Juan")
+            .mediosDeContacto(telegram("@juan"))
+            .build();
+
+        user = new Usuario("u-1002", Rol.USUARIO, "lucas", "fiscella");
+        Perfil perfil3 = Perfil.builder()
+            .id("u-4").usuario(user).nombre("Cristina")
+            .mediosDeContacto(telegram("@cristina"))
+            .build();
 
         Figurita messi   = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
         Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);

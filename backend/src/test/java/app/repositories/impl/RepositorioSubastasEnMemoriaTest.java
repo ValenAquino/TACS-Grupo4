@@ -29,8 +29,18 @@ class RepositorioSubastasEnMemoriaTest {
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioSubastasEnMemoria();
-        p1 = new Perfil("1", new Usuario("u-1000", Rol.USUARIO,"lucas", "fiscella"), "Lucas", new Coleccion(), telegram("@lucas"), new ArrayList<>());
-        p2 = new Perfil("2", new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella"), "Sofía", new Coleccion(), telegram("@sofia"), new ArrayList<>());
+
+        Usuario user = new Usuario("u-1000", Rol.USUARIO,"lucas", "fiscella");
+        p1 = Perfil.builder()
+            .id("1").usuario(user).nombre("Lucas")
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        user = new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella");
+        p2 = Perfil.builder()
+            .id("2").usuario(user).nombre("Sofía")
+            .mediosDeContacto(telegram("@sofia"))
+            .build();
     }
 
     @Test

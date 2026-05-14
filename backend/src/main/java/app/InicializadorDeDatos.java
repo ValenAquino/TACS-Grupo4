@@ -15,6 +15,7 @@ import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
+import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
@@ -40,6 +41,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioColecciones colecciones;
     private final RepositorioFiguritasIntercambiables intercambiables;
     private final RepositorioUsuario sesion;
+    private final RepositorioCalificacion calificaciones;
 
     public InicializadorDeDatos(RepositorioPerfiles perfiles,
                                 RepositorioPropuestas propuestas,
@@ -47,7 +49,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
                                 RepositorioColecciones colecciones,
                                 RepositorioFiguritas figuritas,
                                 RepositorioFiguritasIntercambiables intercambiables,
-                                RepositorioUsuario sesion) {
+                                RepositorioUsuario sesion, RepositorioCalificacion calificaciones) {
         this.perfiles = perfiles;
         this.propuestas = propuestas;
         this.subastas = subastas;
@@ -55,6 +57,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         this.figuritas = figuritas;
         this.intercambiables = intercambiables;
         this.sesion = sesion;
+      this.calificaciones = calificaciones;
     }
 
     private List<MedioDeContacto> telegram(String numero) {
@@ -128,68 +131,77 @@ public class InicializadorDeDatos implements CommandLineRunner {
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
                                 Figurita pedri, Figurita kroos, Figurita neymar) {
         // Lucas
-        Coleccion coleccionLucas = new Coleccion();
-        coleccionLucas.setId("1");
-        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
-        coleccionLucas.getRepetidas().add(interMessi);
-        coleccionLucas.getRepetidas().add(interDiMaria);
-        coleccionLucas.getFaltantes().add(mbappe);
-        coleccionLucas.getFaltantes().add(vinicius);
-        intercambiables.guardar(interMessi);
-        intercambiables.guardar(interDiMaria);
-        colecciones.guardar(coleccionLucas);
-        Usuario user = new Usuario("u-1000",  Rol.USUARIO,"lucas_fis","gordo123");
-        sesion.guardar(user);
-        perfiles.guardar(new Perfil("1000", user, "Lucas",
-            coleccionLucas, telegram("@lucas"), new ArrayList<>()));
+      Coleccion coleccionLucas = new Coleccion();
+      coleccionLucas.setId("1");
+      FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+      FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
+      coleccionLucas.getRepetidas().add(interMessi);
+      coleccionLucas.getRepetidas().add(interDiMaria);
+      coleccionLucas.getFaltantes().add(mbappe);
+      coleccionLucas.getFaltantes().add(vinicius);
+      intercambiables.guardar(interMessi);
+      intercambiables.guardar(interDiMaria);
+      colecciones.guardar(coleccionLucas);
+      Usuario user = new Usuario("u-1000",  Rol.USUARIO,"lucas_fis","gordo123");
+      sesion.guardar(user);
+      perfiles.guardar(Perfil.builder()
+          .id("1000").usuario(user)
+          .nombre("lucas").coleccion(coleccionLucas)
+          .mediosDeContacto(telegram("@lucas")).build());
 
-        // Sofía
-        Coleccion coleccionSofia = new Coleccion();
-        coleccionSofia.setId("2");
-        FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
-        FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
+      // Sofía
+      Coleccion coleccionSofia = new Coleccion();
+      coleccionSofia.setId("2");
+      FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
+      FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
       FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
-        coleccionSofia.getRepetidas().add(interMbappe);
-        coleccionSofia.getRepetidas().add(interGriezmann);
+      coleccionSofia.getRepetidas().add(interMbappe);
+      coleccionSofia.getRepetidas().add(interGriezmann);
       coleccionSofia.getRepetidas().add(interNeymar);
-        coleccionSofia.getFaltantes().add(messi);
-        coleccionSofia.getFaltantes().add(lautaro);
-        intercambiables.guardar(interMbappe);
-        intercambiables.guardar(interGriezmann);
-        colecciones.guardar(coleccionSofia);
-        user = new Usuario("u-1001", Rol.USUARIO,"sofia_ape","password");
-        sesion.guardar(user);
-        perfiles.guardar(new Perfil("1001", user, "Sofía",
-            coleccionSofia, telegram("@sofia"), new ArrayList<>()));
+      coleccionSofia.getFaltantes().add(messi);
+      coleccionSofia.getFaltantes().add(lautaro);
+      intercambiables.guardar(interMbappe);
+      intercambiables.guardar(interGriezmann);
+      colecciones.guardar(coleccionSofia);
+      user = new Usuario("u-1001", Rol.USUARIO,"sofia_ape","password");
+      sesion.guardar(user);
 
-        // Matías
-        Coleccion coleccionMatias = new Coleccion();
-        coleccionMatias.setId("3");
-        FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1002");
-        coleccionMatias.getRepetidas().add(interVinicius);
-        coleccionMatias.getFaltantes().add(pedri);
-        coleccionMatias.getFaltantes().add(kroos);
-        intercambiables.guardar(interVinicius);
-        colecciones.guardar(coleccionMatias);
-        user = new Usuario("u-1002",  Rol.USUARIO,"mati_crim","wordpass");
-        sesion.guardar(user);
-        perfiles.guardar(new Perfil("1002", user, "Matías",
-            coleccionMatias, telegram("@matias"), new ArrayList<>()));
+      perfiles.guardar(Perfil.builder()
+        .id("1001").usuario(user)
+        .nombre("Sofía").coleccion(coleccionSofia)
+        .mediosDeContacto(telegram("@sofia")).build());
 
-        // Juan
-        Coleccion coleccionJuan = new Coleccion();
-        coleccionJuan.setId("4");
-        FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
-        coleccionJuan.getRepetidas().add(interPedri);
-        coleccionJuan.getFaltantes().add(pedri);
-        coleccionJuan.getFaltantes().add(kroos);
-        intercambiables.guardar(interPedri);
-        colecciones.guardar(coleccionJuan);
-        user =  new Usuario("u-1003",  Rol.USUARIO, "juan_jose","una contrasenia");
-        sesion.guardar(user);
-        perfiles.guardar(new Perfil("1003", user, "Juan",
-            coleccionJuan, telegram("@juan"), new ArrayList<>()));
+      // Matías
+      Coleccion coleccionMatias = new Coleccion();
+      coleccionMatias.setId("3");
+      FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1002");
+      coleccionMatias.getRepetidas().add(interVinicius);
+      coleccionMatias.getFaltantes().add(pedri);
+      coleccionMatias.getFaltantes().add(kroos);
+      intercambiables.guardar(interVinicius);
+      colecciones.guardar(coleccionMatias);
+      user = new Usuario("u-1002",  Rol.USUARIO,"mati_crim","wordpass");
+      sesion.guardar(user);
+      perfiles.guardar(Perfil.builder()
+        .id("1002").usuario(user)
+        .nombre("Matías").coleccion(coleccionMatias)
+        .mediosDeContacto(telegram("@matias")).build());
+
+      // Juan
+      Coleccion coleccionJuan = new Coleccion();
+      coleccionJuan.setId("4");
+      FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
+      coleccionJuan.getRepetidas().add(interPedri);
+      coleccionJuan.getFaltantes().add(pedri);
+      coleccionJuan.getFaltantes().add(kroos);
+      intercambiables.guardar(interPedri);
+      colecciones.guardar(coleccionJuan);
+      user =  new Usuario("u-1003",  Rol.USUARIO, "juan_jose","una contrasenia");
+      sesion.guardar(user);
+      perfiles.guardar(Perfil.builder()
+        .id("1003").usuario(user)
+        .nombre("Juan").coleccion(coleccionJuan)
+        .mediosDeContacto(telegram("@juan")).build());
     }
 
     private void cargarCalificaciones() {
@@ -339,8 +351,11 @@ public class InicializadorDeDatos implements CommandLineRunner {
             new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)),
             new ArrayList<>(), 0, true);
         ofertaJuan1.aceptar(sofia);
-        sofia.agregarNuevaCalificacion(new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA));
+        Calificacion calificacion = new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA);
+        sofia.agregarNuevaCalificacion(calificacion);
         subastas.guardar(subasta8);
+        calificaciones.guardar(calificacion);
+        perfiles.guardar(sofia);
 
         // ─── SUBASTAS DONDE LUCAS NO PARTICIPÓ ────────────────
 

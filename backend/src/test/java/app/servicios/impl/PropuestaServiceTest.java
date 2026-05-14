@@ -52,10 +52,15 @@ class PropuestaServiceTest {
 
   @BeforeEach
   void setUp() {
-    lucas = new Perfil("1000", new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella"), "Lucas", new Coleccion(),
-        List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")), new ArrayList<>());
-    sofia = new Perfil("1001", new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella"), "Sofía", new Coleccion(),
-        List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
+    Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
+    lucas = Perfil.builder()
+        .id("1000").usuario(user).nombre("Lucas")
+        .build();
+
+    user = new Usuario("u-1001", Rol.USUARIO, "Sofía", "fiscella");
+    sofia = Perfil.builder()
+        .id("1001").usuario(user).nombre("Sofía")
+        .build();
     messi  = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, null);
   }

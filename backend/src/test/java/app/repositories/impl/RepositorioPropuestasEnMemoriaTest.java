@@ -32,9 +32,25 @@ class RepositorioPropuestasEnMemoriaTest {
     @BeforeEach
     void setUp() {
         repositorio = new RepositorioPropuestasEnMemoria();
-        u1 = new Perfil("u-1",new Usuario("u-1000",  Rol.USUARIO, "lucas", "fiscella"), "Lucas",  new Coleccion(), telegram("@lucas"),  new ArrayList<>());
-        u2 = new Perfil("u-2",new Usuario("u-1001",  Rol.USUARIO, "lucas", "fiscella"), "Sofía",  new Coleccion(), telegram("@sofia"),  new ArrayList<>());
-        u3 = new Perfil("u-3",new Usuario("u-1002",  Rol.USUARIO,"lucas", "fiscella"), "Matías", new Coleccion(), telegram("@matias"), new ArrayList<>());
+
+        Usuario user = new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella");
+        u1 = Perfil.builder()
+            .id("1").usuario(user).nombre("Lucas")
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
+        u2 = Perfil.builder()
+            .id("2").usuario(user).nombre("Sofía")
+            .mediosDeContacto(telegram("@sofia"))
+            .build();
+
+        user = new Usuario("u-3",  Rol.USUARIO,"lucas", "fiscella");
+
+        u3 = Perfil.builder()
+            .id("3").usuario(user).nombre("Matías")
+            .mediosDeContacto(telegram("@matias"))
+            .build();
     }
 
     @Test
@@ -47,7 +63,7 @@ class RepositorioPropuestasEnMemoriaTest {
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 
-        List<Propuesta> resultado = repositorio.buscarPorAutorId("u-1");
+        List<Propuesta> resultado = repositorio.buscarPorAutorId("1");
 
         assertEquals(1, resultado.size());
         assertEquals("p-1", resultado.get(0).getId());
@@ -63,7 +79,7 @@ class RepositorioPropuestasEnMemoriaTest {
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 
-        List<Propuesta> resultado = repositorio.buscarPorDestinatarioId("u-2");
+        List<Propuesta> resultado = repositorio.buscarPorDestinatarioId("2");
 
         assertEquals(1, resultado.size());
         assertEquals("p-1", resultado.get(0).getId());

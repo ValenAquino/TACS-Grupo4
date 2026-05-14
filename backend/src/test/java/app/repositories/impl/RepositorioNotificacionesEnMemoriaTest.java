@@ -35,14 +35,23 @@ public class RepositorioNotificacionesEnMemoriaTest {
     LocalDateTime fecha = LocalDateTime.now();
     Mensaje mensaje = new Mensaje("Mensaje1", fecha);
 
-    Perfil user1 = new Perfil("1", new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella"), "Juan",   new Coleccion(), telegram("@juan"),   new ArrayList<>());
-    Perfil user2 = new Perfil("2", new Usuario("u-2", Rol.USUARIO,"lucas", "fiscella"), "Miguel", new Coleccion(), telegram("@miguel"), new ArrayList<>());
+    Usuario user = new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella");
+    Perfil perfil1 = Perfil.builder()
+        .id("1").usuario(user).nombre("Juan")
+        .mediosDeContacto(telegram("@juan"))
+        .build();
 
-    Notificacion notificacion1 = new Notificacion(mensaje, user1);
-    Notificacion notificacion2 = new Notificacion(mensaje, user1);
-    Notificacion notificacion3 = new Notificacion(mensaje, user1);
-    Notificacion notificacion4 = new Notificacion(mensaje, user2);
-    Notificacion notificacion5 = new Notificacion(mensaje, user2);
+    user = new Usuario("u-2", Rol.USUARIO,"lucas", "fiscella");
+    Perfil perfil2 = Perfil.builder()
+        .id("2").usuario(user)
+        .nombre("Miguel").mediosDeContacto(telegram("@miguel"))
+        .build();
+
+    Notificacion notificacion1 = new Notificacion(mensaje, perfil1);
+    Notificacion notificacion2 = new Notificacion(mensaje, perfil1);
+    Notificacion notificacion3 = new Notificacion(mensaje, perfil1);
+    Notificacion notificacion4 = new Notificacion(mensaje, perfil2);
+    Notificacion notificacion5 = new Notificacion(mensaje, perfil2);
 
     repositorio.guardar(notificacion1);
     repositorio.guardar(notificacion2);
@@ -50,6 +59,6 @@ public class RepositorioNotificacionesEnMemoriaTest {
     repositorio.guardar(notificacion4);
     repositorio.guardar(notificacion5);
 
-    assertEquals(3, repositorio.buscarPorUsuario(user1).size());
+    assertEquals(3, repositorio.buscarPorUsuario(perfil1).size());
   }
 }

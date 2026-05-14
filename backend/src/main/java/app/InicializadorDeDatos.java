@@ -214,6 +214,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       figuritas.add(messi);
 
       propuestas.guardar(propuesta("2000", lucas, sofia, figuritas, mbappe, EstadoProceso.PENDIENTE));
+      propuestas.guardar(propuesta("2001", lucas, sofia, figuritas, mbappe, EstadoProceso.ACEPTADO));
 
       figuritas = new ArrayList<>();
       figuritas.add(griezmann);
@@ -222,6 +223,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
       figuritas = new ArrayList<>();
       figuritas.add(vinicius);
       propuestas.guardar(propuesta("2002", matias, lucas, figuritas, diMaria, EstadoProceso.RECHAZADO));
+      propuestas.guardar(propuesta("2003", matias, lucas, figuritas, diMaria, EstadoProceso.ACEPTADO));
+
     }
 
     private void cargarSubastas(Figurita messi, Figurita diMaria, Figurita lautaro,

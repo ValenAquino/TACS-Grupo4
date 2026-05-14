@@ -18,7 +18,6 @@ public class Propuesta {
     private List<Figurita> figuritasOfrecidas;
     private Figurita figuritaBuscada;
     private List<EstadoPropuesta> estado;
-    private boolean calificada;
 
     public Propuesta(String id, Perfil autor, Perfil destinatario, List<Figurita> figuritasOfrecidas,
                      Figurita figuritaBuscada) {
@@ -30,7 +29,6 @@ public class Propuesta {
         this.estado = new ArrayList<>(
             List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))
         );
-        this.calificada = false;
     }
 
 
@@ -102,12 +100,4 @@ public class Propuesta {
         }
     }
 
-    public void marcarCalificada() {
-        this.validarCalificada();
-        this.setCalificada(true);
-    }
-
-    private void validarCalificada(){
-        if (this.calificada) throw new PropuestaException("La propuesta ya fue calificada");
-    }
 }

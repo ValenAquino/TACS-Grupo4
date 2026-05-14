@@ -83,13 +83,8 @@ public class PerfilService implements IPerfilService {
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
 
-    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(userAutorId);
     if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
-
-    if (tipoTransaccion.equals(MetodoIntercambio.INTERCAMBIO)){
-      Propuesta propuesta = this.repositorioPropuestas.buscarPorId(transactionId);
-      propuesta.marcarCalificada();
-    }
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
@@ -106,11 +101,9 @@ public class PerfilService implements IPerfilService {
         transactionId,
         tipoTransaccion
     );
-    System.out.println(perfilDestino.obtenerCalificacionMedia());
 
     perfilDestino.agregarNuevaCalificacion(calificacion);
 
-    System.out.println(perfilDestino.obtenerCalificacionMedia());
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 

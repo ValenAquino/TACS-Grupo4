@@ -86,6 +86,11 @@ public class PerfilService implements IPerfilService {
     Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
     if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
 
+    if (tipoTransaccion.equals(MetodoIntercambio.INTERCAMBIO)){
+      Propuesta propuesta = this.repositorioPropuestas.buscarPorId(transactionId);
+      propuesta.marcarCalificada();
+    }
+
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
             && Objects.equals(transactionId, c.getTransactionId())

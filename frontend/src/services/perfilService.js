@@ -28,7 +28,8 @@ export const buscarSugerencias = async ({userId, tipo, pagina, limite}) => {
 };
 
 export const calificarPerfil = async (
-  autorId, perfilId,
+  autorId,
+  perfilId,
   { valor, descripcion, transactionId, tipoTransaccion },
 ) => {
   await api.post(
@@ -46,7 +47,6 @@ export const calificarPerfil = async (
 export const buscarPerfil = async (userId) => {
   try {
     const { data } = await api.get(`${PERFIL_URL}/${userId}`);
-    console.log("Perfil en api", data)
     return data;
   } catch (error) {
     handleAxiosError(error);

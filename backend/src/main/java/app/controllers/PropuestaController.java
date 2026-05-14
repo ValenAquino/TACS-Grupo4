@@ -35,6 +35,12 @@ public class PropuestaController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{prop_id}/cancelar")
+    public ResponseEntity<?> cancelar(@PathVariable String prop_id) {
+        propuestaService.cancelar(prop_id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping()
     public ResponseEntity<PropuestasDto> obtenerPropuestas(
         @RequestParam String user_id,
@@ -42,4 +48,6 @@ public class PropuestaController {
         ) {
         return ResponseEntity.ok(this.propuestaService.buscarPropuestas(user_id, filtros));
     }
+
+
 }

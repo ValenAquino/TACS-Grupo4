@@ -19,3 +19,12 @@ export const buscarPropuestas = async (user_id, filtros) => {
         handleAxiosError(error);
     }
 };
+
+export const cancelarPropuesta = async (prop_id) => {
+    try {
+        const {data} = await api.patch(PROPUESTAS_URL + `/${prop_id}/cancelar`);
+        return data
+    } catch (error) {
+        handleAxiosError(error);
+    }
+}

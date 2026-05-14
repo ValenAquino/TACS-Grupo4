@@ -40,9 +40,6 @@ public class PerfilController {
         @PathVariable String perfil_id,
         @RequestBody CalificacionRequest body) {
 
-        System.out.println(body.getUserId());
-        System.out.println(perfil_id);
-
         this.perfilService.agregarCalificacion(
             body.getUserId(),
             perfil_id,

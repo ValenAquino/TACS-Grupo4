@@ -2,6 +2,8 @@ import Button from "@/components/ui/button/button.jsx";
 import SectionCard from "@/components/ui/section-card/section-card.jsx";
 import HeaderUsuarioEstado from "@/components/ui/intercambio-card/header-usuario-estado.jsx";
 import {useNavigate} from "react-router";
+import {cancelarPropuesta} from "@/services/propuestasService.js";
+import {calificarPerfil} from "@/services/perfilService.js";
 
 const ChipFigurita = ({ figurita }) => (
     <div className="border rounded p-2 mb-1 d-flex align-items-center gap-2">
@@ -11,6 +13,7 @@ const ChipFigurita = ({ figurita }) => (
     </div>
 );
 
+
 const IntercambioCard = ({
     intercambio
 }) => {
@@ -19,6 +22,10 @@ const IntercambioCard = ({
     const der = intercambio.figuritas_ofrecidas || [];
     const estado = intercambio.estado;
     const navigate = useNavigate()
+
+    const handleCancelar = async () => await cancelarPropuesta(intercambio.id)
+    const handleNavigate = () => navigate(`/intercambios/${intercambio.id}`)
+    const handleCalificar = async () => await calificarPerfil()
 
     return (
         <SectionCard >
@@ -56,28 +63,27 @@ const IntercambioCard = ({
 
             <SectionCard.Section >
                 <div className="d-flex gap-2 mt-3">
-                    {estado === "PENDIENTE" ?
-                        <>
-                            <Button
-                                className={"w-50"}
-                                label={"Ver detalle"}
-                                onClick={() => navigate(`/intercambios/${intercambio.id}`)}
-                            />
-                            <Button
-                                className={"w-50"}
-                                label={"Cancelar"}/>
-                        </> :
-                        <>
-                            <Button
-                                className={"w-50"}
-                                label={"⭐ Calificar usuario"}/>
-                            <Button
-                                className={"w-50"}
-                                label={"Ver detalle"}
-                                onClick={() => navigate(`/intercambios/${intercambio.id}`)}
-                            />
-                        </>
-                    }
+                    <Button
+                        className={"w-100"}
+                        label={"Ver detalle"}
+                        onClick={() => navigate(`/intercambios/${intercambio.id}`)}
+                    />
+
+                    {estado === "PENDIENTE" && (
+                        <Button
+                            className={"w-50"}
+                            label={"Cancelar"}
+                            onClick={handleCancelar}
+                        />
+                    )}
+
+                    {estado === "ACEPTADO" && (
+                        <Button
+                            className={"w-50"}
+                            label={"⭐ Calificar usuario"}
+                            onClick={handleCalificar}
+                        />
+                    )}
                 </div>
             </SectionCard.Section>
         </SectionCard>

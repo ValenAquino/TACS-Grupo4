@@ -82,6 +82,13 @@ public class PropuestaService implements IPropuestaService {
     repositorioPropuestas.guardar(propuesta);
   }
 
+  @Override
+  public void cancelar(String id) {
+    Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
+    propuesta.cancelar();
+    this.repositorioPropuestas.guardar(propuesta);
+  }
+
   public PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros) {
     if(filtros.tipo().equals("RECIBIDAS")) {
       return this.repositorioPropuestas.buscarPorDestinatarioId(userId, filtros);

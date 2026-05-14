@@ -27,6 +27,12 @@ public interface IPropuestaService {
     void rechazar(String id, String usuarioId);
 
     /**
+     * Cancela la propuesta.
+     * y delega la validación de permisos y estado en {@link app.model.entities.Propuesta#rechazar}.
+     */
+    void cancelar(String id);
+
+    /**
      * Busca las propuestas con la opcion de filtros.
      */
     PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros);

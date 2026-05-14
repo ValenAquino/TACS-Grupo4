@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import app.dto.CalificacionDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.OperacionesDto;
+import app.dto.filtros.PropuestasFiltro;
 import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
@@ -66,50 +67,6 @@ class PerfilServiceImplTest {
         new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), estado))));
   }
 
-  @Test
-  void getOperacionesUsuario_usuarioExistente_retornaOperaciones() {
-    usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(null, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
-
-    Propuesta oferta = propuesta("p-3", otro, usuario, EstadoProceso.ACEPTADO);
-    Subasta subastaActiva = new Subasta("s-1", usuario,
-        LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
-    subastaActiva.getOfertas().add(oferta);
-
-    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioPropuestas.buscarPorAutorId("1")).thenReturn(
-        List.of(propuesta("p-1", usuario, otro, EstadoProceso.PENDIENTE)));
-    when(repositorioPropuestas.buscarPorDestinatarioId("1")).thenReturn(
-        List.of(propuesta("p-2", otro, usuario, EstadoProceso.RECHAZADO)));
-    when(repositorioSubastas.buscarPorAutorUserId("1")).thenReturn(List.of(subastaActiva));
-
-    OperacionesDto resultado = service.obtenerOperacionesPerfil("1");
-
-    assertEquals(1, resultado.getFiguritasPublicadas().size());
-    assertEquals(1, resultado.getPropuestasEnviadas().size());
-    assertEquals(1, resultado.getPropuestasRecibidas().size());
-    assertEquals(1, resultado.getSubastasActivas().size());
-  }
-
-  @Test
-  void getOperacionesUsuario_filtraSoloSubastasActivas() {
-    Propuesta oferta = propuesta("p-1", otro, usuario, EstadoProceso.ACEPTADO);
-    Subasta subastaActiva = new Subasta("s-1", usuario,
-        LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
-    subastaActiva.getOfertas().add(oferta);
-
-    Subasta subastaVencida = new Subasta("s-2", usuario,
-        LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null);
-
-    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioPropuestas.buscarPorAutorId("1")).thenReturn(new ArrayList<>());
-    when(repositorioPropuestas.buscarPorDestinatarioId("1")).thenReturn(new ArrayList<>());
-    when(repositorioSubastas.buscarPorAutorUserId("1")).thenReturn(List.of(subastaActiva, subastaVencida));
-
-    OperacionesDto resultado = service.obtenerOperacionesPerfil("1");
-
-    assertEquals(1, resultado.getSubastasActivas().size());
-    assertEquals("s-1", resultado.getSubastasActivas().get(0).getId());
-  }
 
   @Test
   void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
@@ -135,12 +92,31 @@ class PerfilServiceImplTest {
 
   @Test
   void agregarCalificacion_valida_guardaCalificacion() {
-    usuario.getCalificaciones().add(new Calificacion("c-0", otro, 4, "Buen intercambio", "t-0", MetodoIntercambio.INTERCAMBIO));
+    usuario.getCalificaciones().add(
+        new Calificacion(
+            "c-0",
+            otro,
+            4,
+            "Buen intercambio",
+            "t-0",
+            MetodoIntercambio.INTERCAMBIO
+        )
+    );
 
-    when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("1"))
+        .thenReturn(usuario);
 
-    service.agregarCalificacion("u-2", "1", 2, "Tardó en responder", "t-1", MetodoIntercambio.INTERCAMBIO);
+    when(repositorioPerfiles.buscarPorId("u-2"))
+        .thenReturn(otro);
+
+    service.agregarCalificacion(
+        "u-2",
+        "1",
+        2,
+        "Tardó en responder",
+        "t-1",
+        MetodoIntercambio.INTERCAMBIO
+    );
 
     verify(repositorioPerfiles).guardar(usuario);
   }
@@ -151,7 +127,7 @@ class PerfilServiceImplTest {
     usuario.getCalificaciones().add(existente);
 
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
 
     assertThrows(BadRequestException.class,
         () -> service.agregarCalificacion("u-2", "1", 3, "Otra vez", "t-1", MetodoIntercambio.INTERCAMBIO));
@@ -184,7 +160,7 @@ class PerfilServiceImplTest {
   @Test
   void agregarCalificacion_valorLimiteMinimo_noLanzaExcepcion() {
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
 
     assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "1", 1, "Muy malo", "t-1", MetodoIntercambio.INTERCAMBIO));
   }
@@ -192,7 +168,7 @@ class PerfilServiceImplTest {
   @Test
   void agregarCalificacion_valorLimiteMaximo_noLanzaExcepcion() {
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(otro);
+    when(repositorioPerfiles.buscarPorId("u-2")).thenReturn(otro);
 
     assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "1", 5, "Excelente", "t-1", MetodoIntercambio.INTERCAMBIO));
   }

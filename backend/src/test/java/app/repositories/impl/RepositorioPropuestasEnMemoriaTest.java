@@ -51,7 +51,7 @@ class RepositorioPropuestasEnMemoriaTest {
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 
-        PropuestasDto resultado = repositorio.buscarPorAutorId("u-1", filtros);
+        PropuestasDto resultado = repositorio.buscarPorAutorId("u-1000", filtros);
 
         assertEquals(1, resultado.getData().size());
     }
@@ -66,7 +66,7 @@ class RepositorioPropuestasEnMemoriaTest {
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 
-        PropuestasDto resultado = repositorio.buscarPorDestinatarioId("u-2", filtros);
+        PropuestasDto resultado = repositorio.buscarPorDestinatarioId("u-1002", filtros);
 
         assertEquals(1, resultado.getData().size());
     }

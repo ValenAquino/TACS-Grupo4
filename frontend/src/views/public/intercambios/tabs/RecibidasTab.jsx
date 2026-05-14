@@ -85,6 +85,7 @@ const RecibidasTab = () => {
                         <IntercambioCard
                             key={i.id}
                             intercambio={i}
+                            tipo={"RECIBIDA"}
                         />
                     ))}
                 </>

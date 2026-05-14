@@ -28,3 +28,21 @@ export const cancelarPropuesta = async (prop_id) => {
         handleAxiosError(error);
     }
 }
+
+export const aceptarPropuesta = async (prop_id) => {
+    try {
+        const {data} = await api.patch(PROPUESTAS_URL + `/${prop_id}/aceptar`);
+        return data
+    } catch (error) {
+        handleAxiosError(error);
+    }
+}
+
+export const rechazarPropuesta = async (prop_id) => {
+    try {
+        const {data} = await api.patch(PROPUESTAS_URL + `/${prop_id}/rechazar`);
+        return data
+    } catch (error) {
+        handleAxiosError(error);
+    }
+}

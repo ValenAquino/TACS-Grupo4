@@ -224,6 +224,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       figuritas.add(vinicius);
       propuestas.guardar(propuesta("2002", matias, lucas, figuritas, diMaria, EstadoProceso.RECHAZADO));
       propuestas.guardar(propuesta("2003", matias, lucas, figuritas, diMaria, EstadoProceso.ACEPTADO));
+      propuestas.guardar(propuesta("2004", matias, lucas, figuritas, diMaria, EstadoProceso.PENDIENTE));
 
     }
 

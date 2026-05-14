@@ -119,6 +119,7 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
                         <IntercambioCard
                             key={i.id}
                             intercambio={i}
+                            tipo={"ENVIADA"}
                         />
                     ))}
                 </>

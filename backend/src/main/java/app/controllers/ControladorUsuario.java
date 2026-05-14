@@ -1,13 +1,19 @@
 package app.controllers;
 
+import app.dto.request.LoginRequest;
 import app.dto.request.UsuarioRequest;
-import app.model.entities.Rol;
 import app.servicios.IServicioUsuario;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +24,52 @@ public class ControladorUsuario {
   @PostMapping("/registrar")
   public ResponseEntity<Void> registrar(@RequestBody UsuarioRequest request) {
     this.servicioUsuario.registrar(request);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<Void> login(
+      @RequestBody LoginRequest request,
+      HttpServletResponse response
+  ) {
+    String token = this.servicioUsuario.login(request);
+
+    ResponseCookie cookie =
+        ResponseCookie.from("session", token)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .path("/")
+            .maxAge(Duration.ofHours(12))
+            .build();
+
+    response.addHeader(
+        HttpHeaders.SET_COOKIE,
+        cookie.toString()
+    );
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @DeleteMapping("/session")
+  public ResponseEntity<Void> cerrarSesion(
+      HttpServletResponse response
+  ) {
+
+    ResponseCookie cookie =
+        ResponseCookie.from("session", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .path("/")
+            .maxAge(0)
+            .build();
+
+    response.addHeader(
+        HttpHeaders.SET_COOKIE,
+        cookie.toString()
+    );
+
     return ResponseEntity.noContent().build();
   }
 }

@@ -17,15 +17,6 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
     const [pagina, setPagina] = useState(1);
     const [error, setError] = useState(false);
 
-    // const handleCancelar = async (id) => {
-    //     try {
-    //         await rechazarIntercambio(id);
-    //         setLista(prev => prev.filter(i => i.id !== id));
-    //     } catch (e) {
-    //         console.error("Error al cancelar", e);
-    //     }
-    // };
-
     const {userId} = useUsuarioActual()
     const user_id = userId
 
@@ -97,9 +88,9 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
                 <FilterChip
                     label="Rechazadas"
                     selected={
-                        filtros.estado === "RECHAZO"
+                        filtros.estado === "RECHAZADO"
                     }
-                    onClick={() => cambiarFiltro("RECHAZO")}
+                    onClick={() => cambiarFiltro("RECHAZADO")}
                 />
 
                 <FilterChip

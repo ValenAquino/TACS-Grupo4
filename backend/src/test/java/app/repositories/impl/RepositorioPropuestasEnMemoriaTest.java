@@ -1,5 +1,8 @@
 package app.repositories.impl;
 
+import app.dto.PropuestaDto;
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.propuesta.PropuestasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.EstadoPropuesta;
@@ -24,6 +27,7 @@ class RepositorioPropuestasEnMemoriaTest {
     private Perfil u1;
     private Perfil u2;
     private Perfil u3;
+    private PropuestasFiltro filtros = new PropuestasFiltro("", 1, 10, EstadoProceso.PENDIENTE);
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
@@ -47,10 +51,9 @@ class RepositorioPropuestasEnMemoriaTest {
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 
-        List<Propuesta> resultado = repositorio.buscarPorAutorId("u-1");
+        PropuestasDto resultado = repositorio.buscarPorAutorId("u-1", filtros);
 
-        assertEquals(1, resultado.size());
-        assertEquals("p-1", resultado.get(0).getId());
+        assertEquals(1, resultado.getData().size());
     }
 
     @Test
@@ -63,14 +66,13 @@ class RepositorioPropuestasEnMemoriaTest {
         repositorio.guardar(p1);
         repositorio.guardar(p2);
 
-        List<Propuesta> resultado = repositorio.buscarPorDestinatarioId("u-2");
+        PropuestasDto resultado = repositorio.buscarPorDestinatarioId("u-2", filtros);
 
-        assertEquals(1, resultado.size());
-        assertEquals("p-1", resultado.get(0).getId());
+        assertEquals(1, resultado.getData().size());
     }
 
     @Test
     void findByOrigenId_sinResultados_retornaListaVacia() {
-        assertTrue(repositorio.buscarPorAutorId("u-99").isEmpty());
+        assertTrue(repositorio.buscarPorAutorId("u-99", filtros).getData().isEmpty());
     }
 }

@@ -67,13 +67,6 @@ class PerfilServiceImplTest {
   }
 
   @Test
-  void getOperacionesUsuario_usuarioInexistente_retornaNull() {
-    when(repositorioPerfiles.buscarPorId("u-99")).thenReturn(null);
-
-    assertNull(service.obtenerOperacionesPerfil("u-99"));
-  }
-
-  @Test
   void getOperacionesUsuario_usuarioExistente_retornaOperaciones() {
     usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(null, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
 

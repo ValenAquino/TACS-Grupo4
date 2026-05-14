@@ -1,11 +1,11 @@
 package app.dto.filtros;
 
-import app.model.entities.EstadoPropuesta;
+import app.model.entities.EstadoProceso;
 
 public record PropuestasFiltro(
     String tipo,
     Integer pagina,
     Integer limite,
-    EstadoPropuesta estado
+    EstadoProceso estado
 ) {
 }

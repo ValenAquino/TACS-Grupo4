@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-@Repository
 public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
 
   private final Map<String, Coleccion> storage = new HashMap<>();

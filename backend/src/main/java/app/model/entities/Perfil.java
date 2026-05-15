@@ -25,6 +25,7 @@ public class Perfil {
     private Usuario usuario;
     private String nombre;
     @Builder.Default
+    @DBRef
     private Coleccion coleccion = new Coleccion();
     @Builder.Default
     private List<MedioDeContacto> mediosDeContacto = new ArrayList<>();;

@@ -131,8 +131,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
                                 Figurita pedri, Figurita kroos, Figurita neymar) {
         // Lucas
-      Coleccion coleccionLucas = new Coleccion();
-      coleccionLucas.setId("1");
+      Coleccion coleccionLucas = new Coleccion("1");
       FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
       FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
       coleccionLucas.getRepetidas().add(interMessi);
@@ -150,8 +149,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .mediosDeContacto(telegram("@lucas")).build());
 
       // Sofía
-      Coleccion coleccionSofia = new Coleccion();
-      coleccionSofia.setId("2");
+      Coleccion coleccionSofia = new Coleccion("2");
       FiguritaIntercambiable interMbappe    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
       FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
       FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
@@ -172,8 +170,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .mediosDeContacto(telegram("@sofia")).build());
 
       // Matías
-      Coleccion coleccionMatias = new Coleccion();
-      coleccionMatias.setId("3");
+      Coleccion coleccionMatias = new Coleccion("3");
       FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1002");
       coleccionMatias.getRepetidas().add(interVinicius);
       coleccionMatias.getFaltantes().add(pedri);
@@ -188,8 +185,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .mediosDeContacto(telegram("@matias")).build());
 
       // Juan
-      Coleccion coleccionJuan = new Coleccion();
-      coleccionJuan.setId("4");
+      Coleccion coleccionJuan = new Coleccion("4");
       FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
       coleccionJuan.getRepetidas().add(interPedri);
       coleccionJuan.getFaltantes().add(pedri);

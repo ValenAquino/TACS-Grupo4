@@ -29,10 +29,10 @@ public class ControladorPerfil {
 
     private final IServicioPerfil perfilService;
 
-    @PostMapping("")
-    public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {
-        return ResponseEntity.ok(perfilService.crearPerfil(body));
-    }
+//    @PostMapping("")
+//    public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {
+//        return ResponseEntity.ok(perfilService.crearPerfil(body));
+//    }
 
     //Todo: Eliminar en el futuro
     @GetMapping("/{user_id}/operaciones")

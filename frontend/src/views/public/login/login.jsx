@@ -1,0 +1,152 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import {iniciarSesion} from "@/services/sesionService.js";
+
+function Login() {
+    const [formData, setFormData] = useState({
+        nombre: "",
+        contrasenia: ""
+    });
+
+    const [error, setError] = useState(false);
+    const [onSubmit, setOnSubmit] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!formData.nombre || !formData.contrasenia) {
+            setError("Completa todos los campos");
+            return;
+        }
+
+        try {
+            setOnSubmit(true);
+            await iniciarSesion({nombre: e.target.nombre.value, contrasenia: e.target.contrasenia.value})
+        } catch (e) {
+            setError(true)
+        } finally {
+            setOnSubmit(false);
+        }
+    };
+
+    return (
+        <div
+            className="container-fluid d-flex justify-content-center align-items-center"
+            style={{
+                minHeight: "100vh",
+                backgroundColor: "var(--color-background)"
+            }}
+        >
+            <div
+                className="card shadow p-4"
+                style={{
+                    width: "100%",
+                    maxWidth: "420px",
+                    backgroundColor: "var(--color-primary)",
+                    border: "var(--border-weight) solid var(--border-color-light)",
+                    borderRadius: "16px"
+                }}
+            >
+                <h1
+                    className="text-center mb-2"
+                    style={{
+                        color: "var(--color-secondary)"
+                    }}
+                >
+                    Iniciar sesión
+                </h1>
+
+                <p
+                    className="text-center mb-4"
+                    style={{
+                        color: "var(--color-subtitle)"
+                    }}
+                >
+                    Ingresá tus credenciales
+                </p>
+
+                <form onSubmit={handleSubmit}>
+
+                    <div className="mb-3">
+                        <label className="form-label">
+                            Nombre Usuario
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nombre"
+                            className="form-control"
+                            placeholder="Juan_perez"
+                            value={formData.nombre}
+                            onChange={handleChange}
+                            style={{
+                                borderColor: "var(--border-color-dark)"
+                            }}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="form-label">
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            name="contrasenia"
+                            className="form-control"
+                            placeholder="Ingrese su contraseña"
+                            value={formData.password}
+                            onChange={handleChange}
+                            style={{
+                                borderColor: "var(--border-color-dark)"
+                            }}
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="alert alert-danger">
+                            {error}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="btn w-100 fw-bold"
+                        style={{
+                            backgroundColor: "var(--color-secondary)",
+                            color: "white"
+                        }}
+                    >
+                        Iniciar sesión
+                    </button>
+
+                </form>
+
+                <div className="text-center mt-4">
+                    <p>
+                        ¿No tenés cuenta?{" "}
+                        <Link
+                            to="/registrar"
+                            style={{
+                                color: "var(--color-terciary)",
+                                textDecoration: "none",
+                                fontWeight: "600"
+                            }}
+                        >
+                            Registrarse
+                        </Link>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default Login;

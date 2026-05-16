@@ -141,7 +141,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         colecciones.guardar(coleccionLucas);
         Usuario user = new Usuario("u-1000",  Rol.USUARIO,"lucas_fis","gordo123");
         sesion.guardar(user);
-        perfiles.guardar(new Perfil("1000", user, "Lucas",
+        perfiles.guardar(new Perfil(user, "Lucas",
             coleccionLucas, telegram("@lucas"), new ArrayList<>()));
 
         // Sofía
@@ -160,7 +160,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         colecciones.guardar(coleccionSofia);
         user = new Usuario("u-1001", Rol.USUARIO,"sofia_ape","password");
         sesion.guardar(user);
-        perfiles.guardar(new Perfil("1001", user, "Sofía",
+        perfiles.guardar(new Perfil(user, "Sofía",
             coleccionSofia, telegram("@sofia"), new ArrayList<>()));
 
         // Matías
@@ -174,7 +174,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         colecciones.guardar(coleccionMatias);
         user = new Usuario("u-1002",  Rol.USUARIO,"mati_crim","wordpass");
         sesion.guardar(user);
-        perfiles.guardar(new Perfil("1002", user, "Matías",
+        perfiles.guardar(new Perfil(user, "Matías",
             coleccionMatias, telegram("@matias"), new ArrayList<>()));
 
         // Juan
@@ -188,7 +188,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         colecciones.guardar(coleccionJuan);
         user =  new Usuario("u-1003",  Rol.USUARIO, "juan_jose","una contrasenia");
         sesion.guardar(user);
-        perfiles.guardar(new Perfil("1003", user, "Juan",
+        perfiles.guardar(new Perfil(user, "Juan",
             coleccionJuan, telegram("@juan"), new ArrayList<>()));
     }
 

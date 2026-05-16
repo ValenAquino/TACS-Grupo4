@@ -8,7 +8,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@AllArgsConstructor
 @Getter
 @Setter
 @Document(collection = "perfiles")
@@ -21,6 +20,18 @@ public class Perfil {
     private Coleccion coleccion;
     private List<MedioDeContacto> mediosDeContacto;
     private List<Calificacion> calificaciones;
+
+    public Perfil(Usuario usuario,
+                  String nombre,
+                  Coleccion coleccion,
+                  List<MedioDeContacto> mediosDeContacto,
+                  List<Calificacion> calificaciones) {
+        this.usuario = usuario;
+        this.nombre = nombre;
+        this.coleccion = coleccion;
+        this.mediosDeContacto = mediosDeContacto;
+        this.calificaciones = calificaciones;
+    }
 
     /**
      * Calcula el promedio de las calificaciones recibidas.

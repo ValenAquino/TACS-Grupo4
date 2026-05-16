@@ -6,18 +6,34 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
 @Getter
 @Setter
+@Document(collection = "subastas")
 public class Subasta {
+
+    @Id
     private String id;
+
+    @DBRef
     private Perfil autor;
+
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaCierre;
+
+    @DBRef
     private Figurita figuritaSubastada;
+
+    @DBRef
     private List<Propuesta> ofertas;
+
+    @DBRef
     private List<Figurita> figuritasSolicitadas;
+
     private Integer calificacionMinimaSolicitada;
     private Boolean finalizada;
 

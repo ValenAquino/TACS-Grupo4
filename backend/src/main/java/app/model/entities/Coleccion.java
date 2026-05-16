@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -18,8 +19,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Coleccion {
   @Id
   private String id;
-  //@DBRef
+
+  @DBRef
   private List<Figurita> faltantes = new ArrayList<Figurita>();
+
   private List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
 
   public Coleccion(String id) {

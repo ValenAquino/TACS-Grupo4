@@ -7,16 +7,31 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
 @Getter
 @Setter
+@Document(collection = "propuestas")
 public class Propuesta {
+
+    @Id
     private String id;
+
+    @DBRef
     private Perfil autor;
+
+    @DBRef
     private Perfil destinatario;
+
+    @DBRef
     private List<Figurita> figuritasOfrecidas;
+
+    @DBRef
     private Figurita figuritaBuscada;
+
     private List<EstadoPropuesta> estado;
 
     public Propuesta(String id, Perfil autor, Perfil destinatario, List<Figurita> figuritasOfrecidas,

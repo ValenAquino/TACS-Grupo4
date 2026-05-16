@@ -3,21 +3,27 @@ package app.model.entities;
 import jdk.jfr.Experimental;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
 import java.util.List;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class FiguritaIntercambiable {
+
+    @DBRef
     private Figurita figurita;
+
     private Integer cantidadExistente;
     private Integer cantidadReservada;
     private List<MetodoIntercambio> metodos;
+
     @Experimental
     private String perfilId;
-
-    public FiguritaIntercambiable() {}
 
     public FiguritaIntercambiable(Figurita figurita, Integer cantidadExistente, List<MetodoIntercambio> metodos) {
         this(figurita, cantidadExistente,0, metodos, null);

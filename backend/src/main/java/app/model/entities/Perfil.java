@@ -19,19 +19,25 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @Document(collection = "perfiles")
 public class Perfil {
+
     @Id
     private String id;
+
     @DBRef
     private Usuario usuario;
     private String nombre;
-    @Builder.Default
+
     @DBRef
+    @Builder.Default
     private Coleccion coleccion = new Coleccion();
+
     @Builder.Default
     private List<MedioDeContacto> mediosDeContacto = new ArrayList<>();;
+
     @DBRef
     @Builder.Default
     private List<Calificacion> calificaciones = new ArrayList<>();
+
     @Builder.Default
     private Double calificacionMedia = 0.0;
     private int cantidadCalificaciones = 0;

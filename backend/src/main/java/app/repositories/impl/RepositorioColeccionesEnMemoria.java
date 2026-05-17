@@ -9,6 +9,7 @@ import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.filtros.FaltantesFiltro;
+import app.model.entities.filtros.FiguritasFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import java.util.HashMap;
@@ -98,5 +99,25 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
     int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
 
     return new FaltantesDto(faltantes, resultados, paginaActual, paginasTotales);
+  }
+  @Override
+  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesConFiltros(
+      FiguritasFiltro filtros, int pagina, int tamanioPagina) {
+    return null;
+  }
+  @Override
+  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesPorQuery(
+      String q, MetodoIntercambio tipo, int pagina, int tamanioPagina) {
+    return null; //??
+  }
+
+  @Override
+  public List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds) {
+    return null;
+  }
+
+  @Override
+  public List<FiguritaIntercambiable> buscarIntercambiablesPorUsuarioId(String perfilId) {
+    return null;
   }
 }

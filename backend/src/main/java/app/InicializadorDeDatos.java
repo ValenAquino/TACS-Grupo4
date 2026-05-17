@@ -18,16 +18,13 @@ import app.model.entities.Usuario;
 import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import app.repositories.RepositorioUsuario;
-import app.repositories.implMongo.RepositorioUsuarioMongo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +36,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioSubastas subastas;
     private final RepositorioFiguritas figuritas;
     private final RepositorioColecciones colecciones;
-    private final RepositorioFiguritasIntercambiables intercambiables;
     private final RepositorioUsuario sesion;
     private final RepositorioCalificacion calificaciones;
 
@@ -48,14 +44,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
                                 RepositorioSubastas subastas,
                                 RepositorioColecciones colecciones,
                                 RepositorioFiguritas figuritas,
-                                RepositorioFiguritasIntercambiables intercambiables,
                                 RepositorioUsuario sesion, RepositorioCalificacion calificaciones) {
         this.perfiles = perfiles;
         this.propuestas = propuestas;
         this.subastas = subastas;
         this.colecciones = colecciones;
         this.figuritas = figuritas;
-        this.intercambiables = intercambiables;
         this.sesion = sesion;
       this.calificaciones = calificaciones;
     }
@@ -121,7 +115,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
                 figuritas.guardar(fig);
                 MetodoIntercambio metodo = metodos[contador % metodos.length];
                 String perfilId = perfilIds[contador % perfilIds.length];
-                intercambiables.guardar(new FiguritaIntercambiable(fig, 2, List.of(metodo), perfilId));
+                //TODO: intercambiables.guardar(new FiguritaIntercambiable(fig, 2, List.of(metodo), perfilId));
                 contador++;
             }
         }
@@ -138,8 +132,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionLucas.getRepetidas().add(interDiMaria);
       coleccionLucas.getFaltantes().add(mbappe);
       coleccionLucas.getFaltantes().add(vinicius);
-      intercambiables.guardar(interMessi);
-      intercambiables.guardar(interDiMaria);
       colecciones.guardar(coleccionLucas);
       Usuario user = new Usuario("u-1000",  Rol.USUARIO,"lucas_fis","gordo123");
       sesion.guardar(user);
@@ -158,8 +150,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionSofia.getRepetidas().add(interNeymar);
       coleccionSofia.getFaltantes().add(messi);
       coleccionSofia.getFaltantes().add(lautaro);
-      intercambiables.guardar(interMbappe);
-      intercambiables.guardar(interGriezmann);
       colecciones.guardar(coleccionSofia);
       user = new Usuario("u-1001", Rol.USUARIO,"sofia_ape","password");
       sesion.guardar(user);
@@ -175,7 +165,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionMatias.getRepetidas().add(interVinicius);
       coleccionMatias.getFaltantes().add(pedri);
       coleccionMatias.getFaltantes().add(kroos);
-      intercambiables.guardar(interVinicius);
       colecciones.guardar(coleccionMatias);
       user = new Usuario("u-1002",  Rol.USUARIO,"mati_crim","wordpass");
       sesion.guardar(user);
@@ -190,7 +179,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionJuan.getRepetidas().add(interPedri);
       coleccionJuan.getFaltantes().add(pedri);
       coleccionJuan.getFaltantes().add(kroos);
-      intercambiables.guardar(interPedri);
       colecciones.guardar(coleccionJuan);
       user =  new Usuario("u-1003",  Rol.USUARIO, "juan_jose","una contrasenia");
       sesion.guardar(user);

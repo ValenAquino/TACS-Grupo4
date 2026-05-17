@@ -7,7 +7,6 @@ import app.model.entities.Figurita;
 import app.model.entities.Perfil;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import java.util.List;
@@ -22,7 +21,6 @@ public class ServicioPropuesta {
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repositorioFiguritas;
-  private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final ServicioNotificacion notificacionService;
 
   /**

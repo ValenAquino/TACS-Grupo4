@@ -20,7 +20,7 @@ import app.model.entities.Subasta;
 import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioCalificacion;
-import app.repositories.RepositorioFiguritasIntercambiables;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
@@ -39,7 +39,7 @@ public class ServicioPerfil {
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioSubastas repositorioSubastas;
-  private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
+  private final RepositorioColecciones repositorioColecciones;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
   public PerfilDto crearPerfil(PerfilRequest body){
@@ -89,7 +89,7 @@ public class ServicioPerfil {
         Perfil perfil = repositorioPerfiles.buscarPorId(userId);
         if (perfil == null) throw new NotFoundException("Perfil no encontrado");
 
-        return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
+        return repositorioColecciones.buscarIntercambiablesPorUsuarioId(userId)
             .stream()
             .map(FiguritaIntercambiableDto::new)
             .toList();

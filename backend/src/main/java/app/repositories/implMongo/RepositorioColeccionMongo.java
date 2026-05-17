@@ -5,7 +5,9 @@ import app.dto.PaginaResultado;
 import app.dto.Repetidas;
 import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.filtros.FaltantesFiltro;
+import app.model.entities.filtros.FiguritasFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import org.bson.Document;
@@ -15,6 +17,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -81,6 +84,43 @@ public class RepositorioColeccionMongo implements RepositorioColecciones {
   }
 
   public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros){
+    return null;
+  }
+
+  @Override
+  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesConFiltros(
+      FiguritasFiltro filtros, int pagina, int tamanioPagina) {
+    Query query = new Query();
+    /*query.addCriteria(
+        //Filtros
+    )
+    */
+
+    List<FiguritaIntercambiable> contenido = this.mongoTemplate.find(query, FiguritaIntercambiable.class);
+    int count = Math.toIntExact(this.mongoTemplate.count(query, FiguritaIntercambiable.class));
+
+    return new PaginaResultado<>(contenido, count, count/tamanioPagina, pagina);
+  }
+  @Override
+  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesPorQuery(
+      String q, MetodoIntercambio tipo, int pagina, int tamanioPagina) {
+    return null; //??
+  }
+
+  @Override
+  public List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds) {
+    Query query = new Query();
+    query.addCriteria(
+        Criteria.where("figurita").is(figuritaIds)
+    );
+
+
+    List<FiguritaIntercambiable> contenido = this.mongoTemplate.find(query, FiguritaIntercambiable.class);
+    return contenido;
+  }
+
+  @Override
+  public List<FiguritaIntercambiable> buscarIntercambiablesPorUsuarioId(String perfilId) {
     return null;
   }
 }

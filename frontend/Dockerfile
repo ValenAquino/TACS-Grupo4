@@ -1,15 +1,19 @@
-# --- Etapa de build ---
-# Usamos Node 22 Alpine para compilar la app con Vite
-FROM node:22-alpine AS builder
+# --- Etapa de dependencias ---
+# Instalamos paquetes
+# lo usamos como base en dev
+FROM node:22-alpine AS deps
 WORKDIR /app
-
-# Copiamos solo los manifests primero para cachear la instalación de dependencias
-# Si src/ cambia pero package.json no, Docker reutiliza esta capa
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copiamos el resto del codigo y compilamos
+# --- Etapa de desarrollo ---
+# Lo usamos para tener hot reload
+FROM deps AS dev
 COPY . .
+
+# --- Etapa de build ---
+# Compila la app con Vite para producción
+FROM dev AS builder
 RUN npm run build
 
 # --- Etapa de runtime ---

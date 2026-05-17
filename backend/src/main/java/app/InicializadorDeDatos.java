@@ -24,11 +24,13 @@ import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import app.repositories.RepositorioUsuario;
+import app.repositories.RepositorioUsuarios;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!test")
 public class InicializadorDeDatos implements CommandLineRunner {
 
     private final RepositorioPerfiles perfiles;
@@ -36,7 +38,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioSubastas subastas;
     private final RepositorioFiguritas figuritas;
     private final RepositorioColecciones colecciones;
-    private final RepositorioUsuario sesion;
+    private final RepositorioUsuarios sesion;
     private final RepositorioCalificacion calificaciones;
 
     public InicializadorDeDatos(RepositorioPerfiles perfiles,
@@ -44,7 +46,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
                                 RepositorioSubastas subastas,
                                 RepositorioColecciones colecciones,
                                 RepositorioFiguritas figuritas,
-                                RepositorioUsuario sesion, RepositorioCalificacion calificaciones) {
+                                RepositorioUsuarios sesion, RepositorioCalificacion calificaciones) {
         this.perfiles = perfiles;
         this.propuestas = propuestas;
         this.subastas = subastas;

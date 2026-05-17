@@ -89,7 +89,7 @@ public class ServicioPerfil {
         Perfil perfil = repositorioPerfiles.buscarPorId(userId);
         if (perfil == null) throw new NotFoundException("Perfil no encontrado");
 
-        return repositorioColecciones.buscarIntercambiablesPorUsuarioId(userId)
+        return repositorioColecciones.buscarIntercambiablesPorPerfilId(userId)
             .stream()
             .map(FiguritaIntercambiableDto::new)
             .toList();

@@ -20,8 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class ColeccionServiceTest {
 
   @Mock
@@ -32,7 +34,6 @@ class ColeccionServiceTest {
 
   private ServicioColeccion service;
 
-  private Perfil lucas;
   private Figurita messi;
   private Coleccion coleccion;
 
@@ -45,11 +46,6 @@ class ColeccionServiceTest {
 
     coleccion = new Coleccion();
     coleccion.setId("col-1");
-
-    Usuario user = new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella");
-    lucas = Perfil.builder()
-        .id("1").usuario(user).nombre("Lucas").coleccion(coleccion)
-        .build();
   }
 
   @Test

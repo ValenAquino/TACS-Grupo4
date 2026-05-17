@@ -3,6 +3,6 @@ package app.repositories;
 import app.model.entities.Usuario;
 
 
-public interface RepositorioUsuario {
+public interface RepositorioUsuarios {
   void guardar(Usuario usuario);
 }

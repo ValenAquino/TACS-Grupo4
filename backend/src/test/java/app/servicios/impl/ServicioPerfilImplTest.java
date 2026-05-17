@@ -29,8 +29,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class ServicioPerfilImplTest {
 
   @Mock
@@ -135,7 +137,7 @@ class ServicioPerfilImplTest {
     FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, new ArrayList<>());
 
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioFiguritasIntercambiables.buscarIntercambiablesPorUsuarioId("1")).thenReturn(List.of(fi));
+    when(repositorioFiguritasIntercambiables.buscarIntercambiablesPorPerfilId("1")).thenReturn(List.of(fi));
 
     List<FiguritaIntercambiableDto> resultado = service.obtenerIntercambiablesPerfil("1");
 

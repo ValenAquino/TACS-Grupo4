@@ -3,34 +3,70 @@ package app.repositories.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import app.MongoTestBase;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MedioComunicacion;
+import app.model.entities.MedioDeContacto;
 import app.model.entities.MetodoIntercambio;
+import app.model.entities.Perfil;
+import app.model.entities.Rol;
 import app.model.entities.Seleccion;
+import app.model.entities.Usuario;
 import app.model.entities.filtros.FiguritasFiltro;
 import java.util.List;
 
 import app.repositories.RepositorioColecciones;
-import app.repositories.implMongo.RepositorioColeccionesMongo;
+import app.repositories.RepositorioFiguritas;
+import app.repositories.RepositorioPerfiles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
-public class RepositorioIntercambiablesTest {
-
+public class RepositorioIntercambiablesTest extends MongoTestBase {
+  @Autowired
   private RepositorioColecciones repositorio;
+  @Autowired
+  private RepositorioPerfiles repositorioPerfiles;
+  @Autowired
+  private RepositorioFiguritas repositorioFiguritas;
+  @Autowired
+
+  private MongoTemplate mongoTemplate;
   private FiguritaIntercambiable intercambiableMessi;
   private FiguritaIntercambiable intercambiableMbappe;
   private Coleccion coleccion;
 
   @BeforeEach
   void setUp() {
-    repositorio = new RepositorioColeccionesMongo();
     coleccion = new Coleccion("c-1");
+    Coleccion coleccionDos = new Coleccion("c-2");
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
     Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, "Delantero");
-    intercambiableMessi = new FiguritaIntercambiable(messi, 3, List.of(MetodoIntercambio.INTERCAMBIO), "perfil-1");
-    intercambiableMbappe = new FiguritaIntercambiable(mbappe, 2, List.of(MetodoIntercambio.SUBASTA), "perfil-2");
+    repositorioFiguritas.guardar(messi);
+    repositorioFiguritas.guardar(mbappe);
+
+    repositorio.guardar(coleccion);
+    repositorio.guardar(coleccionDos);
+
+    Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
+    Perfil perfilUno = Perfil.builder()
+        .id("perfil-1").usuario(user).nombre("Lucas")
+        .coleccion(coleccion)
+        .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")))
+        .build();
+    user = new Usuario("u-2", Rol.USUARIO, "adas", "da");
+    Perfil perfilDos = Perfil.builder()
+        .id("perfil-2").usuario(user).nombre("adada")
+        .coleccion(coleccionDos)
+        .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@adas")))
+        .build();
+    repositorioPerfiles.guardar(perfilUno);
+    repositorioPerfiles.guardar(perfilDos);
+    intercambiableMessi = new FiguritaIntercambiable(messi, 3, List.of(MetodoIntercambio.INTERCAMBIO), perfilUno.getId());
+    intercambiableMbappe = new FiguritaIntercambiable(mbappe, 2, List.of(MetodoIntercambio.SUBASTA), perfilDos.getId());
     coleccion.agregarRepetida(intercambiableMessi);
     coleccion.agregarRepetida(intercambiableMbappe);
     repositorio.guardar(coleccion);
@@ -40,7 +76,7 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarConFiltros_sinFiltros_retornaTodas() {
-    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, null), 0, 10);
+    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, null), 1, 10);
 
     assertEquals(2, resultado.cantidadDeElementos());
   }
@@ -48,10 +84,11 @@ public class RepositorioIntercambiablesTest {
   @Test
   void buscarConFiltros_porNumero_retornaCoincidencia() {
     Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, "Extremo");
+    repositorioFiguritas.guardar(diMaria);
     coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 1, List.of(MetodoIntercambio.INTERCAMBIO), "perfil-1"));
     repositorio.guardar(coleccion);
 
-    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, 11, null, null, null), 0, 10);
+    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, 11, null, null, null), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals("ARG-11", resultado.contenido().get(0).getFigurita().getId());
@@ -59,7 +96,7 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarConFiltros_porSeleccion_retornaCoincidencia() {
-    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, Seleccion.ARGENTINA, null, null), 0, 10);
+    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, Seleccion.ARGENTINA, null, null), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals(Seleccion.ARGENTINA, resultado.contenido().get(0).getFigurita().getSeleccion());
@@ -67,14 +104,14 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarConFiltros_porJugadorParcialCaseInsensitive_retornaCoincidencia() {
-    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, "MESSI", null), 0, 10);
+    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, "MESSI", null), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
   }
 
   @Test
   void buscarConFiltros_porTipoIntercambio_retornaCoincidencia() {
-    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, MetodoIntercambio.INTERCAMBIO), 0, 10);
+    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, MetodoIntercambio.INTERCAMBIO), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.INTERCAMBIO));
@@ -82,7 +119,7 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarConFiltros_porTipoSubasta_retornaCoincidencia() {
-    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, MetodoIntercambio.SUBASTA), 0, 10);
+    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, MetodoIntercambio.SUBASTA), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.SUBASTA));
@@ -90,7 +127,7 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarConFiltros_sinResultados_retornaPaginaVacia() {
-    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, 99, null, null, null), 0, 10);
+    var resultado = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, 99, null, null, null), 1, 10);
 
     assertEquals(0, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().isEmpty());
@@ -99,11 +136,12 @@ public class RepositorioIntercambiablesTest {
   @Test
   void buscarConFiltros_conPaginacion_retornaPaginaCorrecta() {
     Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, "Extremo");
+    repositorioFiguritas.guardar(diMaria);
     coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 1, List.of(MetodoIntercambio.INTERCAMBIO), "perfil-1"));
     repositorio.guardar(coleccion);
 
-    var pagina0 = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, null), 0, 2);
-    var pagina1 = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, null), 1, 2);
+    var pagina0 = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, null), 1, 2);
+    var pagina1 = repositorio.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, null), 2, 2);
 
     assertEquals(3, pagina0.cantidadDeElementos());
     assertEquals(2, pagina0.contenido().size());
@@ -114,14 +152,14 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarPorQuery_porJugador_retornaCoincidencia() {
-    var resultado = repositorio.buscarIntercambiablesPorQuery("messi", null, 0, 10);
+    var resultado = repositorio.buscarIntercambiablesPorQuery("messi", null, 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
   }
 
   @Test
   void buscarPorQuery_porSeleccion_retornaCoincidencia() {
-    var resultado = repositorio.buscarIntercambiablesPorQuery("argentina", null, 0, 10);
+    var resultado = repositorio.buscarIntercambiablesPorQuery("argentina", null, 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals(Seleccion.ARGENTINA, resultado.contenido().get(0).getFigurita().getSeleccion());
@@ -129,14 +167,14 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarPorQuery_porNumero_retornaAmbas() {
-    var resultado = repositorio.buscarIntercambiablesPorQuery("10", null, 0, 10);
+    var resultado = repositorio.buscarIntercambiablesPorQuery("10", null, 1, 10);
 
     assertEquals(2, resultado.cantidadDeElementos());
   }
 
   @Test
   void buscarPorQuery_variosTerminos_aplicaAnd() {
-    var resultado = repositorio.buscarIntercambiablesPorQuery("10 argentina", null, 0, 10);
+    var resultado = repositorio.buscarIntercambiablesPorQuery("10 argentina", null, 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals(Seleccion.ARGENTINA, resultado.contenido().get(0).getFigurita().getSeleccion());
@@ -144,7 +182,7 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarPorQuery_conFiltroTipo_aplicaAnd() {
-    var resultado = repositorio.buscarIntercambiablesPorQuery("10", MetodoIntercambio.INTERCAMBIO, 0, 10);
+    var resultado = repositorio.buscarIntercambiablesPorQuery("10", MetodoIntercambio.INTERCAMBIO, 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.INTERCAMBIO));
@@ -152,7 +190,7 @@ public class RepositorioIntercambiablesTest {
 
   @Test
   void buscarPorQuery_sinResultados_retornaPaginaVacia() {
-    var resultado = repositorio.buscarIntercambiablesPorQuery("inexistente", null, 0, 10);
+    var resultado = repositorio.buscarIntercambiablesPorQuery("inexistente", null, 1, 10);
 
     assertEquals(0, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().isEmpty());
@@ -174,18 +212,18 @@ public class RepositorioIntercambiablesTest {
     assertTrue(resultado.isEmpty());
   }
 
-  // buscarPorUsuarioId
+  // buscarPorPerfilId
 
   @Test
-  void buscarPorUsuarioId_perfilIdExistente_retornaFiguritas() {
-    var resultado = repositorio.buscarIntercambiablesPorUsuarioId("perfil-1");
+  void buscarPorPerfilId_perfilIdExistente_retornaFiguritas() {
+    var resultado = repositorio.buscarIntercambiablesPorPerfilId("perfil-1");
 
-    assertEquals(1, resultado.size());
+    assertEquals(2, resultado.size());
   }
 
   @Test
-  void buscarPorUsuarioId_perfilIdInexistente_retornaVacio() {
-    var resultado = repositorio.buscarIntercambiablesPorUsuarioId("perfil-99");
+  void buscarPorPerfilId_perfilIdInexistente_retornaVacio() {
+    var resultado = repositorio.buscarIntercambiablesPorPerfilId("perfil-99");
 
     assertTrue(resultado.isEmpty());
   }

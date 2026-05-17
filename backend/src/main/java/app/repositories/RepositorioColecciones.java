@@ -34,6 +34,6 @@ public interface RepositorioColecciones {
       String q, MetodoIntercambio tipo, int pagina, int tamanioPagina);
 
   List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds);
-  List<FiguritaIntercambiable> buscarIntercambiablesPorUsuarioId(String usuarioId);
+  List<FiguritaIntercambiable> buscarIntercambiablesPorPerfilId(String usuarioId);
 
 }

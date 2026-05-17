@@ -1,25 +1,27 @@
 package app.repositories.impl;
 
+import app.MongoTestBase;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
 import app.model.entities.*;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
+import app.repositories.RepositorioFiguritas;
 import app.repositories.implMongo.RepositorioColeccionesMongo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-public class RepositorioColeccionesTest {
+public class RepositorioColeccionesTest extends MongoTestBase {
 
   @Autowired
   private RepositorioColeccionesMongo repositorio;
+  @Autowired
+  private RepositorioFiguritas repositorioFiguritas;
 
   Figurita messi;
   Figurita diMaria;
@@ -31,6 +33,9 @@ public class RepositorioColeccionesTest {
     diMaria = new Figurita("ARG-11", 11, "Di maria", Seleccion.ARGENTINA, null);
     dybala = new Figurita("ARG-21", 21, "Dybala", Seleccion.ARGENTINA, null);
 
+    repositorioFiguritas.guardar(messi);
+    repositorioFiguritas.guardar(diMaria);
+    repositorioFiguritas.guardar(dybala);
   }
 
   @Test

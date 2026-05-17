@@ -116,7 +116,7 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
   }
 
   @Override
-  public List<FiguritaIntercambiable> buscarIntercambiablesPorUsuarioId(String perfilId) {
+  public List<FiguritaIntercambiable> buscarIntercambiablesPorPerfilId(String perfilId) {
     return null;
   }
 }

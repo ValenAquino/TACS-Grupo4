@@ -16,6 +16,8 @@ import app.model.entities.filtros.FiguritasFiltro;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
+
+import app.servicios.ServicioFigurita;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

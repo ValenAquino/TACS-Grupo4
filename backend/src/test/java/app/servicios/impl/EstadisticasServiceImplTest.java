@@ -5,6 +5,7 @@ import app.model.entities.*;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
+import app.servicios.ServicioEstadisticas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

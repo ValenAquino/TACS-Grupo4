@@ -9,11 +9,8 @@ import static org.mockito.Mockito.when;
 import app.dto.PropuestaDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
-import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
-import app.model.entities.MedioComunicacion;
-import app.model.entities.MedioDeContacto;
 import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
@@ -22,9 +19,10 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IServicioNotificacion;
-import java.util.ArrayList;
 import java.util.List;
+
+import app.servicios.ServicioNotificacion;
+import app.servicios.ServicioPropuesta;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +38,7 @@ class PropuestaServiceTest {
   @Mock RepositorioFiguritas repositorioFiguritas;
   @Mock RepositorioFiguritasIntercambiables repositorioIntercambiables;
   @Mock
-  IServicioNotificacion notificacionesService;
+  ServicioNotificacion notificacionesService;
 
   @InjectMocks
   ServicioPropuesta propuestaService;

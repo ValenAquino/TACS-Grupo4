@@ -4,13 +4,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Document(collection = "subastas")
@@ -30,13 +33,15 @@ public class Subasta {
     private Figurita figuritaSubastada;
 
     @DBRef
-    private List<Propuesta> ofertas;
+    @Builder.Default
+    private List<Propuesta> ofertas = new ArrayList<>();;
 
     @DBRef
-    private List<Figurita> figuritasSolicitadas;
+    @Builder.Default
+    private List<Figurita> figuritasSolicitadas = new ArrayList<>();
 
-    private Integer calificacionMinimaSolicitada;
-    private Boolean finalizada;
+    @Builder.Default
+    private Integer calificacionMinimaSolicitada = 1;
 
     public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
                    Figurita figuritaSubastada, List<Figurita> figuritasSolicitadas,

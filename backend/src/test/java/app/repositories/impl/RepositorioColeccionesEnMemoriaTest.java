@@ -2,7 +2,6 @@ package app.repositories.impl;
 
 import app.dto.FaltantesDto;
 import app.dto.Repetidas;
-import app.dto.RepetidasDto;
 import app.model.entities.*;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
@@ -159,13 +158,13 @@ public class RepositorioColeccionesEnMemoriaTest {
 
     repositorio.guardar(coleccion);
 
-    RepetidasDto dto = repositorio.buscarRepetidas(
+    Repetidas dto = repositorio.buscarRepetidas(
         "10",
         new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, 10, 1)
     );
 
-    assertEquals(1, dto.getResultados());
-    assertEquals(1, dto.getData().size());
+    assertEquals(1, dto.getData().cantidadDeElementos());
+    assertEquals(1, dto.getData().contenido().size());
   }
 
   @Test
@@ -180,13 +179,13 @@ public class RepositorioColeccionesEnMemoriaTest {
 
     repositorio.guardar(coleccion);
 
-    RepetidasDto dto = repositorio.buscarRepetidas(
+    Repetidas dto = repositorio.buscarRepetidas(
         "10",
         new RepetidasFiltro(null, 2, 2)
     );
 
-    assertEquals(1, dto.getData().size());
-    assertEquals(2, dto.getPaginaActual());
-    assertEquals(2, dto.getPaginasTotales());
+    assertEquals(1, dto.getData().contenido().size());
+    assertEquals(2, dto.getData().numero());
+    assertEquals(2, dto.getData().cantidadDePaginas());
   }
 }

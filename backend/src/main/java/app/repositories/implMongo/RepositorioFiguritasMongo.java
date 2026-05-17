@@ -6,6 +6,8 @@ import app.model.entities.filtros.FiguritasFiltro;
 import app.repositories.RepositorioFiguritas;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,14 +19,34 @@ public class RepositorioFiguritasMongo implements RepositorioFiguritas {
 
   @Override
   public Figurita buscarPorId(String id) {
+    Figurita figurita = this.mongoTemplate.findById(id, Figurita.class);
 
-    return null;
+    if(figurita == null) {
+      throw new NotFoundException("Figurita no encontrada");
+    }
+
+    return figurita;
   }
 
   @Override
   public List<Figurita> buscarConFiltros(FiguritasFiltro filtros) {
+    Query query = new Query();
+    if (filtros.id() != null) {
+      query.addCriteria(Criteria.where("_id").is(filtros.id()));
+    }
+    if (filtros.jugador() != null) {
+      query.addCriteria(Criteria.where("jugador").regex(filtros.jugador(), "i"));
 
-    return null;
+    }
+    if (filtros.numero() != null) {
+      query.addCriteria(Criteria.where("numero").is(filtros.numero()));
+
+    }
+    if (filtros.seleccion() != null) {
+      query.addCriteria(Criteria.where("seleccion").regex(filtros.seleccion().name(), "i"));
+    }
+
+    return this.mongoTemplate.find(query, Figurita.class);
   }
 
   @Override

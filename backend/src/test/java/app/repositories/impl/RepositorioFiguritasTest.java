@@ -3,20 +3,19 @@ package app.repositories.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import app.MongoTestBase;
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
 import app.model.entities.filtros.FiguritasFiltro;
+import app.repositories.RepositorioFiguritas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class RepositorioFiguritasEnMemoriaTest {
+public class RepositorioFiguritasTest extends MongoTestBase {
 
-  private RepositorioFiguritasEnMemoria repositorio;
-
-  @BeforeEach
-  void setUp() {
-    repositorio = new RepositorioFiguritasEnMemoria();
-  }
+  @Autowired
+  private RepositorioFiguritas repositorio;
 
   @Test
   void buscarPorId_idValido_retornaFigurita() {
@@ -94,16 +93,9 @@ public class RepositorioFiguritasEnMemoriaTest {
   }
 
   @Test
-  void buscarConFiltros_sinResultados_lanzaNotFoundException() {
+  void buscarConFiltros_sinResultados_daListaVacia() {
     repositorio.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
 
-    assertThrows(RuntimeException.class,
-        () -> repositorio.buscarConFiltros(new FiguritasFiltro(null, 99, null, null, null)));
-  }
-
-  @Test
-  void buscarConFiltros_repositorioVacio_lanzaNotFoundException() {
-    assertThrows(RuntimeException.class,
-        () -> repositorio.buscarConFiltros(new FiguritasFiltro(null, null, null, null, null)));
+    assertEquals(0, repositorio.buscarConFiltros(new FiguritasFiltro(null, 99, null, null, null)).size());
   }
 }

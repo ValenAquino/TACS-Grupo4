@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {iniciarSesion} from "@/services/sesionService.js";
+import {useToast} from "@/contexts/toastContext.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
+import ModalInformativo from "@/components/ui/modales/modal-informativo/modal-informativo.jsx";
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -8,8 +11,12 @@ function Login() {
         contrasenia: ""
     });
 
-    const [error, setError] = useState(false);
+    const {handleError, errorTemplate} = useError();
+
+    const [errorState, setErrorState] = useState(errorTemplate({nombre:undefined, contrasenia: undefined}));
     const [onSubmit, setOnSubmit] = useState(false);
+
+    const {showToast} = useToast();
 
     const handleChange = (e) => {
         setFormData({
@@ -29,8 +36,10 @@ function Login() {
         try {
             setOnSubmit(true);
             await iniciarSesion({nombre: e.target.nombre.value, contrasenia: e.target.contrasenia.value})
-        } catch (e) {
-            setError(true)
+            //buscarUsuario()
+            showToast("Sesion iniciada correctamente")
+        } catch (error) {
+            showToast(handleError(error, setErrorState),"error")
         } finally {
             setOnSubmit(false);
         }
@@ -110,12 +119,6 @@ function Login() {
                         />
                     </div>
 
-                    {error && (
-                        <div className="alert alert-danger">
-                            {error}
-                        </div>
-                    )}
-
                     <button
                         type="submit"
                         className="btn w-100 fw-bold"
@@ -145,6 +148,11 @@ function Login() {
                     </p>
                 </div>
             </div>
+
+            <ModalInformativo open={onSubmit}>
+                <h3>Iniciando sesion...</h3>
+                <p>Esto puede tardar unos segundos</p>
+            </ModalInformativo>
         </div>
     );
 }

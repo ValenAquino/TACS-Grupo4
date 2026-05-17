@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Repository
 public class RepositorioNotificacionesEnMemoria implements RepositorioNotificaciones {
 
   private final Map<String, Notificacion> storage = new HashMap<>();
@@ -33,7 +32,7 @@ public class RepositorioNotificacionesEnMemoria implements RepositorioNotificaci
   }
 
   @Override
-  public List<Notificacion> buscarPorUsuario(Perfil usuario) {
+  public List<Notificacion> buscarPorPerfil(Perfil usuario) {
     return storage.values().stream()
         .filter(n -> n.getUsuario().getId().equals(usuario.getId()))
         .toList();

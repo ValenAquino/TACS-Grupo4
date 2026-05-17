@@ -84,7 +84,7 @@ public class SubastaServiceTest {
     when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(lucas));
 
     service.crearSubasta("u-2", "ARG-10", 30, List.of(), 0);
-    assertEquals(1, repositorioNotificaciones.buscarPorUsuario(lucas).size());
+    assertEquals(1, repositorioNotificaciones.buscarPorPerfil(lucas).size());
   }
 
   @Test
@@ -96,7 +96,7 @@ public class SubastaServiceTest {
     when(repositorioPerfiles.buscarPorFiguritaFaltante(diMaria)).thenReturn(List.of());
 
     service.crearSubasta("u-2", "ARG-11", 30, List.of(), 0);
-    assertEquals(0, repositorioNotificaciones.buscarPorUsuario(lucas).size());
+    assertEquals(0, repositorioNotificaciones.buscarPorPerfil(lucas).size());
   }
 
   @Test

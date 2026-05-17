@@ -100,7 +100,7 @@ class ServicioPerfilImplTest {
         List.of(propuesta("p-1", usuario, otro, EstadoProceso.PENDIENTE)));
     when(repositorioPropuestas.buscarPorDestinatarioId("1")).thenReturn(
         List.of(propuesta("p-2", otro, usuario, EstadoProceso.RECHAZADO)));
-    when(repositorioSubastas.buscarPorAutorUserId("1")).thenReturn(List.of(subastaActiva));
+    when(repositorioSubastas.buscarPorAutorUsuarioId("1")).thenReturn(List.of(subastaActiva));
 
     OperacionesDto resultado = service.obtenerOperacionesPerfil("1");
 
@@ -123,7 +123,7 @@ class ServicioPerfilImplTest {
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPropuestas.buscarPorAutorId("1")).thenReturn(new ArrayList<>());
     when(repositorioPropuestas.buscarPorDestinatarioId("1")).thenReturn(new ArrayList<>());
-    when(repositorioSubastas.buscarPorAutorUserId("1")).thenReturn(List.of(subastaActiva, subastaVencida));
+    when(repositorioSubastas.buscarPorAutorUsuarioId("1")).thenReturn(List.of(subastaActiva, subastaVencida));
 
     OperacionesDto resultado = service.obtenerOperacionesPerfil("1");
 

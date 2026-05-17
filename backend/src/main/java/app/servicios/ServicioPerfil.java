@@ -63,7 +63,7 @@ public class ServicioPerfil {
     List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(userId);
     List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(userId);
 
-    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUserId(userId)
+    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUsuarioId(userId)
         .stream()
         .filter(Subasta::estaActivo)
         .toList();
@@ -188,7 +188,7 @@ public class ServicioPerfil {
   public List<NotificacionesDto> obtenerNotificaciones(String userId) {
       Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
-    return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
+    return this.repositorioNotificaciones.buscarPorPerfil(perfil).stream().map(NotificacionesDto::new).toList();
   }
 
   public PerfilDto obtenerPerfil(String userId) {

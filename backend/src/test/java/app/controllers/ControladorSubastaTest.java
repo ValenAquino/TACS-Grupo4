@@ -231,7 +231,7 @@ class ControladorSubastaTest {
 
     @Test
     void obtenerMisSubastas_retorna200() throws Exception {
-        when(repositorioSubastas.buscarPorAutorUserId("u-1"))
+        when(repositorioSubastas.buscarPorAutorUsuarioId("u-1"))
             .thenReturn(List.of(subastaActiva));
 
         mockMvc.perform(get("/subastas/mis-subastas")

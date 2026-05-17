@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface RepositorioNotificaciones {
   void guardar(Notificacion notificacion);
-  List<Notificacion> buscarPorUsuario(Perfil usuario);
+  List<Notificacion> buscarPorPerfil(Perfil perfil);
 }

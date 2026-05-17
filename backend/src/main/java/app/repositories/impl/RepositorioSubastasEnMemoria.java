@@ -10,13 +10,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public class RepositorioSubastasEnMemoria implements RepositorioSubastas {
 
     private final Map<String, Subasta> storage = new HashMap<>();
 
     @Override
-    public List<Subasta> buscarPorAutorUserId(String userId) {
+    public List<Subasta> buscarPorAutorUsuarioId(String userId) {
         return storage.values().stream()
                 .filter(s -> s.getAutor().getUsuario().getId().equals(userId))
                 .collect(Collectors.toList());

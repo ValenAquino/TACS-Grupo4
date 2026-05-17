@@ -161,7 +161,7 @@ public class ServicioSubasta {
   }
 
   public MisSubastasResponseDto obtenerMisSubastas(String userId) {
-    List<Subasta> misSubastas = this.repoSubasta.buscarPorAutorUserId(userId);
+    List<Subasta> misSubastas = this.repoSubasta.buscarPorAutorUsuarioId(userId);
 
     List<MiSubastaDto> activas = misSubastas.stream()
         .filter(Subasta::estaActivo)

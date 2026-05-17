@@ -59,6 +59,6 @@ public class RepositorioNotificacionesEnMemoriaTest {
     repositorio.guardar(notificacion4);
     repositorio.guardar(notificacion5);
 
-    assertEquals(3, repositorio.buscarPorUsuario(perfil1).size());
+    assertEquals(3, repositorio.buscarPorPerfil(perfil1).size());
   }
 }

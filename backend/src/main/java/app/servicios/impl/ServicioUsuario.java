@@ -5,6 +5,7 @@ import app.dto.request.UsuarioRequest;
 import app.exceptions.UsuarioException;
 import app.model.entities.Coleccion;
 import app.model.entities.Perfil;
+import app.model.entities.Rol;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
@@ -33,6 +34,10 @@ public class ServicioUsuario implements IServicioUsuario {
     Usuario usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), request.getRol());
 
     this.repositorioUsuario.guardar(usuarioNuevo);
+
+    if(request.getRol().equals(Rol.ADMINISTRADOR)) {
+      return;
+    }
 
     Coleccion coleccion = new Coleccion();
 

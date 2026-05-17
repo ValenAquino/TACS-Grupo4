@@ -1,17 +1,16 @@
 package app.controllers;
 
+import app.dto.SesionDto;
 import app.dto.request.LoginRequest;
 import app.dto.request.UsuarioRequest;
 import app.servicios.IServicioUsuario;
+import app.servicios.impl.ServicioJwt;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 
@@ -20,6 +19,7 @@ import java.time.Duration;
 public class ControladorUsuario {
 
   private final IServicioUsuario servicioUsuario;
+  private final ServicioJwt servicioJwt;
 
   @PostMapping("/registrar")
   public ResponseEntity<Void> registrar(@RequestBody UsuarioRequest request) {
@@ -35,7 +35,7 @@ public class ControladorUsuario {
     String token = this.servicioUsuario.login(request);
 
     ResponseCookie cookie =
-        ResponseCookie.from("session", token)
+        ResponseCookie.from("sesion", token)
             .httpOnly(true)
             .secure(true)
             .sameSite("None")
@@ -51,7 +51,15 @@ public class ControladorUsuario {
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("/session")
+  @GetMapping("/yo")
+  public ResponseEntity<SesionDto> buscarUsuario(
+      @CookieValue("sesion") String token
+  ) {
+    SesionDto dto = this.servicioJwt.obtenerSesion(token);
+    return ResponseEntity.ok(dto);
+  }
+
+  @DeleteMapping("/sesion")
   public ResponseEntity<Void> cerrarSesion(
       HttpServletResponse response
   ) {

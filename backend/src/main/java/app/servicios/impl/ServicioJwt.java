@@ -1,5 +1,6 @@
 package app.servicios.impl;
 
+import app.dto.SesionDto;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;
 import io.jsonwebtoken.Claims;
@@ -71,5 +72,18 @@ public class ServicioJwt {
         .getBody();
   }
 
+  /**
+   * Metodo que valida el token y devuelve los datos guardados en el.
+   */
+  public SesionDto obtenerSesion(String token) {
 
+    Claims claims = validarToken(token);
+
+    return new SesionDto(
+        claims.get("usuarioId", String.class),
+        claims.get("rol", String.class),
+        claims.get("perfilId", String.class),
+        claims.get("colId", String.class)
+    );
+  }
 }

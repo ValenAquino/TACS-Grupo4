@@ -5,8 +5,9 @@ import FilterChip from "../../../../../components/ui/filter-chip/filter-chip.jsx
 import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
+import {useAuth} from "@/contexts/userContext.jsx";
 
-const Repetidas = ({ colId }) => {
+const Repetidas = () => {
     const [repetidas, setRepetidas] = useState({});
     const [filtros, setFiltros] = useState({
         metodoIntercambio: "",
@@ -15,6 +16,12 @@ const Repetidas = ({ colId }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [pagina, setPagina] = useState(1);
+
+    const { user } = useAuth()
+
+    console.log("user en comp", user)
+
+    const colId = user?.colId
 
     const navigate = useNavigate();
 

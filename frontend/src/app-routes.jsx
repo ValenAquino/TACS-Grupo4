@@ -12,6 +12,7 @@ import Perfil from "./views/public/perfil/perfil.jsx";
 import Intercambios from "./views/public/intercambios/intercambios.jsx";
 import Login from "@/views/public/login/login.jsx";
 import Registrar from "@/views/public/registrar/registrar.jsx";
+import {AuthProvider} from "@/contexts/userContext.jsx";
 
 const publics = [
   {
@@ -72,17 +73,19 @@ const privates = []
 
 const AppRoutes = () => {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        {publics.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-        {privates.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
-        ))}
-      </Route>
-      {/* <Route path="*" element={<NotFound />} /> */}
-    </Routes>
+      <AuthProvider>
+          <Routes>
+              <Route element={<Layout />}>
+                  {publics.map((route) => (
+                      <Route key={route.path} path={route.path} element={route.element} />
+                  ))}
+                  {privates.map((route) => (
+                      <Route key={route.path} path={route.path} element={route.element} />
+                  ))}
+              </Route>
+              {/* <Route path="*" element={<NotFound />} /> */}
+          </Routes>
+      </AuthProvider>
   )
 }
 

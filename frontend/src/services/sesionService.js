@@ -11,7 +11,7 @@ export const iniciarSesion = async ({nombre, contrasenia}) => {
 
 export const buscarUsuario = async (asignarUsuario) => {
     try {
-        const { data } = await api.get("/me")
+        const { data } = await api.get("/yo")
 
         asignarUsuario(data)
 

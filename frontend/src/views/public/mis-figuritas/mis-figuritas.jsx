@@ -11,7 +11,6 @@ const MisFiguritas = () => {
             key: "repetidas",
             label: "Repetidas",
             component: Repetidas,
-            props: { colId },
         },
         {
             key: "faltantes",

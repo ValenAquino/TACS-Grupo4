@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ServicioSesion implements IServicioSesion {
-  private final RepositorioUsuario repoSesion;
+  private final RepositorioUsuario repoUsuario;
 
   public void crearUsuario(UsuarioRequest req) {
     Usuario usuario = new Usuario(null, req.getRol(), req.getNombre(), req.getContrasenia());
 
-    this.repoSesion.guardar(usuario);
+    this.repoUsuario.guardar(usuario);
   }
 }

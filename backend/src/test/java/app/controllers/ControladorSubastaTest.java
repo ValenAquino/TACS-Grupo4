@@ -66,15 +66,15 @@ class ControladorSubastaTest {
             .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")))
             .build();
 
-        subastaActiva = new Subasta("s-1", sofia,
-            LocalDateTime.now().minusHours(1),
-            LocalDateTime.now().plusDays(1),
-            messi);
+        subastaActiva =  Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+            .figuritaSubastada(messi)
+            .build();
 
-        subastaCerrada = new Subasta("s-2", sofia,
-            LocalDateTime.now().minusDays(2),
-            LocalDateTime.now().minusDays(1),
-            messi);
+        subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+                LocalDateTime.now().minusDays(1)).fechaCierre(LocalDateTime.now().minusHours(1))
+            .figuritaSubastada(messi)
+            .build();
     }
 
     @Test

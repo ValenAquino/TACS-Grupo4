@@ -45,10 +45,12 @@ class RepositorioSubastasEnMemoriaTest {
 
     @Test
     void findByUsuarioId_retornaSoloSubastasDelUsuario() {
-        Subasta s1 = new Subasta("s-1", p1,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
-        Subasta s2 = new Subasta("s-2", p2,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
+        Subasta s1 =  Subasta.builder().id("s-1").autor(p1).fechaInicio(
+                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+            .build();
+        Subasta s2 = Subasta.builder().id("s-2").autor(p2).fechaInicio(
+                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+            .build();
 
         repositorio.guardar(s1);
         repositorio.guardar(s2);

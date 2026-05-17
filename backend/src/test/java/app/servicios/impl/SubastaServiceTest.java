@@ -99,10 +99,9 @@ public class SubastaServiceTest {
 
   @Test
   void ofertarEnSubastaCerrada_lanzaExcepcion() {
-    Subasta subastaCerrada = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusDays(2),
-        LocalDateTime.now().minusDays(1),
-        messi);
+    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+        LocalDateTime.now().minusDays(3)).fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi).build();
 
     when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(lucas);
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
@@ -113,10 +112,10 @@ public class SubastaServiceTest {
 
   @Test
   void ofertarEnSubastaConFiguritasDuplicadas_lanzaExcepcion() {
-    Subasta subastaActiva = new Subasta("s-2", sofia,
-        LocalDateTime.now().minusHours(1),
-        LocalDateTime.now().plusDays(1),
-        messi);
+    Subasta subastaActiva = Subasta.builder().id("s-2").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .build();
 
     when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(lucas);
     when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaActiva);
@@ -127,10 +126,9 @@ public class SubastaServiceTest {
 
   @Test
   void seleccionarOferta_marcaComoSeleccionada() {
-    Subasta subasta = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusHours(1),
-        LocalDateTime.now().plusDays(1),
-        messi);
+    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
 
     Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
     subasta.agregarOferta(propuesta);
@@ -144,10 +142,9 @@ public class SubastaServiceTest {
 
   @Test
   void seleccionarOferta_desseleccionaAnterior() {
-    Subasta subasta = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusHours(1),
-        LocalDateTime.now().plusDays(1),
-        messi);
+    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
 
     Propuesta propuestaAnterior = new Propuesta("o-1", lucas, sofia, List.of(), messi);
     propuestaAnterior.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
@@ -166,10 +163,9 @@ public class SubastaServiceTest {
 
   @Test
   void seleccionarOferta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusDays(2),
-        LocalDateTime.now().minusDays(1),
-        messi);
+    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi).build();
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
 
@@ -179,10 +175,9 @@ public class SubastaServiceTest {
 
   @Test
   void rechazarOferta_marcaComoRechazada() {
-    Subasta subasta = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusHours(1),
-        LocalDateTime.now().plusDays(1),
-        messi);
+    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
 
     Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
     subasta.getOfertas().add(propuesta);
@@ -196,10 +191,10 @@ public class SubastaServiceTest {
 
   @Test
   void rechazarOferta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusDays(2),
-        LocalDateTime.now().minusDays(1),
-        messi);
+    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi).build();
+
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
 
@@ -209,10 +204,10 @@ public class SubastaServiceTest {
 
   @Test
   void cancelarSubasta_rechazaTodasLasOfertas() {
-    Subasta subasta = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusHours(1),
-        LocalDateTime.now().plusDays(1),
-        messi);
+    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
+
 
     Propuesta propuesta1 = new Propuesta("o-1", lucas, sofia, List.of(), messi);
     Propuesta propuesta2 = new Propuesta("o-2", lucas, sofia, List.of(), messi);
@@ -230,10 +225,9 @@ public class SubastaServiceTest {
 
   @Test
   void cancelarSubasta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusDays(2),
-        LocalDateTime.now().minusDays(1),
-        messi);
+    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi).build();
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
 
@@ -243,10 +237,9 @@ public class SubastaServiceTest {
 
   @Test
   void cerrarSubasta_aceptaSeleccionadaYRechazaResto() {
-    Subasta subasta = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusHours(1),
-        LocalDateTime.now().plusDays(1),
-        messi);
+    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
 
     Propuesta propuestaSeleccionada = new Propuesta("o-1", lucas, sofia, List.of(), messi);
     propuestaSeleccionada.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
@@ -267,10 +260,9 @@ public class SubastaServiceTest {
 
   @Test
   void cerrarSubasta_sinOfertaSeleccionada_lanzaExcepcion() {
-    Subasta subasta = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusHours(1),
-        LocalDateTime.now().plusDays(1),
-        messi);
+    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
 
     Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
     subasta.getOfertas().add(propuesta);
@@ -283,10 +275,9 @@ public class SubastaServiceTest {
 
   @Test
   void cerrarSubasta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = new Subasta("s-1", sofia,
-        LocalDateTime.now().minusDays(2),
-        LocalDateTime.now().minusDays(1),
-        messi);
+    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi).build();
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
 

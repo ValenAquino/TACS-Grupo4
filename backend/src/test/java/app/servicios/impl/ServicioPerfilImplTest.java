@@ -22,6 +22,8 @@ import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import app.servicios.ServicioPerfil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,8 +89,8 @@ class ServicioPerfilImplTest {
     usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(null, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
 
     Propuesta oferta = propuesta("p-3", otro, usuario, EstadoProceso.ACEPTADO);
-    Subasta subastaActiva = new Subasta("s-1", usuario,
-        LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
+    Subasta subastaActiva = Subasta.builder().id("s-1").autor(usuario).fechaInicio(
+        LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(2)).build();
     subastaActiva.getOfertas().add(oferta);
 
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
@@ -109,12 +111,12 @@ class ServicioPerfilImplTest {
   @Test
   void getOperacionesUsuario_filtraSoloSubastasActivas() {
     Propuesta oferta = propuesta("p-1", otro, usuario, EstadoProceso.ACEPTADO);
-    Subasta subastaActiva = new Subasta("s-1", usuario,
-        LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
+    Subasta subastaActiva = Subasta.builder().id("s-1").autor(usuario).fechaInicio(
+        LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(2)).build();
     subastaActiva.getOfertas().add(oferta);
 
-    Subasta subastaVencida = new Subasta("s-2", usuario,
-        LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null);
+    Subasta subastaVencida = Subasta.builder().id("s-2").autor(usuario).fechaInicio(
+        LocalDateTime.now().minusDays(3)).fechaCierre(LocalDateTime.now().minusDays(1)).build();
 
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
     when(repositorioPropuestas.buscarPorAutorId("1")).thenReturn(new ArrayList<>());

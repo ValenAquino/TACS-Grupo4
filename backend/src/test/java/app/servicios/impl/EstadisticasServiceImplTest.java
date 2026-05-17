@@ -82,8 +82,9 @@ class EstadisticasServiceImplTest {
             .coleccion(coleccionConUna)
             .build();
 
-        Subasta subastaActiva = new Subasta("s-1", u1,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
+        Subasta subastaActiva = Subasta.builder().id("s-1").autor(u1).fechaInicio(
+                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+            .build();;
 
         when(repositorioUsuarios.contar()).thenReturn(2L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1, u2));
@@ -102,10 +103,12 @@ class EstadisticasServiceImplTest {
     void getEstadisticas_filtraSoloSubastasActivas() {
         Perfil u1 = perfil("u-1", "usr-1", "Lucas");
 
-        Subasta activa  = new Subasta("s-1", u1,
-            LocalDateTime.now().minusHours(1), LocalDateTime.now().plusDays(2), null);
-        Subasta vencida = new Subasta("s-2", u1,
-            LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(1), null);
+        Subasta activa  = Subasta.builder().id("s-1").autor(u1).fechaInicio(
+                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+            .build();
+        Subasta vencida = Subasta.builder().id("s-2").autor(u1).fechaInicio(
+                LocalDateTime.now().minusDays(3)).fechaCierre(LocalDateTime.now().minusDays(1))
+            .build();
 
         when(repositorioUsuarios.contar()).thenReturn(1L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));

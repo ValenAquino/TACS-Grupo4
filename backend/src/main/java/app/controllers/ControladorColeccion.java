@@ -1,7 +1,8 @@
 package app.controllers;
 
-import app.dto.FaltantesDto;
-import app.dto.Repetidas;
+import app.dto.FiguritaDto;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.model.entities.filtros.FaltantesFiltro;
@@ -45,7 +46,7 @@ public class ControladorColeccion {
     }
 
     @GetMapping("/{col_id}/faltantes")
-    public ResponseEntity<FaltantesDto> buscarFaltantes(
+    public ResponseEntity<PaginaResultado<FiguritaDto>> buscarFaltantes(
         @PathVariable String col_id,
         @ModelAttribute FaltantesFiltro filtros
     ) {

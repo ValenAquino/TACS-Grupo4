@@ -1,7 +1,7 @@
 package app.controllers;
 
 import app.dto.FiguritaIntercambiableDto;
-import app.dto.PaginaResultado;
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 import app.servicios.ServicioFigurita;

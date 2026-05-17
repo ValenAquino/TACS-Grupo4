@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import app.dto.FiguritaIntercambiableDto;
-import app.dto.PaginaResultado;
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;

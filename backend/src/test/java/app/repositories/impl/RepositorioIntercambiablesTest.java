@@ -12,11 +12,11 @@ import app.model.entities.filtros.FiguritasFiltro;
 import java.util.List;
 
 import app.repositories.RepositorioColecciones;
-import app.repositories.implMongo.RepositorioColeccionMongo;
+import app.repositories.implMongo.RepositorioColeccionesMongo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class RepositorioFiguritasIntercambiablesEnMemoriaTest {
+public class RepositorioIntercambiablesTest {
 
   private RepositorioColecciones repositorio;
   private FiguritaIntercambiable intercambiableMessi;
@@ -25,7 +25,7 @@ public class RepositorioFiguritasIntercambiablesEnMemoriaTest {
 
   @BeforeEach
   void setUp() {
-    repositorio = new RepositorioColeccionMongo();
+    repositorio = new RepositorioColeccionesMongo();
     coleccion = new Coleccion("c-1");
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
     Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, "Delantero");

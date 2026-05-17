@@ -1,4 +1,4 @@
-package app.dto;
+package app.dto.paginacion;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;

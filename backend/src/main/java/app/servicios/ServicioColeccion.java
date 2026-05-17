@@ -1,7 +1,8 @@
 package app.servicios;
 
-import app.dto.FaltantesDto;
-import app.dto.Repetidas;
+import app.dto.FiguritaDto;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
@@ -55,9 +56,15 @@ public class ServicioColeccion {
     this.notificacionService.notificarInteresados(interesados, cuerpo);
   }
 
-  public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {
-    return this.repositorioColecciones.buscarFaltantes(colId, filtros);
+  public PaginaResultado<FiguritaDto> buscarFaltantes(String colId, FaltantesFiltro filtros) {
+    PaginaResultado<Figurita> resultado = this.repositorioColecciones.buscarFaltantes(colId, filtros);
 
+    PaginaResultado<FiguritaDto> resultadoDto = new PaginaResultado<>(
+        resultado.contenido().stream().map(FiguritaDto::new).toList(),
+        resultado.cantidadDeElementos(),
+        resultado.cantidadDePaginas(),
+        resultado.numero());
+    return resultadoDto;
   }
 
   public Repetidas buscarRepetidas(String colId, RepetidasFiltro filtros) {

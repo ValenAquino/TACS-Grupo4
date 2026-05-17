@@ -1,7 +1,7 @@
 package app.servicios;
 
 import app.dto.FiguritaIntercambiableDto;
-import app.dto.PaginaResultado;
+import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;

@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RepositorioCalificacionMongo implements RepositorioCalificacion {
+public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
   @Autowired
   private MongoTemplate mongoTemplate;
 

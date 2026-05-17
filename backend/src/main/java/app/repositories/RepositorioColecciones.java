@@ -1,9 +1,9 @@
 package app.repositories;
 
-import app.dto.FaltantesDto;
-import app.dto.PaginaResultado;
-import app.dto.Repetidas;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
 import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.filtros.FaltantesFiltro;
@@ -20,7 +20,7 @@ public interface RepositorioColecciones {
 
   Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros);
 
-  FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros);
+  PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros);
 
   PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesConFiltros(
       FiguritasFiltro filtros, int pagina, int tamanioPagina);

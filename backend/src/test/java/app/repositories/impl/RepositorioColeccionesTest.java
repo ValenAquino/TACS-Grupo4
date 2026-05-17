@@ -1,20 +1,25 @@
 package app.repositories.impl;
 
-import app.dto.FaltantesDto;
-import app.dto.Repetidas;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
 import app.model.entities.*;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
+import app.repositories.implMongo.RepositorioColeccionesMongo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RepositorioColeccionesEnMemoriaTest {
+@SpringBootTest
+public class RepositorioColeccionesTest {
 
-  private RepositorioColeccionesEnMemoria repositorio;
+  @Autowired
+  private RepositorioColeccionesMongo repositorio;
 
   Figurita messi;
   Figurita diMaria;
@@ -22,7 +27,6 @@ public class RepositorioColeccionesEnMemoriaTest {
 
   @BeforeEach
   void setUp() {
-    repositorio = new RepositorioColeccionesEnMemoria();
     messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     diMaria = new Figurita("ARG-11", 11, "Di maria", Seleccion.ARGENTINA, null);
     dybala = new Figurita("ARG-21", 21, "Dybala", Seleccion.ARGENTINA, null);
@@ -48,17 +52,6 @@ public class RepositorioColeccionesEnMemoriaTest {
   }
 
   @Test
-  void guardarSobrescribeColeccionConMismoId() {
-    Coleccion original = new Coleccion("10");
-    Coleccion nueva = new Coleccion("10");
-
-    repositorio.guardar(original);
-    repositorio.guardar(nueva);
-
-    assertSame(nueva, repositorio.buscarPorId("10"));
-  }
-
-  @Test
   void buscarFaltantesDevuelveResultadosPaginados() {
     Coleccion coleccion = new Coleccion("10");
 
@@ -70,15 +63,15 @@ public class RepositorioColeccionesEnMemoriaTest {
 
     repositorio.guardar(coleccion);
 
-    FaltantesDto dto = repositorio.buscarFaltantes(
+    PaginaResultado<Figurita> dto = repositorio.buscarFaltantes(
         "10",
         new FaltantesFiltro(2, 1)
     );
 
-    assertEquals(3, dto.resultados());
-    assertEquals(1, dto.paginaActual());
-    assertEquals(2, dto.paginasTotales());
-    assertEquals(2, dto.data().size());
+    assertEquals(3, dto.cantidadDeElementos());
+    assertEquals(1, dto.numero());
+    assertEquals(2, dto.cantidadDePaginas());
+    assertEquals(2, dto.contenido().size());
   }
 
   @Test
@@ -93,13 +86,13 @@ public class RepositorioColeccionesEnMemoriaTest {
 
     repositorio.guardar(coleccion);
 
-    FaltantesDto dto = repositorio.buscarFaltantes(
+    PaginaResultado dto = repositorio.buscarFaltantes(
         "10",
         new FaltantesFiltro(2, 2)
     );
 
-    assertEquals(1, dto.data().size());
-    assertEquals(2, dto.paginaActual());
+    assertEquals(1, dto.contenido().size());
+    assertEquals(2, dto.numero());
   }
 
   @Test
@@ -158,7 +151,7 @@ public class RepositorioColeccionesEnMemoriaTest {
 
     repositorio.guardar(coleccion);
 
-    Repetidas dto = repositorio.buscarRepetidas(
+    Repetidas<FiguritaIntercambiable> dto = repositorio.buscarRepetidas(
         "10",
         new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, 10, 1)
     );

@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RepositorioUsuarioMongo implements RepositorioUsuario {
+public class RepositorioUsuariosMongo implements RepositorioUsuario {
 
   @Autowired
   private MongoTemplate mongoTemplate;

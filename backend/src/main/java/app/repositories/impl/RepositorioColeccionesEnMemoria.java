@@ -1,8 +1,7 @@
 package app.repositories.impl;
 
-import app.dto.FaltantesDto;
-import app.dto.PaginaResultado;
-import app.dto.Repetidas;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
@@ -80,7 +79,7 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
     return new Repetidas<>(publicadas, disponibles, data);
   }
 
-  public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {
+  public PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros) {
     Coleccion col = this.storage.get(colId);
 
     List<Figurita> faltantes = col.getFaltantes();
@@ -98,7 +97,7 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
 
     int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
 
-    return new FaltantesDto(faltantes, resultados, paginaActual, paginasTotales);
+    return null;
   }
   @Override
   public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesConFiltros(

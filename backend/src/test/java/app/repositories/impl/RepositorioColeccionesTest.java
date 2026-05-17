@@ -100,9 +100,9 @@ public class RepositorioColeccionesTest {
     Coleccion coleccion = new Coleccion("10");
 
     coleccion.getRepetidas().addAll(List.of(
-        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
-        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
-        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
+        FiguritaIntercambiable.builder().figurita(messi).cantidadExistente(2).metodos(List.of(MetodoIntercambio.SUBASTA)).build(),
+        FiguritaIntercambiable.builder().figurita(diMaria).cantidadExistente(3).metodos(List.of(MetodoIntercambio.INTERCAMBIO)).build(),
+        FiguritaIntercambiable.builder().figurita(dybala).cantidadExistente(1).metodos(List.of(MetodoIntercambio.SUBASTA)).build()
     ));
 
     repositorio.guardar(coleccion);
@@ -135,7 +135,7 @@ public class RepositorioColeccionesTest {
         new RepetidasFiltro(MetodoIntercambio.SUBASTA, 10, 1)
     );
 
-    assertEquals(2, dto.getData());
+    assertEquals(2, dto.getData().cantidadDeElementos());
     assertEquals(2, dto.getData().contenido().size());
   }
 

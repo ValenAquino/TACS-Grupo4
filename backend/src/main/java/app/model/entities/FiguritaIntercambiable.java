@@ -2,6 +2,7 @@ package app.model.entities;
 
 import jdk.jfr.Experimental;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,17 +14,20 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class FiguritaIntercambiable {
 
     @DBRef
     private Figurita figurita;
 
     private Integer cantidadExistente;
-    private Integer cantidadReservada;
+    @Builder.Default
+    private Integer cantidadReservada = 0;
     private List<MetodoIntercambio> metodos;
 
     @Experimental
-    private String perfilId;
+    @Builder.Default
+    private String perfilId = null;
 
     public FiguritaIntercambiable(Figurita figurita, Integer cantidadExistente, List<MetodoIntercambio> metodos) {
         this(figurita, cantidadExistente,0, metodos, null);

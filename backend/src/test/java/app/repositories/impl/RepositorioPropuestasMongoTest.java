@@ -1,6 +1,6 @@
 package app.repositories.impl;
 
-import app.model.entities.Coleccion;
+import app.MongoTestBase;
 import app.model.entities.EstadoProceso;
 import app.model.entities.EstadoPropuesta;
 import app.model.entities.MedioComunicacion;
@@ -10,17 +10,21 @@ import app.model.entities.Perfil;
 import app.model.entities.Rol;
 import app.model.entities.Usuario;
 import java.time.LocalDateTime;
+
+import app.repositories.RepositorioPropuestas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RepositorioPropuestasEnMemoriaTest {
-
-    private RepositorioPropuestasEnMemoria repositorio;
+class RepositorioPropuestasMongoTest extends MongoTestBase {
+    @Autowired
+    private RepositorioPropuestas repositorio;
     private Perfil u1;
     private Perfil u2;
     private Perfil u3;
@@ -31,7 +35,6 @@ class RepositorioPropuestasEnMemoriaTest {
 
     @BeforeEach
     void setUp() {
-        repositorio = new RepositorioPropuestasEnMemoria();
 
         Usuario user = new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella");
         u1 = Perfil.builder()

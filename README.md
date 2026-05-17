@@ -317,6 +317,8 @@ intercambio, el cambio es deliberado y controlado.
 permite que operaciones sobre la colección no requieran cargar el perfil completo.
 
 ---
+## Utilización de la IA
+---
 
 ## Ejecutar tests
 

@@ -13,7 +13,7 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
 import app.model.entities.filtros.FiguritasFiltro;
-import app.repositories.RepositorioFiguritasIntercambiables;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
 
@@ -27,7 +27,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class FiguritaServiceTest {
 
-  @Mock RepositorioFiguritasIntercambiables repositorioIntercambiables;
+  @Mock
+  RepositorioColecciones repositorioColecciones;
   @Mock RepositorioPerfiles repositorioPerfiles;
   @InjectMocks
   ServicioFigurita figuritaService;
@@ -42,7 +43,7 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_sinFiltros_retornaTodasPaginadas() {
-    when(repositorioIntercambiables.buscarConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
+    when(repositorioColecciones.buscarIntercambiablesConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
         .thenReturn(new PaginaResultado<>(List.of(intercambiable, soloSubasta), 2, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
@@ -56,7 +57,7 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_filtroTipoIntercambio_excluyeSoloSubasta() {
-    when(repositorioIntercambiables.buscarConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
+    when(repositorioColecciones.buscarIntercambiablesConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
         .thenReturn(new PaginaResultado<>(List.of(intercambiable), 1, 1, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
@@ -75,7 +76,7 @@ class FiguritaServiceTest {
     FiguritaIntercambiable fi2 = new FiguritaIntercambiable(f2, 1, List.of(MetodoIntercambio.INTERCAMBIO), "u2");
     FiguritaIntercambiable fi3 = new FiguritaIntercambiable(f3, 1, List.of(MetodoIntercambio.INTERCAMBIO), "u3");
 
-    when(repositorioIntercambiables.buscarConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
+    when(repositorioColecciones.buscarIntercambiablesConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
         .thenReturn(new PaginaResultado<>(List.of(fi1, fi2), 3, 2, 0))
         .thenReturn(new PaginaResultado<>(List.of(fi3), 3, 2, 1));
 
@@ -92,7 +93,7 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_sinResultados_retornaPaginaVacia() {
-    when(repositorioIntercambiables.buscarConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
+    when(repositorioColecciones.buscarIntercambiablesConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
         .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
@@ -105,7 +106,7 @@ class FiguritaServiceTest {
 
   @Test
   void buscarFiguritas_paginaFueraDeRango_retornaContenidoVacio() {
-    when(repositorioIntercambiables.buscarConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
+    when(repositorioColecciones.buscarIntercambiablesConFiltros(any(FiguritasFiltro.class), anyInt(), anyInt()))
         .thenReturn(new PaginaResultado<>(List.of(), 1, 1, 99));
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =

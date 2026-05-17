@@ -14,7 +14,7 @@ import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
 import app.repositories.RepositorioCalificacion;
-import app.repositories.RepositorioFiguritasIntercambiables;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
@@ -42,7 +42,7 @@ class ServicioPerfilImplTest {
   @Mock
   private RepositorioNotificaciones repositorioNotificaciones;
   @Mock
-  private RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
+  private RepositorioColecciones repositorioFiguritasIntercambiables;
   @Mock
   private RepositorioCalificacion repositorioCalificacion;
 
@@ -135,7 +135,7 @@ class ServicioPerfilImplTest {
     FiguritaIntercambiable fi = new FiguritaIntercambiable(figurita, 2, new ArrayList<>());
 
     when(repositorioPerfiles.buscarPorId("1")).thenReturn(usuario);
-    when(repositorioFiguritasIntercambiables.buscarPorUsuarioId("1")).thenReturn(List.of(fi));
+    when(repositorioFiguritasIntercambiables.buscarIntercambiablesPorUsuarioId("1")).thenReturn(List.of(fi));
 
     List<FiguritaIntercambiableDto> resultado = service.obtenerIntercambiablesPerfil("1");
 

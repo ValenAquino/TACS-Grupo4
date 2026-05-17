@@ -16,7 +16,6 @@ import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
@@ -36,7 +35,6 @@ class PropuestaServiceTest {
   @Mock RepositorioPropuestas repositorioPropuestas;
   @Mock RepositorioPerfiles repositorioUsuarios;
   @Mock RepositorioFiguritas repositorioFiguritas;
-  @Mock RepositorioFiguritasIntercambiables repositorioIntercambiables;
   @Mock
   ServicioNotificacion notificacionesService;
 

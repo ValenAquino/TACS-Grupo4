@@ -1,6 +1,7 @@
 package app.controllers;
 
 import app.dto.FaltantesDto;
+import app.dto.Repetidas;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.model.entities.filtros.FaltantesFiltro;
@@ -52,7 +53,7 @@ public class ControladorColeccion {
     }
 
     @GetMapping("/{col_id}/repetidas")
-    public ResponseEntity<RepetidasDto> buscarRepetidas(
+    public ResponseEntity<Repetidas> buscarRepetidas(
         @PathVariable String col_id,
         @ModelAttribute RepetidasFiltro filtros
     ) {

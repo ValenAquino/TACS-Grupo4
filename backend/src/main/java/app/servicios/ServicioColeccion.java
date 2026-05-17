@@ -1,6 +1,7 @@
 package app.servicios;
 
 import app.dto.FaltantesDto;
+import app.dto.Repetidas;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;

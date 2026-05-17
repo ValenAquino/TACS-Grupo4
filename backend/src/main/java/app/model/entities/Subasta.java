@@ -43,31 +43,6 @@ public class Subasta {
     @Builder.Default
     private Integer calificacionMinimaSolicitada = 1;
 
-    public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
-                   Figurita figuritaSubastada, List<Figurita> figuritasSolicitadas,
-                   Integer calificacionMinimaSolicitada) {
-        this.id = id;
-        this.autor = autor;
-        this.fechaInicio = fechaInicio;
-        this.fechaCierre = fechaCierre;
-        this.figuritaSubastada = figuritaSubastada;
-        this.ofertas = new ArrayList<>();
-        this.figuritasSolicitadas = figuritasSolicitadas;
-        this.calificacionMinimaSolicitada = calificacionMinimaSolicitada;
-    }
-
-    public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
-                   Figurita figuritaSubastada) {
-        this.id = id;
-        this.autor = autor;
-        this.fechaInicio = fechaInicio;
-        this.fechaCierre = fechaCierre;
-        this.figuritaSubastada = figuritaSubastada;
-        this.ofertas = new ArrayList<>();
-        this.figuritasSolicitadas = new ArrayList<>();
-        this.calificacionMinimaSolicitada = 1;
-    }
-
     public void agregarOferta(Propuesta oferta) {
         this.ofertas.add(oferta);
     }

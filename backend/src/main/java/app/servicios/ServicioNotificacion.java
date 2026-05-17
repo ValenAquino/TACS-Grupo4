@@ -4,7 +4,6 @@ import app.model.entities.Perfil;
 import app.model.notificador.Mensaje;
 import app.model.notificador.Notificacion;
 import app.repositories.RepositorioNotificaciones;
-import app.servicios.IServicioNotificacion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

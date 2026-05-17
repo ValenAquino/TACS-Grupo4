@@ -271,30 +271,36 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
         ofertaSofia.seleccionar(lucas);
 
-        Subasta subasta1 = new Subasta("1", lucas,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusMinutes(45),
-            mbappe,
-            new ArrayList<>(List.of(ofertaSofia, ofertaPedro, ofertaLu)),
-            new ArrayList<>(), 0, false);
+        Subasta subasta1 = Subasta.builder()
+            .id("1").autor(lucas)
+            .fechaInicio(LocalDateTime.now())
+            .fechaCierre(LocalDateTime.now().plusMinutes(45))
+            .figuritaSubastada(mbappe)
+            .ofertas(new ArrayList<>(List.of(ofertaSofia, ofertaPedro, ofertaLu)))
+            .build();
+
         subastas.guardar(subasta1);
 
         // id=2 | Activa, cierra en 2 días, sin ofertas
-        Subasta subasta2 = new Subasta("2", lucas,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusDays(2),
-            pedri);
+        Subasta subasta2 = Subasta.builder()
+            .id("2").autor(lucas)
+            .fechaInicio(LocalDateTime.now())
+            .fechaCierre(LocalDateTime.now().plusDays(2))
+            .figuritaSubastada(pedri)
+            .build();
+
         subastas.guardar(subasta2);
 
         // id=3 | Finalizada hace 2 días, ganador: matias, sin calificar
         Propuesta ofertaGanadora3 = new Propuesta("o4", matias, lucas,
             List.of(messi, lautaro), diMaria);
-        Subasta subasta3 = new Subasta("3", lucas,
-            LocalDateTime.now().minusDays(2),
-            LocalDateTime.now().minusDays(2),
-            diMaria,
-            new ArrayList<>(List.of(ofertaGanadora3)),
-            new ArrayList<>(), 0, true);
+        Subasta subasta3 = Subasta.builder()
+            .id("3").autor(lucas)
+            .fechaInicio(LocalDateTime.now().minusDays(2))
+            .fechaCierre(LocalDateTime.now())
+            .figuritaSubastada(diMaria)
+            .ofertas(new ArrayList<>(List.of(ofertaGanadora3)))
+            .build();
 
         ofertaGanadora3.aceptar(lucas);
         subastas.guardar(subasta3);
@@ -302,12 +308,13 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
         Propuesta ofertaGanadora7 = new Propuesta("o5", sofia, lucas,
             List.of(pedri), griezmann);
-        Subasta subasta7 = new Subasta("7", lucas,
-            LocalDateTime.now().minusDays(5),
-            LocalDateTime.now().minusDays(5),
-            griezmann,
-            new ArrayList<>(List.of(ofertaGanadora7)),
-            new ArrayList<>(), 0, true);
+        Subasta subasta7 = Subasta.builder()
+            .id("7").autor(lucas)
+            .fechaInicio(LocalDateTime.now().minusDays(5))
+            .fechaCierre(LocalDateTime.now())
+            .figuritaSubastada(griezmann)
+            .ofertas(new ArrayList<>(List.of(ofertaGanadora7)))
+            .build();
         subastas.guardar(subasta7);
 
         // ─── SUBASTAS DONDE LUCAS PARTICIPÓ (autor = otro perfil) ────────────────
@@ -315,24 +322,27 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // id=4 | Activa, cierra en 2h, oferta de lucas SELECCIONADA
         Propuesta ofertaLucas4 = new Propuesta("o6", lucas, sofia,
             List.of(griezmann, kroos), vinicius);
-        Subasta subasta4 = new Subasta("4", sofia,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusHours(2),
-            vinicius,
-            new ArrayList<>(List.of(ofertaLucas4)),
-            new ArrayList<>(), 0, false);
+        Subasta subasta4 = Subasta.builder()
+            .id("4").autor(sofia)
+            .fechaInicio(LocalDateTime.now())
+            .fechaCierre(LocalDateTime.now().plusHours(2))
+            .figuritaSubastada(vinicius)
+            .ofertas(new ArrayList<>(List.of(ofertaLucas4)))
+            .build();
         ofertaLucas4.seleccionar(sofia);
         subastas.guardar(subasta4);
 
         // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
         Propuesta ofertaLucas5 = new Propuesta("o7", lucas, matias,
             List.of(diMaria, messi), messi);
-        Subasta subasta5 = new Subasta("5", matias,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusDays(1),
-            messi,
-            new ArrayList<>(List.of(ofertaLucas5)),
-            new ArrayList<>(), 0, false);
+        Subasta subasta5 = Subasta.builder()
+            .id("5").autor(matias)
+            .fechaInicio(LocalDateTime.now())
+            .fechaCierre(LocalDateTime.now().plusDays(1))
+            .figuritaSubastada(messi)
+            .ofertas(new ArrayList<>(List.of(ofertaLucas5)))
+            .build();
+
         subastas.guardar(subasta5);
 
         // id=8 | Finalizada hace 5 días, oferta de lucas ACEPTADA, ya calificada
@@ -340,12 +350,13 @@ public class InicializadorDeDatos implements CommandLineRunner {
             List.of(kroos), griezmann);
         Propuesta ofertaJuan1 = new Propuesta("o10", juan, sofia,
             List.of(kroos), griezmann);
-        Subasta subasta8 = new Subasta("8", sofia,
-            LocalDateTime.now().minusDays(5),
-            LocalDateTime.now().minusDays(5),
-            griezmann,
-            new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)),
-            new ArrayList<>(), 0, true);
+        Subasta subasta8 = Subasta.builder().id("8").autor(sofia)
+            .fechaInicio(LocalDateTime.now().minusDays(5))
+            .fechaCierre(LocalDateTime.now())
+            .figuritaSubastada(griezmann)
+            .ofertas(new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)))
+            .build();
+
         ofertaJuan1.aceptar(sofia);
         Calificacion calificacion = new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA);
         sofia.agregarNuevaCalificacion(calificacion);
@@ -356,12 +367,11 @@ public class InicializadorDeDatos implements CommandLineRunner {
         // ─── SUBASTAS DONDE LUCAS NO PARTICIPÓ ────────────────
 
         // id=6 | Finalizada hace 5 días, oferta de lucas ACEPTADA, sin calificar
-        Subasta subasta6 = new Subasta("6", juan,
-            LocalDateTime.now().minusDays(5),
-            LocalDateTime.now().minusDays(5),
-            neymar,
-            new ArrayList<>(),
-            new ArrayList<>(), 0, true);
+        Subasta subasta6 = Subasta.builder().id("6").autor(juan)
+            .fechaInicio(LocalDateTime.now().minusDays(5))
+            .fechaCierre(LocalDateTime.now())
+            .figuritaSubastada(neymar)
+            .build();
         subastas.guardar(subasta6);
     }
 }

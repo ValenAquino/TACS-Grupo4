@@ -3,7 +3,6 @@ package app.servicios;
 import app.dto.request.UsuarioRequest;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuario;
-import app.servicios.IServicioUsuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

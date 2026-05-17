@@ -1,10 +1,8 @@
 package app.repositories.impl;
 
 import app.dto.FaltantesDto;
-import app.dto.FiguritaIntercambiableDto;
 import app.dto.PaginaResultado;
 import app.dto.Repetidas;
-import app.dto.RepetidasDto;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
@@ -13,13 +11,10 @@ import app.model.entities.MetodoIntercambio;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
-import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
 

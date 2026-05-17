@@ -71,7 +71,6 @@ public class ServicioPerfil {
         return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
     }
 
-    @Override
     public List<FiguritaDto> obtenerFaltantes(String userId) {
       Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
       return perfil.getColeccion().getFaltantes().stream()
@@ -79,7 +78,6 @@ public class ServicioPerfil {
           .toList();
     }
     //TODO que se filtren las que cantidadExistentes == 0
-    @Override
     public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
       Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
       return perfil.getColeccion().getRepetidas().stream()
@@ -87,7 +85,6 @@ public class ServicioPerfil {
           .toList();
     }
 
-    @Override
     public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
         Perfil perfil = repositorioPerfiles.buscarPorId(userId);
         if (perfil == null) throw new NotFoundException("Perfil no encontrado");
@@ -98,7 +95,6 @@ public class ServicioPerfil {
             .toList();
     }
 
-  @Override
   public void agregarCalificacion(String userAutorId, String perfilDestinoId,
                                   Integer valor, String descripcion, String transactionId,
                                   MetodoIntercambio tipoTransaccion) {
@@ -130,7 +126,6 @@ public class ServicioPerfil {
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 
-  @Override
   public SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
@@ -179,7 +174,6 @@ public class ServicioPerfil {
     return new SugerenciaPaginadaDto(sugerenciasDto, resultados, paginaActual, paginasTotales);
   }
 
-  @Override
   public List<ContadorDto> obtenerContadores(String userId) {
     Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
 
@@ -191,14 +185,12 @@ public class ServicioPerfil {
     return contadores;
   }
 
-  @Override
   public List<NotificacionesDto> obtenerNotificaciones(String userId) {
       Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
     return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
   }
 
-  @Override
   public PerfilDto obtenerPerfil(String userId) {
     Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + userId);

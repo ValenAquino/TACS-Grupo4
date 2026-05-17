@@ -47,6 +47,7 @@ public class RepositorioFiguritasIntercambiablesMongo implements RepositorioFigu
 
 
     List<FiguritaIntercambiable> contenido = this.mongoTemplate.find(query, FiguritaIntercambiable.class);
+    return contenido;
   }
 
   @Override

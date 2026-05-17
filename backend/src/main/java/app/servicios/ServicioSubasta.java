@@ -41,15 +41,12 @@ public class ServicioSubasta {
     LocalDateTime fechaInicio = LocalDateTime.now();
     LocalDateTime fechaFin = fechaInicio.plusHours(duracionEnHoras.longValue());
 
-    Subasta nuevaSubasta = new Subasta(
-        UUID.randomUUID().toString(),
-        perfil,
-        fechaInicio,
-        fechaFin,
-        figuritaSubastada,
-        figuritasDeseadas,
-        calificacionMinima
-    );
+    Subasta nuevaSubasta = Subasta.builder()
+        .autor(perfil).figuritaSubastada(figuritaSubastada)
+        .fechaInicio(fechaInicio).fechaCierre(fechaFin)
+        .figuritasSolicitadas(figuritasDeseadas)
+        .calificacionMinimaSolicitada(calificacionMinima)
+        .build();
 
     this.repoSubasta.guardar(nuevaSubasta);
 

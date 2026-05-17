@@ -1,7 +1,6 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.FaltantesDto;
-import app.dto.RepetidasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
@@ -12,8 +11,6 @@ import app.model.entities.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IServicioColeccion;
-import app.servicios.IServicioNotificacion;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -21,13 +18,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioColeccion implements IServicioColeccion {
+public class ServicioColeccion {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioPerfiles repositorioUsuarios;
-  private final IServicioNotificacion notificacionService;
+  private final ServicioNotificacion notificacionService;
 
-  @Override
   public void agregarFaltante(String colId, String figId) {
     Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
 
@@ -38,7 +34,6 @@ public class ServicioColeccion implements IServicioColeccion {
     repositorioColecciones.guardar(coleccion);
   }
 
-  @Override
   public void agregarRepetida(String colId, String figId, Integer
       cantidadExistente, List<MetodoIntercambio> modosIntercambio) {
 
@@ -59,14 +54,12 @@ public class ServicioColeccion implements IServicioColeccion {
     this.notificacionService.notificarInteresados(interesados, cuerpo);
   }
 
-  @Override
   public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {
     return this.repositorioColecciones.buscarFaltantes(colId, filtros);
 
   }
 
-  @Override
-  public RepetidasDto buscarRepetidas(String colId, RepetidasFiltro filtros) {
+  public Repetidas buscarRepetidas(String colId, RepetidasFiltro filtros) {
     return this.repositorioColecciones.buscarRepetidas(colId, filtros);
   }
 }

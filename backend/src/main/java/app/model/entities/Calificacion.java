@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @NoArgsConstructor
@@ -17,6 +18,7 @@ public class Calificacion {
   @Id
   private String id;
   @JsonIgnore
+  @DBRef
   private Perfil autor;
   //valor es un entero de 1 a 5
   private Integer valor;

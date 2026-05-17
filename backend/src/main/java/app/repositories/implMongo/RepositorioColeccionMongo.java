@@ -1,8 +1,8 @@
 package app.repositories.implMongo;
 
 import app.dto.FaltantesDto;
-import app.dto.FiguritaIntercambiableDto;
-import app.dto.RepetidasDto;
+import app.dto.PaginaResultado;
+import app.dto.Repetidas;
 import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.filtros.FaltantesFiltro;
@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,73 +32,52 @@ public class RepositorioColeccionMongo implements RepositorioColecciones {
     mongoTemplate.save(coleccion);
   }
 
-  public RepetidasDto buscarRepetidas(String colId, RepetidasFiltro filtros){
+  public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
 
     int pagina = filtros.pagina();
     int limite = filtros.limite();
 
+    // ── Count ──────────────────────────────────────────────────────────────
     Aggregation countAggregation = Aggregation.newAggregation(
-
-        Aggregation.match(
-            Criteria.where("id").is(colId)
-        ),
-
+        Aggregation.match(Criteria.where("id").is(colId)),
         Aggregation.unwind("repetidas"),
-
         Aggregation.match(
-            Criteria.where("repetidas.metodos")
-                .is(filtros.metodoIntercambio())
+            Criteria.where("repetidas.metodos").is(filtros.metodoIntercambio())
         ),
-
         Aggregation.count().as("total")
     );
 
     AggregationResults<Document> countResult =
-        mongoTemplate.aggregate(
-            countAggregation,
-            Coleccion.class,
-            Document.class
-        );
+        mongoTemplate.aggregate(countAggregation, "colecciones", Document.class);
 
-    Document doc = countResult.getUniqueMappedResult();
+    Document countDoc = countResult.getUniqueMappedResult();
+    int total = countDoc != null ? countDoc.getInteger("total") : 0;
 
-    int total = doc != null
-        ? doc.getInteger("total")
-        : 0;
-
+    // ── Datos paginados ────────────────────────────────────────────────────
     Aggregation aggregation = Aggregation.newAggregation(
-
-        Aggregation.match(
-            Criteria.where("id").is(colId)
-        ),
-
+        Aggregation.match(Criteria.where("id").is(colId)),
         Aggregation.unwind("repetidas"),
-
         Aggregation.match(
-            Criteria.where("repetidas.metodos")
-                .is(filtros.metodoIntercambio())
+            Criteria.where("repetidas.metodos").is(filtros.metodoIntercambio())
         ),
-
         Aggregation.skip((long) (pagina - 1) * limite),
-
         Aggregation.limit(limite),
-
         Aggregation.replaceRoot("repetidas")
     );
 
-    AggregationResults<FiguritaIntercambiable> resultado =
-        mongoTemplate.aggregate(
-            aggregation,
-            Coleccion.class,
-            FiguritaIntercambiable.class
-        );
+    AggregationResults<Document> resultado =
+        mongoTemplate.aggregate(aggregation, "colecciones", Document.class);
 
-    List<FiguritaIntercambiable> repetidas =
-        resultado.getMappedResults();
+    MongoConverter converter = mongoTemplate.getConverter();
 
-    List<FiguritaIntercambiableDto> figDtos = repetidas.stream().map(FiguritaIntercambiableDto::new).toList();
+    List<FiguritaIntercambiable> figuritas = resultado.getMappedResults()
+        .stream()
+        .map(doc -> converter.read(FiguritaIntercambiable.class, doc))
+        .toList();
 
-    return new RepetidasDto(figDtos,0,0,total,pagina, (int) Math.ceil((double) total/pagina));
+    PaginaResultado<FiguritaIntercambiable> data = new PaginaResultado<>(figuritas, total, pagina, limite);
+
+    return new Repetidas<>(0, 0, data);
   }
 
   public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros){

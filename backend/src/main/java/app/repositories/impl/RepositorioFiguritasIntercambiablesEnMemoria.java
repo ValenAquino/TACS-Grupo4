@@ -3,6 +3,7 @@ package app.repositories.impl;
 import app.dto.PaginaResultado;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
+import app.model.entities.Perfil;
 import app.model.entities.filtros.FiguritasFiltro;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import java.util.Arrays;
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public class RepositorioFiguritasIntercambiablesEnMemoria
     implements RepositorioFiguritasIntercambiables {
 
@@ -67,9 +67,11 @@ public class RepositorioFiguritasIntercambiablesEnMemoria
 
   @Override
   public List<FiguritaIntercambiable> buscarPorUsuarioId(String perfilId) {
-    return storage.values().stream()
+    /*return storage.values().stream()
         .filter(fi -> fi.getPerfilId().equals(perfilId))
         .toList();
+        */
+    return null;
   }
 
   @Override

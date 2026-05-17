@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Document(collection = "subastas")
+@Builder
 public class Subasta {
 
     @Id

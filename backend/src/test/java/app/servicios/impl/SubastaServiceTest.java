@@ -12,10 +12,11 @@ import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
 import app.repositories.impl.RepositorioNotificacionesEnMemoria;
-import app.servicios.IServicioSubasta;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+
+import app.servicios.ServicioNotificacion;
+import app.servicios.ServicioSubasta;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ public class SubastaServiceTest {
   private RepositorioFiguritas repositorioFiguritas;
 
   private RepositorioNotificaciones repositorioNotificaciones;
-  private IServicioSubasta service;
+  private ServicioSubasta service;
 
   private Perfil lucas;
   private Perfil sofia;
@@ -47,7 +48,7 @@ public class SubastaServiceTest {
   void setUp() {
     this.repositorioNotificaciones = new RepositorioNotificacionesEnMemoria();
     ServicioNotificacion serviceNotificacion = new ServicioNotificacion(repositorioNotificaciones);
-    service = new ServicioSubastaImpl(repositorioSubastas, repositorioPerfiles,
+    service = new ServicioSubasta(repositorioSubastas, repositorioPerfiles,
         repositorioFiguritas, serviceNotificacion);
 
     messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);

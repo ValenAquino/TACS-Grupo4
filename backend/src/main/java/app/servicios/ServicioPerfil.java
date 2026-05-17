@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.ContadorDto;
 import app.dto.FiguritaDto;
@@ -13,7 +13,6 @@ import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
-import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Propuesta;
@@ -26,17 +25,15 @@ import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IServicioPerfil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioPerfil implements IServicioPerfil {
+public class ServicioPerfil {
 
   private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
@@ -45,7 +42,6 @@ public class ServicioPerfil implements IServicioPerfil {
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
-  @Override
   public PerfilDto crearPerfil(PerfilRequest body){
     //Todo: buscar sesion y mandarselo por parametro al perfil
     Perfil perfil = Perfil.builder().usuario(null).nombre(body.getNombre()).build();
@@ -56,7 +52,6 @@ public class ServicioPerfil implements IServicioPerfil {
   }
 
 //TODO ya no es necesario este metodo, eliminar
-  @Override
   public OperacionesDto obtenerOperacionesPerfil(String userId) {
     Perfil usuario = repositorioPerfiles.buscarPorId(userId);
     if (usuario == null) {

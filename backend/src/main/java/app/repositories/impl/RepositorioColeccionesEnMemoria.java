@@ -2,6 +2,8 @@ package app.repositories.impl;
 
 import app.dto.FaltantesDto;
 import app.dto.FiguritaIntercambiableDto;
+import app.dto.PaginaResultado;
+import app.dto.Repetidas;
 import app.dto.RepetidasDto;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
@@ -40,7 +42,7 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
     this.storage.put(coleccion.getId(), coleccion);
   }
 
-  public RepetidasDto buscarRepetidas(String colId, RepetidasFiltro filtros) {
+  public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
     Coleccion col = this.storage.get(colId);
 
     List<FiguritaIntercambiable> repetidas = col.getRepetidas();
@@ -70,15 +72,16 @@ public class RepositorioColeccionesEnMemoria implements RepositorioColecciones {
 
     int offset = (paginaActual - 1) * limite;
 
-    List<FiguritaIntercambiableDto> repetidasMapeadas = repetidas.stream()
+    List<FiguritaIntercambiable> repetidasMapeadas = repetidas.stream()
         .skip(offset)
         .limit(limite)
-        .map(FiguritaIntercambiableDto::new)
         .toList();
 
     int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
 
-    return new RepetidasDto(repetidasMapeadas, publicadas, disponibles, resultados, paginaActual, paginasTotales);
+    PaginaResultado<FiguritaIntercambiable> data = new PaginaResultado<>(repetidasMapeadas, resultados, paginaActual, paginasTotales);
+
+    return new Repetidas<>(publicadas, disponibles, data);
   }
 
   public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {

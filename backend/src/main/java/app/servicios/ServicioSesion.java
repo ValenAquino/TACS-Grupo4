@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.request.UsuarioRequest;
 import app.model.entities.Usuario;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioSesion implements IServicioSesion {
+public class ServicioSesion {
   private final RepositorioUsuario repoSesion;
 
   public void crearUsuario(UsuarioRequest req) {

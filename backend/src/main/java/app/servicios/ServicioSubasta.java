@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.subasta.MiSubastaDto;
 import app.dto.subasta.MisSubastasResponseDto;
@@ -15,8 +15,6 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
-import app.servicios.IServicioNotificacion;
-import app.servicios.IServicioSubasta;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,13 +23,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioSubastaImpl implements IServicioSubasta {
+public class ServicioSubasta {
   private final RepositorioSubastas repoSubasta;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repoFigurita;
-  private final IServicioNotificacion notificacionService;
+  private final ServicioNotificacion notificacionService;
 
-  @Override
   public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
                            List<String> figuritasDeseadasIds, Integer calificacionMinima) {
     Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
@@ -63,7 +60,6 @@ public class ServicioSubastaImpl implements IServicioSubasta {
         interesados, "Encontramos una subasta de una figurita que te falta!");
   }
 
-  @Override
   public void ofertarEnSubasta(String userId, String perfilDestinoId, String subastaId, List<String> rawFiguritasId) {
     Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Perfil destinatario = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
@@ -93,7 +89,6 @@ public class ServicioSubastaImpl implements IServicioSubasta {
     this.repoSubasta.guardar(subasta);
   }
 
-  @Override
   public void seleccionarOferta(String subastaId, String ofertaId) {
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
@@ -115,7 +110,6 @@ public class ServicioSubastaImpl implements IServicioSubasta {
     this.repoSubasta.guardar(subasta);
   }
 
-  @Override
   public void rechazarOferta(String subastaId, String ofertaId) {
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
@@ -132,7 +126,6 @@ public class ServicioSubastaImpl implements IServicioSubasta {
     this.repoSubasta.guardar(subasta);
   }
 
-  @Override
   public void cancelarSubasta(String subastaId) {
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
@@ -147,7 +140,6 @@ public class ServicioSubastaImpl implements IServicioSubasta {
     this.repoSubasta.guardar(subasta);
   }
 
-  @Override
   public void cerrarSubasta(String subastaId) {
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
@@ -171,7 +163,6 @@ public class ServicioSubastaImpl implements IServicioSubasta {
     this.repoSubasta.guardar(subasta);
   }
 
-  @Override
   public MisSubastasResponseDto obtenerMisSubastas(String userId) {
     List<Subasta> misSubastas = this.repoSubasta.buscarPorAutorUserId(userId);
 
@@ -188,7 +179,6 @@ public class ServicioSubastaImpl implements IServicioSubasta {
     return new MisSubastasResponseDto(activas, finalizadas);
   }
 
-  @Override
   public SubastasParticipoResponseDto obtenerSubastasParticipo(String userId) {
     List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(userId);
 
@@ -210,7 +200,7 @@ public class ServicioSubastaImpl implements IServicioSubasta {
         .findFirst()
         .get();
   }
-  @Override
+
   public SubastaDto obtenerSubasta(String subastaId) {
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 

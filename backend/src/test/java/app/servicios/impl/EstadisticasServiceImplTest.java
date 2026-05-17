@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +24,7 @@ class EstadisticasServiceImplTest {
     @Mock private RepositorioPropuestas repositorioPropuestas;
     @Mock private RepositorioSubastas repositorioSubastas;
 
-    private ServicioEstadisticasImpl service;
+    private ServicioEstadisticas service;
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
@@ -41,7 +40,7 @@ class EstadisticasServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new ServicioEstadisticasImpl(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
+        service = new ServicioEstadisticas(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
     }
 
     @Test

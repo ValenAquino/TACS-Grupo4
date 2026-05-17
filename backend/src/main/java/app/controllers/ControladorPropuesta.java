@@ -2,7 +2,7 @@ package app.controllers;
 
 import app.dto.PropuestaDto;
 import app.dto.request.CrearPropuestaRequest;
-import app.servicios.IServicioPropuesta;
+import app.servicios.ServicioPropuesta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/propuestas")
 public class ControladorPropuesta {
-    private final IServicioPropuesta propuestaService;
+    private final ServicioPropuesta propuestaService;
 
     @PostMapping
     public ResponseEntity<PropuestaDto> crearPropuesta(@RequestBody CrearPropuestaRequest request) {

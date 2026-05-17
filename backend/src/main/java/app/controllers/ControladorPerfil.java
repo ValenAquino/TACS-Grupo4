@@ -10,8 +10,9 @@ import app.dto.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.dto.request.PerfilRequest;
-import app.servicios.IServicioPerfil;
 import java.util.List;
+
+import app.servicios.ServicioPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ControladorPerfil {
 
-    private final IServicioPerfil perfilService;
+    private final ServicioPerfil perfilService;
 
     @PostMapping("")
     public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {

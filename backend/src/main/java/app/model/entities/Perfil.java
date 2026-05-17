@@ -32,7 +32,7 @@ public class Perfil {
     private Coleccion coleccion = new Coleccion();
 
     @Builder.Default
-    private List<MedioDeContacto> mediosDeContacto = new ArrayList<>();;
+    private List<MedioDeContacto> mediosDeContacto = new ArrayList<>();
 
     @DBRef
     @Builder.Default

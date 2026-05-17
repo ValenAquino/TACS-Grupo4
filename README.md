@@ -4,40 +4,61 @@ Aplicación de intercambio de figuritas del Mundial. Permite a los usuarios gest
 
 ## Stack tecnológico
 
+### Backend
+
+| Componente  | Tecnología        |
+|-------------|-------------------|
+| Lenguaje    | Java 17           |
+| Framework   | Spring Boot 3.2.5 |
+| Build       | Maven 3.9+        |
+| Tests       | JUnit 5 + Mockito |
+| Cobertura   | JaCoCo            |
+| Calidad     | SpotBugs          |
+| Boilerplate | Lombok            |
+
+### Frontend
+
+| Componente  | Tecnología         |
+|-------------|--------------------|
+| Lenguaje    | JavaScript         |
+| Framework   | React 19           |
+| Build       | Vite 8             |
+| Router      | React Router 7     |
+| HTTP Client | Axios              |
+| Servidor    | Nginx (producción) |
+
+### Infraestructura
+
 | Componente       | Tecnología                 |
 |------------------|----------------------------|
-| Lenguaje         | Java 17                    |
-| Framework        | Spring Boot 3.2.5          |
-| Build            | Maven 3.9+                 |
-| Tests            | JUnit 5 + Mockito          |
-| Cobertura        | JaCoCo                     |
-| Calidad          | SpotBugs                   |
-| Boilerplate      | Lombok                     |
 | Containerización | Docker (multi-stage build) |
+| Orquestación     | Docker Compose             |
 | CI               | GitHub Actions             |
 
 ## Levantar la aplicación
 
-### Con Docker Compose
+### Con Docker Compose (recomendado)
 
 ```bash
-docker compose up
+# Compilar imágenes y levantar la app
+docker compose up --build
+
+# Levantar la app 
+docker compose up -d
 ```
 
-### Con Docker
+| Servicio | URL                   |
+|----------|-----------------------|
+| Frontend | http://localhost:5173 |
+| Backend  | http://localhost:8080 |
+
+### Variables de entorno
+
+Para sobreescribir la configuración por defecto, crear un archivo `.env` en la raíz:
 
 ```bash
-docker build -t tacs-grupo5 .
-docker run -p 8080:8080 tacs-grupo5
+CORS_ALLOWED_ORIGIN=http://tacs-dominio.com
 ```
-
-### Con Maven
-
-```bash
-mvn spring-boot:run
-```
-
-La aplicación queda disponible en `http://localhost:8080`.
 
 ---
 
@@ -147,31 +168,31 @@ La aplicación queda disponible en `http://localhost:8080`.
 
 ### Figuritas
 
-| Método | Endpoint     | Descripción                                                       |
-|--------|--------------|-------------------------------------------------------------------|
+| Método | Endpoint     | Descripción                                                         |
+|--------|--------------|---------------------------------------------------------------------|
 | GET    | `/figuritas` | Lista figuritas intercambiables con filtros opcionales y paginación |
 
 El endpoint soporta dos modos de búsqueda mutuamente excluyentes según si se envía `q`:
 
 **Modo búsqueda libre (`q` presente):** OR entre campos, AND entre términos.
 
-| Param           | Tipo    | Requerido | Default | Descripción                                                                 |
-|-----------------|---------|-----------|---------|-----------------------------------------------------------------------------|
+| Param           | Tipo    | Requerido | Default | Descripción                                                                                                           |
+|-----------------|---------|-----------|---------|-----------------------------------------------------------------------------------------------------------------------|
 | `q`             | String  | Sí        | —       | Texto libre; términos separados por espacio se combinan con AND, cada uno busca en jugador, selección y número con OR |
-| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos                          |
-| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                                               |
-| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                                                |
+| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos                                                                     |
+| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                                                                                         |
+| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                                                                                          |
 
 **Modo filtros estructurados (`q` ausente):** AND entre todos los parámetros.
 
-| Param           | Tipo    | Requerido | Default | Descripción                                          |
-|-----------------|---------|-----------|---------|------------------------------------------------------|
-| `numero`        | Integer | No        | —       | Número exacto de figurita                            |
+| Param           | Tipo    | Requerido | Default | Descripción                                            |
+|-----------------|---------|-----------|---------|--------------------------------------------------------|
+| `numero`        | Integer | No        | —       | Número exacto de figurita                              |
 | `seleccion`     | Enum    | No        | —       | `ARGENTINA`, `BRASIL`, `FRANCIA`, `ESPAÑA`, `ALEMANIA` |
-| `jugador`       | String  | No        | —       | Nombre del jugador (contains, case-insensitive)      |
-| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos   |
-| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                        |
-| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                         |
+| `jugador`       | String  | No        | —       | Nombre del jugador (contains, case-insensitive)        |
+| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos      |
+| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                          |
+| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                           |
 
 **Respuesta:**
 
@@ -221,6 +242,28 @@ Los IDs de perfiles, figuritas y colecciones usados en los ejemplos corresponden
 ---
 
 ## Decisiones de diseño
+
+### Docker: multi-stage builds
+
+Tanto el backend como el frontend usan [multi-stage builds](https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/).
+La imagen final no contiene el compilador ni las dependencias de build, solo el artefacto ejecutable. Esto reduce el tamaño de imagen.
+
+Para el backend, el `pom.xml` se copia antes que el codigo fuente para que Docker cachee la descarga de dependencias Maven.
+
+Para el frontend, el build de Vite genera archivos estáticos que Nginx sirve directamente.
+Se incluye una configuración de Nginx con `try_files` para que React Router funcione correctamente al refrescar cualquier ruta ([referencia](https://dev.to/it-wibrc/guide-to-containerizing-a-modern-javascript-spa-vuevitereact-with-a-multi-stage-nginx-build-1lma)).
+
+### Docker: health check y orden de inicio
+
+El backend expone `/ping` como endpoint de salud.
+Docker Compose espera que el backend esté `healthy` antes de iniciar el frontend, evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)).
+El `start_period` de 15s le da margen a Spring Boot para inicializar.
+
+Ambos servicios tienen `restart: unless-stopped` para que Docker los vuelva a levantar automáticamente ante una caída.
+
+### CORS configurable
+
+El origin permitido se define en `application.properties` y puede sobreescribirse vía variable de entorno `CORS_ALLOWED_ORIGIN`. Esto permite usar `http://localhost:5173` en desarrollo y la URL real en producción sin recompilar.
 
 ### `MetodoIntercambio` como enum y no como entidad
 

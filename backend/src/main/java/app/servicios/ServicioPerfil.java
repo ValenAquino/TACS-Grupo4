@@ -7,7 +7,8 @@ import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
-import app.dto.SugerenciaPaginadaDto;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
@@ -126,20 +127,17 @@ public class ServicioPerfil {
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 
-  public SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
+  public PaginaResultado<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
 
-    List<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), perfilObjetivo.getId());
+    PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), perfilObjetivo.getId());
 
     List<Sugerencia> sugerenciasFiltradas = sugerencias.stream().filter(filtros::verifica).toList();
 
-    int resultados = sugerenciasFiltradas.size();
-    int paginaActual = filtros.paginaActual();
-    int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
 
     List<SugerenciaDto> sugerenciasDto = sugerenciasFiltradas.stream().map(SugerenciaDto::new).toList();
 
-    return new SugerenciaPaginadaDto(sugerenciasDto, resultados, paginaActual, paginasTotales);
+    return new PaginaResultado<>(sugerenciasDto, resultados, paginaActual, paginasTotales);
   }
 
   public List<ContadorDto> obtenerContadores(String userId) {

@@ -6,7 +6,8 @@ import app.dto.FiguritaDto;
 import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
-import app.dto.SugerenciaPaginadaDto;
+import app.dto.SugerenciaDto;
+import app.dto.paginacion.PaginaResultado;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.dto.request.PerfilRequest;
@@ -81,9 +82,9 @@ public class ControladorPerfil {
         );
     }
     @GetMapping("/{user_id}/sugerencias")
-    public ResponseEntity<SugerenciaPaginadaDto> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
+    public ResponseEntity<PaginaResultado<SugerenciaDto>> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
 
-        SugerenciaPaginadaDto sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
+        PaginaResultado<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
 
         return ResponseEntity.ok().body(sugerenciasDto);
     }

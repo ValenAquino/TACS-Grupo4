@@ -1,5 +1,6 @@
 package app.repositories.implMongo;
 
+import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
@@ -7,7 +8,6 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Perfil;
 import app.model.entities.Sugerencia;
 import app.repositories.RepositorioPerfiles;
-import com.mongodb.client.MongoClient;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -77,7 +77,8 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     mongoTemplate.save(perfil);
   }
 
-  public List<Sugerencia> generarSugerencias(Coleccion coleccion, String idPerfilObjetivo) {
+  //Todo: A implementar
+  public PaginaResultado<Sugerencia> generarSugerencias(Coleccion coleccion, String idPerfilObjetivo) {
     Set<ObjectId> faltantesObjetivo = coleccion.getFaltantes()
         .stream()
         .map(f -> new ObjectId(f.getId()))
@@ -91,7 +92,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     );
 
     try (Stream<Perfil> cursor = mongoTemplate.stream(query, Perfil.class)) {
-      return cursor
+      return new PaginaResultado<> (cursor
           .map(perfil -> {
             Set<ObjectId> faltantesPerfil = perfil.getColeccion().getFaltantes()
                 .stream()
@@ -111,7 +112,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
             return new Sugerencia(perfil, sugeridas, necesarias);
           })
           .filter(s -> !s.getFiguritasSugeridas().isEmpty() && !s.getFiguritasNecesarias().isEmpty())
-          .toList();
+          .toList(),0,0,0);
     }
   }
 }

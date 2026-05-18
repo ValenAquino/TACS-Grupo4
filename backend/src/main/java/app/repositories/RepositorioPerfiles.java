@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.Perfil;
@@ -21,5 +22,5 @@ public interface RepositorioPerfiles {
 
     void guardar(Perfil perfil);
 
-    List<Sugerencia> generarSugerencias(Coleccion coleccion, String perfilId);
+    PaginaResultado<Sugerencia> generarSugerencias(Coleccion coleccion, String perfilId);
 }

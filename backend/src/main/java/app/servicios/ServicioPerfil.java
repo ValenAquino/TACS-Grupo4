@@ -128,40 +128,8 @@ public class ServicioPerfil {
 
   public SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
-    List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
-    List<Sugerencia> sugerencias = new ArrayList<>();
 
-    //TODO: Esto debe estar en el motor de la base de datos en el futuro
-    perfiles.forEach(perfil -> {
-      Sugerencia sugerencia = new Sugerencia(perfil, new ArrayList<>(), new ArrayList<>());
-
-      perfil.getColeccion().getRepetidas().forEach(miRepetida -> {
-
-        perfilObjetivo.getColeccion().getRepetidas().forEach(suRepetida -> {
-
-          System.out.println(perfilObjetivo.getNombre());
-
-          boolean yoNecesito = perfilObjetivo
-              .getColeccion()
-              .getFaltantes()
-              .contains(miRepetida.getFigurita());
-
-          boolean elNecesita = perfil
-              .getColeccion()
-              .getFaltantes()
-              .contains(suRepetida.getFigurita());
-
-          if (yoNecesito && elNecesita) {
-            sugerencia.getFiguritasSugeridas().add(miRepetida.getFigurita());
-            sugerencia.getFiguritasNecesarias().add(suRepetida.getFigurita());
-          }
-        });
-      });
-      if (!sugerencia.getFiguritasSugeridas().isEmpty() && !sugerencia.getFiguritasNecesarias().isEmpty()) {
-        sugerencias.add(sugerencia);
-      }
-    });
-
+    List<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), perfilObjetivo.getId());
 
     List<Sugerencia> sugerenciasFiltradas = sugerencias.stream().filter(filtros::verifica).toList();
 

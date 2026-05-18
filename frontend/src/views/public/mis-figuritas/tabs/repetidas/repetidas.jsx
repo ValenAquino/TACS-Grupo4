@@ -19,8 +19,6 @@ const Repetidas = () => {
 
     const { user } = useAuth()
 
-    console.log("user en comp", user)
-
     const colId = user?.colId
 
     const navigate = useNavigate();

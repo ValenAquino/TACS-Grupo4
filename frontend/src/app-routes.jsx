@@ -15,6 +15,8 @@ import Registrar from "@/views/public/registrar/registrar.jsx";
 import {AuthProvider} from "@/contexts/userContext.jsx";
 import {ErrorProvider} from "@/contexts/errorContext.jsx";
 import {ToastProvider} from "@/contexts/toastContext.jsx";
+import AccesoDenegado from "@/views/public/acceso-denegado/acceso-denegado.jsx";
+import RutaProtegida from "@/components/autenticacion/ruta-protegida.jsx";
 
 const publics = [
   {
@@ -22,44 +24,8 @@ const publics = [
     element: <Explorar />,
   },
   {
-    path: '/mis-figuritas',
-    element: <MisFiguritas />,
-  },
-  {
-    path: '/mis-figuritas/nueva-faltante',
-    element: <NuevaFaltante />,
-  },
-  {
     path: '/explorar',
     element: <Explorar />,
-  },
-  {
-    path: '/mis-figuritas/nueva-repetida',
-    element: <NuevaRepetida />,
-  },
-  {
-    path: '/subastas',
-    element: <Subastas />,
-  },
-  {
-    path: '/subastas/crear',
-    element: <CrearSubasta />,
-  },
-  {
-      path: '/sugerencias',
-      element: <Sugerencias />
-  },
-  {
-      path: '/perfil',
-      element: <Perfil />
-  },
-  {
-      path: '/intercambios',
-      element: <Intercambios />
-  },
-  {
-      path: '/subastas/:subId',
-      element: <VerSubasta />
   },
   {
       path: '/login',
@@ -68,10 +34,51 @@ const publics = [
   {
     path: '/registrar',
     element: <Registrar />,
-  }
+  },
+    {
+        path: "/acceso-denegado",
+        element: <AccesoDenegado />
+    }
 ];
 
-const privates = []
+const privates = [
+    {
+        path: '/mis-figuritas',
+        element: <MisFiguritas />,
+    },
+    {
+        path: '/mis-figuritas/nueva-faltante',
+        element: <NuevaFaltante />,
+    },
+    {
+        path: '/mis-figuritas/nueva-repetida',
+        element: <NuevaRepetida />,
+    },
+    {
+        path: '/subastas/crear',
+        element: <CrearSubasta />,
+    },
+    {
+        path: '/sugerencias',
+        element: <Sugerencias />
+    },
+    {
+        path: '/perfil',
+        element: <Perfil />
+    },
+    {
+        path: '/intercambios',
+        element: <Intercambios />
+    },
+    {
+        path: '/subastas/:subId',
+        element: <VerSubasta />
+    },
+    {
+        path: '/subastas',
+        element: <Subastas />,
+    }
+]
 
 const AppRoutes = () => {
   return (
@@ -84,9 +91,13 @@ const AppRoutes = () => {
                           {publics.map((route) => (
                               <Route key={route.path} path={route.path} element={route.element} />
                           ))}
-                          {privates.map((route) => (
-                              <Route key={route.path} path={route.path} element={route.element} />
-                          ))}
+
+                          <Route element={<RutaProtegida />}>
+                              {privates.map((route) => (
+                                  <Route key={route.path} path={route.path} element={route.element} />
+                              ))}
+                          </Route>
+
                       </Route>
                       {/* <Route path="*" element={<NotFound />} /> */}
                   </Routes>

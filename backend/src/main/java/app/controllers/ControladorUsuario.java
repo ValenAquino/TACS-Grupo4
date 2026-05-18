@@ -65,7 +65,7 @@ public class ControladorUsuario {
   ) {
 
     ResponseCookie cookie =
-        ResponseCookie.from("session", "")
+        ResponseCookie.from("sesion", "")
             .httpOnly(true)
             .secure(true)
             .sameSite("None")

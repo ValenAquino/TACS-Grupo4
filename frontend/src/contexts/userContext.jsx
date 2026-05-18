@@ -15,6 +15,8 @@ export const AuthProvider = ({ children }) => {
         return storedUser ? JSON.parse(storedUser) : undefined;
     });
 
+    const tieneSesion =  user !== undefined
+
     const navigate = useNavigate();
 
     const asignarUsuario = (user, reload = true) => {
@@ -35,12 +37,15 @@ export const AuthProvider = ({ children }) => {
 
             if (error.type === "UNAUTHORIZED") {
                 setUser(undefined)
-                localStorage.removeItem("user")
+                localStorage.removeItem("sesion")
             }
         }
     }
 
     useEffect(() => {
+
+        if (user == null) return;
+
         verificarSesion()
     }, [])
 
@@ -61,15 +66,11 @@ export const AuthProvider = ({ children }) => {
         navigate("/")
     }
 
-    const tieneSesion = () => {
-        return user !== undefined
-    }
-
     const returnValue = {
         user,
+        tieneSesion,
         asignarUsuario,
         cerrarSesion,
-        tieneSesion
     }
 
     return (

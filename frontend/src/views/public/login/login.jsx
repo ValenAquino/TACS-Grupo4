@@ -83,7 +83,7 @@ function Login() {
                     Ingresá tus credenciales
                 </p>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={(e) => handleSubmit(e)}>
 
                     <div className="mb-3">
                         <label className="form-label">

@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import {buscarContadores,buscarPerfil,buscarCalificaciones} from "../../../services/perfilService.js";
 import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
 import {useAuth} from "@/contexts/userContext.jsx";
+import Button from "@/components/ui/button/button.jsx";
+import confirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
+import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 
 const renderStars = (score) => {
     const fullStars = Math.floor(score / 2);
@@ -28,19 +31,22 @@ const Perfil = () => {
         subastas: 0
     });
 
-    /* Datos Hardcodeados */
-    const { user } = useAuth();
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-    const userId = user?.perfil_id
+    /* Datos Hardcodeados */
+    const { user, cerrarSesion} = useAuth();
+
+    const perfilId = user?.perfil_id
+    console.log("perfilId", perfilId);
 
     useEffect(() => {
       const cargar = async () => {
         try {
           setLoading(true);
 
-          const perfil = await buscarPerfil(userId);
-          const statsData = await buscarContadores({ userId });
-          const reviewsData = await buscarCalificaciones(userId);
+          const perfil = await buscarPerfil(perfilId);
+          const statsData = await buscarContadores({ perfilId });
+          const reviewsData = await buscarCalificaciones(perfilId);
 
           setNombre(perfil.nombre);
           setReviews(reviewsData);
@@ -54,7 +60,7 @@ const Perfil = () => {
       };
 
       cargar();
-    }, [userId]);
+    }, [perfilId]);
 
     const promedio = reviews.length > 0
         ? (reviews.reduce((acc, r) => acc + r.puntaje, 0) / reviews.length).toFixed(1)
@@ -109,13 +115,21 @@ const Perfil = () => {
                         </div>
                     </div>
 
-                    <button
-                        className="btn btn-warning"
-                        style={{ padding: "10px 18px" }}
-                        onClick={() => setShowModal(true)}
-                    >
-                        Editar perfil
-                    </button>
+                    <div className="d-flex align-items-center gap-3 ">
+                        <button
+                            className="btn btn-warning"
+                            style={{ padding: "10px 18px" }}
+                            onClick={() => setShowModal(true)}
+                        >
+                            Editar perfil
+                        </button>
+
+                        {perfilId != null && <Button
+                            label={"Cerrar sesion"}
+                            onClick={() => setShowConfirmModal(true)}
+                        />}
+                    </div>
+
 
                 </div>
             </div>
@@ -258,6 +272,14 @@ const Perfil = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                show={showConfirmModal}
+                titulo={"Esta seguro que quiere cerrar su sesion?"}
+                labelConfirmar={"Aceptar"}
+                onConfirmar={cerrarSesion}
+                onCancelar={() => setShowConfirmModal(false)}
+            />
         </div>
     );
 };

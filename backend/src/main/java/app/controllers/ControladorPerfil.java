@@ -29,11 +29,6 @@ public class ControladorPerfil {
 
     private final IServicioPerfil perfilService;
 
-//    @PostMapping("")
-//    public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {
-//        return ResponseEntity.ok(perfilService.crearPerfil(body));
-//    }
-
     //Todo: Eliminar en el futuro
     @GetMapping("/{user_id}/operaciones")
     public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {
@@ -100,8 +95,8 @@ public class ControladorPerfil {
         return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(user_id));
     }
 
-    @GetMapping("/{user_id}")
-    public ResponseEntity<PerfilDto> obtenerPerfil(@PathVariable String user_id) {
-        return ResponseEntity.ok(this.perfilService.obtenerPerfil(user_id));
+    @GetMapping("/{perfil_id}")
+    public ResponseEntity<PerfilDto> obtenerPerfil(@PathVariable String perfil_id) {
+        return ResponseEntity.ok(this.perfilService.obtenerPerfil(perfil_id));
     }
 }

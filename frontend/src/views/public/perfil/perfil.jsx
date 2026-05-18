@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import {buscarContadores,buscarPerfil,buscarCalificaciones} from "../../../services/perfilService.js";
 import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+import {useAuth} from "@/contexts/userContext.jsx";
 
 const renderStars = (score) => {
     const fullStars = Math.floor(score / 2);
@@ -28,7 +29,9 @@ const Perfil = () => {
     });
 
     /* Datos Hardcodeados */
-    const { userId } = useUsuarioActual();
+    const { user } = useAuth();
+
+    const userId = user?.perfil_id
 
     useEffect(() => {
       const cargar = async () => {

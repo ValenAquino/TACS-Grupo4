@@ -1,5 +1,9 @@
 package app.model.entities;
 
 public enum Rol {
-  ADMINISTRADOR, USUARIO
+  ADMINISTRADOR, USUARIO;
+
+  public String toString() {
+    return this.name();
+  }
 }

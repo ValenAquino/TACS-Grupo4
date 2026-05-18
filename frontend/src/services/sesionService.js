@@ -12,9 +12,7 @@ export const iniciarSesion = async ({nombre, contrasenia}) => {
 export const buscarUsuario = async (asignarUsuario) => {
     try {
         const { data } = await api.get("/yo")
-
         asignarUsuario(data)
-
         return data
     } catch (error) {
         handleAxiosError(error)

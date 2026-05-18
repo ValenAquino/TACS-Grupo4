@@ -31,11 +31,17 @@ public class ServicioUsuario implements IServicioUsuario {
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    Usuario usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), request.getRol());
+    Usuario usuarioNuevo;
+
+    if(request.getRol() == null) {
+      usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), Rol.USUARIO);
+    } else {
+      usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), request.getRol());
+    }
 
     this.repositorioUsuario.guardar(usuarioNuevo);
 
-    if(request.getRol().equals(Rol.ADMINISTRADOR)) {
+    if (Rol.ADMINISTRADOR.equals(request.getRol())) {
       return;
     }
 

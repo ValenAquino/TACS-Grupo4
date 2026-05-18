@@ -30,7 +30,7 @@ import app.repositories.implMongo.RepositorioUsuarioMongo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class InicializadorDeDatos implements CommandLineRunner {
 
     private final RepositorioPerfiles perfiles;

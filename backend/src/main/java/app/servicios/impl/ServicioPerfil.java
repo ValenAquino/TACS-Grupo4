@@ -43,16 +43,6 @@ public class ServicioPerfil implements IServicioPerfil {
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
-//  @Override
-//  public PerfilDto crearPerfil(PerfilRequest body){
-//    Perfil perfil = new Perfil(null, null, body.getNombre(), new Coleccion(), new ArrayList<>(), new ArrayList<>());
-//
-//    this.repositorioPerfiles.guardar(perfil);
-//
-//    return new PerfilDto(perfil);
-//  }
-
-
   @Override
   public PerfilDto crearPerfil(PerfilRequest perfil) {
     return null;
@@ -211,9 +201,9 @@ public class ServicioPerfil implements IServicioPerfil {
   }
 
   @Override
-  public PerfilDto obtenerPerfil(String userId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
-    if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + userId);
+  public PerfilDto obtenerPerfil(String perfilId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
+    if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + perfilId);
     return new PerfilDto(perfil);
   }
 }

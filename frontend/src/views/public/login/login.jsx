@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {iniciarSesion} from "@/services/sesionService.js";
+import {buscarUsuario, iniciarSesion} from "@/services/sesionService.js";
 import {useToast} from "@/contexts/toastContext.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
 import ModalInformativo from "@/components/ui/modales/modal-informativo/modal-informativo.jsx";
+import {useAuth} from "@/contexts/userContext.jsx";
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ function Login() {
     const [onSubmit, setOnSubmit] = useState(false);
 
     const {showToast} = useToast();
+    const {asignarUsuario} = useAuth()
 
     const handleChange = (e) => {
         setFormData({
@@ -36,7 +38,7 @@ function Login() {
         try {
             setOnSubmit(true);
             await iniciarSesion({nombre: e.target.nombre.value, contrasenia: e.target.contrasenia.value})
-            //buscarUsuario()
+            await buscarUsuario(asignarUsuario)
             showToast("Sesion iniciada correctamente")
         } catch (error) {
             showToast(handleError(error, setErrorState),"error")

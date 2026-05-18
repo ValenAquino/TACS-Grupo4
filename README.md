@@ -35,22 +35,37 @@ Aplicación de intercambio de figuritas del Mundial. Permite a los usuarios gest
 | Orquestación     | Docker Compose             |
 | CI               | GitHub Actions             |
 
-## Levantar la aplicación
+## Comandos
 
-### Con Docker Compose (recomendado)
+El proyecto usa un `Makefile` para unificar todos los comandos.
 
-```bash
-# Compilar imágenes y levantar la app
-docker compose up --build
+### Prod
 
-# Levantar la app 
-docker compose up -d
-```
+| Comando           | Descripción                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| `make build`      | Compila las imágenes y levanta el stack en background                       |
+| `make up`         | Levanta el stack sin recompilar (requiere haber corrido `make build` antes) |
+| `make down`       | Baja el stack                                                               |
+| `make logs`       | Muestra los logs de todos los servicios en tiempo real                      |
+| `make logs-back`  | Logs solo del backend                                                       |
+| `make logs-front` | Logs solo del frontend                                                      |
 
 | Servicio | URL                   |
 |----------|-----------------------|
 | Frontend | http://localhost:5173 |
 | Backend  | http://localhost:8080 |
+
+### Dev
+
+| Comando          | Descripción                                          |
+|------------------|------------------------------------------------------|
+| `make dev`       | Levanta el stack completo con Compose Watch activo   |
+| `make dev-down`  | Baja el stack de desarrollo                          |
+| `make dev-back`  | Levanta o recarga solo el backend                    |
+| `make dev-front` | Levanta o recarga solo el frontend                   |
+| `make test`      | Corre los tests del backend en un contenedor efímero |
+
+En modo desarrollo el frontend tiene **HMR automático** — al guardar cualquier archivo en `src/` Vite actualiza el browser sin recargar la página. El backend se recarga manualmente con `make reload-back` cuando se cambia código Java.
 
 ### Variables de entorno
 
@@ -207,7 +222,9 @@ El endpoint soporta dos modos de búsqueda mutuamente excluyentes según si se e
       "seleccion": "ARGENTINA",
       "cantidad_existente": 3,
       "cantidad_reservada": 0,
-      "metodos": ["INTERCAMBIO"],
+      "metodos": [
+        "INTERCAMBIO"
+      ],
       "usuario_id": "1000",
       "nombre_usuario": "Lucas",
       "reputacion": 4
@@ -245,21 +262,41 @@ Los IDs de perfiles, figuritas y colecciones usados en los ejemplos corresponden
 
 ### Docker: multi-stage builds
 
-Tanto el backend como el frontend usan [multi-stage builds](https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/).
-La imagen final no contiene el compilador ni las dependencias de build, solo el artefacto ejecutable. Esto reduce el tamaño de imagen.
+Tanto el backend como el frontend usan [multi-stage builds](https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/). La imagen final no contiene el compilador ni las dependencias de build, solo el artefacto ejecutable.
 
-Para el backend, el `pom.xml` se copia antes que el codigo fuente para que Docker cachee la descarga de dependencias Maven.
+Cada Dockerfile define stages separados para desarrollo y producción:
 
-Para el frontend, el build de Vite genera archivos estáticos que Nginx sirve directamente.
-Se incluye una configuración de Nginx con `try_files` para que React Router funcione correctamente al refrescar cualquier ruta ([referencia](https://dev.to/it-wibrc/guide-to-containerizing-a-modern-javascript-spa-vuevitereact-with-a-multi-stage-nginx-build-1lma)).
+```
+# Backend
+dependencies  →  mvn dependency:go-offline (deps cacheadas)
+dev           →  + código fuente, sin tests
+build         →  + mvn verify (tests + SpotBugs + JaCoCo)
+runtime       →  JAR en JRE Alpine (imagen final de prod)
+
+# Frontend
+deps          →  npm ci (node_modules cacheados)
+dev           →  + código fuente, sin build
+builder       →  + npm run build
+production    →  Nginx con /dist (imagen final de prod)
+```
+
+El `pom.xml` y el `package.json` se copian antes que el código fuente para que Docker cachee la descarga de dependencias. Si solo cambia el código, las dependencias no se re-descargan ([referencia](https://www.baeldung.com/ops/docker-cache-maven-dependencies)).
+
+Para el frontend, Nginx incluye una configuración con `try_files` para que React Router funcione al refrescar cualquier ruta ([referencia](https://dev.to/it-wibrc/guide-to-containerizing-a-modern-javascript-spa-vuevitereact-with-a-multi-stage-nginx-build-1lma)).
+
+### Docker: entorno de desarrollo con Compose Watch
+
+El stack de desarrollo usa `docker-compose.dev.yml`, que buildea hasta el stage `dev` de cada Dockerfile — sin `mvn verify` ni `npm run build`.
+
+Los cambios en el código fuente se sincronizan al contenedor usando [Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/), que transfiere archivos a través del socket Docker sin requerir volume mounts ni configuración especial del host. Para el frontend, Vite detecta el cambio y
+actualiza el browser automáticamente (HMR). Para el backend, el redespliegue es manual con `make deploy-back`.
 
 ### Docker: health check y orden de inicio
 
-El backend expone `/ping` como endpoint de salud.
-Docker Compose espera que el backend esté `healthy` antes de iniciar el frontend, evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)).
-El `start_period` de 15s le da margen a Spring Boot para inicializar.
+El backend expone `/ping` como endpoint de salud. Docker Compose espera que esté `healthy` antes de iniciar el frontend (`condition: service_healthy`), evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)). El
+`start_period` de 15s le da margen a Spring Boot para inicializar.
 
-Ambos servicios tienen `restart: unless-stopped` para que Docker los vuelva a levantar automáticamente ante una caída.
+Ambos servicios tienen `restart: unless-stopped` para que Docker los recupere automáticamente ante una caída.
 
 ### CORS configurable
 
@@ -280,16 +317,18 @@ permite que operaciones sobre la colección no requieran cargar el perfil comple
 ## Ejecutar tests
 
 ```bash
-mvn test
+make test
 ```
+
+Corre los tests dentro de un contenedor efímero sin levantar el stack completo. No requiere Java instalado localmente.
 
 ## Validar el proyecto
 
 ```bash
-mvn clean verify
+docker compose -f docker-compose.dev.yml run --rm backend mvn verify
 ```
 
-Este comando ejecuta los tests, corre el análisis de SpotBugs y valida la cobertura mínima con JaCoCo.
+Ejecuta tests, análisis de SpotBugs y cobertura mínima con JaCoCo (80%). Este mismo comando corre automáticamente en cada `make build` (producción).
 
 ## Configuración del IDE (IntelliJ)
 

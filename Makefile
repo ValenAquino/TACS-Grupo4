@@ -1,4 +1,4 @@
-.PHONY: up build down logs logs-back logs-front dev dev-down deploy-back test
+.PHONY: up build down logs logs-back logs-front dev dev-back dev-front dev-down reload-back test
 
 # --- Prod ---
 
@@ -25,11 +25,14 @@ logs-front:
 dev:
 	docker compose -f docker-compose.dev.yml up --build --watch
 
+dev-back:
+	docker compose -f docker-compose.dev.yml up --build backend
+
+dev-front:
+	docker compose -f docker-compose.dev.yml up --build frontend
+
 dev-down:
 	docker compose -f docker-compose.dev.yml down
-
-deploy-back:
-	docker compose -f docker-compose.dev.yml up --build backend
 
 # --- Tests ---
 

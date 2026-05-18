@@ -29,6 +29,3 @@ services:
         - action: sync
           path: ./frontend/public
           target: /app/public
-#       Creo que en este caso es mejor reiniciar a mano
-#        - action: rebuild
-#          path: ./frontend/package.json

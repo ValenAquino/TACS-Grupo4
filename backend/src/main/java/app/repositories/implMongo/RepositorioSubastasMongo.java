@@ -4,7 +4,6 @@ import app.exceptions.NotFoundException;
 import app.model.entities.Perfil;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioSubastas;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -25,7 +24,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
     if (perfil == null) return List.of();
 
     Query querySubastas = new Query(
-        Criteria.where("autor.$id").is(new ObjectId(perfil.getId()))
+        Criteria.where("autor.$id").is(perfil.getId())
     );
     return mongoTemplate.find(querySubastas, Subasta.class);
   }
@@ -59,7 +58,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     Query querySubastas = new Query(
         Criteria.where("ofertas").elemMatch(
-            Criteria.where("$id").is(new ObjectId(perfil.getId()))
+            Criteria.where("$id").is(perfil.getId())
         )
     );
     return mongoTemplate.find(querySubastas, Subasta.class);

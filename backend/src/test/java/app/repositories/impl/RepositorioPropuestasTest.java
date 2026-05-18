@@ -22,7 +22,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RepositorioPropuestasMongoTest extends MongoTestBase {
+class RepositorioPropuestasTest extends MongoTestBase {
     @Autowired
     private RepositorioPropuestas repositorio;
     private Perfil u1;

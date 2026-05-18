@@ -49,7 +49,19 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
   }
 
   public List<Perfil> buscarPorFiguritaFaltante(Figurita figurita) {
-    return null;
+    Query queryColecciones = new Query(
+        Criteria.where("faltantes").is(figurita.getId())
+    );
+    List<Coleccion> colecciones = mongoTemplate.find(queryColecciones, Coleccion.class);
+
+    List<String> idsColecciones = colecciones.stream()
+        .map(Coleccion::getId)
+        .toList();
+
+    Query queryPerfiles = new Query(
+        Criteria.where("coleccion").in(idsColecciones)
+    );
+    return mongoTemplate.find(queryPerfiles, Perfil.class);
   }
 
   public List<Perfil> buscarTodos() {

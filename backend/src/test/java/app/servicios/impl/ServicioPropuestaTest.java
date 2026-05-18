@@ -32,7 +32,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class PropuestaServiceTest {
+class ServicioPropuestaTest {
 
   @Mock RepositorioPropuestas repositorioPropuestas;
   @Mock RepositorioPerfiles repositorioUsuarios;

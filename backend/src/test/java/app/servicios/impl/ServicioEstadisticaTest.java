@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class EstadisticasServiceImplTest {
+class ServicioEstadisticaTest {
 
     @Mock private RepositorioPerfiles repositorioUsuarios;
     @Mock private RepositorioPropuestas repositorioPropuestas;

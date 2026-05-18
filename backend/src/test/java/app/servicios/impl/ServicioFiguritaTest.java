@@ -27,7 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class FiguritaServiceTest {
+class ServicioFiguritaTest {
 
   @Mock
   RepositorioColecciones repositorioColecciones;

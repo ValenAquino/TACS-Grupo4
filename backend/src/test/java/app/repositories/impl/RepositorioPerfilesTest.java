@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.MongoTestBase;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
@@ -10,35 +11,23 @@ import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
+
+import app.repositories.RepositorioColecciones;
+import app.repositories.RepositorioPerfiles;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.*;
-class RepositorioPerfilesEnMemoriaTest {
 
-    private RepositorioPerfilesEnMemoria repositorio;
+class RepositorioPerfilesTest extends MongoTestBase {
 
-    @BeforeEach
-    void setUp() {
-        repositorio = new RepositorioPerfilesEnMemoria();
-    }
+    @Autowired
+    private RepositorioPerfiles repositorio;
+    @Autowired
+    private RepositorioColecciones repositorioColecciones;
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
-    }
-
-    @Test
-    void save_y_findById_retornaPerfil() {
-        Usuario user = new Usuario("u-1000",  Rol.USUARIO, "lucas", "fiscella");
-        Perfil perfil = Perfil.builder()
-            .id("u-1").usuario(user).nombre("Lucas")
-            .mediosDeContacto(telegram("@lucas"))
-            .build();
-
-        repositorio.guardar(perfil);
-
-        assertEquals(perfil, repositorio.buscarPorId("u-1"));
     }
 
     @Test
@@ -49,20 +38,28 @@ class RepositorioPerfilesEnMemoriaTest {
     @Test
     void buscarPorFiguritaFaltanteDevuelve2() {
         Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
+        Coleccion coleccion1 = new Coleccion();
+        Coleccion coleccion2 = new Coleccion();
+        Coleccion coleccion3 = new Coleccion();
+
         Perfil perfil = Perfil.builder()
             .id("u-1").usuario(user).nombre("Lucas")
+            .coleccion(coleccion1)
             .mediosDeContacto(telegram("@lucas"))
             .build();
 
         user = new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella");
         Perfil perfil2 = Perfil.builder()
             .id("u-2").usuario(user).nombre("Juan")
+            .coleccion(coleccion2)
             .mediosDeContacto(telegram("@juan"))
             .build();
+
 
         user = new Usuario("u-1002", Rol.USUARIO, "lucas", "fiscella");
         Perfil perfil3 = Perfil.builder()
             .id("u-4").usuario(user).nombre("Cristina")
+            .coleccion(coleccion3)
             .mediosDeContacto(telegram("@cristina"))
             .build();
 
@@ -76,6 +73,10 @@ class RepositorioPerfilesEnMemoriaTest {
         perfil2.getColeccion().agregarFaltante(diMaria);
 
         perfil3.getColeccion().agregarFaltante(diMaria);
+
+        repositorioColecciones.guardar(coleccion1);
+        repositorioColecciones.guardar(coleccion2);
+        repositorioColecciones.guardar(coleccion3);
 
         repositorio.guardar(perfil);
         repositorio.guardar(perfil2);

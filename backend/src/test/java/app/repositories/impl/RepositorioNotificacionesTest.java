@@ -1,6 +1,6 @@
 package app.repositories.impl;
 
-import app.model.entities.Coleccion;
+import app.MongoTestBase;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
 import app.model.entities.Perfil;
@@ -9,22 +9,20 @@ import app.model.entities.Usuario;
 import app.model.notificador.Mensaje;
 import app.model.notificador.Notificacion;
 import java.util.List;
+
+import app.repositories.RepositorioNotificaciones;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RepositorioNotificacionesEnMemoriaTest {
+public class RepositorioNotificacionesTest extends MongoTestBase {
 
-  private RepositorioNotificacionesEnMemoria repositorio;
-
-  @BeforeEach
-  void setUp() {
-    repositorio = new RepositorioNotificacionesEnMemoria();
-  }
+  @Autowired
+  private RepositorioNotificaciones repositorio;
 
   private List<MedioDeContacto> telegram(String numero) {
     return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));

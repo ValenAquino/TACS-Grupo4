@@ -102,16 +102,14 @@ class ControladorSubastaTest {
         Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
         when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(lucas);
-        when(repositorioPerfiles.buscarPorId("1")).thenReturn(sofia);
         when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
         when(repositorioFiguritas.buscarPorId("ARG-11")).thenReturn(diMaria);
 
-        mockMvc.perform(post("/subastas/s-1/propuestas")
-                .header("user_id", "u-2")
+        mockMvc.perform(post("/subastas/s-1/ofertas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                        "usuario_id": "1",
+                        "user_id": "u-2",
                         "figuritas_ofrecidas_id": ["ARG-11"]
                     }
                 """))
@@ -123,12 +121,11 @@ class ControladorSubastaTest {
         when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(lucas);
         when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaCerrada);
 
-        mockMvc.perform(post("/subastas/s-2/propuestas")
-                .header("user_id", "u-2")
+        mockMvc.perform(post("/subastas/s-2/ofertas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                        "usuario_id": "1",
+                        "user_id": "u-2",
                         "figuritas_ofrecidas_id": ["ARG-11"]
                     }
                 """))

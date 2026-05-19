@@ -109,7 +109,7 @@ public class ServicioSubastaTest {
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
 
     assertThrows(BadRequestException.class,
-        () -> service.ofertarEnSubasta("u-1", "2", "s-1", List.of("ARG-11")));
+        () -> service.ofertarEnSubasta("u-1", "s-1", List.of("ARG-11")));
   }
 
   @Test
@@ -123,7 +123,7 @@ public class ServicioSubastaTest {
     when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaActiva);
 
     assertThrows(BadRequestException.class,
-        () -> service.ofertarEnSubasta("u-1", "2", "s-2", List.of("ARG-11", "ARG-11")));
+        () -> service.ofertarEnSubasta("u-1","s-2", List.of("ARG-11", "ARG-11")));
   }
 
   @Test

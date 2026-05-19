@@ -126,6 +126,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
                                 Figurita pedri, Figurita kroos, Figurita neymar) {
+      Coleccion coleccionJuan = new Coleccion();
+        Perfil juan = new Perfil("1003", new Usuario("u-1003",  Rol.USUARIO), "Juan",
+            coleccionJuan, telegram("@juan"), new ArrayList<>());
+
         // Lucas
       Coleccion coleccionLucas = new Coleccion("1");
       FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
@@ -141,6 +145,26 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .id("1000").usuario(user)
           .nombre("lucas").coleccion(coleccionLucas)
           .mediosDeContacto(telegram("@lucas")).build());
+        Coleccion coleccionLucas = new Coleccion();
+        coleccionLucas.setId("1");
+        FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interLautaro   = new FiguritaIntercambiable(lautaro,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interGriezmann1   = new FiguritaIntercambiable(griezmann,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interMbappe   = new FiguritaIntercambiable(mbappe,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
+        FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
+        coleccionLucas.getRepetidas().add(interMessi);
+        coleccionLucas.getRepetidas().add(interDiMaria);
+        coleccionLucas.getRepetidas().add(interLautaro);
+        coleccionLucas.getRepetidas().add(interGriezmann1);
+        coleccionLucas.getRepetidas().add(interMbappe);
+        coleccionLucas.getFaltantes().add(mbappe);
+        coleccionLucas.getFaltantes().add(vinicius);
+        colecciones.guardar(coleccionLucas);
+        Calificacion calificacion = new Calificacion("40002", juan, 4, "dasda", "612431", MetodoIntercambio.INTERCAMBIO);
+        List<Calificacion> calificaciones = new ArrayList<>();
+        calificaciones.add(calificacion);
+        perfiles.guardar(new Perfil("1000", new Usuario("u-1000",  Rol.USUARIO), "Lucas",
+            coleccionLucas, telegram("@lucas"), calificaciones));
 
       // Sofía
       Coleccion coleccionSofia = new Coleccion("2");

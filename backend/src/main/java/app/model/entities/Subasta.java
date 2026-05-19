@@ -33,7 +33,6 @@ public class Subasta {
     @DBRef
     private Figurita figuritaSubastada;
 
-    @DBRef
     @Builder.Default
     private List<Propuesta> ofertas = new ArrayList<>();;
 
@@ -48,7 +47,7 @@ public class Subasta {
         boolean tieneCondicionesSolicitadas = !this.figuritasSolicitadas.isEmpty();
         boolean noOfertaLasSolicitadas = this.figuritasSolicitadas.stream().noneMatch(fs -> oferta.getFiguritasOfrecidas().contains(fs));
 
-        if(tieneCondicionesSolicitadas && (noOfertaLasSolicitadas || oferta.getAutor().obtenerCalificacionMedia() >= this.calificacionMinimaSolicitada)) {
+        if(tieneCondicionesSolicitadas && (noOfertaLasSolicitadas || oferta.getAutor().getCalificacionMedia() >= this.calificacionMinimaSolicitada)) {
             throw new BadRequestException("No se cumplieron las condiciones minimas");
         }
 

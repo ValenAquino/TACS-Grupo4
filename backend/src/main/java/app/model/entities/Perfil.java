@@ -40,6 +40,7 @@ public class Perfil {
 
     @Builder.Default
     private Double calificacionMedia = 0.0;
+    @Builder.Default
     private int cantidadCalificaciones = 0;
 
     /**

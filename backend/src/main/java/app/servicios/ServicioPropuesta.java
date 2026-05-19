@@ -42,13 +42,11 @@ public class ServicioPropuesta {
         .map(repositorioFiguritas::buscarPorId)
         .toList();
 
-    Propuesta propuesta = new Propuesta(
-        UUID.randomUUID().toString(),
-        origen,
-        destino,
-        figuritasOfrecidas,
-        figuritaBuscada
-    );
+    Propuesta propuesta = Propuesta.builder()
+        .autor(origen).destinatario(destino)
+        .figuritaBuscada(figuritaBuscada)
+        .figuritasOfrecidas(figuritasOfrecidas)
+        .build();
 
     repositorioPropuestas.guardar(propuesta);
 

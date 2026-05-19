@@ -59,7 +59,7 @@ public class ServicioSubasta {
         interesados, "Encontramos una subasta de una figurita que te falta!");
   }
 
-  public void ofertarEnSubasta(String userId, String perfilDestinoId, String subastaId, List<String> rawFiguritasId) {
+  public void ofertarEnSubasta(String userId, String subastaId, List<String> rawFiguritasId) {
     Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
@@ -77,13 +77,11 @@ public class ServicioSubasta {
         .map(this.repoFigurita::buscarPorId)
         .toList();
 
-    Propuesta nuevaPropuesta = new Propuesta(
-        UUID.randomUUID().toString(),
-        autor,
-        destinatario,
-        figuritasOfrecidas,
-        subasta.getFiguritaSubastada()
-    );
+    Propuesta nuevaPropuesta = Propuesta.builder()
+        .autor(autor)
+        .destinatario(destinatario)
+        .figuritaBuscada(subasta.getFiguritaSubastada())
+        .figuritasOfrecidas(figuritasOfrecidas).build();
 
     subasta.agregarOferta(nuevaPropuesta);
     this.repoSubasta.guardar(subasta);
@@ -100,6 +98,7 @@ public class ServicioSubasta {
     ).toList();
 
     oferta.setFiguritasOfrecidas(nuevas_figuritas);
+    this.repoSubasta.guardar(subasta);
   }
 
   public void seleccionarOferta(String subastaId, String ofertaId) {

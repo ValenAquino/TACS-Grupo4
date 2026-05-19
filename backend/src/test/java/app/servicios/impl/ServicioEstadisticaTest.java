@@ -77,7 +77,7 @@ class ServicioEstadisticaTest {
     }
 
     private void stubRepositoriosVacios() {
-        when(repositorioUsuarios.contar()).thenReturn(0);
+        when(repositorioUsuarios.contar()).thenReturn(0L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
         when(repositorioPropuestas.contar()).thenReturn(0);
         when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
@@ -195,7 +195,7 @@ class ServicioEstadisticaTest {
         Propuesta rechazada = new Propuesta("p3", autor, destinatario, List.of(), null);
         rechazada.rechazar(destinatario);
 
-        when(repositorioUsuarios.contar()).thenReturn(0);
+        when(repositorioUsuarios.contar()).thenReturn(0L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
         when(repositorioPropuestas.contar()).thenReturn(3);
         when(repositorioPropuestas.buscarTodos()).thenReturn(List.of(pendiente, aceptada, rechazada));
@@ -218,7 +218,7 @@ class ServicioEstadisticaTest {
         Propuesta p3 = new Propuesta("p3", autor, destinatario, List.of(), null);
         p3.aceptar(destinatario);
 
-        when(repositorioUsuarios.contar()).thenReturn(0);
+        when(repositorioUsuarios.contar()).thenReturn(0L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
         when(repositorioPropuestas.contar()).thenReturn(3);
         when(repositorioPropuestas.buscarTodos()).thenReturn(List.of(p1, p2, p3));
@@ -253,10 +253,15 @@ class ServicioEstadisticaTest {
         coleccion.getRepetidas().add(soloSubasta(f2));
         coleccion.getRepetidas().add(ambosMetodos(f3));
 
-        Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas",
-            coleccion, telegram("@lucas"), new ArrayList<>());
+        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
 
-        when(repositorioUsuarios.contar()).thenReturn(1);
+        Perfil u1 = Perfil.builder()
+            .id("1").usuario(user)
+            .nombre("Lucas").coleccion(coleccion)
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        when(repositorioUsuarios.contar()).thenReturn(1L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
         when(repositorioPropuestas.contar()).thenReturn(0);
         when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
@@ -288,10 +293,15 @@ class ServicioEstadisticaTest {
         coleccion.getRepetidas().add(soloIntercambio(figurita("f5", Seleccion.BRASIL)));
         coleccion.getRepetidas().add(soloIntercambio(figurita("f6", Seleccion.ESPAÑA)));
 
-        Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas",
-            coleccion, telegram("@lucas"), new ArrayList<>());
+        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
 
-        when(repositorioUsuarios.contar()).thenReturn(1);
+        Perfil u1 = Perfil.builder()
+            .id("1").usuario(user)
+            .nombre("Lucas").coleccion(coleccion)
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        when(repositorioUsuarios.contar()).thenReturn(1L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
         when(repositorioPropuestas.contar()).thenReturn(0);
         when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
@@ -314,10 +324,15 @@ class ServicioEstadisticaTest {
         coleccion.getRepetidas().add(soloIntercambio(figurita("f1", Seleccion.ARGENTINA)));
         coleccion.getRepetidas().add(soloIntercambio(figurita("f2", Seleccion.BRASIL)));
 
-        Perfil u1 = new Perfil("u-1", new Usuario("usr-1", Rol.USUARIO), "Lucas",
-            coleccion, telegram("@lucas"), new ArrayList<>());
+        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
 
-        when(repositorioUsuarios.contar()).thenReturn(1);
+        Perfil u1 = Perfil.builder()
+            .id("1").usuario(user)
+            .nombre("Lucas").coleccion(coleccion)
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        when(repositorioUsuarios.contar()).thenReturn(1L);
         when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
         when(repositorioPropuestas.contar()).thenReturn(0);
         when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());

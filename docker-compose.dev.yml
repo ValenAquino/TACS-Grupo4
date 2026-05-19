@@ -4,6 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: dev
+    env_file: .env
     ports:
       - "8080:8080"
     command: mvn spring-boot:run
@@ -23,9 +24,12 @@ services:
         - action: sync
           path: ./frontend/src
           target: /app/src
+          initial_sync: true
         - action: sync
           path: ./frontend/index.html
           target: /app/index.html
+          initial_sync: true
         - action: sync
           path: ./frontend/public
           target: /app/public
+          initial_sync: true

@@ -11,15 +11,6 @@ build:
 down:
 	docker compose down
 
-logs:
-	docker compose logs -f
-
-logs-back:
-	docker compose logs -f backend
-
-logs-front:
-	docker compose logs -f frontend
-
 # --- Dev ---
 
 dev:
@@ -33,6 +24,17 @@ dev-front:
 
 dev-down:
 	docker compose -f docker-compose.dev.yml down
+
+# -- Ambos
+
+logs:
+	docker compose logs -f
+
+logs-back:
+	docker compose logs -f backend
+
+logs-front:
+	docker compose logs -f frontend
 
 # --- Tests ---
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {buscarUsuario, iniciarSesion} from "@/services/sesionService.js";
 import {useToast} from "@/contexts/toastContext.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
@@ -19,6 +19,7 @@ function Login() {
 
     const {showToast} = useToast();
     const {asignarUsuario} = useAuth()
+    const navigate = useNavigate()
 
     const handleChange = (e) => {
         setFormData({
@@ -31,7 +32,7 @@ function Login() {
         e.preventDefault();
 
         if (!formData.nombre || !formData.contrasenia) {
-            setError("Completa todos los campos");
+            setErrorState("Completa todos los campos");
             return;
         }
 
@@ -39,9 +40,10 @@ function Login() {
             setOnSubmit(true);
             await iniciarSesion({nombre: e.target.nombre.value, contrasenia: e.target.contrasenia.value})
             await buscarUsuario(asignarUsuario)
-            showToast("Sesion iniciada correctamente")
+            showToast(`Sesion iniciada correctamente`)
+            navigate("/")
         } catch (error) {
-            showToast(handleError(error, setErrorState),"error")
+            showToast(handleError(error, setErrorState), "error")
         } finally {
             setOnSubmit(false);
         }
@@ -113,7 +115,7 @@ function Login() {
                             name="contrasenia"
                             className="form-control"
                             placeholder="Ingrese su contraseña"
-                            value={formData.password}
+                            value={formData.contrasenia}
                             onChange={handleChange}
                             style={{
                                 borderColor: "var(--border-color-dark)"

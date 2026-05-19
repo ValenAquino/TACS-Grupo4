@@ -21,7 +21,6 @@ export const buscarUsuario = async (asignarUsuario) => {
 
 export const logout = async () => {
     try {
-        console.log("logout")
         const { data } = await api.delete("/sesion")
 
         return data

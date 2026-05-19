@@ -5,24 +5,25 @@ const Toast = ({ message, type, onClose }) => {
     const [closing, setClosing] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
+        const showTimer = setTimeout(() => {
             setClosing(true);
         }, 5000);
 
-        return () => clearTimeout(timer);
+        return () => clearTimeout(showTimer);
     }, []);
 
-    const handleAnimationEnd = () => {
-        if (closing) {
+    useEffect(() => {
+        if (!closing) return;
+
+        const closeTimer = setTimeout(() => {
             onClose();
-        }
-    };
+        }, 300); // duración de slideOut
+
+        return () => clearTimeout(closeTimer);
+    }, [closing, onClose]);
 
     return (
-        <div
-            className={`toast ${type} ${closing ? "closing" : ""}`}
-            onAnimationEnd={handleAnimationEnd}
-        >
+        <div className={`custom-toast ${type} ${closing ? "closing" : ""}`}>
             {message}
         </div>
     );

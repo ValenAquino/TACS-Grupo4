@@ -37,7 +37,6 @@ const Perfil = () => {
     const { user, cerrarSesion} = useAuth();
 
     const perfilId = user?.perfil_id
-    console.log("perfilId", perfilId);
 
     useEffect(() => {
       const cargar = async () => {

@@ -23,10 +23,6 @@ export const AuthProvider = ({ children }) => {
         setUser(user)
 
         localStorage.setItem("sesion", JSON.stringify(user))
-
-        if (reload) {
-            navigate("/")
-        }
     }
 
     const verificarSesion = async () => {

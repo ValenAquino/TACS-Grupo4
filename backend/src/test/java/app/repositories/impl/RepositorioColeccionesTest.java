@@ -6,22 +6,14 @@ import app.dto.paginacion.Repetidas;
 import app.model.entities.*;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
-import app.repositories.RepositorioFiguritas;
-import app.repositories.implMongo.RepositorioColeccionesMongo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RepositorioColeccionesTest extends MongoTestBase {
-
-  @Autowired
-  private RepositorioColeccionesMongo repositorio;
-  @Autowired
-  private RepositorioFiguritas repositorioFiguritas;
 
   Figurita messi;
   Figurita diMaria;
@@ -42,18 +34,18 @@ public class RepositorioColeccionesTest extends MongoTestBase {
   void findByIdNoEncuentraYtiraExcepcion() {
     Coleccion coleccion = new Coleccion("10");
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    assertThrows(RuntimeException.class, () -> repositorio.buscarPorId("11"));
+    assertThrows(RuntimeException.class, () -> repositorioColecciones.buscarPorId("11"));
   }
 
   @Test
   void findByIdValido() {
     Coleccion coleccion = new Coleccion("10");
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    assertEquals(coleccion.getId(), repositorio.buscarPorId("10").getId());
+    assertEquals(coleccion.getId(), repositorioColecciones.buscarPorId("10").getId());
   }
 
   @Test
@@ -66,9 +58,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
         dybala
     ));
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    PaginaResultado<Figurita> dto = repositorio.buscarFaltantes(
+    PaginaResultado<Figurita> dto = repositorioColecciones.buscarFaltantes(
         "10",
         new FaltantesFiltro(2, 1)
     );
@@ -89,9 +81,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
         dybala
     ));
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    PaginaResultado dto = repositorio.buscarFaltantes(
+    PaginaResultado dto = repositorioColecciones.buscarFaltantes(
         "10",
         new FaltantesFiltro(2, 2)
     );
@@ -110,9 +102,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
         FiguritaIntercambiable.builder().figurita(dybala).cantidadExistente(1).metodos(List.of(MetodoIntercambio.SUBASTA)).build()
     ));
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    Repetidas dto = repositorio.buscarRepetidas(
+    Repetidas dto = repositorioColecciones.buscarRepetidas(
         "10",
         new RepetidasFiltro(null, 10, 1)
     );
@@ -133,9 +125,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
         new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
     ));
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    Repetidas dto = repositorio.buscarRepetidas(
+    Repetidas dto = repositorioColecciones.buscarRepetidas(
         "10",
         new RepetidasFiltro(MetodoIntercambio.SUBASTA, 10, 1)
     );
@@ -154,9 +146,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
         new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
     ));
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    Repetidas<FiguritaIntercambiable> dto = repositorio.buscarRepetidas(
+    Repetidas<FiguritaIntercambiable> dto = repositorioColecciones.buscarRepetidas(
         "10",
         new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, 10, 1)
     );
@@ -175,9 +167,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
         new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
     ));
 
-    repositorio.guardar(coleccion);
+    repositorioColecciones.guardar(coleccion);
 
-    Repetidas dto = repositorio.buscarRepetidas(
+    Repetidas dto = repositorioColecciones.buscarRepetidas(
         "10",
         new RepetidasFiltro(null, 2, 2)
     );

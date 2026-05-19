@@ -52,18 +52,18 @@ public class ServicioPerfil {
   }
 
 //TODO ya no es necesario este metodo, eliminar
-  public OperacionesDto obtenerOperacionesPerfil(String userId) {
-    Perfil usuario = repositorioPerfiles.buscarPorId(userId);
-    if (usuario == null) {
+  public OperacionesDto obtenerOperacionesPerfil(String perfilId) {
+    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
+    if (perfil == null) {
       return null;
     }
 
-    List<FiguritaIntercambiable> figuritasPublicadas = usuario.getColeccion().getRepetidas();
+    List<FiguritaIntercambiable> figuritasPublicadas = perfil.getColeccion().getRepetidas();
 
-    List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(userId);
-    List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(userId);
+    List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(perfilId);
+    List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(perfilId);
 
-    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUsuarioId(userId)
+    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUsuarioId(perfilId)
         .stream()
         .filter(Subasta::estaActivo)
         .toList();
@@ -129,7 +129,7 @@ public class ServicioPerfil {
   public PaginaResultado<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
 
-    PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), perfilObjetivo.getId());
+    PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), filtros);
 
     //TODO: sigue en implementacion
     return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(), 0, 0, 0);

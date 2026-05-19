@@ -23,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RepositorioPropuestasTest extends MongoTestBase {
-    @Autowired
-    private RepositorioPropuestas repositorio;
     private Perfil u1;
     private Perfil u2;
     private Perfil u3;
@@ -63,10 +61,10 @@ class RepositorioPropuestasTest extends MongoTestBase {
         Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null,
             new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
 
-        repositorio.guardar(p1);
-        repositorio.guardar(p2);
+        repositorioPropuestas.guardar(p1);
+        repositorioPropuestas.guardar(p2);
 
-        List<Propuesta> resultado = repositorio.buscarPorAutorId("1");
+        List<Propuesta> resultado = repositorioPropuestas.buscarPorAutorId("1");
 
         assertEquals(1, resultado.size());
         assertEquals("p-1", resultado.get(0).getId());
@@ -79,10 +77,10 @@ class RepositorioPropuestasTest extends MongoTestBase {
         Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null,
             new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
 
-        repositorio.guardar(p1);
-        repositorio.guardar(p2);
+        repositorioPropuestas.guardar(p1);
+        repositorioPropuestas.guardar(p2);
 
-        List<Propuesta> resultado = repositorio.buscarPorDestinatarioId("2");
+        List<Propuesta> resultado = repositorioPropuestas.buscarPorDestinatarioId("2");
 
         assertEquals(1, resultado.size());
         assertEquals("p-1", resultado.get(0).getId());
@@ -90,6 +88,6 @@ class RepositorioPropuestasTest extends MongoTestBase {
 
     @Test
     void findByOrigenId_sinResultados_retornaListaVacia() {
-        assertTrue(repositorio.buscarPorAutorId("u-99").isEmpty());
+        assertTrue(repositorioPropuestas.buscarPorAutorId("u-99").isEmpty());
     }
 }

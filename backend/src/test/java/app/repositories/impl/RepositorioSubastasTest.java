@@ -25,15 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RepositorioSubastasTest extends MongoTestBase {
 
-    @Autowired
-    private RepositorioSubastas repositorio;
-    @Autowired
-    private RepositorioPerfiles repositorioPerfiles;
-    @Autowired
-    private RepositorioUsuarios repositorioUsuarios;
-    @Autowired
-    private RepositorioColecciones repositorioColecciones;
-
     private Perfil p1;
     private Perfil p2;
 
@@ -76,10 +67,10 @@ class RepositorioSubastasTest extends MongoTestBase {
                 LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
             .build();
 
-        repositorio.guardar(s1);
-        repositorio.guardar(s2);
+        repositorioSubastas.guardar(s1);
+        repositorioSubastas.guardar(s2);
 
-        List<Subasta> resultado = repositorio.buscarPorAutorUsuarioId("u-1000");
+        List<Subasta> resultado = repositorioSubastas.buscarPorAutorUsuarioId("u-1000");
 
         assertEquals(1, resultado.size());
         assertEquals("s-1", resultado.get(0).getId());
@@ -87,6 +78,6 @@ class RepositorioSubastasTest extends MongoTestBase {
 
     @Test
     void findByUsuarioId_sinResultados_retornaListaVacia() {
-        assertTrue(repositorio.buscarPorAutorUsuarioId("u-99").isEmpty());
+        assertTrue(repositorioSubastas.buscarPorAutorUsuarioId("u-99").isEmpty());
     }
 }

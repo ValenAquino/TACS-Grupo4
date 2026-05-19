@@ -21,18 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RepositorioPerfilesTest extends MongoTestBase {
 
-    @Autowired
-    private RepositorioPerfiles repositorio;
-    @Autowired
-    private RepositorioColecciones repositorioColecciones;
-
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
     }
 
     @Test
     void findById_inexistente_retornaNull() {
-        assertThrows(NotFoundException.class, () -> repositorio.buscarPorId("inexistente"));
+        assertThrows(NotFoundException.class, () -> repositorioPerfiles.buscarPorId("inexistente"));
     }
 
     @Test
@@ -78,10 +73,10 @@ class RepositorioPerfilesTest extends MongoTestBase {
         repositorioColecciones.guardar(coleccion2);
         repositorioColecciones.guardar(coleccion3);
 
-        repositorio.guardar(perfil);
-        repositorio.guardar(perfil2);
-        repositorio.guardar(perfil3);
+        repositorioPerfiles.guardar(perfil);
+        repositorioPerfiles.guardar(perfil2);
+        repositorioPerfiles.guardar(perfil3);
 
-        assertEquals(2, repositorio.buscarPorFiguritaFaltante(messi).size());
+        assertEquals(2, repositorioPerfiles.buscarPorFiguritaFaltante(messi).size());
     }
 }

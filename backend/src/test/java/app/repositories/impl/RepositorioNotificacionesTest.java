@@ -21,9 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RepositorioNotificacionesTest extends MongoTestBase {
 
-  @Autowired
-  private RepositorioNotificaciones repositorio;
-
   private List<MedioDeContacto> telegram(String numero) {
     return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
   }
@@ -51,12 +48,12 @@ public class RepositorioNotificacionesTest extends MongoTestBase {
     Notificacion notificacion4 = new Notificacion(mensaje, perfil2);
     Notificacion notificacion5 = new Notificacion(mensaje, perfil2);
 
-    repositorio.guardar(notificacion1);
-    repositorio.guardar(notificacion2);
-    repositorio.guardar(notificacion3);
-    repositorio.guardar(notificacion4);
-    repositorio.guardar(notificacion5);
+    repositorioNotificaciones.guardar(notificacion1);
+    repositorioNotificaciones.guardar(notificacion2);
+    repositorioNotificaciones.guardar(notificacion3);
+    repositorioNotificaciones.guardar(notificacion4);
+    repositorioNotificaciones.guardar(notificacion5);
 
-    assertEquals(3, repositorio.buscarPorPerfil(perfil1).size());
+    assertEquals(3, repositorioNotificaciones.buscarPorPerfil(perfil1).size());
   }
 }

@@ -22,19 +22,19 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
     }
 
     @Override
-    public List<Propuesta> buscarPorAutorId(String userId) {
+    public List<Propuesta> buscarPorAutorId(String perfilId) {
         Query query = new Query();
         query.addCriteria(
-            Criteria.where("autor").is(userId)
+            Criteria.where("autor").is(perfilId)
         );
         return this.mongoTemplate.find(query, Propuesta.class);
     }
 
     @Override
-    public List<Propuesta> buscarPorDestinatarioId(String userId) {
+    public List<Propuesta> buscarPorDestinatarioId(String perfilId) {
         Query query = new Query();
         query.addCriteria(
-            Criteria.where("destinatario").is(userId)
+            Criteria.where("destinatario").is(perfilId)
         );
         return this.mongoTemplate.find(query, Propuesta.class);
     }

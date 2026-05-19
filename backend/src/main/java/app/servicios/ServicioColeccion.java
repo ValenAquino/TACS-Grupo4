@@ -31,8 +31,6 @@ public class ServicioColeccion {
 
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
 
-    System.out.println(coleccion.getFaltantes().size());
-
     coleccion.agregarFaltante(faltante);
 
     repositorioColecciones.guardar(coleccion);

@@ -2,45 +2,27 @@ package app.servicios.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import app.MongoTestBase;
 import app.dto.PropuestaDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
+import app.model.entities.Coleccion;
 import app.model.entities.EstadoProceso;
 import app.model.entities.Figurita;
 import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;
-import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioPerfiles;
 import java.util.List;
-
-import app.servicios.ServicioNotificacion;
 import app.servicios.ServicioPropuesta;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-class ServicioPropuestaTest {
+class ServicioPropuestaTest  extends MongoTestBase {
 
-  @Mock RepositorioPropuestas repositorioPropuestas;
-  @Mock RepositorioPerfiles repositorioUsuarios;
-  @Mock RepositorioFiguritas repositorioFiguritas;
-  @Mock
-  ServicioNotificacion notificacionesService;
 
-  @InjectMocks
+  @Autowired
   ServicioPropuesta propuestaService;
 
   private Perfil lucas;
@@ -51,16 +33,32 @@ class ServicioPropuestaTest {
   @BeforeEach
   void setUp() {
     Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
+    repositorioUsuarios.guardar(user);
+
+    Coleccion colec = new Coleccion("c-1000");
     lucas = Perfil.builder()
         .id("1000").usuario(user).nombre("Lucas")
+        .coleccion(colec)
         .build();
+    repositorioColecciones.guardar(colec);
+    repositorioPerfiles.guardar(lucas);
 
     user = new Usuario("u-1001", Rol.USUARIO, "Sofía", "fiscella");
+    repositorioUsuarios.guardar(user);
+
+    colec = new Coleccion("c-1001");
     sofia = Perfil.builder()
         .id("1001").usuario(user).nombre("Sofía")
+        .coleccion(colec)
         .build();
+
+    repositorioColecciones.guardar(colec);
+    repositorioPerfiles.guardar(sofia);
+
     messi  = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, null);
+    repositorioFiguritas.guardar(messi);
+    repositorioFiguritas.guardar(mbappe);
   }
 
   @Test
@@ -68,18 +66,12 @@ class ServicioPropuestaTest {
     CrearPropuestaRequest request = new CrearPropuestaRequest(
         "1000", "1001", "ARG-10", List.of("FRA-10"));
 
-    when(repositorioUsuarios.buscarPorId("1000")).thenReturn(lucas);
-    when(repositorioUsuarios.buscarPorId("1001")).thenReturn(sofia);
-    when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-    when(repositorioFiguritas.buscarPorId("FRA-10")).thenReturn(mbappe);
-
     PropuestaDto resultado = propuestaService.crearPropuesta(request);
 
     assertEquals("1000", resultado.getAutor().getId());
     assertEquals("1001", resultado.getDestinatario().getId());
     assertEquals("ARG-10", resultado.getFiguritaBuscada().getId());
     assertEquals(EstadoProceso.PENDIENTE, resultado.getEstado());
-    verify(repositorioPropuestas).guardar(any());
   }
 
   @Test
@@ -87,7 +79,6 @@ class ServicioPropuestaTest {
     CrearPropuestaRequest request = new CrearPropuestaRequest(
         "9999", "1001", "ARG-10", List.of("FRA-10"));
 
-    when(repositorioUsuarios.buscarPorId("9999")).thenReturn(null);
 
     assertThrows(NotFoundException.class,
         () -> propuestaService.crearPropuesta(request));
@@ -97,9 +88,6 @@ class ServicioPropuestaTest {
   void crearPropuestaUsuarioDestinoNoExisteLanzaNotFoundException() {
     CrearPropuestaRequest request = new CrearPropuestaRequest(
         "1000", "9999", "ARG-10", List.of("FRA-10"));
-
-    when(repositorioUsuarios.buscarPorId("1000")).thenReturn(lucas);
-    when(repositorioUsuarios.buscarPorId("9999")).thenReturn(null);
 
     assertThrows(NotFoundException.class,
         () -> propuestaService.crearPropuesta(request));

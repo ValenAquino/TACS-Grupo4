@@ -22,6 +22,7 @@ const Perfil = () => {
     const [perfil, setPerfil] = useState({});
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingNotificaciones, setLoadingNotificaciones] = useState(false);
     const [stats, setStats] = useState([]);
     const [pagina, setPagina] = useState(1);
     const [filtros, setFiltros] = useState({});
@@ -53,7 +54,7 @@ const Perfil = () => {
     useEffect(() => {
         const cargarCalificaciones = async () => {
             try {
-                setLoading(true);
+                setLoadingNotificaciones(true);
 
                 const calificacionesApi = await buscarCalificaciones(userId, {
                     ...filtros,
@@ -65,7 +66,7 @@ const Perfil = () => {
             } catch (err) {
                 setError(true);
             } finally {
-                setLoading(false);
+                setLoadingNotificaciones(false);
             }
         };
 
@@ -182,12 +183,12 @@ const Perfil = () => {
 
                     <div className="d-flex flex-column gap-3">
 
-                        {loading ? (
+                        {loadingNotificaciones ? (
                             <p className="text-muted">Cargando reseñas...</p>
-                        ) : reviews.data.length === 0 ? (
+                        ) : reviews.data?.length === 0 ? (
                             <p className="text-muted">Este usuario no tiene reseñas disponibles</p>
                         ) : (
-                            reviews.data.map((r, i) => (
+                            reviews.data?.map((r, i) => (
                                 <div
                                     key={i}
                                     className="p-3 bg-white rounded shadow-sm d-flex align-items-center gap-3"

@@ -24,7 +24,7 @@ public class RepositorioNotificacionesMongo implements RepositorioNotificaciones
   public List<Notificacion> buscarPorPerfil(Perfil perfil) {
     Query query = new Query();
     query.addCriteria(
-        Criteria.where("usuario").is(perfil.getId())
+        Criteria.where("perfil").is(perfil)
     );
 
     return this.mongoTemplate.find(query, Notificacion.class);

@@ -46,7 +46,7 @@ class NotificadorTest {
     Notificacion notificacion = new Notificacion(mensaje, perfil);
 
     assertEquals(mensaje, notificacion.getMensaje());
-    assertEquals(perfil, notificacion.getUsuario());
+    assertEquals(perfil, notificacion.getPerfil());
   }
 
   @Test

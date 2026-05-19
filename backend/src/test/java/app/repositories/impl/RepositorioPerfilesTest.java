@@ -11,11 +11,7 @@ import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;
 import java.util.List;
-
-import app.repositories.RepositorioColecciones;
-import app.repositories.RepositorioPerfiles;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,9 +29,10 @@ class RepositorioPerfilesTest extends MongoTestBase {
     @Test
     void buscarPorFiguritaFaltanteDevuelve2() {
         Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
-        Coleccion coleccion1 = new Coleccion();
-        Coleccion coleccion2 = new Coleccion();
-        Coleccion coleccion3 = new Coleccion();
+        repositorioUsuarios.guardar(user);
+        Coleccion coleccion1 = new Coleccion("c-1");
+        Coleccion coleccion2 = new Coleccion("c-2");
+        Coleccion coleccion3 = new Coleccion("c-3");
 
         Perfil perfil = Perfil.builder()
             .id("u-1").usuario(user).nombre("Lucas")
@@ -44,6 +41,7 @@ class RepositorioPerfilesTest extends MongoTestBase {
             .build();
 
         user = new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella");
+        repositorioUsuarios.guardar(user);
         Perfil perfil2 = Perfil.builder()
             .id("u-2").usuario(user).nombre("Juan")
             .coleccion(coleccion2)
@@ -52,6 +50,8 @@ class RepositorioPerfilesTest extends MongoTestBase {
 
 
         user = new Usuario("u-1002", Rol.USUARIO, "lucas", "fiscella");
+        repositorioUsuarios.guardar(user);
+
         Perfil perfil3 = Perfil.builder()
             .id("u-4").usuario(user).nombre("Cristina")
             .coleccion(coleccion3)

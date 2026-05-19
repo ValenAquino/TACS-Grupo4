@@ -60,8 +60,6 @@ public class Coleccion {
   }
 
   public boolean tieneFaltante(Figurita figurita) {
-    return this.faltantes.contains(figurita);
+    return !this.faltantes.stream().filter(p -> p.getId().equals(figurita.getId())).toList().isEmpty();
   }
-
-
 }

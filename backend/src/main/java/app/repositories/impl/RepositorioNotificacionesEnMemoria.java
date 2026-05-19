@@ -34,7 +34,7 @@ public class RepositorioNotificacionesEnMemoria implements RepositorioNotificaci
   @Override
   public List<Notificacion> buscarPorPerfil(Perfil usuario) {
     return storage.values().stream()
-        .filter(n -> n.getUsuario().getId().equals(usuario.getId()))
+        .filter(n -> n.getPerfil().getId().equals(usuario.getId()))
         .toList();
   }
 }

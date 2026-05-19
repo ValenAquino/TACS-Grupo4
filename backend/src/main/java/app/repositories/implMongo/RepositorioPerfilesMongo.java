@@ -53,7 +53,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
 
   public List<Perfil> buscarPorFiguritaFaltante(Figurita figurita) {
     Query queryColecciones = new Query(
-        Criteria.where("faltantes").is(figurita.getId())
+        Criteria.where("faltantes.$id").is(figurita.getId())
     );
     List<Coleccion> colecciones = mongoTemplate.find(queryColecciones, Coleccion.class);
 
@@ -62,7 +62,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
         .toList();
 
     Query queryPerfiles = new Query(
-        Criteria.where("coleccion").in(idsColecciones)
+        Criteria.where("coleccion.$id").in(idsColecciones)
     );
     return mongoTemplate.find(queryPerfiles, Perfil.class);
   }

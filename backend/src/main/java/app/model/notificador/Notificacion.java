@@ -17,10 +17,10 @@ public class Notificacion {
   String id;
   Mensaje mensaje;
   @DBRef
-  Perfil usuario;
+  Perfil perfil;
 
-  public Notificacion(Mensaje mensaje, Perfil usuario) {
+  public Notificacion(Mensaje mensaje, Perfil perfil) {
     this.mensaje = mensaje;
-    this.usuario = usuario;
+    this.perfil = perfil;
   }
 }

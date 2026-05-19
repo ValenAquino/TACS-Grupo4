@@ -1,4 +1,4 @@
-package app.model.entities.filtros;
+package app.dto.filtros;
 
 public record FaltantesFiltro (
     int limite,

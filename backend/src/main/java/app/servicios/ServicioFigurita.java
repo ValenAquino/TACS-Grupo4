@@ -7,7 +7,7 @@ import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Seleccion;
-import app.model.entities.filtros.FiguritasFiltro;
+import app.dto.filtros.FiguritasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;

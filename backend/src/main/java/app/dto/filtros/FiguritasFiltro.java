@@ -1,4 +1,4 @@
-package app.model.entities.filtros;
+package app.dto.filtros;
 
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;

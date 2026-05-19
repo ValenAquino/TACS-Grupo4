@@ -14,16 +14,11 @@ import app.model.entities.Perfil;
 import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Usuario;
-import app.model.entities.filtros.FiguritasFiltro;
+import app.dto.filtros.FiguritasFiltro;
 import java.util.List;
 
-import app.repositories.RepositorioColecciones;
-import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioPerfiles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 public class RepositorioIntercambiablesTest extends MongoTestBase {
   private FiguritaIntercambiable intercambiableMessi;

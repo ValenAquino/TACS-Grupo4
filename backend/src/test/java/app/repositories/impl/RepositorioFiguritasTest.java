@@ -6,11 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import app.MongoTestBase;
 import app.model.entities.Figurita;
 import app.model.entities.Seleccion;
-import app.model.entities.filtros.FiguritasFiltro;
-import app.repositories.RepositorioFiguritas;
-import org.junit.jupiter.api.BeforeEach;
+import app.dto.filtros.FiguritasFiltro;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class RepositorioFiguritasTest extends MongoTestBase {
 

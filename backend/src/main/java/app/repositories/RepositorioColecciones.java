@@ -6,9 +6,9 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.filtros.FaltantesFiltro;
-import app.model.entities.filtros.FiguritasFiltro;
-import app.model.entities.filtros.RepetidasFiltro;
+import app.dto.filtros.FaltantesFiltro;
+import app.dto.filtros.FiguritasFiltro;
+import app.dto.filtros.RepetidasFiltro;
 
 import java.util.List;
 

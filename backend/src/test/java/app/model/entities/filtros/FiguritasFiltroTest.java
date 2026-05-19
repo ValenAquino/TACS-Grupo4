@@ -3,6 +3,7 @@ package app.model.entities.filtros;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import app.dto.filtros.FiguritasFiltro;
 import app.model.entities.Seleccion;
 import org.junit.jupiter.api.Test;
 

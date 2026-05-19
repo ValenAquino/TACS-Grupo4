@@ -1,8 +1,7 @@
 package app.repositories;
 
 import app.model.entities.Figurita;
-import app.model.entities.Seleccion;
-import app.model.entities.filtros.FiguritasFiltro;
+import app.dto.filtros.FiguritasFiltro;
 
 import java.util.List;
 

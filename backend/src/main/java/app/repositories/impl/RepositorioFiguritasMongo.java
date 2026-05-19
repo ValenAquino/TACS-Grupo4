@@ -2,7 +2,7 @@ package app.repositories.impl;
 
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
-import app.model.entities.filtros.FiguritasFiltro;
+import app.dto.filtros.FiguritasFiltro;
 import app.repositories.RepositorioFiguritas;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

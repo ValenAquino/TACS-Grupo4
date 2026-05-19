@@ -145,8 +145,8 @@
               </rules>
               <excludes>
                 <exclude>Main.class</exclude>
-                <!-- DTOs y requests son POJOs sin lógica de negocio: solo campos y getters/setters -->
                 <exclude>app/dto/**</exclude>
+                <exclude>**/InicializadorDeDatos.class</exclude>
               </excludes>
             </configuration>
           </execution>

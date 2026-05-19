@@ -1,4 +1,4 @@
-package app.repositories.implMongo;
+package app.repositories.impl;
 
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
@@ -7,7 +7,6 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Perfil;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.FiguritasFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
@@ -15,7 +14,6 @@ import app.repositories.RepositorioColecciones;
 import com.mongodb.DBRef;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;

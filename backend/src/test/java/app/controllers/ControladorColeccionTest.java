@@ -3,6 +3,7 @@ package app.controllers;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -114,6 +115,13 @@ class ControladorColeccionTest {
     mockMvc.perform(post("/colecciones/1/faltantes")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
+        .andExpect(status().is(400));
+  }
+
+  @Test
+  void buscarFaltantesEnColeccionInexistenteArroja400() throws Exception {
+
+    mockMvc.perform(get("/colecciones/1/faltantes"))
         .andExpect(status().is(400));
   }
 }

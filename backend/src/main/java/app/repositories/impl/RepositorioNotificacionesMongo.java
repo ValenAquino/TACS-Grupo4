@@ -1,4 +1,4 @@
-package app.repositories.implMongo;
+package app.repositories.impl;
 
 import app.model.entities.Perfil;
 import app.model.notificador.Notificacion;

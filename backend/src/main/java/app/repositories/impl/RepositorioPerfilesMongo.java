@@ -1,4 +1,4 @@
-package app.repositories.implMongo;
+package app.repositories.impl;
 
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.paginacion.PaginaResultado;

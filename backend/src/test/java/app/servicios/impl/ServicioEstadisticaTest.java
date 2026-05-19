@@ -2,8 +2,7 @@ package app.servicios.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
+import app.MongoTestBase;
 import app.dto.EstadisticasDto;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
@@ -17,35 +16,15 @@ import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Subasta;
 import app.model.entities.Usuario;
-import app.repositories.RepositorioPerfiles;
-import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioPerfiles;
 import app.servicios.ServicioEstadisticas;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-class ServicioEstadisticaTest {
-
-    @Mock private RepositorioPerfiles repositorioUsuarios;
-    @Mock private RepositorioPropuestas repositorioPropuestas;
-    @Mock private RepositorioSubastas repositorioSubastas;
-
+class ServicioEstadisticaTest extends MongoTestBase {
+    @Autowired
     private ServicioEstadisticas service;
 
     private List<MedioDeContacto> telegram(String numero) {
@@ -54,14 +33,23 @@ class ServicioEstadisticaTest {
 
     private Perfil perfil(String id, String usuarioId, String nombre) {
         Usuario user = new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella");
-        return Perfil.builder()
+        Coleccion colecccion = new Coleccion("c-"+ id);
+        Perfil perfil = Perfil.builder()
             .id(id).usuario(user).nombre("nombre")
+            .coleccion(colecccion)
             .mediosDeContacto(telegram("@" + nombre.toLowerCase()))
             .build();
+        repositorioColecciones.guardar(colecccion);
+        repositorioUsuarios.guardar(user);
+        repositorioPerfiles.guardar(perfil);
+        return perfil;
     }
 
     private Figurita figurita(String id, Seleccion seleccion) {
-        return new Figurita(id, 1, "Jugador", seleccion, "Delantero");
+        Figurita fig =  new Figurita(id, 1, "Jugador", seleccion, "Delantero");
+        repositorioFiguritas.guardar(fig);
+
+        return fig;
     }
 
     private FiguritaIntercambiable soloIntercambio(Figurita f) {
@@ -76,25 +64,13 @@ class ServicioEstadisticaTest {
         return new FiguritaIntercambiable(f, 1, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA));
     }
 
-    private void stubRepositoriosVacios() {
-        when(repositorioUsuarios.contar()).thenReturn(0L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
-        when(repositorioPropuestas.contar()).thenReturn(0);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
-    }
-
     @BeforeEach
     void setUp() {
-        service = new ServicioEstadisticas(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
+        service = new ServicioEstadisticas(repositorioPerfiles, repositorioPropuestas, repositorioSubastas);
     }
 
     @Test
     void getEstadisticas_sinDatos_retornaTodosCeros() {
-        when(repositorioUsuarios.contar()).thenReturn(0L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
-        when(repositorioPropuestas.contar()).thenReturn(0);
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -117,35 +93,41 @@ class ServicioEstadisticaTest {
         Coleccion coleccionConUna = new Coleccion();
         coleccionConUna.getRepetidas().add(soloIntercambio(f3));
 
+        repositorioColecciones.guardar(coleccionConDos);
+        repositorioColecciones.guardar(coleccionConUna);
+
         Usuario user =  new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
+        repositorioUsuarios.guardar(user);
+
         Perfil u1 = Perfil.builder()
             .id("u-1").usuario(user).nombre("Lucas")
             .mediosDeContacto(telegram("@lucas"))
             .coleccion(coleccionConDos)
             .build();
 
+        repositorioPerfiles.guardar(u1);
+
         user = new Usuario("usr-2", Rol.USUARIO, "lucas", "fiscella");
+        repositorioUsuarios.guardar(user);
         Perfil u2 = Perfil.builder()
             .id("u-2").usuario(user).nombre("Sofía")
             .mediosDeContacto(telegram("@sofia"))
             .coleccion(coleccionConUna)
             .build();
 
+        repositorioPerfiles.guardar(u2);
+
         Subasta subastaActiva = Subasta.builder().id("s-1").autor(u1).fechaInicio(
                 LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
-            .build();;
+            .build();
 
-        when(repositorioUsuarios.contar()).thenReturn(2L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1, u2));
-        when(repositorioPropuestas.contar()).thenReturn(4);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of(subastaActiva));
+        repositorioSubastas.guardar(subastaActiva);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
         assertEquals(2, resultado.getTotalUsuarios());
         assertEquals(3, resultado.getTotalFiguritasPublicadas());
-        assertEquals(4, resultado.getTotalPropuestas());
+        assertEquals(0, resultado.getTotalPropuestas());
         assertEquals(1, resultado.getTotalSubastasActivas());
     }
 
@@ -156,15 +138,13 @@ class ServicioEstadisticaTest {
         Subasta activa  = Subasta.builder().id("s-1").autor(u1).fechaInicio(
                 LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
             .build();
+
         Subasta vencida = Subasta.builder().id("s-2").autor(u1).fechaInicio(
                 LocalDateTime.now().minusDays(3)).fechaCierre(LocalDateTime.now().minusDays(1))
             .build();
 
-        when(repositorioUsuarios.contar()).thenReturn(1L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
-        when(repositorioPropuestas.contar()).thenReturn(0);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of(activa, vencida));
+        repositorioSubastas.guardar(activa);
+        repositorioSubastas.guardar(vencida);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -173,7 +153,6 @@ class ServicioEstadisticaTest {
 
     @Test
     void propuestasPorEstado_sinPropuestas_retornaCeros() {
-        stubRepositoriosVacios();
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -207,11 +186,9 @@ class ServicioEstadisticaTest {
             .build();
         rechazada.rechazar(destinatario);
 
-        when(repositorioUsuarios.contar()).thenReturn(0L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
-        when(repositorioPropuestas.contar()).thenReturn(3);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of(pendiente, aceptada, rechazada));
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
+        repositorioPropuestas.guardar(pendiente);
+        repositorioPropuestas.guardar(aceptada);
+        repositorioPropuestas.guardar(rechazada);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -230,6 +207,7 @@ class ServicioEstadisticaTest {
             .figuritasOfrecidas(List.of())
             .figuritaBuscada(null)
             .build();
+
         Propuesta p2 = Propuesta.builder()
             .id("p2").autor(autor).destinatario(destinatario)
             .figuritasOfrecidas(List.of())
@@ -242,11 +220,9 @@ class ServicioEstadisticaTest {
             .build();
         p3.aceptar(destinatario);
 
-        when(repositorioUsuarios.contar()).thenReturn(0L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of());
-        when(repositorioPropuestas.contar()).thenReturn(3);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of(p1, p2, p3));
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
+        repositorioPropuestas.guardar(p1);
+        repositorioPropuestas.guardar(p2);
+        repositorioPropuestas.guardar(p3);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -257,7 +233,6 @@ class ServicioEstadisticaTest {
 
     @Test
     void figuritasPorModalidad_sinFiguritas_retornaCeros() {
-        stubRepositoriosVacios();
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -277,7 +252,11 @@ class ServicioEstadisticaTest {
         coleccion.getRepetidas().add(soloSubasta(f2));
         coleccion.getRepetidas().add(ambosMetodos(f3));
 
+        repositorioColecciones.guardar(coleccion);
+
         Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
+
+        repositorioUsuarios.guardar(user);
 
         Perfil u1 = Perfil.builder()
             .id("1").usuario(user)
@@ -285,11 +264,7 @@ class ServicioEstadisticaTest {
             .mediosDeContacto(telegram("@lucas"))
             .build();
 
-        when(repositorioUsuarios.contar()).thenReturn(1L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
-        when(repositorioPropuestas.contar()).thenReturn(0);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
+        repositorioPerfiles.guardar(u1);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -300,8 +275,6 @@ class ServicioEstadisticaTest {
 
     @Test
     void topSelecciones_sinFiguritas_retornaListaVacia() {
-        stubRepositoriosVacios();
-
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
         assertTrue(resultado.getTopSelecciones().isEmpty());
@@ -325,11 +298,9 @@ class ServicioEstadisticaTest {
             .mediosDeContacto(telegram("@lucas"))
             .build();
 
-        when(repositorioUsuarios.contar()).thenReturn(1L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
-        when(repositorioPropuestas.contar()).thenReturn(0);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
+        repositorioColecciones.guardar(coleccion);
+        repositorioUsuarios.guardar(user);
+        repositorioPerfiles.guardar(u1);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -356,11 +327,9 @@ class ServicioEstadisticaTest {
             .mediosDeContacto(telegram("@lucas"))
             .build();
 
-        when(repositorioUsuarios.contar()).thenReturn(1L);
-        when(repositorioUsuarios.buscarTodos()).thenReturn(List.of(u1));
-        when(repositorioPropuestas.contar()).thenReturn(0);
-        when(repositorioPropuestas.buscarTodos()).thenReturn(List.of());
-        when(repositorioSubastas.buscarTodos()).thenReturn(List.of());
+        repositorioColecciones.guardar(coleccion);
+        repositorioUsuarios.guardar(user);
+        repositorioPerfiles.guardar(u1);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 

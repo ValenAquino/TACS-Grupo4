@@ -24,14 +24,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ServicioEstadisticas {
 
-    private final RepositorioPerfiles repositorioUsuarios;
+    private final RepositorioPerfiles repositorioPerfiles;
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
 
     public EstadisticasDto obtenerEstadisticas() {
-        long totalUsuarios = repositorioUsuarios.contar();
+        long totalUsuarios = repositorioPerfiles.contar();
 
-        List<FiguritaIntercambiable> todasLasRepetidas = repositorioUsuarios.buscarTodos().stream()
+        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos().stream()
             .flatMap(u -> u.getColeccion().getRepetidas().stream())
             .collect(Collectors.toList());
 

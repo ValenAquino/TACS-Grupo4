@@ -44,15 +44,11 @@ public class Perfil {
 
     /**
      * Calcula el promedio de las calificaciones recibidas.
-     * Retorna 0 si el perfil aún no tiene calificaciones.
      */
-    public void calcularCalificacionMedia(int calificacion) {
-        this.calificacionMedia = (calificacionMedia + calificacion)/ (this.cantidadCalificaciones + 1);
-    }
-
-    public void agregarNuevaCalificacion(Calificacion calificacion){
+    public void agregarNuevaCalificacion(Calificacion calificacion) {
         this.calificaciones.add(calificacion);
         this.cantidadCalificaciones++;
-        this.calcularCalificacionMedia(calificacion.getValor());
+        this.calificacionMedia = this.calificacionMedia +
+            (calificacion.getValor() - this.calificacionMedia) / this.cantidadCalificaciones;
     }
 }

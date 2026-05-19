@@ -137,7 +137,7 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
 
     List<FiguritaIntercambiable> contenido = this.mapearADominio(resultado);
 
-    return new PaginaResultado<>(contenido, count, count/limite, pagina);
+    return new PaginaResultado<>(contenido, count, (int) Math.ceil((double) count / limite), pagina);
   }
 
   @Override

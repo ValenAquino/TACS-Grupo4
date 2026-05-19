@@ -17,7 +17,7 @@ const ChipFigurita = ({ figurita }) => (
 );
 
 
-const IntercambioCard = ({ intercambio, tipo = "RECIBIDA" }) => {
+const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
 
     const [showCalificacion, setShowCalificacion] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null);
@@ -65,6 +65,7 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA" }) => {
         try {
             await cancelarPropuesta(intercambio.id);
             setConfirmAction(null);
+            onActualizado?.()
         } catch (e) {
             console.error(e);
         }
@@ -74,6 +75,7 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA" }) => {
         try {
             await aceptarPropuesta(intercambio.id);
             setConfirmAction(null);
+            onActualizado?.()
         } catch (e) {
             console.error(e);
         }
@@ -83,6 +85,7 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA" }) => {
         try {
             await rechazarPropuesta(intercambio.id);
             setConfirmAction(null);
+            onActualizado?.()
         } catch (e) {
             console.error(e);
         }

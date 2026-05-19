@@ -33,19 +33,19 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
          setPagina(1);
      };
 
-    useEffect(() => {
-        const cargarEnviadas = async () => {
-            try {
-                setLoading(true);
-                const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
-                setEnviadas(enviadasApi)
-            } catch (e) {
-                setError(true)
-            } finally {
-                setLoading(false);
-            }
-        }
+     const cargarEnviadas = async () => {
+         try {
+             setLoading(true);
+             const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
+             setEnviadas(enviadasApi)
+         } catch (e) {
+             setError(true)
+         } finally {
+             setLoading(false);
+         }
+     }
 
+    useEffect(() => {
         cargarEnviadas();
     }, [pagina, filtros])
 
@@ -111,6 +111,7 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
                             key={i.id}
                             intercambio={i}
                             tipo={"ENVIADA"}
+                            onActualizado={cargarEnviadas}
                         />
                     ))}
                 </>

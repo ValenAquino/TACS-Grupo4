@@ -20,19 +20,19 @@ const RecibidasTab = () => {
     const { userId} = useUsuarioActual()
     const user_id = userId
 
-    useEffect(() => {
-        const cargarRecibidas = async () => {
-            try {
-                setLoading(true);
-                const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
-                setRecibidas(enviadasApi)
-            } catch (e) {
-                setError(true)
-            } finally {
-                setLoading(false);
-            }
+    const cargarRecibidas = async () => {
+        try {
+            setLoading(true);
+            const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
+            setRecibidas(enviadasApi)
+        } catch (e) {
+            setError(true)
+        } finally {
+            setLoading(false);
         }
+    }
 
+    useEffect(() => {
         cargarRecibidas();
     }, [pagina, filtros]);
 
@@ -86,6 +86,7 @@ const RecibidasTab = () => {
                             key={i.id}
                             intercambio={i}
                             tipo={"RECIBIDA"}
+                            onActualizado={cargarRecibidas}
                         />
                     ))}
                 </>

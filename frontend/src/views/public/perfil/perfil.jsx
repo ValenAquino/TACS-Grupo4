@@ -5,6 +5,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
 import Button from "@/components/ui/button/button.jsx";
 import confirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
+import {useToast} from "@/contexts/toastContext.jsx";
 
 const renderStars = (score) => {
     const fullStars = Math.floor(score / 2);
@@ -31,12 +32,23 @@ const Perfil = () => {
         subastas: 0
     });
 
+    const {showToast} = useToast();
+
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     /* Datos Hardcodeados */
     const { user, cerrarSesion} = useAuth();
 
     const perfilId = user?.perfil_id
+
+    const manejarCierreDeSesion = () => {
+        try {
+            cerrarSesion()
+            showToast("Cierre de sesion exitoso", "success");
+        } catch (error) {
+            showToast("Error al cerra la sesion", "error");
+        }
+    }
 
     useEffect(() => {
       const cargar = async () => {
@@ -276,7 +288,7 @@ const Perfil = () => {
                 show={showConfirmModal}
                 titulo={"Esta seguro que quiere cerrar su sesion?"}
                 labelConfirmar={"Aceptar"}
-                onConfirmar={cerrarSesion}
+                onConfirmar={manejarCierreDeSesion}
                 onCancelar={() => setShowConfirmModal(false)}
             />
         </div>

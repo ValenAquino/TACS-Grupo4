@@ -3,8 +3,8 @@ package app.controllers;
 import app.dto.SesionDto;
 import app.dto.request.LoginRequest;
 import app.dto.request.UsuarioRequest;
-import app.servicios.IServicioUsuario;
-import app.servicios.impl.ServicioJwt;
+import app.servicios.ServicioJwt;
+import app.servicios.ServicioUsuario;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +18,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class ControladorUsuario {
 
-  private final IServicioUsuario servicioUsuario;
+  private final ServicioUsuario servicioUsuario;
   private final ServicioJwt servicioJwt;
 
   @PostMapping("/registrar")

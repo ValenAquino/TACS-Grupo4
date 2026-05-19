@@ -37,7 +37,6 @@ const Perfil = () => {
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-    /* Datos Hardcodeados */
     const { user, cerrarSesion} = useAuth();
 
     const perfilId = user?.perfil_id
@@ -57,8 +56,7 @@ const Perfil = () => {
           setLoading(true);
 
           const perfil = await buscarPerfil(perfilId);
-          const statsData = await buscarContadores({ perfilId });
-          const reviewsData = await buscarCalificaciones(perfilId);
+          const statsData = await buscarContadores(perfilId);
 
           setPerfil(perfil);
           setStats(statsData);
@@ -78,7 +76,7 @@ const Perfil = () => {
             try {
                 setLoadingNotificaciones(true);
 
-                const calificacionesApi = await buscarCalificaciones(userId, {
+                const calificacionesApi = await buscarCalificaciones(perfilId, {
                     ...filtros,
                     pagina,
                     limite: 10,
@@ -93,7 +91,7 @@ const Perfil = () => {
         };
 
         cargarCalificaciones();
-    }, [userId, filtros, pagina]);
+    }, [perfilId, filtros, pagina]);
 
     const promedio = reviews.resultados > 0
         ? (reviews.data.reduce((acc, r) => acc + r.valor, 0) / reviews.resultados).toFixed(1)
@@ -149,7 +147,6 @@ const Perfil = () => {
                                                 textOverflow: "ellipsis"
                                             }}>
                                             {perfil?.nombre}</h2>
-                                        <p className="mb-1">@messi_g</p>
                                         <div>
                                             {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.resultados})
                                         </div>

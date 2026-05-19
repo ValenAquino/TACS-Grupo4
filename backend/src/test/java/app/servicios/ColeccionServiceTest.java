@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,7 +29,7 @@ class ColeccionServiceTest {
   private RepositorioColecciones repositorioColecciones;
   @Mock private RepositorioFiguritas repositorioFiguritas;
   @Mock private RepositorioPerfiles repositorioPerfiles;
-  @Mock private IServicioNotificacion notificacionService;
+  @Mock private ServicioNotificacion notificacionService;
 
   private ServicioColeccion service;
 

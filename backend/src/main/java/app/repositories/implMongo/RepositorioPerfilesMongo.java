@@ -1,5 +1,6 @@
 package app.repositories.implMongo;
 
+import app.dto.calificaciones.CalificacionesDto;
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
 import app.model.entities.Perfil;
@@ -56,6 +57,11 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
 
   public void guardar(Perfil perfil) {
     mongoTemplate.save(perfil);
+  }
+
+  @Override
+  public CalificacionesDto buscarCalificaciones(String id, Integer pagina, Integer limite) {
+    return null;
   }
 }
 

@@ -1,24 +1,18 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.ContadorDto;
 import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
-import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
-import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
-import app.model.entities.Coleccion;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Propuesta;
-import app.model.entities.Subasta;
 import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritasIntercambiables;
@@ -26,7 +20,6 @@ import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IServicioPerfil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +29,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioPerfil implements IServicioPerfil {
+public class ServicioPerfil {
 
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioPropuestas repositorioPropuestas;
@@ -45,15 +38,15 @@ public class ServicioPerfil implements IServicioPerfil {
   private final RepositorioNotificaciones repositorioNotificaciones;
 
 
-  @Override
   public List<FiguritaDto> obtenerFaltantes(String userId) {
     Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
     return perfil.getColeccion().getFaltantes().stream()
         .map(FiguritaDto::new)
         .toList();
   }
+
+
   //TODO que se filtren las que cantidadExistentes == 0
-  @Override
   public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
     Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
     return perfil.getColeccion().getRepetidas().stream()
@@ -61,7 +54,6 @@ public class ServicioPerfil implements IServicioPerfil {
         .toList();
   }
 
-  @Override
   public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
       Perfil perfil = repositorioPerfiles.buscarPorId(userId);
       if (perfil == null) throw new NotFoundException("Perfil no encontrado");
@@ -72,7 +64,6 @@ public class ServicioPerfil implements IServicioPerfil {
           .toList();
   }
 
-  @Override
   public void agregarCalificacion(String userAutorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
       throw new BadRequestException("El valor de la calificación no puede ser nulo");
@@ -108,7 +99,6 @@ public class ServicioPerfil implements IServicioPerfil {
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 
-  @Override
   public SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
@@ -155,9 +145,8 @@ public class ServicioPerfil implements IServicioPerfil {
     return new SugerenciaPaginadaDto(sugerenciasDto, resultados, paginaActual, paginasTotales);
   }
 
-  @Override
-  public List<ContadorDto> obtenerContadores(String userId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+  public List<ContadorDto> obtenerContadores(String perfilId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
 
     List<ContadorDto> contadores = new ArrayList<>();
 
@@ -167,19 +156,16 @@ public class ServicioPerfil implements IServicioPerfil {
     return contadores;
   }
 
-  @Override
-  public List<NotificacionesDto> obtenerNotificaciones(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
+  public List<NotificacionesDto> obtenerNotificaciones(String perfilId) {
+      Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
 
     return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
   }
 
-  @Override
   public CalificacionesDto obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
     return this.repositorioPerfiles.buscarCalificaciones(perfilId, pagina, limite);
   }
 
-  @Override
   public PerfilDto obtenerPerfil(String perfilId) {
     Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
     if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + perfilId);

@@ -4,15 +4,14 @@ import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.FiguritaDto;
 import app.dto.NotificacionesDto;
-import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
-import app.dto.request.PerfilRequest;
-import app.servicios.IServicioPerfil;
 import java.util.List;
+
+import app.servicios.ServicioPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,13 +28,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ControladorPerfil {
 
-    private final IServicioPerfil perfilService;
+    private final ServicioPerfil perfilService;
 
+    //TODO: Eliminar esta funcion. Si se quieren las repetidas de un perfil, se tiene que usar la coleccion.
     @GetMapping("/{user_id}/faltantes")
     public ResponseEntity<List<FiguritaDto>> obtenerFaltantes(@PathVariable String user_id) {
         return ResponseEntity.ok(perfilService.obtenerFaltantes(user_id));
     }
 
+    //TODO: Eliminar esta funcion. Si se quieren las repetidas de un perfil, se tiene que usar la coleccion.
     @GetMapping("/{user_id}/repetidas")
     public ResponseEntity<List<FiguritaIntercambiableDto>> obtenerRepetidas(@PathVariable String user_id) {
         return ResponseEntity.ok(perfilService.obtenerRepetidas(user_id));
@@ -68,6 +69,7 @@ public class ControladorPerfil {
         return this.perfilService.obtenerCalificaciones(perfil_id, pagina, limite);
     }
 
+    //TODO: Eliminar esta funcion. Si se quieren las repetidas de un perfil, se tiene que usar la coleccion.
     @GetMapping("/{user_id}/intercambiables")
     public ResponseEntity<List<FiguritaIntercambiableDto>> obtenerIntercambiables(
         @PathVariable String user_id) {
@@ -76,22 +78,24 @@ public class ControladorPerfil {
             perfilService.obtenerIntercambiablesPerfil(user_id)
         );
     }
-    @GetMapping("/{user_id}/sugerencias")
-    public ResponseEntity<SugerenciaPaginadaDto> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
 
-        SugerenciaPaginadaDto sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
+
+    @GetMapping("/{perfil_id}/sugerencias")
+    public ResponseEntity<SugerenciaPaginadaDto> obtenerSugerencias(@PathVariable String perfil_id, @ModelAttribute SugerenciasFiltro filtro) {
+
+        SugerenciaPaginadaDto sugerenciasDto = this.perfilService.obtenerSugerencias(perfil_id, filtro);
 
         return ResponseEntity.ok().body(sugerenciasDto);
     }
 
-    @GetMapping("/{user_id}/contadores")
-    public ResponseEntity<List<ContadorDto>> obtenerContadores(@PathVariable String user_id) {
-        return ResponseEntity.ok(this.perfilService.obtenerContadores(user_id));
+    @GetMapping("/{perfil_id}/contadores")
+    public ResponseEntity<List<ContadorDto>> obtenerContadores(@PathVariable String perfil_id) {
+        return ResponseEntity.ok(this.perfilService.obtenerContadores(perfil_id));
     }
 
-    @GetMapping("/{user_id}/notificaciones")
-    public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(@PathVariable String user_id) {
-        return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(user_id));
+    @GetMapping("/{perfil_id}/notificaciones")
+    public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(@PathVariable String perfil_id) {
+        return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(perfil_id));
     }
 
     @GetMapping("/{perfil_id}")

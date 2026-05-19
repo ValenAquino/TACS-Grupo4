@@ -26,24 +26,36 @@ export const AuthProvider = ({ children }) => {
     }
 
     const verificarSesion = async () => {
-        try {
-            await buscarUsuario((obj) => asignarUsuario (obj, false))
-
-        } catch (error) {
-
-            if (error.type === "UNAUTHORIZED") {
-                setUser(undefined)
-                localStorage.removeItem("sesion")
-            }
-        }
+        await buscarUsuario((obj) => asignarUsuario (obj, false))
     }
 
     useEffect(() => {
-
         if (user == null) return;
-
         verificarSesion()
     }, [])
+
+    //Este useEffect es el que escucha cuando el interceptor de axios lanza el evento de logout.
+    useEffect(() => {
+
+        const listener = () => {
+
+            setUser(undefined);
+
+            navigate("/login");
+        };
+
+        window.addEventListener(
+            "logout",
+            listener
+        );
+
+        return () =>
+            window.removeEventListener(
+                "logout",
+                listener
+            );
+
+    }, []);
 
     const updateUser = (fields) => {
         const updatedUser = {...user, ...fields};

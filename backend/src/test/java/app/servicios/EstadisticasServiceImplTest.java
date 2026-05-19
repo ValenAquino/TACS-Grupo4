@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.EstadisticasDto;
 import app.model.entities.*;
@@ -25,7 +25,7 @@ class EstadisticasServiceImplTest {
     @Mock private RepositorioPropuestas repositorioPropuestas;
     @Mock private RepositorioSubastas repositorioSubastas;
 
-    private ServicioEstadisticasImpl service;
+    private ServicioEstadisticas service;
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
@@ -38,7 +38,7 @@ class EstadisticasServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new ServicioEstadisticasImpl(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
+        service = new ServicioEstadisticas(repositorioUsuarios, repositorioPropuestas, repositorioSubastas);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
@@ -12,8 +12,6 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
-import app.servicios.IServicioNotificacion;
-import app.servicios.IServicioPropuesta;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +19,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioPropuesta implements IServicioPropuesta {
+public class ServicioPropuesta {
 
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
-  private final IServicioNotificacion notificacionService;
+  private final ServicioNotificacion notificacionService;
 
   /**
    * Crea una propuesta de intercambio. Valida que el usuario origen,
@@ -66,7 +64,6 @@ public class ServicioPropuesta implements IServicioPropuesta {
     return new PropuestaDto(propuesta);
   }
 
-  @Override
   public void aceptar(String propuestaId, String usuarioId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
     Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
@@ -74,7 +71,6 @@ public class ServicioPropuesta implements IServicioPropuesta {
     repositorioPropuestas.guardar(propuesta);
   }
 
-  @Override
   public void rechazar(String id, String usuarioId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
@@ -82,7 +78,6 @@ public class ServicioPropuesta implements IServicioPropuesta {
     repositorioPropuestas.guardar(propuesta);
   }
 
-  @Override
   public void cancelar(String id) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.cancelar();

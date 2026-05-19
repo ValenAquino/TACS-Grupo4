@@ -4,7 +4,7 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
-import app.servicios.IServicioFigurita;
+import app.servicios.ServicioFigurita;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class ControladorFigurita {
-    private final IServicioFigurita figuritaService;
+    private final ServicioFigurita figuritaService;
 
     @GetMapping("/figuritas")
     public ResponseEntity<PaginaResultado<FiguritaIntercambiableDto>> obtenerFiguritas(

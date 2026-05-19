@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.PaginaResultado;
@@ -10,14 +10,13 @@ import app.model.entities.Seleccion;
 import app.model.entities.filtros.FiguritasFiltro;
 import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
-import app.servicios.IServicioFigurita;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioFigurita implements IServicioFigurita {
+public class ServicioFigurita {
 
   private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final RepositorioPerfiles repositorioPerfiles;

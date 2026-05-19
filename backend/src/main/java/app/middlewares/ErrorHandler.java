@@ -3,6 +3,7 @@ package app.middlewares;
 import app.dto.response.ErrorResponse;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
+import app.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,6 +42,23 @@ public class ErrorHandler {
 
     return ResponseEntity
         .status(HttpStatus.BAD_REQUEST)
+        .body(error);
+  }
+
+  @ExceptionHandler(UnauthorizedException.class)
+  public ResponseEntity<ErrorResponse> handleUnathorized(
+      UnauthorizedException ex
+  ) {
+
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.UNAUTHORIZED.value(),
+        ex.getMessage(),
+        Map.of(),
+        LocalDateTime.now()
+    );
+
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
         .body(error);
   }
 

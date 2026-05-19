@@ -44,15 +44,16 @@ export const calificarPerfil = async (
   );
 };
 
-export const buscarPerfil = async (userId) => {
+export const buscarPerfil = async (perfilId) => {
   try {
-    const { data } = await api.get(`${PERFIL_URL}/${userId}`);
+    const { data } = await api.get(`${PERFIL_URL}/${perfilId}`);
     return data;
   } catch (error) {
     handleAxiosError(error);
   }
 };
 
+//TODO: Eliminar esta funcion. Si se quieren las faltantes de un perfil, se tiene que usar la coleccion.
 export const buscarFaltantes = async (userId) => {
   try {
     const { data } = await api.get(`${PERFIL_URL}/${userId}/faltantes`);
@@ -62,6 +63,7 @@ export const buscarFaltantes = async (userId) => {
   }
 };
 
+//TODO: Eliminar esta funcion. Si se quieren las repetidas de un perfil, se tiene que usar la coleccion.
 export const buscarRepetidas = async (userId) => {
   try {
     const { data } = await api.get(`${PERFIL_URL}/${userId}/repetidas`);
@@ -71,9 +73,9 @@ export const buscarRepetidas = async (userId) => {
   }
 };
 
-export const buscarCalificaciones = async (userId, filtros) => {
+export const buscarCalificaciones = async (perfilId, filtros) => {
     try {
-        const { data } = await api.get(`${PERFIL_URL}/${userId}/calificaciones`,
+        const { data } = await api.get(`${PERFIL_URL}/${perfilId}/calificaciones`,
             {params: filtros}
         );
         return data;
@@ -82,9 +84,9 @@ export const buscarCalificaciones = async (userId, filtros) => {
     }
 };
 
-export const buscarContadores = async (userId) => {
+export const buscarContadores = async (perfilId) => {
     try {
-        const { data } = await api.get(`${PERFIL_URL}/${userId}/contadores`);
+        const { data } = await api.get(`${PERFIL_URL}/${perfilId}/contadores`);
         return data;
     } catch (error) {
         handleAxiosError(error);

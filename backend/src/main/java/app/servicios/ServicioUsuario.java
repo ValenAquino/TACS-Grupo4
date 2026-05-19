@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.request.LoginRequest;
 import app.dto.request.UsuarioRequest;
@@ -10,7 +10,7 @@ import app.model.entities.Usuario;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioUsuario;
-import app.servicios.IServicioUsuario;
+import app.servicios.ServicioUsuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioUsuario implements IServicioUsuario {
+public class ServicioUsuario {
 
   private final RepositorioUsuario repositorioUsuario;
   private final RepositorioPerfiles repositorioPerfiles;

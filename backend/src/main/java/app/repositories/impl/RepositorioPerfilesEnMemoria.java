@@ -53,7 +53,6 @@ public class RepositorioPerfilesEnMemoria {
         }
     }
 
-    @Override
     public CalificacionesDto buscarCalificaciones(String id, Integer pagina, Integer limite) {
         Perfil perfil = this.buscarPorUsuarioId(id);
 

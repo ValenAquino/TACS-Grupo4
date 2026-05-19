@@ -1,4 +1,4 @@
-package app.servicios.impl;
+package app.servicios;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,8 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import app.dto.FiguritaIntercambiableDto;
-import app.dto.OperacionesDto;
-import app.dto.filtros.PropuestasFiltro;
 import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;

@@ -1,15 +1,14 @@
-package app.servicios.impl;
+package app.servicios;
 
 import app.dto.request.UsuarioRequest;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioUsuario;
-import app.servicios.IServicioSesion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ServicioSesion implements IServicioSesion {
+public class ServicioSesion {
   private final RepositorioUsuario repoUsuario;
 
   public void crearUsuario(UsuarioRequest req) {

@@ -1,6 +1,7 @@
 package app.controllers;
 
 import app.dto.FiguritaDto;
+import app.dto.FiguritaIntercambiableDto;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
 import app.dto.request.FaltanteRequest;
@@ -54,7 +55,7 @@ public class ControladorColeccion {
     }
 
     @GetMapping("/{col_id}/repetidas")
-    public ResponseEntity<Repetidas> buscarRepetidas(
+    public ResponseEntity<Repetidas<FiguritaIntercambiableDto>> buscarRepetidas(
         @PathVariable String col_id,
         @ModelAttribute RepetidasFiltro filtros
     ) {

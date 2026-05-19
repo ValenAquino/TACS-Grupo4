@@ -16,6 +16,7 @@ import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
+import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.List;

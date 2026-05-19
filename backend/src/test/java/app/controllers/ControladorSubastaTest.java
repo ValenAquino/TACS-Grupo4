@@ -134,7 +134,11 @@ class ControladorSubastaTest {
 
     @Test
     void seleccionarOferta_retorna200() throws Exception {
-        Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+        Propuesta propuesta = Propuesta.builder()
+            .id("o-1").autor(lucas).destinatario(sofia)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(messi)
+            .build();
         subastaActiva.getOfertas().add(propuesta);
 
         when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
@@ -155,7 +159,11 @@ class ControladorSubastaTest {
 
     @Test
     void rechazarOferta_retorna200() throws Exception {
-        Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+        Propuesta propuesta = Propuesta.builder()
+            .id("o-1").autor(lucas).destinatario(sofia)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(messi)
+            .build();
         subastaActiva.getOfertas().add(propuesta);
 
         when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
@@ -194,7 +202,11 @@ class ControladorSubastaTest {
 
     @Test
     void cerrarSubasta_retorna200() throws Exception {
-        Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+        Propuesta propuesta = Propuesta.builder()
+            .id("o-1").autor(lucas).destinatario(sofia)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(messi)
+            .build();
         propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
         subastaActiva.getOfertas().add(propuesta);
 
@@ -207,7 +219,11 @@ class ControladorSubastaTest {
 
     @Test
     void cerrarSubasta_sinOfertaSeleccionada_retorna400() throws Exception {
-        Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+        Propuesta propuesta = Propuesta.builder()
+            .id("o-1").autor(lucas).destinatario(sofia)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(messi)
+            .build();
         subastaActiva.getOfertas().add(propuesta);
 
         when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
@@ -238,7 +254,11 @@ class ControladorSubastaTest {
 
     @Test
     void obtenerSubastasParticipo_retorna200() throws Exception {
-        Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+        Propuesta propuesta = Propuesta.builder()
+            .id("o-1").autor(lucas).destinatario(sofia)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(messi)
+            .build();
         subastaActiva.getOfertas().add(propuesta);
 
         when(repositorioSubastas.buscarDondeParticipa("u-2"))

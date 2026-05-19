@@ -132,7 +132,12 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi).build();
 
-    Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();;
     subasta.agregarOferta(propuesta);
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
@@ -148,10 +153,20 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi).build();
 
-    Propuesta propuestaAnterior = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+    Propuesta propuestaAnterior = Propuesta.builder()
+        .id("o-1").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();;
     propuestaAnterior.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
 
-    Propuesta propuestaNueva = new Propuesta("o-2", lucas, sofia, List.of(), messi);
+    Propuesta propuestaNueva = Propuesta.builder()
+        .id("o-2").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();;
     subasta.getOfertas().add(propuestaAnterior);
     subasta.getOfertas().add(propuestaNueva);
 
@@ -181,7 +196,12 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi).build();
 
-    Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();
     subasta.getOfertas().add(propuesta);
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
@@ -211,8 +231,18 @@ public class ServicioSubastaTest {
         .figuritaSubastada(messi).build();
 
 
-    Propuesta propuesta1 = new Propuesta("o-1", lucas, sofia, List.of(), messi);
-    Propuesta propuesta2 = new Propuesta("o-2", lucas, sofia, List.of(), messi);
+    Propuesta propuesta1 = Propuesta.builder()
+        .id("o-1").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();
+    Propuesta propuesta2 = Propuesta.builder()
+        .id("o-2").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();
     subasta.getOfertas().add(propuesta1);
     subasta.getOfertas().add(propuesta2);
 
@@ -243,10 +273,20 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi).build();
 
-    Propuesta propuestaSeleccionada = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+    Propuesta propuestaSeleccionada = Propuesta.builder()
+        .id("o-1").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();
     propuestaSeleccionada.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
 
-    Propuesta propuestaPendiente = new Propuesta("o-2", lucas, sofia, List.of(), messi);
+    Propuesta propuestaPendiente = Propuesta.builder()
+        .id("o-2").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();
 
     subasta.getOfertas().add(propuestaSeleccionada);
     subasta.getOfertas().add(propuestaPendiente);
@@ -266,7 +306,12 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi).build();
 
-    Propuesta propuesta = new Propuesta("o-1", lucas, sofia, List.of(), messi);
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1").autor(lucas)
+        .destinatario(sofia)
+        .figuritasOfrecidas(List.of())
+        .figuritaBuscada(messi)
+        .build();
     subasta.getOfertas().add(propuesta);
 
     when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);

@@ -187,12 +187,24 @@ class ServicioEstadisticaTest {
         Perfil autor = perfil("a", "usr-a", "Autor");
         Perfil destinatario = perfil("d", "usr-d", "Dest");
 
-        Propuesta pendiente = new Propuesta("p1", autor, destinatario, List.of(), null);
+        Propuesta pendiente = Propuesta.builder()
+            .id("p1").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
 
-        Propuesta aceptada = new Propuesta("p2", autor, destinatario, List.of(), null);
+        Propuesta aceptada = Propuesta.builder()
+            .id("p2").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
         aceptada.aceptar(destinatario);
 
-        Propuesta rechazada = new Propuesta("p3", autor, destinatario, List.of(), null);
+        Propuesta rechazada = Propuesta.builder()
+            .id("p3").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
         rechazada.rechazar(destinatario);
 
         when(repositorioUsuarios.contar()).thenReturn(0L);
@@ -213,9 +225,21 @@ class ServicioEstadisticaTest {
         Perfil autor = perfil("a", "usr-a", "Autor");
         Perfil destinatario = perfil("d", "usr-d", "Dest");
 
-        Propuesta p1 = new Propuesta("p1", autor, destinatario, List.of(), null);
-        Propuesta p2 = new Propuesta("p2", autor, destinatario, List.of(), null);
-        Propuesta p3 = new Propuesta("p3", autor, destinatario, List.of(), null);
+        Propuesta p1 = Propuesta.builder()
+            .id("p1").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+        Propuesta p2 = Propuesta.builder()
+            .id("p2").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+        Propuesta p3 = Propuesta.builder()
+            .id("p3").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
         p3.aceptar(destinatario);
 
         when(repositorioUsuarios.contar()).thenReturn(0L);

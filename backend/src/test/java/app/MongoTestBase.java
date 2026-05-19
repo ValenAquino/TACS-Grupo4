@@ -25,8 +25,6 @@ public abstract class MongoTestBase {
   @Autowired
   protected RepositorioNotificaciones repositorioNotificaciones;
   @Autowired
-  protected RepositorioColecciones repositorioFiguritasIntercambiables;
-  @Autowired
   protected RepositorioCalificacion repositorioCalificacion;
   @Autowired
   protected RepositorioColecciones repositorioColecciones;

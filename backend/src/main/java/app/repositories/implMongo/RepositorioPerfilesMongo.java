@@ -166,8 +166,14 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
           List<Figurita> sugeridas = ((List<Document>) doc.get("sugeridas")).stream()
               .map(d -> converter.read(Figurita.class, d))
               .toList();
-          List<Figurita> necesarias = ((List<Document>) doc.get("necesarias")).stream()
-              .map(d -> converter.read(Figurita.class, d))
+          List<Figurita> necesarias = ((List<Object>) doc.get("necesarias")).stream()
+              .map(item -> {
+                if (item instanceof com.mongodb.DBRef ref) {
+                  return mongoTemplate.findById(ref.getId().toString(), Figurita.class);
+                }
+                return converter.read(Figurita.class, (Document) item);
+              })
+              .filter(Objects::nonNull)
               .toList();
           return new Sugerencia(perfil, sugeridas, necesarias);
         })

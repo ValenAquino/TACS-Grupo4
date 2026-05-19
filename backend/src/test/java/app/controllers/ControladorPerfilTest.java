@@ -1,47 +1,29 @@
 package app.controllers;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import app.exceptions.NotFoundException;
+import app.MongoTestBase;
 import app.model.entities.Coleccion;
-import app.model.entities.FiguritaIntercambiable;
-import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Rol;
 import app.model.entities.Usuario;
-import app.repositories.RepositorioColecciones;
-import app.repositories.RepositorioPerfiles;
-import app.repositories.RepositorioUsuarios;
-import app.repositories.impl.RepositorioPerfilesEnMemoria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
-class ControladorPerfilTest {
+class ControladorPerfilTest extends MongoTestBase {
 
   @Autowired
   MockMvc mockMvc;
-  @MockBean
-  private RepositorioPerfiles perfiles;
-  @MockBean
-  private RepositorioColecciones colecciones;
-  @MockBean
-  private RepositorioUsuarios usuarios;
+
   private Perfil perfil;
 
   @BeforeEach
@@ -53,10 +35,9 @@ class ControladorPerfilTest {
         .nombre("lucas").coleccion(coleccionLucas)
         .build();
 
-    when(perfiles.buscarPorId("1000")).thenReturn(perfil);
-    when(perfiles.buscarPorUsuarioId("u-1000")).thenReturn(perfil);
-    when(perfiles.buscarPorUsuarioId("u-99")).thenThrow(NotFoundException.class);
-    when(colecciones.buscarPorId("1")).thenReturn(coleccionLucas);
+    repositorioColecciones.guardar(coleccionLucas);
+    repositorioUsuarios.guardar(user);
+    repositorioPerfiles.guardar(perfil);
   }
 
   @Test
@@ -64,7 +45,7 @@ class ControladorPerfilTest {
     mockMvc.perform(
             get("/perfil/u-1000/sugerencias")
                 .param("tipo", "1a1")
-                .param("paginaActual", "0")
+                .param("paginaActual", "1")
                 .param("limite", "10")
         )
         .andExpect(status().is2xxSuccessful());
@@ -84,7 +65,7 @@ class ControladorPerfilTest {
             .contentType("application/json")
             .content("""
               {
-                "user_id": "u-1001",
+                "user_id": "u-1000",
                 "valor": 4,
                 "descripcion": "Buen intercambio",
                 "transaction_id": "i-1",

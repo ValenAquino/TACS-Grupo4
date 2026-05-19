@@ -7,6 +7,7 @@ import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaPaginadaDto;
+import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.dto.request.PerfilRequest;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/perfil")
@@ -28,16 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ControladorPerfil {
 
     private final IServicioPerfil perfilService;
-
-    //Todo: Eliminar en el futuro
-    @GetMapping("/{user_id}/operaciones")
-    public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {
-        OperacionesDto operaciones = perfilService.obtenerOperacionesPerfil(user_id);
-        if (operaciones == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(operaciones);
-    }
 
     @GetMapping("/{user_id}/faltantes")
     public ResponseEntity<List<FiguritaDto>> obtenerFaltantes(@PathVariable String user_id) {
@@ -54,9 +46,6 @@ public class ControladorPerfil {
         @PathVariable String perfil_id,
         @RequestBody CalificacionRequest body) {
 
-        System.out.println(body.getUserId());
-        System.out.println(perfil_id);
-
         this.perfilService.agregarCalificacion(
             body.getUserId(),
             perfil_id,
@@ -67,6 +56,16 @@ public class ControladorPerfil {
         );
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{perfil_id}/calificaciones")
+    public CalificacionesDto obtenerCalificaciones(
+        @PathVariable String perfil_id,
+        @RequestParam Integer pagina,
+        @RequestParam Integer limite
+
+    ) {
+        return this.perfilService.obtenerCalificaciones(perfil_id, pagina, limite);
     }
 
     @GetMapping("/{user_id}/intercambiables")

@@ -8,6 +8,7 @@ import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
+import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
@@ -43,58 +44,33 @@ public class ServicioPerfil implements IServicioPerfil {
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
+
   @Override
-  public PerfilDto crearPerfil(PerfilRequest perfil) {
-    return null;
+  public List<FiguritaDto> obtenerFaltantes(String userId) {
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+    return perfil.getColeccion().getFaltantes().stream()
+        .map(FiguritaDto::new)
+        .toList();
+  }
+  //TODO que se filtren las que cantidadExistentes == 0
+  @Override
+  public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+    return perfil.getColeccion().getRepetidas().stream()
+        .map(FiguritaIntercambiableDto::new)
+        .toList();
   }
 
-  //TODO ya no es necesario este metodo, eliminar
   @Override
-  public OperacionesDto obtenerOperacionesPerfil(String userId) {
-    Perfil usuario = repositorioPerfiles.buscarPorId(userId);
-    if (usuario == null) {
-      return null;
-    }
+  public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
+      if (perfil == null) throw new NotFoundException("Perfil no encontrado");
 
-    List<FiguritaIntercambiable> figuritasPublicadas = usuario.getColeccion().getRepetidas();
-
-    List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(userId);
-    List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(userId);
-
-    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUserId(userId)
-        .stream()
-        .filter(Subasta::estaActivo)
-        .toList();
-
-        return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
-    }
-
-    @Override
-    public List<FiguritaDto> obtenerFaltantes(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
-      return perfil.getColeccion().getFaltantes().stream()
-          .map(FiguritaDto::new)
-          .toList();
-    }
-    //TODO que se filtren las que cantidadExistentes == 0
-    @Override
-    public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
-      return perfil.getColeccion().getRepetidas().stream()
+      return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
+          .stream()
           .map(FiguritaIntercambiableDto::new)
           .toList();
-    }
-
-    @Override
-    public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
-        Perfil perfil = repositorioPerfiles.buscarPorId(userId);
-        if (perfil == null) throw new NotFoundException("Perfil no encontrado");
-
-        return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
-            .stream()
-            .map(FiguritaIntercambiableDto::new)
-            .toList();
-    }
+  }
 
   @Override
   public void agregarCalificacion(String userAutorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
@@ -108,7 +84,7 @@ public class ServicioPerfil implements IServicioPerfil {
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
     if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
 
-    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(userAutorId);
     if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
@@ -126,11 +102,9 @@ public class ServicioPerfil implements IServicioPerfil {
         transactionId,
         tipoTransaccion
     );
-    System.out.println(perfilDestino.obtenerCalificacionMedia());
 
     perfilDestino.agregarNuevaCalificacion(calificacion);
 
-    System.out.println(perfilDestino.obtenerCalificacionMedia());
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 
@@ -198,6 +172,11 @@ public class ServicioPerfil implements IServicioPerfil {
       Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
     return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
+  }
+
+  @Override
+  public CalificacionesDto obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
+    return this.repositorioPerfiles.buscarCalificaciones(perfilId, pagina, limite);
   }
 
   @Override

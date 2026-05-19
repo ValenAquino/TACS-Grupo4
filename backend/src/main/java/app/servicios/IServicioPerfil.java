@@ -6,12 +6,14 @@ import app.dto.NotificacionesDto;
 import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaPaginadaDto;
+import app.dto.calificaciones.CalificacionesDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.PerfilRequest;
 
 import app.model.entities.MetodoIntercambio;
 import java.util.List;
 
+public interface IPerfilService {
 public interface IServicioPerfil {
 
     PerfilDto crearPerfil(PerfilRequest perfil);
@@ -73,4 +75,10 @@ public interface IServicioPerfil {
      * incluyendo nombre, iniciales y calificación promedio.
      */
     PerfilDto obtenerPerfil(String userId);
+
+    /**
+     * Obtiene las calificaciones del perfil del usuario indicado,
+     *
+     */
+    CalificacionesDto obtenerCalificaciones(String userId, Integer pagina, Integer limite);
 }

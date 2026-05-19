@@ -1,6 +1,8 @@
 package app.servicios;
 
 import app.dto.PropuestaDto;
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 
 public interface IServicioPropuesta {
@@ -22,4 +24,15 @@ public interface IServicioPropuesta {
      * y delega la validación de permisos y estado en {@link app.model.entities.Propuesta#rechazar}.
      */
     void rechazar(String id, String usuarioId);
+
+    /**
+     * Cancela la propuesta.
+     * y delega la validación de permisos y estado en {@link app.model.entities.Propuesta#rechazar}.
+     */
+    void cancelar(String id);
+
+    /**
+     * Busca las propuestas con la opcion de filtros.
+     */
+    PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros);
 }

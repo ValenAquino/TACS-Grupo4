@@ -6,9 +6,11 @@ import Button from "@/components/ui/button/button.jsx";
 import confirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 import {useToast} from "@/contexts/toastContext.jsx";
+import {buscarFaltantes} from "@/services/coleccionService.js";
+import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 
 const renderStars = (score) => {
-    const fullStars = Math.floor(score / 2);
+    const fullStars = Math.floor(score);
     const emptyStars = 5 - fullStars;
 
     return (
@@ -22,15 +24,14 @@ const renderStars = (score) => {
 const Perfil = () => {
 
     const [showModal, setShowModal] = useState(false);
-    const [nombre, setNombre] = useState("Messi G.");
+    const [perfil, setPerfil] = useState({});
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({
-        intercambios: 0,
-        publicadas: 0,
-        faltantes: 0,
-        subastas: 0
-    });
+    const [loadingNotificaciones, setLoadingNotificaciones] = useState(false);
+    const [stats, setStats] = useState([]);
+    const [pagina, setPagina] = useState(1);
+    const [filtros, setFiltros] = useState({});
+    const [error, setError] = useState(false);
 
     const {showToast} = useToast();
 
@@ -59,12 +60,11 @@ const Perfil = () => {
           const statsData = await buscarContadores({ perfilId });
           const reviewsData = await buscarCalificaciones(perfilId);
 
-          setNombre(perfil.nombre);
-          setReviews(reviewsData);
+          setPerfil(perfil);
           setStats(statsData);
 
         } catch (e) {
-          console.error(e);
+          setError(true);
         } finally {
           setLoading(false);
         }
@@ -73,9 +73,35 @@ const Perfil = () => {
       cargar();
     }, [perfilId]);
 
-    const promedio = reviews.length > 0
-        ? (reviews.reduce((acc, r) => acc + r.puntaje, 0) / reviews.length).toFixed(1)
+    useEffect(() => {
+        const cargarCalificaciones = async () => {
+            try {
+                setLoadingNotificaciones(true);
+
+                const calificacionesApi = await buscarCalificaciones(userId, {
+                    ...filtros,
+                    pagina,
+                    limite: 10,
+                });
+
+                setReviews(calificacionesApi);
+            } catch (err) {
+                setError(true);
+            } finally {
+                setLoadingNotificaciones(false);
+            }
+        };
+
+        cargarCalificaciones();
+    }, [userId, filtros, pagina]);
+
+    const promedio = reviews.resultados > 0
+        ? (reviews.data.reduce((acc, r) => acc + r.valor, 0) / reviews.resultados).toFixed(1)
         : 0;
+
+    const guardarCambios = async () => {
+
+    }
 
     return (
         <div className="d-flex flex-column">
@@ -111,18 +137,25 @@ const Perfil = () => {
                         </div>
 
                         <div>
-                            <h2 className="mb-0 fw-bold"
-                            style={{
-                            maxWidth: "750px",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis"
-                            }}>
-                            {nombre}</h2>
-                            <p className="mb-1">@messi_g</p>
-                            <div>
-                                {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.length})
-                            </div>
+                            {loading
+                                ? <h2>Cargando datos...</h2>
+                                : (
+                                    <>
+                                        <h2 className="mb-0 fw-bold"
+                                            style={{
+                                                maxWidth: "750px",
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis"
+                                            }}>
+                                            {perfil?.nombre}</h2>
+                                        <p className="mb-1">@messi_g</p>
+                                        <div>
+                                            {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.resultados})
+                                        </div>
+                                    </>
+                                )
+                            }
                         </div>
                     </div>
 
@@ -154,12 +187,7 @@ const Perfil = () => {
                 marginLeft: "-50vw"
             }}>
                 <div className="mx-auto d-flex text-center text-white" style={{ maxWidth: "60%" }}>
-                    {[
-                         { valor: stats.intercambios, label: "Intercambios" },
-                         { valor: stats.publicadas, label: "Publicadas" },
-                         { valor: stats.faltantes, label: "Faltantes" },
-                         { valor: stats.subastas, label: "Subastas" }
-                     ].map((stat, i) => (
+                    {stats.map((stat, i) => (
                         <div
                             key={i}
                             className="flex-fill py-3"
@@ -171,7 +199,7 @@ const Perfil = () => {
                                 {stat.valor}
                             </div>
                             <div style={{ fontSize: "1rem", marginTop: "2px" }}>
-                                {stat.label}
+                                {stat.nombre}
                             </div>
                         </div>
                     ))}
@@ -185,12 +213,12 @@ const Perfil = () => {
 
                     <div className="d-flex flex-column gap-3">
 
-                        {loading ? (
+                        {loadingNotificaciones ? (
                             <p className="text-muted">Cargando reseñas...</p>
-                        ) : reviews.length === 0 ? (
+                        ) : reviews.data?.length === 0 ? (
                             <p className="text-muted">Este usuario no tiene reseñas disponibles</p>
                         ) : (
-                            reviews.map((r, i) => (
+                            reviews.data?.map((r, i) => (
                                 <div
                                     key={i}
                                     className="p-3 bg-white rounded shadow-sm d-flex align-items-center gap-3"
@@ -211,9 +239,9 @@ const Perfil = () => {
 
                                     <div className="flex-grow-1">
                                         <strong>{r.nombre}</strong>
-                                        <div>{renderStars(r.puntaje)} {r.puntaje}/10</div>
+                                        <div>{renderStars(perfil.calificacion)} {r.calificacion_final}/5</div>
                                         <p className="mb-0 text-muted" style={{ fontSize: "0.9rem" }}>
-                                            "{r.comentario}"
+                                            "{r.descripcion}"
                                         </p>
                                     </div>
                                 </div>
@@ -222,6 +250,10 @@ const Perfil = () => {
 
                     </div>
                 </div>
+                <Paginacion
+                    page={pagina}
+                    totalPages={reviews.paginas_totales ?? 1}
+                    onChange={setPagina}/>
             </div>
 
             {/* MODAL (sin cambios) */}
@@ -267,8 +299,10 @@ const Perfil = () => {
                         <label>Nombre</label>
                         <input
                             className="form-control mb-3"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
+                            value={perfil?.nombre}
+                            onChange={(e) => setPerfil((prev) =>
+                                setPerfil({ ...prev, nombre: e.target.value }))
+                            }
                         />
 
                         <label className="text-muted">@messi_g</label>

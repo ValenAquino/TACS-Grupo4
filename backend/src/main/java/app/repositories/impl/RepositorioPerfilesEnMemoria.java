@@ -1,6 +1,9 @@
 package app.repositories.impl;
 
+import app.dto.CalificacionDto;
+import app.dto.calificaciones.CalificacionesDto;
 import app.exceptions.NotFoundException;
+import app.model.entities.Calificacion;
 import app.model.entities.Figurita;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioPerfiles;
@@ -48,5 +51,26 @@ public class RepositorioPerfilesEnMemoria {
         if(!storage.containsKey(perfil.getId())) {
             storage.put(perfil.getId(), perfil);
         }
+    }
+
+    @Override
+    public CalificacionesDto buscarCalificaciones(String id, Integer pagina, Integer limite) {
+        Perfil perfil = this.buscarPorUsuarioId(id);
+
+        List<Calificacion> calificaciones = perfil.getCalificaciones();
+
+        int resultados = calificaciones.size();
+
+        int offset = (pagina - 1) * limite;
+
+        List<CalificacionDto> data = calificaciones.stream()
+            .skip(offset)
+            .limit(limite)
+            .map(c -> new CalificacionDto(c, perfil.obtenerCalificacionMedia()))
+            .toList();
+
+        int paginasTotales = (resultados + limite - 1) / limite;
+
+        return new CalificacionesDto(data, resultados, pagina, paginasTotales);
     }
 }

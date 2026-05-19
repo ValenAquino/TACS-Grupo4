@@ -47,4 +47,8 @@ public class Perfil {
     public void agregarNuevaCalificacion(Calificacion calificacion){
         this.calificaciones.add(calificacion);
     }
+
+    public String getIniciales() {
+        return this.nombre.substring(0, 2).toUpperCase();
+    }
 }

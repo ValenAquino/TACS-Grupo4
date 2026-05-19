@@ -1,6 +1,8 @@
 package app.servicios.impl;
 
 import app.dto.PropuestaDto;
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
@@ -78,5 +80,22 @@ public class ServicioPropuesta implements IServicioPropuesta {
     Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
     propuesta.rechazar(perfil);
     repositorioPropuestas.guardar(propuesta);
+  }
+
+  @Override
+  public void cancelar(String id) {
+    Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
+    propuesta.cancelar();
+    this.repositorioPropuestas.guardar(propuesta);
+  }
+
+  public PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros) {
+    if(filtros.tipo().equals("RECIBIDAS")) {
+      return this.repositorioPropuestas.buscarPorDestinatarioId(userId, filtros);
+    } else if (filtros.tipo().equals("ENVIADAS")) {
+      return this.repositorioPropuestas.buscarPorAutorId(userId, filtros);
+    }
+
+    return null;
   }
 }

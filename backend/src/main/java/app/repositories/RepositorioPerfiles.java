@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.dto.calificaciones.CalificacionesDto;
 import app.model.entities.Figurita;
 import app.model.entities.Perfil;
 import java.util.List;
@@ -17,4 +18,6 @@ public interface RepositorioPerfiles {
     List<Perfil> buscarPorFiguritaFaltante(Figurita figurita);
 
     void guardar(Perfil perfil);
+
+    CalificacionesDto buscarCalificaciones(String id, Integer pagina, Integer limite);
 }

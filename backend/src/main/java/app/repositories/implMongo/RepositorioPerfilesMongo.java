@@ -5,29 +5,22 @@ import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.Perfil;
 import app.model.entities.Sugerencia;
 import app.repositories.RepositorioPerfiles;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Repository
 public class RepositorioPerfilesMongo implements RepositorioPerfiles {
@@ -87,19 +80,6 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     mongoTemplate.save(perfil);
   }
 
-  public Perfil buscarPorColeccionId(String id) {
-    Query query = new Query();
-    query.addCriteria(
-        Criteria.where("coleccion").is(id)
-    );
-    Perfil perfil =  mongoTemplate.findOne(query, Perfil.class);
-
-    if(perfil == null) {
-      throw new NotFoundException("Perfil no encontrado con esta coleccion");
-    }
-
-    return perfil;
-  }
   public PaginaResultado<Sugerencia> generarSugerencias(Coleccion coleccionObjetivo, SugerenciasFiltro filtro) {
 
     List<String> faltantesObjetivo = coleccionObjetivo.getFaltantes()

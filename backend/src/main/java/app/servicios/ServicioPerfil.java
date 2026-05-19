@@ -4,7 +4,6 @@ import app.dto.ContadorDto;
 import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
-import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.paginacion.PaginaResultado;
@@ -13,17 +12,12 @@ import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Propuesta;
-import app.model.entities.Subasta;
 import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioNotificaciones;
-import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +31,6 @@ public class ServicioPerfil {
 
   private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
-  private final RepositorioPropuestas repositorioPropuestas;
-  private final RepositorioSubastas repositorioSubastas;
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
@@ -51,49 +43,29 @@ public class ServicioPerfil {
     return new PerfilDto(perfil);
   }
 
-//TODO ya no es necesario este metodo, eliminar
-  public OperacionesDto obtenerOperacionesPerfil(String perfilId) {
-    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
-    if (perfil == null) {
-      return null;
-    }
-
-    List<FiguritaIntercambiable> figuritasPublicadas = perfil.getColeccion().getRepetidas();
-
-    List<Propuesta> enviadas = repositorioPropuestas.buscarPorAutorId(perfilId);
-    List<Propuesta> recibidas = repositorioPropuestas.buscarPorDestinatarioId(perfilId);
-
-    List<Subasta> subastasActivas = repositorioSubastas.buscarPorAutorUsuarioId(perfilId)
-        .stream()
-        .filter(Subasta::estaActivo)
+  public List<FiguritaDto> obtenerFaltantes(String userId) {
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+    return perfil.getColeccion().getFaltantes().stream()
+        .map(FiguritaDto::new)
         .toList();
+  }
+  //TODO que se filtren las que cantidadExistentes == 0
+  public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+    return perfil.getColeccion().getRepetidas().stream()
+        .map(FiguritaIntercambiableDto::new)
+        .toList();
+  }
 
-        return new OperacionesDto(figuritasPublicadas, enviadas, recibidas, subastasActivas);
-    }
+  public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
+      if (perfil == null) throw new NotFoundException("Perfil no encontrado");
 
-    public List<FiguritaDto> obtenerFaltantes(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
-      return perfil.getColeccion().getFaltantes().stream()
-          .map(FiguritaDto::new)
-          .toList();
-    }
-    //TODO que se filtren las que cantidadExistentes == 0
-    public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
-      return perfil.getColeccion().getRepetidas().stream()
+      return repositorioColecciones.buscarIntercambiablesPorPerfilId(userId)
+          .stream()
           .map(FiguritaIntercambiableDto::new)
           .toList();
-    }
-
-    public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
-        Perfil perfil = repositorioPerfiles.buscarPorId(userId);
-        if (perfil == null) throw new NotFoundException("Perfil no encontrado");
-
-        return repositorioColecciones.buscarIntercambiablesPorPerfilId(userId)
-            .stream()
-            .map(FiguritaIntercambiableDto::new)
-            .toList();
-    }
+  }
 
   public void agregarCalificacion(String userAutorId, String perfilDestinoId,
                                   Integer valor, String descripcion, String transactionId,

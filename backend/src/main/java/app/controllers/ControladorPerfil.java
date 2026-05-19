@@ -4,7 +4,6 @@ import app.dto.ContadorDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.FiguritaDto;
 import app.dto.NotificacionesDto;
-import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.paginacion.PaginaResultado;
@@ -12,7 +11,6 @@ import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import app.dto.request.PerfilRequest;
 import java.util.List;
-
 import app.servicios.ServicioPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,16 +32,6 @@ public class ControladorPerfil {
     @PostMapping("")
     public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {
         return ResponseEntity.ok(perfilService.crearPerfil(body));
-    }
-
-    //Todo: Eliminar en el futuro
-    @GetMapping("/{user_id}/operaciones")
-    public ResponseEntity<OperacionesDto> obtenerOperaciones(@PathVariable String user_id) {
-        OperacionesDto operaciones = perfilService.obtenerOperacionesPerfil(user_id);
-        if (operaciones == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(operaciones);
     }
 
     @GetMapping("/{user_id}/faltantes")

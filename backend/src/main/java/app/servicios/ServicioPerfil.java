@@ -8,7 +8,6 @@ import app.dto.OperacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.paginacion.SugerenciaPaginadaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
@@ -132,12 +131,8 @@ public class ServicioPerfil {
 
     PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), perfilObjetivo.getId());
 
-    List<Sugerencia> sugerenciasFiltradas = sugerencias.stream().filter(filtros::verifica).toList();
-
-
-    List<SugerenciaDto> sugerenciasDto = sugerenciasFiltradas.stream().map(SugerenciaDto::new).toList();
-
-    return new PaginaResultado<>(sugerenciasDto, resultados, paginaActual, paginasTotales);
+    //TODO: sigue en implementacion
+    return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(), 0, 0, 0);
   }
 
   public List<ContadorDto> obtenerContadores(String userId) {

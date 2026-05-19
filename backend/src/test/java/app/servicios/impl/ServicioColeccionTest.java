@@ -2,30 +2,17 @@ package app.servicios.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import app.MongoTestBase;
 import app.exceptions.FiguritaDuplicadaException;
 import app.model.entities.*;
-import app.repositories.RepositorioColecciones;
-import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioPerfiles;
 import java.util.List;
 
 import app.servicios.ServicioColeccion;
 import app.servicios.ServicioNotificacion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 
-@ExtendWith(MockitoExtension.class)
 class ServicioColeccionTest extends MongoTestBase {
 
   @Autowired

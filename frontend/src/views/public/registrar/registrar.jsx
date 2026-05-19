@@ -1,16 +1,26 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import {iniciarSesion, registrarUsuario} from "@/services/sesionService.js";
+import {Link, useNavigate} from "react-router-dom";
+import {buscarUsuario, iniciarSesion, registrarUsuario} from "@/services/sesionService.js";
+import {useToast} from "@/contexts/toastContext.jsx";
+import {useAuth} from "@/contexts/userContext.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
+import ModalInformativo from "@/components/ui/modales/modal-informativo/modal-informativo.jsx";
 
 function Registrar() {
     const [formData, setFormData] = useState({
         nombre: "",
-        password: "",
-        confirmarPassword: ""
+        contrasenia: "",
+        confirmarContrasenia: ""
     });
 
-    const [error, setError] = useState("");
+    const {handleError, errorTemplate} = useError();
+
+    const [errorState, setErrorState] = useState(errorTemplate({nombre:undefined, contrasenia: undefined}));
     const [onSubmit, setOnSubmit] = useState(false);
+
+    const {showToast} = useToast();
+    const {asignarUsuario} = useAuth()
+    const navigate = useNavigate()
 
     const handleChange = (e) => {
         setFormData({
@@ -24,30 +34,30 @@ function Registrar() {
 
         if (
             !formData.nombre ||
-            !formData.password ||
-            !formData.confirmarPassword
+            !formData.contrasenia ||
+            !formData.confirmarContrasenia
         ) {
-            setError("Completa todos los campos");
+            showToast("Completa todos los campos", "error");
             return;
         }
 
-        if (formData.password !== formData.confirmarPassword) {
-            setError("Las contraseñas no coinciden");
+        if (formData.contrasenia !== formData.confirmarContrasenia) {
+            showToast("Las contraseñas no coinciden", "error");
             return;
         }
-
-        setError("");
 
         const usuario = {
             nombre: formData.nombre,
-            contrasenia: formData.password
+            contrasenia: formData.contrasenia
         };
 
         try {
             setOnSubmit(true);
             await registrarUsuario(usuario)
-        } catch (e) {
-            setError(true)
+            showToast(`Usuario creado correctamente`)
+            navigate("/")
+        } catch (error) {
+            showToast(handleError(error, setErrorState), "error")
         } finally {
             setOnSubmit(false);
         }
@@ -117,10 +127,10 @@ function Registrar() {
 
                         <input
                             type="password"
-                            name="password"
+                            name="contrasenia"
                             className="form-control"
                             placeholder="********"
-                            value={formData.password}
+                            value={formData.contrasenia}
                             onChange={handleChange}
                             style={{
                                 borderColor: "var(--border-color-dark)"
@@ -135,22 +145,16 @@ function Registrar() {
 
                         <input
                             type="password"
-                            name="confirmarPassword"
+                            name="confirmarContrasenia"
                             className="form-control"
                             placeholder="********"
-                            value={formData.confirmarPassword}
+                            value={formData.confirmarContrasenia}
                             onChange={handleChange}
                             style={{
                                 borderColor: "var(--border-color-dark)"
                             }}
                         />
                     </div>
-
-                    {error && (
-                        <div className="alert alert-danger">
-                            {error}
-                        </div>
-                    )}
 
                     <button
                         type="submit"
@@ -181,6 +185,10 @@ function Registrar() {
                     </p>
                 </div>
             </div>
+            <ModalInformativo open={onSubmit}>
+                <h3>Registrando usuario...</h3>
+                <p>Esto puede tardar unos segundos</p>
+            </ModalInformativo>
         </div>
     );
 }

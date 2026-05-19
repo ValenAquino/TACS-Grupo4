@@ -6,6 +6,7 @@ import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import {useAuth} from "@/contexts/userContext.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
 const Repetidas = () => {
     const [repetidas, setRepetidas] = useState({});
@@ -18,8 +19,9 @@ const Repetidas = () => {
     const [pagina, setPagina] = useState(1);
 
     const { user } = useAuth()
+    const {handleError} = useError()
 
-    const colId = user?.colId
+    const coleccionId = user?.colId
 
     const navigate = useNavigate();
 
@@ -28,7 +30,7 @@ const Repetidas = () => {
             try {
                 setLoading(true);
 
-                const repetidasApi = await buscarRepetidas(colId, {
+                const repetidasApi = await buscarRepetidas(coleccionId, {
                     ...filtros,
                     pagina,
                     limite: 10,
@@ -36,14 +38,14 @@ const Repetidas = () => {
 
                 setRepetidas(repetidasApi);
             } catch (err) {
-                setError(true);
+                handleError(err, () => {});
             } finally {
                 setLoading(false);
             }
         };
 
         cargarRepetidas();
-    }, [colId, filtros, pagina]);
+    }, [coleccionId, filtros, pagina]);
 
     const cambiarFiltro = (nuevoTipo) => {
         setFiltros((prev) => {

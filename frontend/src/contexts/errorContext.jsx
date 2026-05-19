@@ -1,10 +1,11 @@
 import { createContext, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const ErrorContext = createContext(null);
 
 export const ErrorProvider = ({ children }) => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const errorTemplate = (fields = undefined) => {
 
@@ -19,12 +20,21 @@ export const ErrorProvider = ({ children }) => {
         switch (error.type) {
 
             case "SERVER_DOWN":
-                navigate("/server-down");
+                navigate("/servidor-caido", {
+                    state: {
+                        from: location.pathname
+                    }
+                });
+
                 break;
 
             case "FORBIDDEN":
                 navigate("/unauthorized");
                 break;
+
+            // case "INTERNAL_SERVER_ERROR":
+            //     navigate("/servidor-caido");
+            //     break;
 
 
             default: {

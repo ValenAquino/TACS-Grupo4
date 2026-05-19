@@ -15,8 +15,9 @@ import Registrar from "@/views/public/registrar/registrar.jsx";
 import {AuthProvider} from "@/contexts/userContext.jsx";
 import {ErrorProvider} from "@/contexts/errorContext.jsx";
 import {ToastProvider} from "@/contexts/toastContext.jsx";
-import AccesoDenegado from "@/views/public/acceso-denegado/acceso-denegado.jsx";
+import AccesoDenegado from "@/views/public/errores/acceso-denegado/acceso-denegado.jsx";
 import RutaProtegida from "@/components/autenticacion/ruta-protegida.jsx";
+import ServidorCaido from "@/views/public/errores/servidor-caido/servidor-caido.jsx";
 
 const publics = [
   {
@@ -38,6 +39,10 @@ const publics = [
     {
         path: "/acceso-denegado",
         element: <AccesoDenegado />
+    },
+    {
+        path: "/servidor-caido",
+        element: <ServidorCaido />
     }
 ];
 
@@ -103,7 +108,6 @@ const AppRoutes = () => {
                   </Routes>
               </AuthProvider>
           </ToastProvider>
-
       </ErrorProvider>
 
   )

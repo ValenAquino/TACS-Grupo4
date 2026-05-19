@@ -43,4 +43,21 @@ public class ErrorHandler {
         .status(HttpStatus.BAD_REQUEST)
         .body(error);
   }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleInternalServerError(
+      Exception ex
+  ) {
+
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        "Ocurrió un error interno del servidor",
+        Map.of(),
+        LocalDateTime.now()
+    );
+
+    return ResponseEntity
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(error);
+  }
 }

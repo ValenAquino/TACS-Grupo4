@@ -9,7 +9,23 @@ const api = axios.create({
     withCredentials: true
 });
 
+export const ping = async () => {
+    try {
+        await api.get("/ping")
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
+
 const handleAxiosError = (error) => {
+
+    if (error.code === "ERR_NETWORK") {
+        throw {
+            type: "SERVER_DOWN",
+            message: "Servidor no disponible",
+        };
+    }
+
     if (error.response) {
         const { status, data } = error.response;
 
@@ -19,6 +35,12 @@ const handleAxiosError = (error) => {
 
             case 403:
                 throw {type: "FORBIDDEN", message: "Accion no permitida"}
+
+            case 500:
+                throw {
+                    type: "INTERNAL_SERVER_ERROR",
+                    message: "Ocurrió un error interno"
+                };
         }
 
         throw { //Errores que deben mostrar el mensaje en la misma pagina

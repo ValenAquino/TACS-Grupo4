@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { buscarFaltantes } from "../../../../../services/coleccionService.js";
+import { buscarFaltantes } from "@/services/coleccionService.js";
 import FaltanteCard from "../../../../../components/ui/faltante-card/faltante-card.jsx";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import { useNavigate } from "react-router";
 import Button from "../../../../../components/ui/button/button.jsx";
+import {useAuth} from "@/contexts/userContext.jsx";
 
-const Faltantes = ({ colId }) => {
+const Faltantes = () => {
+
+    const {user} = useAuth()
+
     const [faltantes, setFaltantes] = useState([]);
     const [filtros, setFiltros] = useState({});
     const [loading, setLoading] = useState(true);
@@ -14,12 +18,17 @@ const Faltantes = ({ colId }) => {
 
     const navigate = useNavigate();
 
+    const coleccionId = user?.colId
+
     useEffect(() => {
+
+        if(!coleccionId) return;
+
         const cargarFaltantes = async () => {
             try {
                 setLoading(true);
 
-                const faltantesApi = await buscarFaltantes(colId, {
+                const faltantesApi = await buscarFaltantes(coleccionId, {
                     ...filtros,
                     pagina,
                     limite: 10,
@@ -34,7 +43,7 @@ const Faltantes = ({ colId }) => {
         };
 
         cargarFaltantes();
-    }, [colId, filtros, pagina]);
+    }, [coleccionId, filtros, pagina]);
 
     if (error) {
         return (

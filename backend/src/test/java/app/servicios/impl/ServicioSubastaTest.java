@@ -3,39 +3,19 @@ package app.servicios.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
+import app.MongoTestBase;
 import app.exceptions.BadRequestException;
 import app.model.entities.*;
-import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioNotificaciones;
-import app.repositories.RepositorioPerfiles;
-import app.repositories.RepositorioSubastas;
-import app.repositories.impl.RepositorioNotificacionesEnMemoria;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import app.servicios.ServicioNotificacion;
 import app.servicios.ServicioSubasta;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-public class ServicioSubastaTest {
+public class ServicioSubastaTest extends MongoTestBase {
 
-  @Mock
-  private RepositorioPerfiles repositorioPerfiles;
-  @Mock
-  private RepositorioSubastas repositorioSubastas;
-  @Mock
-  private RepositorioFiguritas repositorioFiguritas;
-
-  private RepositorioNotificaciones repositorioNotificaciones;
+  @Autowired
   private ServicioSubasta service;
 
   private Perfil lucas;
@@ -48,14 +28,10 @@ public class ServicioSubastaTest {
 
   @BeforeEach
   void setUp() {
-    this.repositorioNotificaciones = new RepositorioNotificacionesEnMemoria();
-    ServicioNotificacion serviceNotificacion = new ServicioNotificacion(repositorioNotificaciones);
-    service = new ServicioSubasta(repositorioSubastas, repositorioPerfiles,
-        repositorioFiguritas, serviceNotificacion);
-
     messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    repositorioFiguritas.guardar( messi);
 
-    Coleccion coleccionSinMessi = new Coleccion();
+    Coleccion coleccionSinMessi = new Coleccion("c-1");
     coleccionSinMessi.getFaltantes().add(messi);
 
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
@@ -65,8 +41,11 @@ public class ServicioSubastaTest {
         .mediosDeContacto(telegram("@lucas"))
         .build();
 
+    repositorioUsuarios.guardar(user);
+    repositorioColecciones.guardar(coleccionSinMessi);
+    repositorioPerfiles.guardar(lucas);
 
-    Coleccion coleccionRepetidos = new Coleccion();
+    Coleccion coleccionRepetidos = new Coleccion("c-2");
     coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
 
     user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
@@ -75,13 +54,14 @@ public class ServicioSubastaTest {
         .coleccion(coleccionRepetidos)
         .mediosDeContacto(telegram("@sofia"))
         .build();
+
+    repositorioUsuarios.guardar(user);
+    repositorioColecciones.guardar(coleccionRepetidos);
+    repositorioPerfiles.guardar(sofia);
   }
 
   @Test
   void crearSubastaNotificaUsuarios() {
-    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(sofia);
-    when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-    when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(lucas));
 
     service.crearSubasta("u-2", "ARG-10", 30, List.of(), 0);
     assertEquals(1, repositorioNotificaciones.buscarPorPerfil(lucas).size());
@@ -91,9 +71,7 @@ public class ServicioSubastaTest {
   void crearSubastaNoNotificaUsuarios() {
     Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
-    when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(sofia);
-    when(repositorioFiguritas.buscarPorId("ARG-11")).thenReturn(diMaria);
-    when(repositorioPerfiles.buscarPorFiguritaFaltante(diMaria)).thenReturn(List.of());
+    repositorioFiguritas.guardar(diMaria);
 
     service.crearSubasta("u-2", "ARG-11", 30, List.of(), 0);
     assertEquals(0, repositorioNotificaciones.buscarPorPerfil(lucas).size());
@@ -105,8 +83,7 @@ public class ServicioSubastaTest {
         LocalDateTime.now().minusDays(3)).fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
-    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(lucas);
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
+    repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
         () -> service.ofertarEnSubasta("u-1", "s-1", List.of("ARG-11")));
@@ -119,8 +96,7 @@ public class ServicioSubastaTest {
         .figuritaSubastada(messi)
         .build();
 
-    when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(lucas);
-    when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaActiva);
+    repositorioSubastas.guardar(subastaActiva);
 
     assertThrows(BadRequestException.class,
         () -> service.ofertarEnSubasta("u-1","s-2", List.of("ARG-11", "ARG-11")));
@@ -137,14 +113,16 @@ public class ServicioSubastaTest {
         .destinatario(sofia)
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
-        .build();;
+        .build();
     subasta.agregarOferta(propuesta);
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
+    repositorioSubastas.guardar(subasta);
 
     service.seleccionarOferta("s-1", "o-1");
 
-    assertEquals(EstadoProceso.SELECCIONADO, propuesta.obtenerEstadoActual().getValor());
+    subasta = repositorioSubastas.buscarPorId("s-1");
+
+    assertEquals(EstadoProceso.SELECCIONADO, buscarOfertaEn(subasta,propuesta.getId()).obtenerEstadoActual().getValor());
   }
 
   @Test
@@ -167,15 +145,17 @@ public class ServicioSubastaTest {
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
         .build();;
-    subasta.getOfertas().add(propuestaAnterior);
-    subasta.getOfertas().add(propuestaNueva);
+    subasta.agregarOferta(propuestaAnterior);
+    subasta.agregarOferta(propuestaNueva);
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
+    repositorioSubastas.guardar(subasta);
 
     service.seleccionarOferta("s-1", "o-2");
 
-    assertEquals(EstadoProceso.PENDIENTE, propuestaAnterior.obtenerEstadoActual().getValor());
-    assertEquals(EstadoProceso.SELECCIONADO, propuestaNueva.obtenerEstadoActual().getValor());
+    subasta = repositorioSubastas.buscarPorId("s-1");
+
+    assertEquals(EstadoProceso.PENDIENTE, buscarOfertaEn(subasta,propuestaAnterior.getId()).obtenerEstadoActual().getValor());
+    assertEquals(EstadoProceso.SELECCIONADO,  buscarOfertaEn(subasta,propuestaNueva.getId()).obtenerEstadoActual().getValor());
   }
 
   @Test
@@ -184,7 +164,7 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
+    repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
         () -> service.seleccionarOferta("s-1", "o-1"));
@@ -202,13 +182,15 @@ public class ServicioSubastaTest {
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
         .build();
-    subasta.getOfertas().add(propuesta);
+    subasta.agregarOferta(propuesta);
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
+    repositorioSubastas.guardar(subasta);
 
     service.rechazarOferta("s-1", "o-1");
 
-    assertEquals(EstadoProceso.RECHAZADO, propuesta.obtenerEstadoActual().getValor());
+    subasta = repositorioSubastas.buscarPorId("s-1");
+
+    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta.getId()).obtenerEstadoActual().getValor());
   }
 
   @Test
@@ -217,8 +199,7 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
-
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
+    repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
         () -> service.rechazarOferta("s-1", "o-1"));
@@ -243,15 +224,17 @@ public class ServicioSubastaTest {
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
         .build();
-    subasta.getOfertas().add(propuesta1);
-    subasta.getOfertas().add(propuesta2);
+    subasta.agregarOferta(propuesta1);
+    subasta.agregarOferta(propuesta2);
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
+    repositorioSubastas.guardar(subasta);
 
     service.cancelarSubasta("s-1");
 
-    assertEquals(EstadoProceso.RECHAZADO, propuesta1.obtenerEstadoActual().getValor());
-    assertEquals(EstadoProceso.RECHAZADO, propuesta2.obtenerEstadoActual().getValor());
+    subasta = repositorioSubastas.buscarPorId("s-1");
+
+    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta1.getId()).obtenerEstadoActual().getValor());
+    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta2.getId()).obtenerEstadoActual().getValor());
     assertTrue(subasta.getFechaCierre().isBefore(LocalDateTime.now().plusSeconds(1)));
   }
 
@@ -261,7 +244,7 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
+    repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
         () -> service.cancelarSubasta("s-1"));
@@ -279,7 +262,8 @@ public class ServicioSubastaTest {
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
         .build();
-    propuestaSeleccionada.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
+
+    propuestaSeleccionada.seleccionar(sofia);
 
     Propuesta propuestaPendiente = Propuesta.builder()
         .id("o-2").autor(lucas)
@@ -288,15 +272,17 @@ public class ServicioSubastaTest {
         .figuritaBuscada(messi)
         .build();
 
-    subasta.getOfertas().add(propuestaSeleccionada);
-    subasta.getOfertas().add(propuestaPendiente);
+    subasta.agregarOferta(propuestaSeleccionada);
+    subasta.agregarOferta(propuestaPendiente);
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
+    repositorioSubastas.guardar(subasta);
 
     service.cerrarSubasta("s-1");
 
-    assertEquals(EstadoProceso.ACEPTADO, propuestaSeleccionada.obtenerEstadoActual().getValor());
-    assertEquals(EstadoProceso.RECHAZADO, propuestaPendiente.obtenerEstadoActual().getValor());
+    subasta = repositorioSubastas.buscarPorId("s-1");
+
+    assertEquals(EstadoProceso.ACEPTADO, buscarOfertaEn(subasta, propuestaSeleccionada.getId()).obtenerEstadoActual().getValor());
+    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuestaPendiente.getId()).obtenerEstadoActual().getValor());
     assertTrue(subasta.getFechaCierre().isBefore(LocalDateTime.now().plusSeconds(1)));
   }
 
@@ -312,9 +298,9 @@ public class ServicioSubastaTest {
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
         .build();
-    subasta.getOfertas().add(propuesta);
+    subasta.agregarOferta(propuesta);
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subasta);
+    repositorioSubastas.guardar(subasta);
 
     assertThrows(BadRequestException.class,
         () -> service.cerrarSubasta("s-1"));
@@ -326,9 +312,16 @@ public class ServicioSubastaTest {
             LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
-    when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaCerrada);
+    repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
         () -> service.cerrarSubasta("s-1"));
+  }
+
+  private Propuesta buscarOfertaEn(Subasta subasta, String ofertaId) {
+    return subasta.getOfertas().stream()
+        .filter(o -> o.getId().equals(ofertaId))
+        .findFirst()
+        .orElseThrow();
   }
 }

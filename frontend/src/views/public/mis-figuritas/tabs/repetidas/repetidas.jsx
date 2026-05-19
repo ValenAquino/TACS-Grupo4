@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { buscarRepetidas } from "../../../../../services/coleccionService.js";
+import { buscarRepetidas } from "@/services/coleccionService.js";
 import RepetidaCard from "../../../../../components/ui/repetida-card/repetida-card.jsx";
 import FilterChip from "../../../../../components/ui/filter-chip/filter-chip.jsx";
 import Button from "../../../../../components/ui/button/button.jsx";

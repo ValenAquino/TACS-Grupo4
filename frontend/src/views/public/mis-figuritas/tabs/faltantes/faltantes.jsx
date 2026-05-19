@@ -5,10 +5,12 @@ import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import { useNavigate } from "react-router";
 import Button from "../../../../../components/ui/button/button.jsx";
 import {useAuth} from "@/contexts/userContext.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
 const Faltantes = () => {
 
     const {user} = useAuth()
+    const {handleError} = useError()
 
     const [faltantes, setFaltantes] = useState([]);
     const [filtros, setFiltros] = useState({});
@@ -36,7 +38,7 @@ const Faltantes = () => {
 
                 setFaltantes(faltantesApi);
             } catch (err) {
-                setError(true);
+                handleError(err, () => {});
             } finally {
                 setLoading(false);
             }

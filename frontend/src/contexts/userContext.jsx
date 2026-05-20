@@ -1,14 +1,10 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {buscarUsuario, logout} from "../services/sesionService.js";
 import {useNavigate} from "react-router-dom";
-// import {useError} from "./errorContext.jsx";
-// import {useToast} from "./toastContext.jsx";
 
 const AuthContext = createContext(null)
 
 export const AuthProvider = ({ children }) => {
-    // const {handleError} = useError();
-    // const {showToast} = useToast();
 
     const [user, setUser] = useState(() => {
         const storedUser = localStorage.getItem("sesion");
@@ -40,7 +36,7 @@ export const AuthProvider = ({ children }) => {
         const listener = () => {
 
             setUser(undefined);
-
+            localStorage.removeItem("sesion");
             navigate("/login");
         };
 

@@ -3,6 +3,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 
 const ErrorContext = createContext(null);
 
+//La idea de este contexto, es que mapee los errores para que se puedan mostrar en la UI.
 export const ErrorProvider = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -32,9 +33,9 @@ export const ErrorProvider = ({ children }) => {
                 navigate("/unauthorized");
                 break;
 
-            // case "INTERNAL_SERVER_ERROR":
-            //     navigate("/servidor-caido");
-            //     break;
+            case "INTERNAL_SERVER_ERROR":
+                navigate("/servidor-caido");
+                break;
 
 
             default: {

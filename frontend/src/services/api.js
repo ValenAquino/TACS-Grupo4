@@ -1,4 +1,6 @@
 import axios from "axios";
+import {logout} from "@/services/sesionService.js";
+import {useAuth} from "@/contexts/userContext.jsx";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URI || 'http://localhost:8080',
@@ -17,6 +19,7 @@ export const ping = async () => {
     }
 };
 
+//Esta funcion, lo que hace es mapear el error de axios a un error de nuestro "dominio".
 const handleAxiosError = (error) => {
 
     if (error.code === "ERR_NETWORK") {
@@ -69,15 +72,17 @@ const handleAxiosError = (error) => {
 api.interceptors.response.use(
     response => response,
 
-    error => {
+    async error => {
 
-        if(error.response?.status === 401){
+        if (error.response?.status === 401) {
 
-            localStorage.removeItem("sesion")
-
-            window.dispatchEvent(
-                new Event("logout")
-            );
+            try {
+                await logout();
+            } finally {
+                window.dispatchEvent(
+                    new Event("logout")
+                );
+            }
         }
 
         return Promise.reject(error);

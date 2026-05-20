@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
@@ -21,14 +22,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
   private final ServicioJwt servicioJwt;
   private final HandlerExceptionResolver errorHandler;
+  private final CorsConfigurationSource corsConfigurationSource;
 
   public JwtFilter(
       ServicioJwt servicioJwt,
       @Qualifier("handlerExceptionResolver")
-      HandlerExceptionResolver errorHandler
+      HandlerExceptionResolver errorHandler,
+      CorsConfigurationSource corsConfigurationSource
   ){
     this.servicioJwt = servicioJwt;
     this.errorHandler = errorHandler;
+    this.corsConfigurationSource = corsConfigurationSource;
   }
 
   @Override
@@ -38,7 +42,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     return path.startsWith("/login")
         || path.startsWith("/registrar")
-        || path.startsWith("/public");
+        || path.startsWith("/figuritas")
+        || path.startsWith("/sesion");
   }
 
   @Override
@@ -50,19 +55,43 @@ public class JwtFilter extends OncePerRequestFilter {
 
     try {
 
-      servicioJwt.validarToken(obtenerToken(request));
+      servicioJwt.validarToken(
+          obtenerToken(request)
+      );
 
-      filterChain.doFilter(request, response);
+      filterChain.doFilter(
+          request,
+          response
+      );
 
     } catch (JwtException | UnauthorizedException e) {
+
+      var corsConfig =
+          corsConfigurationSource.getCorsConfiguration(request);
+
+      if (corsConfig != null) {
+
+        String origin = request.getHeader("Origin");
+
+        if (corsConfig.checkOrigin(origin) != null) {
+
+          response.setHeader(
+              "Access-Control-Allow-Origin",
+              origin
+          );
+
+          response.setHeader(
+              "Access-Control-Allow-Credentials",
+              "true"
+          );
+        }
+      }
 
       errorHandler.resolveException(
           request,
           response,
           null,
-          new UnauthorizedException(
-              "Token inválido"
-          )
+          new UnauthorizedException("Token inválido")
       );
     }
   }

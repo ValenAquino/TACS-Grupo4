@@ -89,22 +89,19 @@ public class ServicioJwt {
 
   private Claims obtenerAtributos(String token) {
     return Jwts.parserBuilder()
+        .setSigningKey(getSignKey())
         .build()
-        .parseClaimsJwt(token)
+        .parseClaimsJws(token)
         .getBody();
   }
 
   public String getColeccionId(String token) {
-
-    Claims claims = obtenerAtributos(token);
-
-    return claims.get("colId", String.class);
+    return obtenerAtributos(token)
+        .get("colId", String.class);
   }
 
   public String getPerfilId(String token) {
-
-    Claims claims = obtenerAtributos(token);
-
-    return claims.get("perfilId", String.class);
+    return obtenerAtributos(token)
+        .get("perfilId", String.class);
   }
 }

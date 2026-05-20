@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {buscarUsuario, iniciarSesion, registrarUsuario} from "@/services/sesionService.js";
+import {crearUsuario} from "@/services/usuarioService.js";
 import {useToast} from "@/contexts/toastContext.jsx";
 import {useAuth} from "@/contexts/userContext.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
@@ -53,7 +53,7 @@ function Registrar() {
 
         try {
             setOnSubmit(true);
-            await registrarUsuario(usuario)
+            await crearUsuario(usuario)
             showToast(`Usuario creado correctamente`)
             navigate("/")
         } catch (error) {

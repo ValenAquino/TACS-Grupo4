@@ -1,12 +1,7 @@
 package app.controllers;
 
-import app.dto.ContadorDto;
-import app.dto.NotificacionesDto;
-import app.dto.PerfilDto;
-import app.dto.calificaciones.CalificacionesDto;
-import app.dto.SugerenciaDto;
+import app.dto.*;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
 import java.util.List;
 import app.servicios.ServicioJwt;
@@ -14,7 +9,6 @@ import app.servicios.ServicioPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +25,7 @@ public class ControladorPerfil {
 
     @PostMapping("/calificaciones")
     public ResponseEntity<Void> calificarPerfil(
-        @CookieValue String token,
+        @CookieValue("token") String token,
         @RequestBody CalificacionRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
@@ -48,16 +42,16 @@ public class ControladorPerfil {
         return ResponseEntity.ok().build();
     }
 
-//    @GetMapping("/calificaciones")
-//    public CalificacionesDto obtenerCalificaciones(
-//        @CookieValue String token,
-//        @RequestParam Integer pagina,
-//        @RequestParam Integer limite
-//
-//    ) {
-//        String perfilId = this.obtenerPerfilIdDeCookie(token);
-//        return this.perfilService.obtenerCalificaciones(perfilId, pagina, limite);
-//    }
+    @GetMapping("/calificaciones")
+    public ResponseEntity<PaginaResultado<CalificacionDto>> obtenerCalificaciones(
+        @CookieValue("token") String token,
+        @RequestParam Integer pagina,
+        @RequestParam Integer limite
+
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.perfilService.obtenerCalificaciones(perfilId, pagina, limite));
+    }
 
 //    @GetMapping("/sugerencias")
 //    public ResponseEntity<PaginaResultado<SugerenciaDto>> obtenerSugerencias(
@@ -72,7 +66,7 @@ public class ControladorPerfil {
 
     @GetMapping("/contadores")
     public ResponseEntity<List<ContadorDto>> obtenerContadores(
-        @CookieValue String token
+        @CookieValue("token") String token
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.ok(this.perfilService.obtenerContadores(perfilId));
@@ -86,9 +80,9 @@ public class ControladorPerfil {
         return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(perfilId));
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<PerfilDto> obtenerPerfil(
-        @CookieValue String token
+        @CookieValue("token") String token
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.ok(this.perfilService.obtenerPerfil(perfilId));

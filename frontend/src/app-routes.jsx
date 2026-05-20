@@ -92,8 +92,6 @@ const privates = [
     }
 ];
 
-const privates = []
-
 const AppRoutes = () => {
   return (
 

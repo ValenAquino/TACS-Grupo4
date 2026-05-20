@@ -53,7 +53,7 @@ export const buscarPerfil = async () => {
   }
 };
 
-export const buscarCalificaciones = async ( filtros) => {
+export const buscarCalificaciones = async (filtros) => {
     try {
         const { data } = await api.get(`${PERFIL_URL}/calificaciones`,
             {params: filtros}

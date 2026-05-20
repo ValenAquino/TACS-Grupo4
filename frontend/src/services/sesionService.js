@@ -1,5 +1,4 @@
 import {api, handleAxiosError } from "./api.js";
-import {useContext} from "react";
 
 export const iniciarSesion = async ({nombre, contrasenia}) => {
     try {
@@ -23,16 +22,6 @@ export const buscarUsuario = async (asignarUsuario) => {
 export const logout = async () => {
     try {
         const { data } = await api.delete("/sesion")
-
-        return data
-    } catch (error) {
-        handleAxiosError(error)
-    }
-}
-
-export const registrarUsuario = async ({nombre, contrasenia}) => {
-    try {
-        const { data } = await api.post("/registrar", {nombre, contrasenia, rol: "USUARIO"})
 
         return data
     } catch (error) {

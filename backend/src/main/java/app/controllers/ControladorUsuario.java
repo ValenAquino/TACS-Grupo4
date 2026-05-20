@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class ControladorUsuario {
 
   private final ServicioUsuario servicioUsuario;
-  private final ServicioJwt servicioJwt;
 
   @PostMapping()
-  public ResponseEntity<Void> registrar(@RequestBody UsuarioRequest request) {
+  public ResponseEntity<Void> registrar(
+      @RequestBody UsuarioRequest request
+  ) {
     this.servicioUsuario.registrar(request);
     return ResponseEntity.noContent().build();
   }

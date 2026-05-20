@@ -22,7 +22,6 @@ public class ServicioUsuario {
   private final RepositorioUsuarios repositorioUsuarios;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioColecciones repositorioColecciones;
-  private final ServicioJwt servicioJwt;
 
   public void registrar(UsuarioRequest request) {
 

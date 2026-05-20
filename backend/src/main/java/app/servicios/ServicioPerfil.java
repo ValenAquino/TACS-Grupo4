@@ -1,11 +1,7 @@
 package app.servicios;
 
-import app.dto.ContadorDto;
-import app.dto.FiguritaDto;
-import app.dto.FiguritaIntercambiableDto;
-import app.dto.NotificacionesDto;
-import app.dto.PerfilDto;
-import app.dto.SugerenciaDto;
+import app.dto.*;
+import app.dto.calificaciones.CalificacionesDto;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.filtros.SugerenciasFiltro;
 import app.exceptions.BadRequestException;
@@ -88,8 +84,8 @@ public class ServicioPerfil {
     return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(), 0, 0, 0);
   }
 
-  public List<ContadorDto> obtenerContadores(String userId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+  public List<ContadorDto> obtenerContadores(String perfilId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
 
     List<ContadorDto> contadores = new ArrayList<>();
 
@@ -105,13 +101,19 @@ public class ServicioPerfil {
     return this.repositorioNotificaciones.buscarPorPerfil(perfil).stream().map(NotificacionesDto::new).toList();
   }
 
-  public PerfilDto obtenerPerfil(String userId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
-    if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + userId);
+  public PerfilDto obtenerPerfil(String perfilId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
+    if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + perfilId);
     return new PerfilDto(perfil);
   }
 
-//  public CalificacionesDto obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
-//    return this.repositorioPerfiles.buscarCalificaciones(perfilId, pagina, limite);
-//  }
+  public PaginaResultado<CalificacionDto> obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
+    PaginaResultado<Calificacion> resultado = this.repositorioCalificacion.buscarPorPerfil(perfilId, pagina, limite);
+
+    return new PaginaResultado<>(
+        resultado.contenido().stream().map(CalificacionDto::new).toList(),
+        resultado.cantidadDeElementos(),
+        resultado.cantidadDePaginas(),
+        resultado.numero());
+  }
 }

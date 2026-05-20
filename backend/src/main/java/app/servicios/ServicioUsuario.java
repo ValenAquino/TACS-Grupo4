@@ -54,21 +54,7 @@ public class ServicioUsuario {
     this.repositorioPerfiles.guardar(perfil);
   }
 
-  public String login(LoginRequest request) {
-    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    Usuario usuario = this.repositorioUsuario.buscarPorNombre(request.nombre());
-
-    boolean coincide = passwordEncoder.matches(request.contrasenia(), usuario.getContrasenia());
-
-    if(!coincide) {
-      throw new UsuarioException("Credenciales invalidas");
-    }
-
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(usuario.getId());
-
-    return this.servicioJwt.generarToken(usuario, perfil);
-  }
 }
 
 

@@ -6,18 +6,14 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.NotificacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
-import app.dto.SugerenciaPaginadaDto;
-import app.dto.calificaciones.CalificacionesDto;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.filtros.SugerenciasFiltro;
-import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
-import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioNotificaciones;
@@ -27,7 +23,6 @@ import app.repositories.RepositorioPerfiles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +35,6 @@ public class ServicioPerfil {
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioSubastas repositorioSubastas;
-  private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
 
@@ -51,24 +45,6 @@ public class ServicioPerfil {
         .toList();
   }
 
-
-  //TODO que se filtren las que cantidadExistentes == 0
-  public List<FiguritaIntercambiableDto> obtenerRepetidas(String userId) {
-    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
-    return perfil.getColeccion().getRepetidas().stream()
-        .map(FiguritaIntercambiableDto::new)
-        .toList();
-  }
-
-  public List<FiguritaIntercambiableDto> obtenerIntercambiablesPerfil(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
-      if (perfil == null) throw new NotFoundException("Perfil no encontrado");
-
-      return repositorioColecciones.buscarIntercambiablesPorPerfilId(userId)
-          .stream()
-          .map(FiguritaIntercambiableDto::new)
-          .toList();
-  }
 
   public void agregarCalificacion(String userAutorId, String perfilDestinoId,
                                   Integer valor, String descripcion, String transactionId,
@@ -85,7 +61,6 @@ public class ServicioPerfil {
 
     Perfil autor = this.repositorioPerfiles.buscarPorId(userAutorId);
     if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
-    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
@@ -106,21 +81,6 @@ public class ServicioPerfil {
 
   public PaginaResultado<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
-    List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
-    List<Sugerencia> sugerencias = new ArrayList<>();
-
-    //TODO: Esto debe estar en el motor de la base de datos en el futuro
-    perfiles.forEach(perfil -> {
-      Sugerencia sugerencia = new Sugerencia(perfil, new ArrayList<>(), new ArrayList<>());
-
-      perfil.getColeccion().getRepetidas().forEach(miRepetida -> {
-
-        perfilObjetivo.getColeccion().getRepetidas().forEach(suRepetida -> {
-
-          boolean yoNecesito = perfilObjetivo
-              .getColeccion()
-              .getFaltantes()
-              .contains(miRepetida.getFigurita());
 
     PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), filtros);
 
@@ -150,4 +110,8 @@ public class ServicioPerfil {
     if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + userId);
     return new PerfilDto(perfil);
   }
+
+//  public CalificacionesDto obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
+//    return this.repositorioPerfiles.buscarCalificaciones(perfilId, pagina, limite);
+//  }
 }

@@ -1,16 +1,13 @@
 package app.servicios;
 
-import app.dto.request.LoginRequest;
 import app.dto.request.UsuarioRequest;
-import app.exceptions.UsuarioException;
 import app.model.entities.Coleccion;
 import app.model.entities.Perfil;
 import app.model.entities.Rol;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
-import app.repositories.RepositorioUsuario;
-import app.servicios.ServicioUsuario;
+import app.repositories.RepositorioUsuarios;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +19,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class ServicioUsuario {
 
-  private final RepositorioUsuario repositorioUsuario;
+  private final RepositorioUsuarios repositorioUsuarios;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioColecciones repositorioColecciones;
   private final ServicioJwt servicioJwt;
@@ -39,7 +36,7 @@ public class ServicioUsuario {
       usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), request.getRol());
     }
 
-    this.repositorioUsuario.guardar(usuarioNuevo);
+    this.repositorioUsuarios.guardar(usuarioNuevo);
 
     if (Rol.ADMINISTRADOR.equals(request.getRol())) {
       return;

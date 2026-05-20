@@ -5,7 +5,7 @@ import app.exceptions.UsuarioException;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioPerfiles;
-import app.repositories.RepositorioUsuario;
+import app.repositories.RepositorioUsuarios;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ServicioSesion {
-  private final RepositorioUsuario repoUsuario;
+  private final RepositorioUsuarios repoUsuario;
   private final RepositorioPerfiles repoPerfiles;
   private final ServicioJwt servicioJwt;
 

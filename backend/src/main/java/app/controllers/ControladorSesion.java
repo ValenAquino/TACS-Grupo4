@@ -7,10 +7,6 @@ import app.servicios.ServicioEstadisticas;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSesion;
 import jakarta.servlet.http.HttpServletResponse;
-import app.dto.PerfilDto;
-import app.dto.request.UsuarioRequest;
-import app.servicios.ServicioEstadisticas;
-import app.servicios.ServicioSesion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -32,10 +28,10 @@ public class ControladorSesion {
     private final ServicioJwt servicioJwt;
 
 
-    @GetMapping("/administrador/estadisticas")
-    public ResponseEntity<EstadisticasDto> obtenerEstadisticas() {
-        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas());
-    }
+//    @GetMapping("/administrador/estadisticas")
+//    public ResponseEntity<EstadisticasDto> obtenerEstadisticas() {
+//        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas());
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(

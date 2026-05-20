@@ -1,5 +1,7 @@
 package app.repositories.impl;
 
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.propuesta.PropuestasDto;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioPropuestas;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
         this.mongoTemplate.save(propuesta);
     }
 
-    @Override
+
     public List<Propuesta> buscarPorAutorId(String perfilId) {
         Query query = new Query();
         query.addCriteria(
@@ -30,13 +32,24 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
         return this.mongoTemplate.find(query, Propuesta.class);
     }
 
-    @Override
+
     public List<Propuesta> buscarPorDestinatarioId(String perfilId) {
         Query query = new Query();
         query.addCriteria(
             Criteria.where("destinatario").is(perfilId)
         );
         return this.mongoTemplate.find(query, Propuesta.class);
+    }
+
+
+    @Override
+    public PropuestasDto buscarPorAutorId(String userId, PropuestasFiltro filtros) {
+        return null;
+    }
+
+    @Override
+    public PropuestasDto buscarPorDestinatarioId(String userId, PropuestasFiltro filtros) {
+        return null;
     }
 
     @Override

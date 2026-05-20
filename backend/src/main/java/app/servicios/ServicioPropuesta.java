@@ -22,7 +22,6 @@ public class ServicioPropuesta {
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repositorioFiguritas;
-  private final RepositorioFiguritasIntercambiables repositorioIntercambiables;
   private final ServicioNotificacion notificacionService;
 
   /**

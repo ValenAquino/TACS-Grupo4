@@ -8,7 +8,6 @@ import app.dto.subasta.SubastasParticipoResponseDto;
 import app.dto.subasta.SubastaDto;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSubasta;
-import app.servicios.ServicioSubasta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,14 +46,15 @@ public class ControladorSubasta {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{sub_id}/propuestas")
+    @PostMapping("/{sub_id}/ofertas")
     public ResponseEntity<Void> ofertarEnSubasta(
         @CookieValue String token,
         @PathVariable String sub_id,
         @RequestBody OfertarEnSubastaRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
-        this.subastaService.ofertarEnSubasta(perfilId, body.getUsuarioId(), sub_id, body.getFiguritasOfrecidasId());
+        this.subastaService.ofertarEnSubasta(perfilId, sub_id, body.getFiguritasOfrecidasId());
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{sub_id}/ofertas/{oferta_id}")
@@ -62,11 +62,6 @@ public class ControladorSubasta {
         this.subastaService.mejorarOfertaEnSubasta(sub_id, oferta_id, body);
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("/{sub_id}/ofertas")
-    public ResponseEntity<Void> ofertarEnSubasta(@PathVariable String sub_id, @RequestBody OfertarEnSubastaRequest body) {
-        this.subastaService.ofertarEnSubasta(body.getAutorId(), sub_id, body.getFiguritasOfrecidasId());
-        return ResponseEntity.ok().build();
 
     @PostMapping("/{sub_id}/ofertas/{oferta_id}/seleccionar")
     public ResponseEntity<Void> seleccionarOferta(

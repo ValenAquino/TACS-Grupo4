@@ -4,6 +4,7 @@ import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
+import app.servicios.ServicioJwt;
 import app.servicios.ServicioPropuesta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/propuestas")
 public class ControladorPropuesta {
     private final ServicioPropuesta propuestaService;
+    private final ServicioJwt servicioJwt;
 
     @PostMapping
     public ResponseEntity<PropuestaDto> crearPropuesta(@RequestBody CrearPropuestaRequest request) {
@@ -21,32 +23,45 @@ public class ControladorPropuesta {
     }
 
     @PatchMapping("/{prop_id}/aceptar")
-    public ResponseEntity<?> aceptar(@PathVariable String prop_id,
-                                     @RequestHeader String usuario_id) {
-        propuestaService.aceptar(prop_id, usuario_id);
+    public ResponseEntity<?> aceptar(
+        @CookieValue String token,
+        @PathVariable String prop_id
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        propuestaService.aceptar(prop_id, perfilId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{prop_id}/rechazar")
-    public ResponseEntity<?> rechazar(@PathVariable String prop_id,
-                                      @RequestHeader String usuario_id) {
-        propuestaService.rechazar(prop_id, usuario_id);
+    public ResponseEntity<?> rechazar(
+        @CookieValue String token,
+        @PathVariable String prop_id
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        propuestaService.rechazar(prop_id, perfilId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{prop_id}/cancelar")
-    public ResponseEntity<?> cancelar(@PathVariable String prop_id) {
-        propuestaService.cancelar(prop_id);
+    public ResponseEntity<?> cancelar(
+        @CookieValue String token,
+        @PathVariable String prop_id
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        propuestaService.cancelar(prop_id, perfilId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping()
     public ResponseEntity<PropuestasDto> obtenerPropuestas(
-        @RequestParam String user_id,
+        @CookieValue String token,
         @ModelAttribute PropuestasFiltro filtros
-        ) {
-        return ResponseEntity.ok(this.propuestaService.buscarPropuestas(user_id, filtros));
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.propuestaService.buscarPropuestas(perfilId, filtros));
     }
 
-
+    private String obtenerPerfilIdDeCookie(String token) {
+        return this.servicioJwt.getPerfilId(token);
+    }
 }

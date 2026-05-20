@@ -80,10 +80,11 @@ public class Propuesta {
     }
 
     /**
-     * Rechaza la propuesta. Valida que {@code usuario} sea el destinatario
-     * y que la propuesta esté en estado RECHAZADO.
+     * Cancela la propuesta. Valida que {@code usuario} sea el autor
+     * y que la propuesta esté en estado PENDIENTE.
      */
-    public void cancelar() {
+    public void cancelar(Perfil perfil) {
+        this.validarUsuarioAutor(perfil);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
     }
@@ -95,6 +96,12 @@ public class Propuesta {
     }
 
     private void validarUsuarioDestino(Perfil perfil) {
+        if (!this.destinatario.getId().equals(perfil.getId())) {
+            throw new PropuestaException("Solo el destinatario puede responder la propuesta");
+        }
+    }
+
+    private void validarUsuarioAutor(Perfil perfil) {
         if (!this.destinatario.getId().equals(perfil.getId())) {
             throw new PropuestaException("Solo el destinatario puede responder la propuesta");
         }

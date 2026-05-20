@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class CrearSubastaRequest {
 
-  @JsonProperty("user_id")
-  private String userId;
-
   @JsonProperty("figurita_id")
   private String figuritaId;
 

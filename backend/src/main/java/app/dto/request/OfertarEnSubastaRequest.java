@@ -11,6 +11,7 @@ import java.util.List;
 public class OfertarEnSubastaRequest {
   @JsonProperty("usuario_id")
   private String usuarioId;
+
   @JsonProperty("figuritas_ofrecidas_id")
   private List<String> figuritasOfrecidasId;
 }

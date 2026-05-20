@@ -60,9 +60,12 @@ public class ServicioSubasta {
         interesados, "Encontramos una subasta de una figurita que te falta!");
   }
 
-  public void ofertarEnSubasta(String userId, String perfilDestinoId, String subastaId, List<String> rawFiguritasId) {
-    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userId);
-    Perfil destinatario = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
+  public void ofertarEnSubasta(String autorId,
+                               String destinoId,
+                               String subastaId,
+                               List<String> rawFiguritasId) {
+    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
+    Perfil destinatario = this.repositorioPerfiles.buscarPorId(destinoId);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
 
     if (!subasta.estaActivo()) {

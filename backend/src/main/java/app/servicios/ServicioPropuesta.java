@@ -64,31 +64,32 @@ public class ServicioPropuesta {
     return new PropuestaDto(propuesta);
   }
 
-  public void aceptar(String propuestaId, String usuarioId) {
+  public void aceptar(String propuestaId, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
-    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
+    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
     propuesta.aceptar(perfil);
     repositorioPropuestas.guardar(propuesta);
   }
 
-  public void rechazar(String id, String usuarioId) {
+  public void rechazar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
-    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
+    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
     propuesta.rechazar(perfil);
     repositorioPropuestas.guardar(propuesta);
   }
 
-  public void cancelar(String id) {
+  public void cancelar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
-    propuesta.cancelar();
+    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
+    propuesta.cancelar(perfil);
     this.repositorioPropuestas.guardar(propuesta);
   }
 
-  public PropuestasDto buscarPropuestas(String userId, PropuestasFiltro filtros) {
+  public PropuestasDto buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
     if(filtros.tipo().equals("RECIBIDAS")) {
-      return this.repositorioPropuestas.buscarPorDestinatarioId(userId, filtros);
+      return this.repositorioPropuestas.buscarPorDestinatarioId(perfilId, filtros);
     } else if (filtros.tipo().equals("ENVIADAS")) {
-      return this.repositorioPropuestas.buscarPorAutorId(userId, filtros);
+      return this.repositorioPropuestas.buscarPorAutorId(perfilId, filtros);
     }
 
     return null;

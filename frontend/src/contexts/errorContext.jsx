@@ -26,7 +26,6 @@ export const ErrorProvider = ({ children }) => {
                         from: location.pathname
                     }
                 });
-
                 break;
 
             case "FORBIDDEN":
@@ -34,7 +33,7 @@ export const ErrorProvider = ({ children }) => {
                 break;
 
             case "INTERNAL_SERVER_ERROR":
-                navigate("/servidor-caido");
+                navigate("/error-interno");
                 break;
 
 
@@ -42,7 +41,7 @@ export const ErrorProvider = ({ children }) => {
                 const errorProcesado = {
                     codigo: error.code || error.status,
                     mensaje: error.message,
-                    // errors: error.errors,
+                    errors: error.errors
                 }
 
                 setter(errorProcesado)

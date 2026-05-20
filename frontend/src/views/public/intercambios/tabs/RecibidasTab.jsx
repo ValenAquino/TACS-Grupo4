@@ -5,18 +5,19 @@ import {aceptarIntercambio,rechazarIntercambio} from "../../../../services/inter
 import {buscarPropuestas} from "@/services/propuestasService.js";
 import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
 const RecibidasTab = () => {
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(true);
     const [pagina, setPagina] = useState(1);
-    const [error, setError] = useState(false);
     const [recibidas, setRecibidas] = useState([]);
     const [filtros, setFiltros] = useState({
         estado: "",
         tipo: "RECIBIDAS"
     });
 
+    const {handleError} = useError()
     const { userId} = useUsuarioActual()
     const user_id = userId
 
@@ -25,8 +26,8 @@ const RecibidasTab = () => {
             setLoading(true);
             const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
             setRecibidas(enviadasApi)
-        } catch (e) {
-            setError(true)
+        } catch (error) {
+            handleError(error, () => {})
         } finally {
             setLoading(false);
         }

@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
             setUser(undefined);
             localStorage.removeItem("sesion");
-            navigate("/login");
+            navigate("/")
         };
 
         window.addEventListener(

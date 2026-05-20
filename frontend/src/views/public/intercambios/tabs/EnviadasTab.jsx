@@ -5,6 +5,7 @@ import {buscarPropuestas} from "@/services/propuestasService.js";
 import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
  const EnviadasTab = () => {
     const [selected, setSelected] = useState(null);
@@ -15,7 +16,8 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
     });
     const [loading, setLoading] = useState(true);
     const [pagina, setPagina] = useState(1);
-    const [error, setError] = useState(false);
+
+    const {handleError} = useError()
 
     const {userId} = useUsuarioActual()
     const user_id = userId
@@ -38,8 +40,8 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
              setLoading(true);
              const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
              setEnviadas(enviadasApi)
-         } catch (e) {
-             setError(true)
+         } catch (error) {
+             handleError(error, () => {})
          } finally {
              setLoading(false);
          }

@@ -18,6 +18,7 @@ import {ToastProvider} from "@/contexts/toastContext.jsx";
 import AccesoDenegado from "@/views/public/errores/acceso-denegado/acceso-denegado.jsx";
 import RutaProtegida from "@/components/autenticacion/ruta-protegida.jsx";
 import ServidorCaido from "@/views/public/errores/servidor-caido/servidor-caido.jsx";
+import ErrorInterno from "@/views/public/errores/error-interno/error-interno.jsx";
 
 const publics = [
   {
@@ -43,6 +44,10 @@ const publics = [
     {
         path: "/servidor-caido",
         element: <ServidorCaido />
+    },
+    {
+        path: "/error-interno",
+        element: <ErrorInterno />
     }
 ];
 

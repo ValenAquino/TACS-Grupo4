@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import {buscarContadores,buscarPerfil,buscarCalificaciones} from "../../../services/perfilService.js";
-import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
 import {useAuth} from "@/contexts/userContext.jsx";
 import Button from "@/components/ui/button/button.jsx";
-import confirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 import {useToast} from "@/contexts/toastContext.jsx";
-import {buscarFaltantes} from "@/services/coleccionService.js";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
 const renderStars = (score) => {
     const fullStars = Math.floor(score);
@@ -31,8 +29,8 @@ const Perfil = () => {
     const [stats, setStats] = useState([]);
     const [pagina, setPagina] = useState(1);
     const [filtros, setFiltros] = useState({});
-    const [error, setError] = useState(false);
 
+    const {handleError} = useError();
     const {showToast} = useToast();
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -61,8 +59,8 @@ const Perfil = () => {
           setPerfil(perfil);
           setStats(statsData);
 
-        } catch (e) {
-          setError(true);
+        } catch (error) {
+          handleError(error, () => {});
         } finally {
           setLoading(false);
         }
@@ -83,8 +81,8 @@ const Perfil = () => {
                 });
 
                 setReviews(calificacionesApi);
-            } catch (err) {
-                setError(true);
+            } catch (error) {
+                handleError(error, () => {})
             } finally {
                 setLoadingNotificaciones(false);
             }

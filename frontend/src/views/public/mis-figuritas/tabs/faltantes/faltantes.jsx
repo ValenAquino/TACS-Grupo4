@@ -15,7 +15,6 @@ const Faltantes = () => {
     const [faltantes, setFaltantes] = useState([]);
     const [filtros, setFiltros] = useState({});
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [pagina, setPagina] = useState(1);
 
     const navigate = useNavigate();
@@ -46,14 +45,6 @@ const Faltantes = () => {
 
         cargarFaltantes();
     }, [coleccionId, filtros, pagina]);
-
-    if (error) {
-        return (
-            <div className="text-center py-4 text-danger">
-                Error al cargar faltantes
-            </div>
-        );
-    }
 
     return (
         <div className="container-fluid px-0 d-flex flex-column gap-4">

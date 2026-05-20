@@ -1,6 +1,6 @@
 import Button from "@/components/ui/button/button.jsx";
 import { useLocation, useNavigate } from "react-router-dom";
-import {api, ping} from "@/services/api";
+import {ping} from "@/services/api";
 
 const ServidorCaido = () => {
     const navigate = useNavigate();
@@ -10,7 +10,6 @@ const ServidorCaido = () => {
 
     const reintentar = async () => {
         try {
-            // endpoint simple para verificar que el backend responde
             await ping()
             navigate(previousPage);
         } catch {

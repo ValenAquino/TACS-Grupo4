@@ -43,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
     return path.startsWith("/login")
         || path.startsWith("/registrar")
         || path.startsWith("/figuritas")
+        || path.startsWith("/ping")
         || path.startsWith("/sesion");
   }
 

@@ -31,7 +31,7 @@ public class ServicioJwt {
         .claim("usuarioId", usuario.getId())
         .claim("rol", usuario.getRol().toString())
         .claim("perfilId", perfil.getId())
-        //.claim("colId", perfil.getColeccion().getId())
+        .claim("colId", perfil.getColeccion().getId())
 
         .setIssuedAt(new Date())
 

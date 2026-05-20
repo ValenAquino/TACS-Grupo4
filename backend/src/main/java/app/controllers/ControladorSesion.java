@@ -37,7 +37,7 @@ public class ControladorSesion {
         String token = this.servicioSesion.login(request);
 
         ResponseCookie cookie =
-            ResponseCookie.from("sesion", token)
+            ResponseCookie.from("token", token)
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
@@ -55,7 +55,7 @@ public class ControladorSesion {
 
     @GetMapping("/yo")
     public ResponseEntity<SesionDto> buscarUsuario(
-        @CookieValue("sesion") String token
+        @CookieValue("token") String token
     ) {
         SesionDto dto = this.servicioJwt.obtenerSesion(token);
         return ResponseEntity.ok(dto);
@@ -67,7 +67,7 @@ public class ControladorSesion {
     ) {
 
         ResponseCookie cookie =
-            ResponseCookie.from("sesion", "")
+            ResponseCookie.from("token", "")
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")

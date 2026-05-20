@@ -1,7 +1,6 @@
 package app.servicios;
 
 import app.dto.request.LoginRequest;
-import app.dto.request.UsuarioRequest;
 import app.exceptions.UsuarioException;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;

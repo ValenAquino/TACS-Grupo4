@@ -108,7 +108,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     for(Cookie cookie : cookies) {
-      if("sesion".equals(cookie.getName())) {
+      if("token".equals(cookie.getName())) {
         return cookie.getValue();
       }
     }

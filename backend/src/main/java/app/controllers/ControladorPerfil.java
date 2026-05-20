@@ -5,11 +5,15 @@ import app.dto.NotificacionesDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.calificaciones.CalificacionesDto;
+import app.dto.SugerenciaDto;
+import app.dto.paginacion.PaginaResultado;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
+import app.dto.request.PerfilRequest;
 import java.util.List;
 
 import app.servicios.ServicioJwt;
+import app.servicios.ServicioPerfil;
 import app.servicios.ServicioPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -58,14 +62,17 @@ public class ControladorPerfil {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return this.perfilService.obtenerCalificaciones(perfilId, pagina, limite);
     }
+    @GetMapping("/{user_id}/sugerencias")
+    public ResponseEntity<SugerenciaPaginadaDto> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
 
     @GetMapping("/sugerencias")
-    public ResponseEntity<SugerenciaPaginadaDto> obtenerSugerencias(
+    public ResponseEntity<PaginaResultado<SugerenciaDto>> obtenerSugerencias(
         @CookieValue String token,
         @ModelAttribute SugerenciasFiltro filtro
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         SugerenciaPaginadaDto sugerenciasDto = this.perfilService.obtenerSugerencias(perfilId, filtro);
+        PaginaResultado<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
 
         return ResponseEntity.ok().body(sugerenciasDto);
     }

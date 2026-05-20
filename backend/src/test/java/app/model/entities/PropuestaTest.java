@@ -18,8 +18,18 @@ public class PropuestaTest {
 
   @BeforeEach
   void setUp() {
-    origen = new Perfil("1", new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"), "Origen", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@origen")), List.of());
-    destino = new Perfil("2", new Usuario("u-2", Rol.USUARIO,"lucas", "fiscella"), "Destino", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@destino")), List.of());
+    Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
+    origen = Perfil.builder()
+        .id("1").usuario(user).nombre("Origen")
+        .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM,"@origen")))
+        .build();
+
+    user = new Usuario("u-2", Rol.USUARIO,"lucas", "fiscella");
+
+    destino = Perfil.builder()
+        .id("2").usuario(user).nombre("Destino")
+        .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM,"@destino")))
+        .build();
 
     propuesta = new Propuesta(
         "123",
@@ -61,15 +71,22 @@ public class PropuestaTest {
 
   @Test
   void noDeberiaAceptarSiNoEsElUsuarioDestino() {
-    Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO,"lucas", "fiscella"), "Otro", null, List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
+    Usuario user = new Usuario("u-3", Rol.USUARIO,"lucas", "fiscella");
+    Perfil otro = Perfil.builder()
+        .id("3").usuario(user).nombre("Otro")
+        .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM,"@otro")))
+        .build();
 
     assertThrows(PropuestaException.class, () -> propuesta.aceptar(otro));
   }
 
   @Test
   void noDeberiaRechazarSiNoEsElUsuarioDestino() {
-    Perfil otro = new Perfil("3", new Usuario("u-3", Rol.USUARIO,"lucas", "fiscella"), "Otro", null,
-        List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@otro")), List.of());
+    Usuario user = new Usuario("u-3", Rol.USUARIO,"lucas", "fiscella");
+    Perfil otro = Perfil.builder()
+        .id("3").usuario(user).nombre("Otro")
+        .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM,"@otro")))
+        .build();
 
     assertThrows(PropuestaException.class, () -> propuesta.rechazar(otro));
   }

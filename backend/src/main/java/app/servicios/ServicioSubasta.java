@@ -1,5 +1,7 @@
 package app.servicios;
 
+import app.dto.request.MejorarOfertaRequest;
+import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.MiSubastaDto;
 import app.dto.subasta.MisSubastasResponseDto;
 import app.dto.subasta.SubastaDto;
@@ -14,6 +16,7 @@ import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
+import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,15 +44,12 @@ public class ServicioSubasta {
     LocalDateTime fechaInicio = LocalDateTime.now();
     LocalDateTime fechaFin = fechaInicio.plusHours(duracionEnHoras.longValue());
 
-    Subasta nuevaSubasta = new Subasta(
-        UUID.randomUUID().toString(),
-        perfil,
-        fechaInicio,
-        fechaFin,
-        figuritaSubastada,
-        figuritasDeseadas,
-        calificacionMinima
-    );
+    Subasta nuevaSubasta = Subasta.builder()
+        .autor(perfil).figuritaSubastada(figuritaSubastada)
+        .fechaInicio(fechaInicio).fechaCierre(fechaFin)
+        .figuritasSolicitadas(figuritasDeseadas)
+        .calificacionMinimaSolicitada(calificacionMinima)
+        .build();
 
     this.repoSubasta.guardar(nuevaSubasta);
 
@@ -67,7 +67,11 @@ public class ServicioSubasta {
   ) {
     Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
     Perfil destinatario = this.repositorioPerfiles.buscarPorId(destinoId);
+  public void ofertarEnSubasta(String userId, String subastaId, List<String> rawFiguritasId) {
+    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+
+    Perfil destinatario = subasta.getAutor();
 
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
@@ -81,15 +85,27 @@ public class ServicioSubasta {
         .map(this.repoFigurita::buscarPorId)
         .toList();
 
-    Propuesta nuevaPropuesta = new Propuesta(
-        UUID.randomUUID().toString(),
-        autor,
-        destinatario,
-        figuritasOfrecidas,
-        subasta.getFiguritaSubastada()
-    );
+    Propuesta nuevaPropuesta = Propuesta.builder()
+        .autor(autor)
+        .destinatario(destinatario)
+        .figuritaBuscada(subasta.getFiguritaSubastada())
+        .figuritasOfrecidas(figuritasOfrecidas).build();
 
     subasta.agregarOferta(nuevaPropuesta);
+    this.repoSubasta.guardar(subasta);
+  }
+
+  public void mejorarOfertaEnSubasta(String subastaId, String ofertaId, MejorarOfertaRequest body){
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+    Propuesta oferta = subasta.getOfertas().stream()
+        .filter(o -> o.getId().equals(ofertaId))
+        .findFirst().orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+
+    List<Figurita> nuevas_figuritas = body.getFiguritasOfrecidasId().stream().map(
+        this.repoFigurita::buscarPorId
+    ).toList();
+
+    oferta.setFiguritasOfrecidas(nuevas_figuritas);
     this.repoSubasta.guardar(subasta);
   }
 
@@ -168,7 +184,7 @@ public class ServicioSubasta {
   }
 
   public MisSubastasResponseDto obtenerMisSubastas(String userId) {
-    List<Subasta> misSubastas = this.repoSubasta.buscarPorAutorUserId(userId);
+    List<Subasta> misSubastas = this.repoSubasta.buscarPorAutorUsuarioId(userId);
 
     List<MiSubastaDto> activas = misSubastas.stream()
         .filter(Subasta::estaActivo)

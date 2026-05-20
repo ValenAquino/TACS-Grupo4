@@ -1,25 +1,47 @@
 package app.model.entities;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Getter
 @Setter
 @Document(collection = "perfiles")
 public class Perfil {
+
     @Id
     private String id;
+
     @DBRef
     private Usuario usuario;
     private String nombre;
-    private Coleccion coleccion;
-    private List<MedioDeContacto> mediosDeContacto;
-    private List<Calificacion> calificaciones;
+
+    @DBRef
+    @Builder.Default
+    private Coleccion coleccion = new Coleccion();
+
+    @Builder.Default
+    private List<MedioDeContacto> mediosDeContacto = new ArrayList<>();
+
+    @DBRef
+    @Builder.Default
+    private List<Calificacion> calificaciones = new ArrayList<>();
+
+    @Builder.Default
+    private Double calificacionMedia = 0.0;
+    @Builder.Default
+    private int cantidadCalificaciones = 0;
 
     public Perfil(Usuario usuario,
                   String nombre,
@@ -35,17 +57,12 @@ public class Perfil {
 
     /**
      * Calcula el promedio de las calificaciones recibidas.
-     * Retorna 0 si el perfil aún no tiene calificaciones.
      */
-    public double obtenerCalificacionMedia() {
-        return calificaciones.stream()
-            .mapToInt(Calificacion::getValor)
-            .average()
-            .orElse(0.0);
-    }
-
-    public void agregarNuevaCalificacion(Calificacion calificacion){
+    public void agregarNuevaCalificacion(Calificacion calificacion) {
         this.calificaciones.add(calificacion);
+        this.cantidadCalificaciones++;
+        this.calificacionMedia = this.calificacionMedia +
+            (calificacion.getValor() - this.calificacionMedia) / this.cantidadCalificaciones;
     }
 
     public String getIniciales() {

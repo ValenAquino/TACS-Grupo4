@@ -8,7 +8,9 @@ import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.SugerenciaPaginadaDto;
 import app.dto.calificaciones.CalificacionesDto;
+import app.dto.paginacion.PaginaResultado;
 import app.dto.filtros.SugerenciasFiltro;
+import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
@@ -16,6 +18,8 @@ import app.model.entities.MetodoIntercambio;
 import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
 import app.repositories.RepositorioFiguritasIntercambiables;
+import app.repositories.RepositorioCalificacion;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioNotificaciones;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
@@ -31,7 +35,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ServicioPerfil {
 
+  private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
+  private final RepositorioColecciones repositorioColecciones;
   private final RepositorioPropuestas repositorioPropuestas;
   private final RepositorioSubastas repositorioSubastas;
   private final RepositorioFiguritasIntercambiables repositorioFiguritasIntercambiables;
@@ -58,13 +64,15 @@ public class ServicioPerfil {
       Perfil perfil = repositorioPerfiles.buscarPorId(userId);
       if (perfil == null) throw new NotFoundException("Perfil no encontrado");
 
-      return repositorioFiguritasIntercambiables.buscarPorUsuarioId(userId)
+      return repositorioColecciones.buscarIntercambiablesPorPerfilId(userId)
           .stream()
           .map(FiguritaIntercambiableDto::new)
           .toList();
   }
 
-  public void agregarCalificacion(String userAutorId, String perfilDestinoId, Integer valor, String descripcion, String transactionId, MetodoIntercambio tipoTransaccion) {
+  public void agregarCalificacion(String userAutorId, String perfilDestinoId,
+                                  Integer valor, String descripcion, String transactionId,
+                                  MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
       throw new BadRequestException("El valor de la calificación no puede ser nulo");
     }
@@ -77,6 +85,7 @@ public class ServicioPerfil {
 
     Perfil autor = this.repositorioPerfiles.buscarPorId(userAutorId);
     if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
+    Perfil autor = this.repositorioPerfiles.buscarPorUsuarioId(userAutorId);
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
@@ -85,21 +94,17 @@ public class ServicioPerfil {
 
     if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
 
-    Calificacion calificacion = new Calificacion(
-        UUID.randomUUID().toString(),
-        autor,
-        valor,
-        descripcion,
-        transactionId,
-        tipoTransaccion
-    );
+    Calificacion calificacion = Calificacion.builder()
+        .autor(autor).valor(valor).descripcion(descripcion)
+        .tipoTransaccion(tipoTransaccion).transactionId(transactionId).build();
 
     perfilDestino.agregarNuevaCalificacion(calificacion);
 
+    this.repositorioCalificacion.guardar(calificacion);
     this.repositorioPerfiles.guardar(perfilDestino);
   }
 
-  public SugerenciaPaginadaDto obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
+  public PaginaResultado<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
     Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos();
     List<Sugerencia> sugerencias = new ArrayList<>();
@@ -117,36 +122,14 @@ public class ServicioPerfil {
               .getFaltantes()
               .contains(miRepetida.getFigurita());
 
-          boolean elNecesita = perfil
-              .getColeccion()
-              .getFaltantes()
-              .contains(suRepetida.getFigurita());
+    PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), filtros);
 
-          if (yoNecesito && elNecesita) {
-            sugerencia.getFiguritasSugeridas().add(miRepetida.getFigurita());
-            sugerencia.getFiguritasNecesarias().add(suRepetida.getFigurita());
-          }
-        });
-      });
-      if (!sugerencia.getFiguritasSugeridas().isEmpty() && !sugerencia.getFiguritasNecesarias().isEmpty()) {
-        sugerencias.add(sugerencia);
-      }
-    });
-
-
-    List<Sugerencia> sugerenciasFiltradas = sugerencias.stream().filter(filtros::verifica).toList();
-
-    int resultados = sugerenciasFiltradas.size();
-    int paginaActual = filtros.paginaActual();
-    int paginasTotales = (resultados + filtros.limite() - 1) / filtros.limite();
-
-    List<SugerenciaDto> sugerenciasDto = sugerenciasFiltradas.stream().map(SugerenciaDto::new).toList();
-
-    return new SugerenciaPaginadaDto(sugerenciasDto, resultados, paginaActual, paginasTotales);
+    //TODO: sigue en implementacion
+    return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(), 0, 0, 0);
   }
 
-  public List<ContadorDto> obtenerContadores(String perfilId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
+  public List<ContadorDto> obtenerContadores(String userId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
 
     List<ContadorDto> contadores = new ArrayList<>();
 
@@ -156,19 +139,15 @@ public class ServicioPerfil {
     return contadores;
   }
 
-  public List<NotificacionesDto> obtenerNotificaciones(String perfilId) {
-      Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
+  public List<NotificacionesDto> obtenerNotificaciones(String userId) {
+      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
 
-    return this.repositorioNotificaciones.buscarPorUsuario(perfil).stream().map(NotificacionesDto::new).toList();
+    return this.repositorioNotificaciones.buscarPorPerfil(perfil).stream().map(NotificacionesDto::new).toList();
   }
 
-  public CalificacionesDto obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
-    return this.repositorioPerfiles.buscarCalificaciones(perfilId, pagina, limite);
-  }
-
-  public PerfilDto obtenerPerfil(String perfilId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
-    if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + perfilId);
+  public PerfilDto obtenerPerfil(String userId) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+    if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + userId);
     return new PerfilDto(perfil);
   }
 }

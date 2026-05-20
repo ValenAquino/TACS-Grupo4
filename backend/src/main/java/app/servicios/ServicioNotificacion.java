@@ -9,16 +9,18 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class ServicioNotificacion {
 
   private final RepositorioNotificaciones repositorioNotificaciones;
 
-  public void notificarInteresados(List<Perfil> interesados, String cuerpo) {
+  public void  notificarInteresados(List<Perfil> interesados, String cuerpo) {
     interesados.forEach(u -> {
       Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
-      this.repositorioNotificaciones.guardar(new Notificacion(mensaje, u));
+      Notificacion noti = new Notificacion(mensaje, u);
+      this.repositorioNotificaciones.guardar(noti);
     });
   }
 }

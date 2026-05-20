@@ -6,6 +6,7 @@ import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPropuesta;
+import app.servicios.ServicioPropuesta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

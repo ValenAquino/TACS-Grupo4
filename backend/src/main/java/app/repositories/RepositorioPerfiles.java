@@ -1,8 +1,12 @@
 package app.repositories;
 
-import app.dto.calificaciones.CalificacionesDto;
+import app.dto.filtros.SugerenciasFiltro;
+import app.dto.paginacion.PaginaResultado;
+import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.Perfil;
+import app.model.entities.Sugerencia;
+
 import java.util.List;
 
 public interface RepositorioPerfiles {
@@ -19,5 +23,5 @@ public interface RepositorioPerfiles {
 
     void guardar(Perfil perfil);
 
-    CalificacionesDto buscarCalificaciones(String id, Integer pagina, Integer limite);
+    PaginaResultado<Sugerencia> generarSugerencias(Coleccion coleccion, SugerenciasFiltro filtros);
 }

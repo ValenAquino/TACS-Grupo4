@@ -13,6 +13,6 @@ public class NotificacionesDto {
   public NotificacionesDto(Notificacion notificacion) {
     this.id = notificacion.getId();
     this.mensaje = notificacion.getMensaje();
-    this.usuario = new PerfilDto(notificacion.getUsuario());
+    this.usuario = new PerfilDto(notificacion.getPerfil());
   }
 }

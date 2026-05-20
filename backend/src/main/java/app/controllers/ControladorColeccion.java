@@ -1,13 +1,18 @@
 package app.controllers;
 
-import app.dto.FaltantesDto;
-import app.dto.RepetidasDto;
+import app.dto.FiguritaDto;
+import app.dto.FiguritaIntercambiableDto;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.servicios.ServicioColeccion;
 import app.servicios.ServicioJwt;
+import app.dto.filtros.FaltantesFiltro;
+import app.dto.filtros.RepetidasFiltro;
+import app.servicios.ServicioColeccion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,8 +53,9 @@ public class ControladorColeccion {
     }
 
     @GetMapping("/faltantes")
-    public ResponseEntity<FaltantesDto> buscarFaltantes(
+    public ResponseEntity<PaginaResultado<FiguritaDto>> buscarFaltantes(
         @CookieValue String token,
+        @PathVariable String col_id,
         @ModelAttribute FaltantesFiltro filtros
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);
@@ -57,8 +63,9 @@ public class ControladorColeccion {
     }
 
     @GetMapping("/repetidas")
-    public ResponseEntity<RepetidasDto> buscarRepetidas(
+    public ResponseEntity<Repetidas<FiguritaIntercambiableDto>> buscarRepetidas(
         @CookieValue String token,
+        @PathVariable String col_id,
         @ModelAttribute RepetidasFiltro filtros
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);

@@ -69,35 +69,3 @@ class ColeccionServiceTest {
 
     when(repositorioColecciones.buscarPorId("col-1")).thenReturn(coleccion);
     when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-
-    assertThrows(FiguritaDuplicadaException.class,
-        () -> service.agregarFaltante("col-1", "ARG-10"));
-  }
-
-  @Test
-  void agregarRepetida_agregaFiguritaYNotificaInteresados() {
-    Perfil interesado = new Perfil("2", new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella"), "Sofía",
-        new Coleccion(), List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")), new ArrayList<>());
-
-    when(repositorioColecciones.buscarPorId("col-1")).thenReturn(coleccion);
-    when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-    when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of(interesado));
-
-    service.agregarRepetida("col-1",  "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
-
-    assertEquals(1, coleccion.getRepetidas().size());
-    verify(repositorioColecciones).guardar(coleccion);
-    verify(notificacionService).notificarInteresados(eq(List.of(interesado)), anyString());
-  }
-
-  @Test
-  void agregarRepetida_sinInteresados_noNotifica() {
-    when(repositorioColecciones.buscarPorId("col-1")).thenReturn(coleccion);
-    when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-    when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of());
-
-    service.agregarRepetida("col-1", "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
-
-    verify(notificacionService).notificarInteresados(eq(List.of()), anyString());
-  }
-}

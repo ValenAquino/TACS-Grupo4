@@ -9,11 +9,9 @@ import app.model.entities.Figurita;
 import app.model.entities.Perfil;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioFiguritasIntercambiables;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,13 +44,11 @@ public class ServicioPropuesta {
         .map(repositorioFiguritas::buscarPorId)
         .toList();
 
-    Propuesta propuesta = new Propuesta(
-        UUID.randomUUID().toString(),
-        origen,
-        destino,
-        figuritasOfrecidas,
-        figuritaBuscada
-    );
+    Propuesta propuesta = Propuesta.builder()
+        .autor(origen).destinatario(destino)
+        .figuritaBuscada(figuritaBuscada)
+        .figuritasOfrecidas(figuritasOfrecidas)
+        .build();
 
     repositorioPropuestas.guardar(propuesta);
 

@@ -3,17 +3,26 @@ package app.model.entities;
 import app.exceptions.FiguritaDuplicadaException;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Document(collection = "colecciones")
 public class Coleccion {
-
+  @Id
   private String id;
+
+  @DBRef
   private List<Figurita> faltantes = new ArrayList<Figurita>();
+
   private List<FiguritaIntercambiable> repetidas = new ArrayList<FiguritaIntercambiable>();
 
   public Coleccion(String id) {
@@ -51,8 +60,6 @@ public class Coleccion {
   }
 
   public boolean tieneFaltante(Figurita figurita) {
-    return this.faltantes.contains(figurita);
+    return !this.faltantes.stream().filter(p -> p.getId().equals(figurita.getId())).toList().isEmpty();
   }
-
-
 }

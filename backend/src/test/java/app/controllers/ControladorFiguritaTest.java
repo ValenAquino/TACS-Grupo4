@@ -7,29 +7,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import app.dto.FiguritaIntercambiableDto;
-import app.dto.PaginaResultado;
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Seleccion;
-import app.servicios.IServicioFigurita;
 
 import java.util.List;
+import app.servicios.ServicioFigurita;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class ControladorFiguritaTest {
 
   @Autowired MockMvc mockMvc;
   @MockBean
-  IServicioFigurita figuritaService;
+  ServicioFigurita figuritaService;
 
   Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
   FiguritaIntercambiable intercambiable = new FiguritaIntercambiable(

@@ -1,19 +1,20 @@
 package app.servicios;
 
-import app.dto.FaltantesDto;
-import app.dto.RepetidasDto;
+import app.dto.FiguritaDto;
+import app.dto.FiguritaIntercambiableDto;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
-import app.model.entities.filtros.FaltantesFiltro;
-import app.model.entities.filtros.RepetidasFiltro;
+import app.dto.filtros.FaltantesFiltro;
+import app.dto.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -55,12 +56,20 @@ public class ServicioColeccion {
     this.notificacionService.notificarInteresados(interesados, cuerpo);
   }
 
-  public FaltantesDto buscarFaltantes(String colId, FaltantesFiltro filtros) {
-    return this.repositorioColecciones.buscarFaltantes(colId, filtros);
+  public PaginaResultado<FiguritaDto> buscarFaltantes(String colId, FaltantesFiltro filtros) {
+    PaginaResultado<Figurita> resultado = this.repositorioColecciones.buscarFaltantes(colId, filtros);
 
+    return new PaginaResultado<>(
+        resultado.contenido().stream().map(FiguritaDto::new).toList(),
+        resultado.cantidadDeElementos(),
+        resultado.cantidadDePaginas(),
+        resultado.numero());
   }
 
-  public RepetidasDto buscarRepetidas(String colId, RepetidasFiltro filtros) {
-    return this.repositorioColecciones.buscarRepetidas(colId, filtros);
+  public Repetidas<FiguritaIntercambiableDto> buscarRepetidas(String colId, RepetidasFiltro filtros) {
+    Repetidas<FiguritaIntercambiable> repetidas = this.repositorioColecciones.buscarRepetidas(colId, filtros);
+    PaginaResultado<FiguritaIntercambiableDto> paginacionDto = repetidas.getData().mapearA(FiguritaIntercambiableDto::new);
+
+    return new Repetidas<>(repetidas.getPublicadas(), repetidas.getDisponibles(), paginacionDto);
   }
 }

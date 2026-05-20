@@ -1,4 +1,4 @@
-package app.servicios;
+package app.servicios.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,7 +33,7 @@ public class SubastaServiceTest {
   private RepositorioFiguritas repositorioFiguritas;
 
   private RepositorioNotificaciones repositorioNotificaciones;
-  private ServicioSubasta service;
+  private IServicioSubasta service;
 
   private Perfil lucas;
   private Perfil sofia;
@@ -47,7 +47,7 @@ public class SubastaServiceTest {
   void setUp() {
     this.repositorioNotificaciones = new RepositorioNotificacionesEnMemoria();
     ServicioNotificacion serviceNotificacion = new ServicioNotificacion(repositorioNotificaciones);
-    service = new ServicioSubasta(repositorioSubastas, repositorioPerfiles,
+    service = new ServicioSubastaImpl(repositorioSubastas, repositorioPerfiles,
         repositorioFiguritas, serviceNotificacion);
 
     messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);

@@ -86,4 +86,25 @@ public class ServicioJwt {
         claims.get("colId", String.class)
     );
   }
+
+  private Claims obtenerAtributos(String token) {
+    return Jwts.parserBuilder()
+        .build()
+        .parseClaimsJwt(token)
+        .getBody();
+  }
+
+  public String getColeccionId(String token) {
+
+    Claims claims = obtenerAtributos(token);
+
+    return claims.get("colId", String.class);
+  }
+
+  public String getPerfilId(String token) {
+
+    Claims claims = obtenerAtributos(token);
+
+    return claims.get("perfilId", String.class);
+  }
 }

@@ -7,9 +7,9 @@ import app.dto.request.RepetidaRequest;
 import app.model.entities.filtros.FaltantesFiltro;
 import app.model.entities.filtros.RepetidasFiltro;
 import app.servicios.ServicioColeccion;
+import app.servicios.ServicioJwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,42 +22,50 @@ import org.springframework.web.bind.annotation.*;
 public class ControladorColeccion {
 
     private final ServicioColeccion coleccionService;
+    private final ServicioJwt servicioJwt;
 
-    @PostMapping("/{col_id}/faltantes")
+    @PostMapping("/faltantes")
     public ResponseEntity<Void> agregarFaltante(
-        @PathVariable String col_id,
-        @RequestBody FaltanteRequest request) {
-
-        coleccionService.agregarFaltante(col_id, request.getFigId());
+        @CookieValue String token,
+        @RequestBody FaltanteRequest request
+    ) {
+        String colId = this.obtenerColeccionIdDeCookie(token);
+        coleccionService.agregarFaltante(colId, request.getFigId());
 
         return ResponseEntity.status(201).build();
     }
 
-    @PostMapping("/{col_id}/repetidas")
+    @PostMapping("/repetidas")
     public ResponseEntity<Void> agregarRepetida(
-        @PathVariable String col_id,
-        @RequestBody RepetidaRequest request) {
-
-        coleccionService.agregarRepetida(col_id,
+        @CookieValue String token,
+        @RequestBody RepetidaRequest request
+    ) {
+        String colId = this.obtenerColeccionIdDeCookie(token);
+        coleccionService.agregarRepetida(colId,
             request.figId(), request.cantidadExistente(), request.modosIntercambio());
 
         return ResponseEntity.status(201).build();
     }
 
-    @GetMapping("/{col_id}/faltantes")
+    @GetMapping("/faltantes")
     public ResponseEntity<FaltantesDto> buscarFaltantes(
-        @PathVariable String col_id,
+        @CookieValue String token,
         @ModelAttribute FaltantesFiltro filtros
     ) {
-        return ResponseEntity.ok(this.coleccionService.buscarFaltantes(col_id, filtros));
+        String colId = this.obtenerColeccionIdDeCookie(token);
+        return ResponseEntity.ok(this.coleccionService.buscarFaltantes(colId, filtros));
     }
 
-    @GetMapping("/{col_id}/repetidas")
+    @GetMapping("/repetidas")
     public ResponseEntity<RepetidasDto> buscarRepetidas(
-        @PathVariable String col_id,
+        @CookieValue String token,
         @ModelAttribute RepetidasFiltro filtros
     ) {
-        return ResponseEntity.ok(this.coleccionService.buscarRepetidas(col_id, filtros));
+        String colId = this.obtenerColeccionIdDeCookie(token);
+        return ResponseEntity.ok(this.coleccionService.buscarRepetidas(colId, filtros));
     }
 
+    private String obtenerColeccionIdDeCookie(String token) {
+        return this.servicioJwt.getColeccionId(token);
+    }
 }

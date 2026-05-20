@@ -53,8 +53,8 @@ const Perfil = () => {
         try {
           setLoading(true);
 
-          const perfil = await buscarPerfil(perfilId);
-          const statsData = await buscarContadores(perfilId);
+          const perfil = await buscarPerfil();
+          const statsData = await buscarContadores();
 
           setPerfil(perfil);
           setStats(statsData);
@@ -74,7 +74,7 @@ const Perfil = () => {
             try {
                 setLoadingNotificaciones(true);
 
-                const calificacionesApi = await buscarCalificaciones(perfilId, {
+                const calificacionesApi = await buscarCalificaciones({
                     ...filtros,
                     pagina,
                     limite: 10,

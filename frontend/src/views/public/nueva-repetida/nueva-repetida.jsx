@@ -165,7 +165,7 @@ const NuevaRepetida = () => {
                 label="Publicar Repetida ↗"
                 disabled={!figurita || modosIntercambio.length === 0}
                 onClick={() => {
-                    agregarRepetida(colId, {id: figurita.id, cantidad: cantidad, modosIntercambio: modosIntercambio});
+                    agregarRepetida({id: figurita.id, cantidad: cantidad, modosIntercambio: modosIntercambio});
                     alert("Se guardo la repetida")
                     setNumero('')
                     setJugador('')

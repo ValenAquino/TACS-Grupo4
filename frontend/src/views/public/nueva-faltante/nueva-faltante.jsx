@@ -90,7 +90,7 @@ const NuevaFaltante = () => {
                 label="Publicar faltante ↗"
                 disabled={!figurita}
                 onClick={() => {
-                    agregarFaltante(colId, figurita)
+                    agregarFaltante(figurita)
                     alert("Se guardo la faltante")
                     setNumero('')
                     setJugador('')

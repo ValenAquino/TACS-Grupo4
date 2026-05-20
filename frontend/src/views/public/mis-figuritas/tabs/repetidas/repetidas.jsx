@@ -30,7 +30,7 @@ const Repetidas = () => {
             try {
                 setLoading(true);
 
-                const repetidasApi = await buscarRepetidas(coleccionId, {
+                const repetidasApi = await buscarRepetidas({
                     ...filtros,
                     pagina,
                     limite: 10,

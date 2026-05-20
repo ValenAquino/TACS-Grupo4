@@ -35,7 +35,7 @@ const PasoFigurita = ({ seleccionada, onSeleccionar, userId }) => {
     const cargar = async () => {
       try {
         setLoading(true);
-        const res = await buscarRepetidas(userId);
+        const res = await buscarRepetidas();
         setRepetidas(res ?? []);
       } catch {
         setRepetidas([]);

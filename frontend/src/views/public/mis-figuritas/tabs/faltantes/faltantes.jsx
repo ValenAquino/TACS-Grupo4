@@ -29,7 +29,7 @@ const Faltantes = () => {
             try {
                 setLoading(true);
 
-                const faltantesApi = await buscarFaltantes(coleccionId, {
+                const faltantesApi = await buscarFaltantes({
                     ...filtros,
                     pagina,
                     limite: 10,

@@ -2,10 +2,10 @@ import { api, handleAxiosError } from "./api.js";
 
 const PERFIL_URL = "/perfil";
 
-export const buscarContadoresSugerencias = async ({userId}) => {
+export const buscarContadoresSugerencias = async () => {
     try {
         const { data } = await api.get(
-            `${PERFIL_URL}/${userId}/contadores`,
+            `${PERFIL_URL}/contadores`,
             {}
         );
         return data;
@@ -15,10 +15,10 @@ export const buscarContadoresSugerencias = async ({userId}) => {
 
 };
 
-export const buscarSugerencias = async ({userId, tipo, pagina, limite}) => {
+export const buscarSugerencias = async ({tipo, pagina, limite}) => {
     try {
         const { data } = await api.get(
-            `${PERFIL_URL}/${userId}/sugerencias`,
+            `${PERFIL_URL}/sugerencias`,
             {params: {tipo, paginaActual: pagina, limite}}
         );
         return data;
@@ -44,38 +44,18 @@ export const calificarPerfil = async (
   );
 };
 
-export const buscarPerfil = async (perfilId) => {
+export const buscarPerfil = async () => {
   try {
-    const { data } = await api.get(`${PERFIL_URL}/${perfilId}`);
+    const { data } = await api.get(`${PERFIL_URL}`);
     return data;
   } catch (error) {
     handleAxiosError(error);
   }
 };
 
-//TODO: Eliminar esta funcion. Si se quieren las faltantes de un perfil, se tiene que usar la coleccion.
-export const buscarFaltantes = async (userId) => {
-  try {
-    const { data } = await api.get(`${PERFIL_URL}/${userId}/faltantes`);
-    return data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
-};
-
-//TODO: Eliminar esta funcion. Si se quieren las repetidas de un perfil, se tiene que usar la coleccion.
-export const buscarRepetidas = async (userId) => {
-  try {
-    const { data } = await api.get(`${PERFIL_URL}/${userId}/repetidas`);
-    return data;
-  } catch (error) {
-    handleAxiosError(error);
-  }
-};
-
-export const buscarCalificaciones = async (perfilId, filtros) => {
+export const buscarCalificaciones = async ( filtros) => {
     try {
-        const { data } = await api.get(`${PERFIL_URL}/${perfilId}/calificaciones`,
+        const { data } = await api.get(`${PERFIL_URL}/calificaciones`,
             {params: filtros}
         );
         return data;
@@ -84,9 +64,9 @@ export const buscarCalificaciones = async (perfilId, filtros) => {
     }
 };
 
-export const buscarContadores = async (perfilId) => {
+export const buscarContadores = async () => {
     try {
-        const { data } = await api.get(`${PERFIL_URL}/${perfilId}/contadores`);
+        const { data } = await api.get(`${PERFIL_URL}/contadores`);
         return data;
     } catch (error) {
         handleAxiosError(error);

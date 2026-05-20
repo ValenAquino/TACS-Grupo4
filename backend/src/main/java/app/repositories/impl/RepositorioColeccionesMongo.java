@@ -1,0 +1,280 @@
+package app.repositories.impl;
+
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
+import app.exceptions.NotFoundException;
+import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
+import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
+import app.dto.filtros.FaltantesFiltro;
+import app.dto.filtros.FiguritasFiltro;
+import app.dto.filtros.RepetidasFiltro;
+import app.repositories.RepositorioColecciones;
+import com.mongodb.DBRef;
+import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public class RepositorioColeccionesMongo implements RepositorioColecciones {
+  @Autowired
+  private MongoTemplate mongoTemplate;
+
+  public void guardar(Coleccion coleccion) {
+    mongoTemplate.save(coleccion);
+  }
+
+  public Coleccion buscarPorId(String colId){
+    Coleccion coleccion = mongoTemplate.findById(colId, Coleccion.class);
+
+    if(coleccion == null) {
+      throw new NotFoundException("No se encontro la coleccion");
+    }
+
+    return coleccion;
+  }
+
+  public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
+
+    int pagina = filtros.pagina();
+    int limite = filtros.limite();
+
+    List<AggregationOperation> filtrado = new ArrayList<>();
+    if(filtros.metodoIntercambio() != null){
+      filtrado.add(Aggregation.match(
+          Criteria.where("repetidas.metodos").is(filtros.metodoIntercambio())
+      ));
+    }
+
+    int cantidadResultadosCrudo = this.contarCampoEnColeccion(colId, "repetidas", filtrado);
+
+    int cantidadResultadosDisponibles = this.sumarDisponibles(colId, "repetidas", filtrado);
+
+    AggregationResults<Document> resultado = this.buscarCampoEnColeccion(colId, "repetidas", filtrado, pagina, limite);
+
+    List<FiguritaIntercambiable> figuritas = this.mapearADominio(resultado);
+
+    PaginaResultado<FiguritaIntercambiable> data =
+        new PaginaResultado<>(
+            figuritas,
+            cantidadResultadosCrudo,
+            (int) Math.ceil( (double) cantidadResultadosCrudo / limite),
+            limite);
+
+    return new Repetidas<>(cantidadResultadosCrudo, cantidadResultadosDisponibles, data);
+  }
+
+  public PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros){
+    int pagina = filtros.pagina();
+    int limite = filtros.limite();
+    List<AggregationOperation> filtrado = new ArrayList<>();
+
+    int cantidadResultados = this.contarCampoEnColeccion(colId, "faltantes", filtrado);
+
+    AggregationResults<Document> resultado = this.buscarCampoEnColeccion(colId, "faltantes", filtrado, pagina, limite);
+
+    MongoConverter converter = mongoTemplate.getConverter();
+
+    List<Figurita> figuritas = resultado.getMappedResults()
+        .stream()
+        .map(doc -> converter.read(Figurita.class, doc))
+        .toList();
+
+    return new PaginaResultado<>(figuritas, cantidadResultados, (int) Math.ceil( (double) cantidadResultados /limite), pagina);
+  }
+
+  @Override
+  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesConFiltros(
+      FiguritasFiltro filtros, int pagina, int limite) {
+    List<AggregationOperation> ops = new ArrayList<>();
+
+    ops.add(Aggregation.lookup("figuritas", "repetidas.figurita.$id", "_id", "repetidas.figurita"));
+    ops.add(Aggregation.unwind("repetidas.figurita"));
+
+    if (filtros.tipo() != null) {
+      ops.add(Aggregation.match(
+          Criteria.where("repetidas.metodos").is(filtros.tipo())
+      ));
+    }
+
+    if (filtros.id() != null) {
+      ops.add(Aggregation.match(
+          Criteria.where("repetidas.figurita._id").is(filtros.id())
+      ));
+    }
+    if (filtros.jugador() != null) {
+      ops.add(Aggregation.match(
+          Criteria.where("repetidas.figurita.jugador").regex(filtros.jugador(), "i")
+      ));
+    }
+    if (filtros.numero() != null) {
+      ops.add(Aggregation.match(
+          Criteria.where("repetidas.figurita.numero").is(filtros.numero())
+      ));
+    }
+    if (filtros.seleccion() != null) {
+      ops.add(Aggregation.match(
+          Criteria.where("repetidas.figurita.seleccion").regex(filtros.seleccion().name(), "i")
+      ));
+    }
+
+    AggregationResults<Document> resultado = this.buscarCampoEnColeccion(null, "repetidas", ops, pagina, limite);
+
+    int count = this.contarCampoEnColeccion(null, "repetidas", ops);
+
+    List<FiguritaIntercambiable> contenido = this.mapearADominio(resultado);
+
+    return new PaginaResultado<>(contenido, count, (int) Math.ceil((double) count / limite), pagina);
+  }
+
+  @Override
+  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesPorQuery(
+      String q, MetodoIntercambio tipo, int pagina, int limite) {
+
+    String[] terminos = q.trim().toLowerCase().split("\\s+");
+
+    List<AggregationOperation> ops = new ArrayList<>();
+
+    if (tipo != null) {
+      ops.add(Aggregation.match(
+          Criteria.where("repetidas.metodos").is(tipo)
+      ));
+    }
+
+    ops.add(Aggregation.lookup("figuritas", "repetidas.figurita.$id", "_id", "repetidas.figurita"));
+    ops.add(Aggregation.unwind("repetidas.figurita"));
+
+    for (String termino : terminos) {
+      List<Criteria> criteriosPorTermino = new ArrayList<>();
+      criteriosPorTermino.add(Criteria.where("repetidas.figurita.jugador").regex(termino, "i"));
+      criteriosPorTermino.add(Criteria.where("repetidas.figurita.seleccion").regex(termino, "i"));
+
+      Integer numero = parseNumero(termino);
+      if (numero != null) {
+        criteriosPorTermino.add(Criteria.where("repetidas.figurita.numero").is(numero));
+      }
+
+      ops.add(Aggregation.match(new Criteria().orOperator(criteriosPorTermino)));
+    }
+
+    int count = this.contarCampoEnColeccion(null, "repetidas", ops);
+    AggregationResults<Document> resultado = this.buscarCampoEnColeccion(null, "repetidas", ops, pagina, limite);
+    List<FiguritaIntercambiable> contenido = this.mapearADominio(resultado);
+
+    return new PaginaResultado<>(contenido, count, (int) Math.ceil((double) count / limite), pagina);
+  }
+
+  private Integer parseNumero(String termino) {
+    try { return Integer.parseInt(termino); }
+    catch (NumberFormatException e) { return null; }
+  }
+
+  @Override
+  public List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds) {
+    List<AggregationOperation> ops = new ArrayList<>();
+    ops.add(Aggregation.lookup("figuritas", "repetidas.figurita.$id", "_id", "repetidas.figurita"));
+    ops.add(Aggregation.unwind("repetidas.figurita"));
+    ops.add(Aggregation.match(
+        Criteria.where("repetidas.figurita._id").in(figuritaIds)
+    ));
+
+    AggregationResults<Document> resultados = this.buscarCampoEnColeccion(null, "repetidas", ops, 1, 100);
+
+    return this.mapearADominio(resultados);
+  }
+
+  @Override
+  public List<FiguritaIntercambiable> buscarIntercambiablesPorPerfilId(String perfilId) {
+    Query query = new Query(Criteria.where("_id").is(perfilId));
+    query.fields().include("coleccion");
+
+    Document doc = mongoTemplate.findOne(query, Document.class, "perfiles");
+    if (doc == null) {
+      return new ArrayList<>();
+    }
+    DBRef ref = (DBRef) doc.get("coleccion");
+    String colId = ref.getId().toString();
+
+    AggregationResults<Document> figuritas = this.buscarCampoEnColeccion(colId, "repetidas", new ArrayList<>(), 1,100);
+    return this.mapearADominio(figuritas);
+  }
+
+  private int contarCampoEnColeccion(String colId, String campo, List<AggregationOperation> ops) {
+    List<AggregationOperation> operaciones = new ArrayList<>();
+
+    if(colId != null) {
+      operaciones.add(Aggregation.match(Criteria.where("_id").is(colId)));
+    }
+    operaciones.add(Aggregation.unwind(campo));
+    operaciones.addAll(ops);
+    operaciones.add(Aggregation.count().as("total"));
+
+    Aggregation countAggregation = Aggregation.newAggregation(operaciones);
+
+    AggregationResults<Document> countResult =
+        mongoTemplate.aggregate(countAggregation, "colecciones", Document.class);
+
+    Document countDoc = countResult.getUniqueMappedResult();
+    return countDoc != null ? countDoc.getInteger("total") : 0;
+  }
+
+  private AggregationResults<Document> buscarCampoEnColeccion(String colId, String campo, List<AggregationOperation> ops, int pagina, int limite) {
+    List<AggregationOperation> operaciones = new ArrayList<>();
+    if(colId != null) {
+      operaciones.add(Aggregation.match(Criteria.where("_id").is(colId)));
+    }
+    operaciones.add(Aggregation.unwind(campo));
+    operaciones.addAll(ops);
+    operaciones.add(Aggregation.skip((long) (pagina - 1) * limite));
+    operaciones.add(Aggregation.limit(limite));
+    operaciones.add(Aggregation.replaceRoot(campo));
+
+    Aggregation aggregation = Aggregation.newAggregation(operaciones);
+
+    return mongoTemplate.aggregate(aggregation, "colecciones", Document.class);
+  }
+
+  private int sumarDisponibles(String colId, String campo, List<AggregationOperation> ops) {
+    List<AggregationOperation> operaciones = new ArrayList<>();
+
+    operaciones.add(Aggregation.match(Criteria.where("_id").is(colId)));
+    operaciones.add(Aggregation.unwind(campo));
+    operaciones.addAll(ops);
+    operaciones.add(Aggregation.group()
+        .sum(campo + ".cantidadExistente").as("totalExistente")
+        .sum(campo + ".cantidadReservada").as("totalReservada")
+    );
+
+    Aggregation aggregation = Aggregation.newAggregation(operaciones);
+
+    AggregationResults<Document> result =
+        mongoTemplate.aggregate(aggregation, "colecciones", Document.class);
+
+    Document doc = result.getUniqueMappedResult();
+    if (doc == null) return 0;
+
+    int existente = doc.getInteger("totalExistente", 0);
+    int reservada = doc.getInteger("totalReservada", 0);
+    return existente - reservada;
+  }
+
+  private List<FiguritaIntercambiable> mapearADominio(AggregationResults<Document> resultado) {
+    MongoConverter converter = mongoTemplate.getConverter();
+
+    return resultado.getMappedResults()
+        .stream()
+        .map(doc -> converter.read(FiguritaIntercambiable.class, doc))
+        .toList();
+  }
+}

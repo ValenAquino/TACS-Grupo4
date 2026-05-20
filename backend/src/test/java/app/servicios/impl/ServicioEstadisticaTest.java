@@ -1,0 +1,338 @@
+package app.servicios.impl;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import app.MongoTestBase;
+import app.dto.EstadisticasDto;
+import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
+import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MedioComunicacion;
+import app.model.entities.MedioDeContacto;
+import app.model.entities.MetodoIntercambio;
+import app.model.entities.Perfil;
+import app.model.entities.Propuesta;
+import app.model.entities.Rol;
+import app.model.entities.Seleccion;
+import app.model.entities.Subasta;
+import app.model.entities.Usuario;
+import app.servicios.ServicioEstadisticas;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+class ServicioEstadisticaTest extends MongoTestBase {
+    @Autowired
+    private ServicioEstadisticas service;
+
+    private List<MedioDeContacto> telegram(String numero) {
+        return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
+    }
+
+    private Perfil perfil(String id, String usuarioId, String nombre) {
+        Usuario user = new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella");
+        Coleccion colecccion = new Coleccion("c-"+ id);
+        Perfil perfil = Perfil.builder()
+            .id(id).usuario(user).nombre("nombre")
+            .coleccion(colecccion)
+            .mediosDeContacto(telegram("@" + nombre.toLowerCase()))
+            .build();
+        repositorioColecciones.guardar(colecccion);
+        repositorioUsuarios.guardar(user);
+        repositorioPerfiles.guardar(perfil);
+        return perfil;
+    }
+
+    private Figurita figurita(String id, Seleccion seleccion) {
+        Figurita fig =  new Figurita(id, 1, "Jugador", seleccion, "Delantero");
+        repositorioFiguritas.guardar(fig);
+
+        return fig;
+    }
+
+    private FiguritaIntercambiable soloIntercambio(Figurita f) {
+        return new FiguritaIntercambiable(f, 1, List.of(MetodoIntercambio.INTERCAMBIO));
+    }
+
+    private FiguritaIntercambiable soloSubasta(Figurita f) {
+        return new FiguritaIntercambiable(f, 1, List.of(MetodoIntercambio.SUBASTA));
+    }
+
+    private FiguritaIntercambiable ambosMetodos(Figurita f) {
+        return new FiguritaIntercambiable(f, 1, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA));
+    }
+
+    @BeforeEach
+    void setUp() {
+        service = new ServicioEstadisticas(repositorioPerfiles, repositorioPropuestas, repositorioSubastas);
+    }
+
+    @Test
+    void getEstadisticas_sinDatos_retornaTodosCeros() {
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(0, resultado.getTotalUsuarios());
+        assertEquals(0, resultado.getTotalFiguritasPublicadas());
+        assertEquals(0, resultado.getTotalPropuestas());
+        assertEquals(0, resultado.getTotalSubastasActivas());
+    }
+
+    @Test
+    void getEstadisticas_conDatos_retornaValoresCorrectos() {
+        Figurita f1 = figurita("f1", Seleccion.ARGENTINA);
+        Figurita f2 = figurita("f2", Seleccion.BRASIL);
+        Figurita f3 = figurita("f3", Seleccion.ARGENTINA);
+
+        Coleccion coleccionConDos = new Coleccion();
+        coleccionConDos.getRepetidas().add(soloIntercambio(f1));
+        coleccionConDos.getRepetidas().add(soloIntercambio(f2));
+
+        Coleccion coleccionConUna = new Coleccion();
+        coleccionConUna.getRepetidas().add(soloIntercambio(f3));
+
+        repositorioColecciones.guardar(coleccionConDos);
+        repositorioColecciones.guardar(coleccionConUna);
+
+        Usuario user =  new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
+        repositorioUsuarios.guardar(user);
+
+        Perfil u1 = Perfil.builder()
+            .id("u-1").usuario(user).nombre("Lucas")
+            .mediosDeContacto(telegram("@lucas"))
+            .coleccion(coleccionConDos)
+            .build();
+
+        repositorioPerfiles.guardar(u1);
+
+        user = new Usuario("usr-2", Rol.USUARIO, "lucas", "fiscella");
+        repositorioUsuarios.guardar(user);
+        Perfil u2 = Perfil.builder()
+            .id("u-2").usuario(user).nombre("Sofía")
+            .mediosDeContacto(telegram("@sofia"))
+            .coleccion(coleccionConUna)
+            .build();
+
+        repositorioPerfiles.guardar(u2);
+
+        Subasta subastaActiva = Subasta.builder().id("s-1").autor(u1).fechaInicio(
+                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+            .build();
+
+        repositorioSubastas.guardar(subastaActiva);
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(2, resultado.getTotalUsuarios());
+        assertEquals(3, resultado.getTotalFiguritasPublicadas());
+        assertEquals(0, resultado.getTotalPropuestas());
+        assertEquals(1, resultado.getTotalSubastasActivas());
+    }
+
+    @Test
+    void getEstadisticas_filtraSoloSubastasActivas() {
+        Perfil u1 = perfil("u-1", "usr-1", "Lucas");
+
+        Subasta activa  = Subasta.builder().id("s-1").autor(u1).fechaInicio(
+                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+            .build();
+
+        Subasta vencida = Subasta.builder().id("s-2").autor(u1).fechaInicio(
+                LocalDateTime.now().minusDays(3)).fechaCierre(LocalDateTime.now().minusDays(1))
+            .build();
+
+        repositorioSubastas.guardar(activa);
+        repositorioSubastas.guardar(vencida);
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(1, resultado.getTotalSubastasActivas());
+    }
+
+    @Test
+    void propuestasPorEstado_sinPropuestas_retornaCeros() {
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(0, resultado.getPropuestasPorEstado().getPendientes());
+        assertEquals(0, resultado.getPropuestasPorEstado().getAceptadas());
+        assertEquals(0, resultado.getPropuestasPorEstado().getRechazadas());
+    }
+
+    @Test
+    void propuestasPorEstado_conPropuestasMixtas_retornaConteoCorrecto() {
+        Perfil autor = perfil("a", "usr-a", "Autor");
+        Perfil destinatario = perfil("d", "usr-d", "Dest");
+
+        Propuesta pendiente = Propuesta.builder()
+            .id("p1").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+
+        Propuesta aceptada = Propuesta.builder()
+            .id("p2").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+        aceptada.aceptar(destinatario);
+
+        Propuesta rechazada = Propuesta.builder()
+            .id("p3").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+        rechazada.rechazar(destinatario);
+
+        repositorioPropuestas.guardar(pendiente);
+        repositorioPropuestas.guardar(aceptada);
+        repositorioPropuestas.guardar(rechazada);
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(1, resultado.getPropuestasPorEstado().getPendientes());
+        assertEquals(1, resultado.getPropuestasPorEstado().getAceptadas());
+        assertEquals(1, resultado.getPropuestasPorEstado().getRechazadas());
+    }
+
+    @Test
+    void propuestasPorEstado_variasDelMismoEstado_acumulaCorrectamente() {
+        Perfil autor = perfil("a", "usr-a", "Autor");
+        Perfil destinatario = perfil("d", "usr-d", "Dest");
+
+        Propuesta p1 = Propuesta.builder()
+            .id("p1").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+
+        Propuesta p2 = Propuesta.builder()
+            .id("p2").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+        Propuesta p3 = Propuesta.builder()
+            .id("p3").autor(autor).destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .build();
+        p3.aceptar(destinatario);
+
+        repositorioPropuestas.guardar(p1);
+        repositorioPropuestas.guardar(p2);
+        repositorioPropuestas.guardar(p3);
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(2, resultado.getPropuestasPorEstado().getPendientes());
+        assertEquals(1, resultado.getPropuestasPorEstado().getAceptadas());
+        assertEquals(0, resultado.getPropuestasPorEstado().getRechazadas());
+    }
+
+    @Test
+    void figuritasPorModalidad_sinFiguritas_retornaCeros() {
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(0, resultado.getFiguritasPorModalidad().getSoloIntercambio());
+        assertEquals(0, resultado.getFiguritasPorModalidad().getSoloSubasta());
+        assertEquals(0, resultado.getFiguritasPorModalidad().getAmbos());
+    }
+
+    @Test
+    void figuritasPorModalidad_conFiguritasMixtas_retornaConteoCorrecto() {
+        Figurita f1 = figurita("f1", Seleccion.ARGENTINA);
+        Figurita f2 = figurita("f2", Seleccion.BRASIL);
+        Figurita f3 = figurita("f3", Seleccion.ESPAÑA);
+
+        Coleccion coleccion = new Coleccion();
+        coleccion.getRepetidas().add(soloIntercambio(f1));
+        coleccion.getRepetidas().add(soloSubasta(f2));
+        coleccion.getRepetidas().add(ambosMetodos(f3));
+
+        repositorioColecciones.guardar(coleccion);
+
+        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
+
+        repositorioUsuarios.guardar(user);
+
+        Perfil u1 = Perfil.builder()
+            .id("1").usuario(user)
+            .nombre("Lucas").coleccion(coleccion)
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        repositorioPerfiles.guardar(u1);
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(1, resultado.getFiguritasPorModalidad().getSoloIntercambio());
+        assertEquals(1, resultado.getFiguritasPorModalidad().getSoloSubasta());
+        assertEquals(1, resultado.getFiguritasPorModalidad().getAmbos());
+    }
+
+    @Test
+    void topSelecciones_sinFiguritas_retornaListaVacia() {
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertTrue(resultado.getTopSelecciones().isEmpty());
+    }
+
+    @Test
+    void topSelecciones_retornaTop3OrdenadoDescendente() {
+        Coleccion coleccion = new Coleccion();
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f1", Seleccion.ARGENTINA)));
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f2", Seleccion.ARGENTINA)));
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f3", Seleccion.ARGENTINA)));
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f4", Seleccion.BRASIL)));
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f5", Seleccion.BRASIL)));
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f6", Seleccion.ESPAÑA)));
+
+        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
+
+        Perfil u1 = Perfil.builder()
+            .id("1").usuario(user)
+            .nombre("Lucas").coleccion(coleccion)
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        repositorioColecciones.guardar(coleccion);
+        repositorioUsuarios.guardar(user);
+        repositorioPerfiles.guardar(u1);
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(3, resultado.getTopSelecciones().size());
+        assertEquals("ARGENTINA", resultado.getTopSelecciones().get(0).getSeleccion());
+        assertEquals(3, resultado.getTopSelecciones().get(0).getCantidad());
+        assertEquals("BRASIL", resultado.getTopSelecciones().get(1).getSeleccion());
+        assertEquals(2, resultado.getTopSelecciones().get(1).getCantidad());
+        assertEquals("ESPAÑA", resultado.getTopSelecciones().get(2).getSeleccion());
+        assertEquals(1, resultado.getTopSelecciones().get(2).getCantidad());
+    }
+
+    @Test
+    void topSelecciones_menosDeTresSelecciones_retornaSoloLasExistentes() {
+        Coleccion coleccion = new Coleccion();
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f1", Seleccion.ARGENTINA)));
+        coleccion.getRepetidas().add(soloIntercambio(figurita("f2", Seleccion.BRASIL)));
+
+        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
+
+        Perfil u1 = Perfil.builder()
+            .id("1").usuario(user)
+            .nombre("Lucas").coleccion(coleccion)
+            .mediosDeContacto(telegram("@lucas"))
+            .build();
+
+        repositorioColecciones.guardar(coleccion);
+        repositorioUsuarios.guardar(user);
+        repositorioPerfiles.guardar(u1);
+
+        EstadisticasDto resultado = service.obtenerEstadisticas();
+
+        assertEquals(2, resultado.getTopSelecciones().size());
+    }
+}

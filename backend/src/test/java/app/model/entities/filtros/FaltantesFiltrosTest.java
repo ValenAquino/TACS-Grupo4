@@ -1,5 +1,6 @@
 package app.model.entities.filtros;
 
+import app.dto.filtros.FaltantesFiltro;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

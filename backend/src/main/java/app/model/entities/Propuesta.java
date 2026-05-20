@@ -5,32 +5,41 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Document(collection = "propuestas")
+@Builder
 public class Propuesta {
+
+    @Id
     private String id;
+
+    @DBRef
     private Perfil autor;
+
+    @DBRef
     private Perfil destinatario;
+
+    @DBRef
     private List<Figurita> figuritasOfrecidas;
+
+    @DBRef
     private Figurita figuritaBuscada;
-    private List<EstadoPropuesta> estado;
 
-    public Propuesta(String id, Perfil autor, Perfil destinatario, List<Figurita> figuritasOfrecidas,
-                     Figurita figuritaBuscada) {
-        this.id = id;
-        this.autor = autor;
-        this.destinatario = destinatario;
-        this.figuritasOfrecidas = figuritasOfrecidas;
-        this.figuritaBuscada = figuritaBuscada;
-        this.estado = new ArrayList<>(
-            List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))
-        );    }
-
-
+    @Builder.Default
+    private List<EstadoPropuesta> estado= new ArrayList<>(
+        List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))
+    );
     //Valído que no este pendiente y que solo lo pueda aceptar el usuario Correspondiente.
     //Chequear si eso está bien o no es necesario.
 

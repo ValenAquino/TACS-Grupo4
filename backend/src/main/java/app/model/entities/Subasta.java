@@ -5,53 +5,49 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Document(collection = "subastas")
+@Builder
 public class Subasta {
+
+    @Id
     private String id;
+
+    @DBRef
     private Perfil autor;
+
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaCierre;
+
+    @DBRef
     private Figurita figuritaSubastada;
-    private List<Propuesta> ofertas;
-    private List<Figurita> figuritasSolicitadas;
-    private Integer calificacionMinimaSolicitada;
-    private Boolean finalizada;
 
-    public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
-                   Figurita figuritaSubastada, List<Figurita> figuritasSolicitadas,
-                   Integer calificacionMinimaSolicitada) {
-        this.id = id;
-        this.autor = autor;
-        this.fechaInicio = fechaInicio;
-        this.fechaCierre = fechaCierre;
-        this.figuritaSubastada = figuritaSubastada;
-        this.ofertas = new ArrayList<>();
-        this.figuritasSolicitadas = figuritasSolicitadas;
-        this.calificacionMinimaSolicitada = calificacionMinimaSolicitada;
-    }
+    @Builder.Default
+    private List<Propuesta> ofertas = new ArrayList<>();;
 
-    public Subasta(String id, Perfil autor, LocalDateTime fechaInicio, LocalDateTime fechaCierre,
-                   Figurita figuritaSubastada) {
-        this.id = id;
-        this.autor = autor;
-        this.fechaInicio = fechaInicio;
-        this.fechaCierre = fechaCierre;
-        this.figuritaSubastada = figuritaSubastada;
-        this.ofertas = new ArrayList<>();
-        this.figuritasSolicitadas = new ArrayList<>();
-        this.calificacionMinimaSolicitada = 1;
-    }
+    @DBRef
+    @Builder.Default
+    private List<Figurita> figuritasSolicitadas = new ArrayList<>();
+
+    @Builder.Default
+    private Integer calificacionMinimaSolicitada = 1;
 
     public void agregarOferta(Propuesta oferta) {
         boolean tieneCondicionesSolicitadas = !this.figuritasSolicitadas.isEmpty();
         boolean noOfertaLasSolicitadas = this.figuritasSolicitadas.stream().noneMatch(fs -> oferta.getFiguritasOfrecidas().contains(fs));
 
-        if(tieneCondicionesSolicitadas && (noOfertaLasSolicitadas || oferta.getAutor().obtenerCalificacionMedia() >= this.calificacionMinimaSolicitada)) {
+        if(tieneCondicionesSolicitadas && (noOfertaLasSolicitadas || oferta.getAutor().getCalificacionMedia() >= this.calificacionMinimaSolicitada)) {
             throw new BadRequestException("No se cumplieron las condiciones minimas");
         }
 

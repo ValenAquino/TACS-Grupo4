@@ -1,5 +1,6 @@
 package app.model.entities.filtros;
 
+import app.dto.filtros.RepetidasFiltro;
 import app.model.entities.MetodoIntercambio;
 import org.junit.jupiter.api.Test;
 

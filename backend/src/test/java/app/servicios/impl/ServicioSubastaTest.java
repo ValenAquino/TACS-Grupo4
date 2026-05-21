@@ -272,7 +272,7 @@ public class ServicioSubastaTest extends MongoTestBase {
         .figuritaBuscada(messi)
         .build();
 
-    propuestaSeleccionada.seleccionar(sofia);
+    propuestaSeleccionada.seleccionar(sofia.getId());
 
     Propuesta propuestaPendiente = Propuesta.builder()
         .id("o-2").autor(lucas)

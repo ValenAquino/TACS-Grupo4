@@ -3,7 +3,7 @@ package app.servicios.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import app.MongoTestBase;
-import app.exceptions.FiguritaDuplicadaException;
+import app.exceptions.BadRequestException;
 import app.model.entities.*;
 import java.util.List;
 
@@ -49,7 +49,7 @@ class ServicioColeccionTest extends MongoTestBase {
     coleccion.agregarFaltante(messi);
     repositorioColecciones.guardar(coleccion);
 
-    assertThrows(FiguritaDuplicadaException.class,
+    assertThrows(BadRequestException.class,
         () -> service.agregarFaltante("col-1", "ARG-10"));
   }
 

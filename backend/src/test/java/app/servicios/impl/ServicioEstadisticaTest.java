@@ -177,14 +177,14 @@ class ServicioEstadisticaTest extends MongoTestBase {
             .figuritasOfrecidas(List.of())
             .figuritaBuscada(null)
             .build();
-        aceptada.aceptar(destinatario);
+        aceptada.aceptar(destinatario.getId());
 
         Propuesta rechazada = Propuesta.builder()
             .id("p3").autor(autor).destinatario(destinatario)
             .figuritasOfrecidas(List.of())
             .figuritaBuscada(null)
             .build();
-        rechazada.rechazar(destinatario);
+        rechazada.rechazar(destinatario.getId());
 
         repositorioPropuestas.guardar(pendiente);
         repositorioPropuestas.guardar(aceptada);
@@ -218,7 +218,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
             .figuritasOfrecidas(List.of())
             .figuritaBuscada(null)
             .build();
-        p3.aceptar(destinatario);
+        p3.aceptar(destinatario.getId());
 
         repositorioPropuestas.guardar(p1);
         repositorioPropuestas.guardar(p2);

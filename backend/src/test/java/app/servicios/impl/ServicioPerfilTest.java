@@ -69,6 +69,7 @@ class ServicioPerfilTest extends MongoTestBase {
     Calificacion calificacion = new Calificacion(
         "c-0",
         usuario,
+        otro,
         4,
         "Buen intercambio",
         "t-1",
@@ -103,6 +104,7 @@ class ServicioPerfilTest extends MongoTestBase {
     Calificacion existente = new Calificacion(
         "c-0",
         otro,
+        usuario,
         4,
         "Buen intercambio",
         "t-1",

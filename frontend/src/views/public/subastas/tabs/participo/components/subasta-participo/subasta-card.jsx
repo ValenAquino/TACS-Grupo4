@@ -77,37 +77,33 @@ const SubastaCard = ({ subasta }) => {
         </div>
       </div>
 
-      {/* Acciones */}
       <div className="px-3 py-2 d-flex gap-2 border-top">
-        <button
-          className="btn btn-outline-secondary flex-fill"
-          style={{ fontSize: '0.85rem' }}
+        <Button
+          label={finalizada ? 'Ver resumen' : 'Ver subasta'}
+          variante="secundario_borde"
+          className="flex-fill"
           onClick={() => navigate(`/subastas/${subasta.id}`)}
-        >
-          {finalizada ? 'Ver resumen' : 'Ver subasta'}
-        </button>
+        />
         {finalizada ? (
           <>
             {puedoCalificar && (
-              <button
-                className="btn btn-outline-secondary flex-fill"
-                style={{ fontSize: '0.85rem' }}
+              <Button
+                label="Calificar usuario"
+                variante="secundario_borde"
+                className="flex-fill"
                 onClick={() => setMostrarCalificar(true)}
-              >
-                Calificar usuario
-              </button>
+              />
             )}
           </>
         ) : (
           <>
             {tu_oferta.figuritas_ofrecidas?.length > 0 && (
-              <button
-                className="btn btn-outline-secondary flex-fill"
-                style={{ fontSize: '0.85rem' }}
+              <Button
+                label="Mejorar oferta"
+                variante="secundario_borde"
+                className="flex-fill"
                 onClick={() => navigate(`/subastas/${subasta.id}/ofertas/${tu_oferta.id}`)}
-              >
-                Mejorar oferta
-              </button>
+              />
             )}
           </>
         )}
@@ -123,4 +119,4 @@ const SubastaCard = ({ subasta }) => {
   )
 }
 
-export default SubastaCard;
+export default SubastaCard

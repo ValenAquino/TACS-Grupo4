@@ -1,4 +1,13 @@
-import styles from './button.module.css';
+import styles from './button.module.css'
+
+const varianteClase = {
+  default: '',
+  peligro: 'btn-danger',
+  exito: 'btn-success',
+  peligroBorde: 'btn-outline-danger',
+  exitoBorde: 'btn-outline-success',
+  secundarioBorde: 'btn-outline-secondary',
+}
 
 const Button = ({
   children,
@@ -8,11 +17,12 @@ const Button = ({
   disabled = false,
   relevant = false,
   type = 'button',
+  variante = 'default',
 }) => {
   return (
     <button
       type={type}
-      className={`btn ${styles.button} ${relevant ? styles.relevant : ''} ${className}`}
+      className={`btn ${styles.button} ${varianteClase[variante]} ${relevant ? styles.relevant : ''} ${className}`}
       onClick={!disabled ? onClick : undefined}
       disabled={disabled}
     >
@@ -21,4 +31,4 @@ const Button = ({
   );
 };
 
-export default Button;
+export default Button

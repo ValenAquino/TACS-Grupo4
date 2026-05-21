@@ -28,3 +28,25 @@
   outline: 2px solid var(--color-secondary);
   outline-offset: 2px;
 }
+
+.peligro {
+  background-color: var(--bs-danger);
+  border-color: var(--bs-danger);
+  color: white;
+}
+
+.peligro:hover:not(:disabled) {
+  background-color: #b02a37;
+  color: white;
+}
+
+.exito {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+  color: white;
+}
+
+.exito:hover:not(:disabled) {
+  background-color: #146c43;
+  color: white;
+}

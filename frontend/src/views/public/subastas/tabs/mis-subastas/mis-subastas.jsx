@@ -18,10 +18,8 @@ const MisSubastas = () => {
       try {
         setLoading(true)
         const res = await buscarMisSubastas(userId)
-        console.log('misSubastas res:', res)
         setData(res)
-      } catch (e) {
-        console.log('error catch:', e)
+      } catch {
         setError(true)
       } finally {
         setLoading(false)

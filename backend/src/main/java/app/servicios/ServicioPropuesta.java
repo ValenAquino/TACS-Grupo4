@@ -1,10 +1,8 @@
 package app.servicios;
 
-import app.dto.CalificacionDto;
 import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
@@ -65,22 +63,19 @@ public class ServicioPropuesta {
 
   public void aceptar(String propuestaId, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
-    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
-    propuesta.aceptar(perfil);
+    propuesta.aceptar(perfilId);
     repositorioPropuestas.guardar(propuesta);
   }
 
   public void rechazar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
-    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
-    propuesta.rechazar(perfil);
+    propuesta.rechazar(perfilId);
     repositorioPropuestas.guardar(propuesta);
   }
 
   public void cancelar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
-    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
-    propuesta.cancelar(perfil);
+    propuesta.cancelar(perfilId);
     this.repositorioPropuestas.guardar(propuesta);
   }
 

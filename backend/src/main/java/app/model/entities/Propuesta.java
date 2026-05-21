@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.BadRequestException;
 import app.exceptions.PropuestaException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -61,8 +62,8 @@ public class Propuesta {
      * Acepta la propuesta. Valida que {@code usuario} sea el destinatario
      * y que la propuesta esté en estado ACEPTADO.
      */
-    public void aceptar(Perfil perfil) {
-        validarUsuarioDestino(perfil);
+    public void aceptar(String perfilId) {
+        validarUsuarioDestino(perfilId);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
     }
@@ -71,8 +72,8 @@ public class Propuesta {
      * Se selecciona la propuesta. Valida que {@code usuario} sea el destinatario
      * y que la propuesta esté en estado SELECCIONADO. (En una subasta)
      */
-    public void seleccionar(Perfil perfil) {
-        validarUsuarioDestino(perfil);
+    public void seleccionar(String perfilId) {
+        validarUsuarioDestino(perfilId);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
     }
@@ -81,8 +82,8 @@ public class Propuesta {
      * Rechaza la propuesta. Valida que {@code usuario} sea el destinatario
      * y que la propuesta esté en estado RECHAZADO.
      */
-    public void rechazar(Perfil perfil) {
-        validarUsuarioDestino(perfil);
+    public void rechazar(String perfilId) {
+        validarUsuarioDestino(perfilId);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
     }
@@ -91,27 +92,27 @@ public class Propuesta {
      * Cancela la propuesta. Valida que {@code usuario} sea el autor
      * y que la propuesta esté en estado PENDIENTE.
      */
-    public void cancelar(Perfil perfil) {
-        this.validarUsuarioAutor(perfil);
+    public void cancelar(String perfilId) {
+        this.validarUsuarioAutor(perfilId);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
     }
 
     private void validarPendiente() {
         if (obtenerEstadoActual().getValor() != EstadoProceso.PENDIENTE) {
-            throw new PropuestaException("La propuesta ya fue respondida");
+            throw new BadRequestException("La propuesta ya fue respondida");
         }
     }
 
-    private void validarUsuarioDestino(Perfil perfil) {
-        if (!this.destinatario.getId().equals(perfil.getId())) {
-            throw new PropuestaException("Solo el destinatario puede responder la propuesta");
+    private void validarUsuarioDestino(String perfilId) {
+        if (!this.destinatario.getId().equals(perfilId)) {
+            throw new BadRequestException("Solo el destinatario puede responder la propuesta");
         }
     }
 
-    private void validarUsuarioAutor(Perfil perfil) {
-        if (!this.destinatario.getId().equals(perfil.getId())) {
-            throw new PropuestaException("Solo el destinatario puede responder la propuesta");
+    private void validarUsuarioAutor(String perfilId) {
+        if (!this.autor.getId().equals(perfilId)) {
+            throw new BadRequestException("Solo el destinatario puede responder la propuesta");
         }
     }
 

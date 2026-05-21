@@ -76,20 +76,31 @@ const RecibidasTab = () => {
                         `}</style>
 
 
-            {loading ? <p>Cargando resultados...</p>
-                :
+            {loading ? (
+                <p>Cargando resultados...</p>
+            ) : (
                 <>
-                    <h6 className="fw-bold mt-3">PENDIENTES ({`${recibidas.resultados}`})</h6>
-                    {recibidas.data.map(i => (
-                        <IntercambioCard
-                            key={i.id}
-                            intercambio={i}
-                            tipo={"RECIBIDA"}
-                            onActualizado={cargarRecibidas}
-                        />
-                    ))}
+                    <h6 className="fw-bold mt-3">
+                        PENDIENTES ({recibidas?.resultados})
+                    </h6>
+
+                    {recibidas?.data?.length > 0 ? (
+                        recibidas.data.map(i => (
+                            <IntercambioCard
+                                key={i.id}
+                                intercambio={i}
+                                tipo={"RECIBIDA"}
+                                onActualizado={cargarRecibidas}
+                            />
+                        ))
+                    ) : (
+                        <div className="col-12 text-center text-muted py-5">
+                            <div className="fs-1">📭</div>
+                            <p className="mb-0">No hay resultados...</p>
+                        </div>
+                    )}
                 </>
-            }
+            )}
 
             <Paginacion
                 page={pagina}

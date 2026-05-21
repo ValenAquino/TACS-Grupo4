@@ -104,6 +104,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
 
             {loading ? <p>Cargando resultados...</p>
                 :
+                enviadas?.data?.length > 0 ?
                 <>
                     <p className={"mb-3"}>Esperando Respuesta {`(${enviadas.resultados})`}</p>
                     {enviadas.data.map(i => (
@@ -114,8 +115,12 @@ import {useAuth} from "@/contexts/userContext.jsx";
                             onActualizado={cargarEnviadas}
                         />
                     ))}
-                </>
-            }
+                </> : (
+                        <div className="col-12 text-center text-muted py-5">
+                            <div className="fs-1">📭</div>
+                            <p className="mb-0">No hay resultados...</p>
+                        </div>
+                )}
 
             <Paginacion
                 page={pagina}

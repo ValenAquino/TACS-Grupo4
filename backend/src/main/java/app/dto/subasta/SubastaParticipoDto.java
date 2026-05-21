@@ -29,11 +29,11 @@ public class SubastaParticipoDto {
     this.fechaCierre = subasta.getFechaCierre();
     this.tuOferta = new PropuestaDto(tuOferta);
 
-    if (this.tuOferta.getEstado() == EstadoProceso.ACEPTADO) {
-      this.yaCalificado = subasta.getAutor().getCalificaciones().stream()
-          .anyMatch(c -> tuOferta.getAutor().getId().equals(c.getAutor().getId())
-              && subasta.getId().equals(c.getTransactionId())
-              && c.getTipoTransaccion() == MetodoIntercambio.SUBASTA);
-    }
+//    if (this.tuOferta.getEstado() == EstadoProceso.ACEPTADO) {
+//      this.yaCalificado = subasta.getAutor().getCalificaciones().stream()
+//          .anyMatch(c -> tuOferta.getAutor().getId().equals(c.getAutor().getId())
+//              && subasta.getId().equals(c.getTransactionId())
+//              && c.getTipoTransaccion() == MetodoIntercambio.SUBASTA);
+//    }
   }
 }

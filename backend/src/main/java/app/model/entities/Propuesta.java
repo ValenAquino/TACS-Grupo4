@@ -1,7 +1,6 @@
 package app.model.entities;
 
 import app.exceptions.BadRequestException;
-import app.exceptions.PropuestaException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,6 @@
 package app.model.entities;
 
 import app.exceptions.BadRequestException;
-import app.exceptions.FiguritaDuplicadaException;
 import java.util.ArrayList;
 import java.util.List;
 

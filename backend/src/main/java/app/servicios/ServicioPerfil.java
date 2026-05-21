@@ -50,21 +50,23 @@ public class ServicioPerfil {
     }
 
     Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(DestinoId);
-    if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + DestinoId);
-
     Perfil autor = this.repositorioPerfiles.buscarPorId(AutorId);
-    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + AutorId);
 
-    boolean yaCalifico = perfilDestino.getCalificaciones().stream()
-        .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
-            && Objects.equals(transactionId, c.getTransactionId())
-            && c.getTipoTransaccion() == tipoTransaccion);
-
-    if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
+//    boolean yaCalifico = perfilDestino.getCalificaciones().stream()
+//        .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
+//            && Objects.equals(transactionId, c.getTransactionId())
+//            && c.getTipoTransaccion() == tipoTransaccion);
+//
+//    if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
 
     Calificacion calificacion = Calificacion.builder()
-        .autor(autor).valor(valor).descripcion(descripcion)
-        .tipoTransaccion(tipoTransaccion).transactionId(transactionId).build();
+        .autor(autor)
+        .destinatario(perfilDestino)
+        .valor(valor)
+        .descripcion(descripcion)
+        .tipoTransaccion(tipoTransaccion)
+        .transactionId(transactionId)
+        .build();
 
     perfilDestino.agregarNuevaCalificacion(calificacion);
 
@@ -105,7 +107,7 @@ public class ServicioPerfil {
   }
 
   public PaginaResultado<CalificacionDto> obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
-    PaginaResultado<Calificacion> resultado = this.repositorioCalificacion.buscarPorPerfil(perfilId, pagina, limite);
+    PaginaResultado<Calificacion> resultado = this.repositorioCalificacion.buscarPorDestinatario(perfilId, pagina, limite);
 
     return new PaginaResultado<>(
         resultado.contenido().stream().map(CalificacionDto::new).toList(),

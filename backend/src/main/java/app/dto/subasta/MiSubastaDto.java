@@ -32,21 +32,21 @@ public class MiSubastaDto {
 
     this.ofertas = subasta.getOfertas().stream().map(OfertaSubastaDto::new).toList();
 
-    if (!subasta.estaActivo()) {
-      subasta.getOfertas().stream()
-          .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO)
-          .findFirst()
-          .ifPresent(p -> {
-            this.ganador = new PerfilDto(p.getAutor());
-            this.ganadorLabel = p.getFiguritasOfrecidas().stream()
-                .map(f -> f.getJugador() + " #" + f.getNumero())
-                .reduce((a, b) -> a + " + " + b)
-                .orElse("");
-            this.yaCalificado = p.getAutor().getCalificaciones().stream()
-                .anyMatch(c -> subasta.getAutor().getId().equals(c.getAutor().getId())
-                    && subasta.getId().equals(c.getTransactionId())
-                    && c.getTipoTransaccion() == MetodoIntercambio.SUBASTA);
-          });
-    }
+//    if (!subasta.estaActivo()) {
+//      subasta.getOfertas().stream()
+//          .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO)
+//          .findFirst()
+//          .ifPresent(p -> {
+//            this.ganador = new PerfilDto(p.getAutor());
+//            this.ganadorLabel = p.getFiguritasOfrecidas().stream()
+//                .map(f -> f.getJugador() + " #" + f.getNumero())
+//                .reduce((a, b) -> a + " + " + b)
+//                .orElse("");
+//            this.yaCalificado = p.getAutor().getCalificaciones().stream()
+//                .anyMatch(c -> subasta.getAutor().getId().equals(c.getAutor().getId())
+//                    && subasta.getId().equals(c.getTransactionId())
+//                    && c.getTipoTransaccion() == MetodoIntercambio.SUBASTA);
+//          });
+//    }
   }
 }

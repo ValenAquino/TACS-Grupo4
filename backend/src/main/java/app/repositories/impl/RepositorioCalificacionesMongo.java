@@ -5,6 +5,7 @@ import app.model.entities.Calificacion;
 import app.model.entities.FiguritaIntercambiable;
 import app.repositories.RepositorioCalificacion;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -27,8 +28,8 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
   }
 
   @Override
-  public PaginaResultado<Calificacion> buscarPorPerfil(
-      String perfilId,
+  public PaginaResultado<Calificacion> buscarPorDestinatario(
+      String destinatarioId,
       Integer pagina,
       Integer limite
   ) {
@@ -36,12 +37,12 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("autor.$id").is(perfilId)
+        Criteria.where("destinatario.$id").is(new ObjectId(destinatarioId))
     );
 
     long count = mongoTemplate.count(query, Calificacion.class);
 
-    query.skip((long) pagina * limite);
+    query.skip((long) (pagina - 1) * limite);
     query.limit(limite);
 
     List<Calificacion> contenido =

@@ -34,10 +34,6 @@ public class Perfil {
     @Builder.Default
     private List<MedioDeContacto> mediosDeContacto = new ArrayList<>();
 
-    @DBRef
-    @Builder.Default
-    private List<Calificacion> calificaciones = new ArrayList<>();
-
     @Builder.Default
     private Double calificacionMedia = 0.0;
     @Builder.Default
@@ -52,14 +48,12 @@ public class Perfil {
         this.nombre = nombre;
         this.coleccion = coleccion;
         this.mediosDeContacto = mediosDeContacto;
-        this.calificaciones = calificaciones;
     }
 
     /**
      * Calcula el promedio de las calificaciones recibidas.
      */
     public void agregarNuevaCalificacion(Calificacion calificacion) {
-        this.calificaciones.add(calificacion);
         this.cantidadCalificaciones++;
         this.calificacionMedia = this.calificacionMedia +
             (calificacion.getValor() - this.calificacionMedia) / this.cantidadCalificaciones;

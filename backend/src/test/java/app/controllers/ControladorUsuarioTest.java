@@ -28,7 +28,7 @@ public class ControladorUsuarioTest {
         }
         """;
 
-    mockMvc.perform(post("/registrar")
+    mockMvc.perform(post("/")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
         .andExpect(status().is(204));

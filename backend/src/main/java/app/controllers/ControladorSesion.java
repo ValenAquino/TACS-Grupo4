@@ -28,10 +28,10 @@ public class ControladorSesion {
     private final ServicioJwt servicioJwt;
 
 
-//    @GetMapping("/administrador/estadisticas")
-//    public ResponseEntity<EstadisticasDto> obtenerEstadisticas() {
-//        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas());
-//    }
+    @GetMapping("/administrador/estadisticas")
+    public ResponseEntity<EstadisticasDto> obtenerEstadisticas() {
+        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas());
+    }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(

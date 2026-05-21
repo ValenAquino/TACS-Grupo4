@@ -28,7 +28,7 @@ public class ControladorColeccion {
 
     @PostMapping("/faltantes")
     public ResponseEntity<Void> agregarFaltante(
-        @CookieValue String token,
+        @CookieValue("token") String token,
         @RequestBody FaltanteRequest request
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);
@@ -39,7 +39,7 @@ public class ControladorColeccion {
 
     @PostMapping("/repetidas")
     public ResponseEntity<Void> agregarRepetida(
-        @CookieValue String token,
+        @CookieValue("token") String token,
         @RequestBody RepetidaRequest request
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);
@@ -51,7 +51,7 @@ public class ControladorColeccion {
 
     @GetMapping("/faltantes")
     public ResponseEntity<PaginaResultado<FiguritaDto>> buscarFaltantes(
-        @CookieValue String token,
+        @CookieValue("token") String token,
         @ModelAttribute FaltantesFiltro filtros
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);
@@ -60,7 +60,7 @@ public class ControladorColeccion {
 
     @GetMapping("/repetidas")
     public ResponseEntity<Repetidas<FiguritaIntercambiableDto>> buscarRepetidas(
-        @CookieValue String token,
+        @CookieValue("token") String token,
         @ModelAttribute RepetidasFiltro filtros
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);

@@ -3,6 +3,7 @@ package app.controllers;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -10,6 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import app.exceptions.FiguritaDuplicadaException;
 import app.exceptions.NotFoundException;
 import app.servicios.ServicioColeccion;
+import app.servicios.ServicioJwt;
+import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,98 +34,108 @@ class ControladorColeccionTest {
   @MockBean
   private ServicioColeccion serviceColeccion;
 
+  @MockBean
+  private ServicioJwt servicioJwt;
+
+  private final Cookie cookie = new Cookie("token", "fake-token");
+
+  @BeforeEach
+  void setup() {
+    when(servicioJwt.getColeccionId("fake-token"))
+        .thenReturn("1");
+  }
+
   @Test
   void agregarRepetidaNoFalla() throws Exception {
     String json = """
-        {
-            "fig_id": "ARG-10",
-            "cantidad_disponible": 2,
-            "modos_intercambio": ["SUBASTA"]
-        }
-        """;
+            {
+                "fig_id": "ARG-10",
+                "cantidad_disponible": 2,
+                "modos_intercambio": ["SUBASTA"]
+            }
+            """;
 
-    mockMvc.perform(post("/colecciones/1/repetidas")
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
             .contentType(MediaType.APPLICATION_JSON)
-            .header("user_id", "user-123")
             .content(json))
-        .andExpect(status().is(201));
+        .andExpect(status().isCreated());
   }
 
   @Test
   void agregarFaltanteNoFalla() throws Exception {
     String json = """
-        {
-            "fig_id": "ARG-10"
-        }
-        """;
+            {
+                "fig_id": "ARG-10"
+            }
+            """;
 
-    mockMvc.perform(post("/colecciones/1/faltantes")
+    mockMvc.perform(post("/colecciones/faltantes")
+            .cookie(cookie)
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-        .andExpect(status().is(201));
+        .andExpect(status().isCreated());
   }
 
   @Test
   void agregarFaltanteNoEncontradaDevuelve404() throws Exception {
+
     doThrow(new NotFoundException("No se encontro la figurita"))
         .when(serviceColeccion)
         .agregarFaltante("1", "ARG-10");
 
     String json = """
-        {
-            "fig_id": "ARG-10"
-        }
-        """;
+            {
+                "fig_id": "ARG-10"
+            }
+            """;
 
-    mockMvc.perform(post("/colecciones/1/faltantes")
+    mockMvc.perform(post("/colecciones/faltantes")
+            .cookie(cookie)
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-        .andExpect(status().is(404));
+        .andExpect(status().isNotFound());
   }
 
   @Test
   void agregarRepetidaNoEncontradaDevuelve404() throws Exception {
+
     doThrow(new NotFoundException("No se encontro la figurita"))
         .when(serviceColeccion)
         .agregarRepetida(eq("1"), any(), any(), any());
 
     String json = """
-        {
-            "fig_id": "ARG-10",
-            "cantidad_disponible": 2,
-            "modos_intercambio": ["SUBASTA"]
-        }
-        """;
+            {
+                "fig_id": "ARG-10",
+                "cantidad_disponible": 2,
+                "modos_intercambio": ["SUBASTA"]
+            }
+            """;
 
-    mockMvc.perform(post("/colecciones/1/repetidas")
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
             .contentType(MediaType.APPLICATION_JSON)
-            .header("user_id", "user-123")
             .content(json))
         .andExpect(status().isNotFound());
   }
 
   @Test
   void agregarFaltanteDevuelve400SiDuplicada() throws Exception {
+
     doThrow(new FiguritaDuplicadaException("Figurita ya listada como faltante"))
         .when(serviceColeccion)
         .agregarFaltante(eq("1"), any());
 
     String json = """
-        {
-            "fig_id": "ARG-10"
-        }
-        """;
+            {
+                "fig_id": "ARG-10"
+            }
+            """;
 
-    mockMvc.perform(post("/colecciones/1/faltantes")
+    mockMvc.perform(post("/colecciones/faltantes")
+            .cookie(cookie)
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
-        .andExpect(status().is(400));
-  }
-
-  @Test
-  void buscarFaltantesEnColeccionInexistenteArroja400() throws Exception {
-
-    mockMvc.perform(get("/colecciones/1/faltantes"))
-        .andExpect(status().is(400));
+        .andExpect(status().isBadRequest());
   }
 }

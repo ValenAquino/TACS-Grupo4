@@ -1,42 +1,37 @@
-import { useEffect, useState } from "react";
-import { buscarSubastasParticipo } from "../../../../../services/subastasService.js";
-import SubastaCard from "../../../../../components/ui/subasta-card/subasta-card.jsx";
-import { useNavigate } from "react-router";
-import useUsuarioActual from "../../../../../hooks/useUsuarioActual.js";
+import { useEffect, useState } from 'react'
+import { buscarSubastasParticipo } from '../../../../../services/subastasService.js'
+import SubastaCard from './components/subasta-participo/subasta-card.jsx'
+import { useNavigate } from 'react-router'
+import useUsuarioActual from '../../../../../hooks/useUsuarioActual.js'
 
 const Participo = () => {
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const navigate = useNavigate();
-  const {userId} = useUsuarioActual()
+  const [data, setData] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const navigate = useNavigate()
+  const { userId } = useUsuarioActual()
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        setLoading(true);
-        const res = await buscarSubastasParticipo(userId);
-        setData(res);
+        setLoading(true)
+        const res = await buscarSubastasParticipo(userId)
+        setData(res)
       } catch {
-        setError(true);
+        setError(true)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    cargar();
-  }, []);
+    }
+    cargar()
+  }, [])
 
-  if (error)
-    return (
-      <div className="text-center text-danger py-4">
-        Error al cargar subastas
-      </div>
-    );
+  if (error) return <div className="text-center text-danger py-4">Error al cargar subastas</div>
 
-  const activasCount = data.activas?.length ?? 0;
+  const activasCount = data.activas?.length ?? 0
   const seleccionadasCount =
-    data.activas?.filter((s) => s.tuOferta?.estado === "SELECCIONADO").length ?? 0;
-  const hayResultados = activasCount > 0 || (data.finalizadas?.length ?? 0) > 0;
+    data.activas?.filter((s) => s.tuOferta?.estado === 'SELECCIONADO').length ?? 0
+  const hayResultados = activasCount > 0 || (data.finalizadas?.length ?? 0) > 0
 
   return (
     <div className="container-fluid px-0 d-flex flex-column gap-4">
@@ -45,7 +40,7 @@ const Participo = () => {
         <div className="col-6 col-md-4">
           <div
             className="border rounded-4 p-4 text-center shadow-sm h-100"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            style={{ backgroundColor: 'var(--color-primary)' }}
           >
             <p className="mb-1 fw-bold fs-2">{activasCount}</p>
             <p className="mb-0 text-muted">Ofertas activas</p>
@@ -54,7 +49,7 @@ const Participo = () => {
         <div className="col-6 col-md-4">
           <div
             className="border rounded-4 p-4 text-center shadow-sm h-100"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            style={{ backgroundColor: 'var(--color-primary)' }}
           >
             <p className="mb-1 fw-bold fs-2">{seleccionadasCount}</p>
             <p className="mb-0 text-muted">Mejor oferta</p>
@@ -65,11 +60,7 @@ const Participo = () => {
       {loading ? (
         <div className="d-flex flex-column gap-3">
           {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="rounded-3 placeholder-glow border"
-              style={{ height: "140px" }}
-            >
+            <div key={i} className="rounded-3 placeholder-glow border" style={{ height: '140px' }}>
               <div className="placeholder w-100 h-100 rounded-3" />
             </div>
           ))}
@@ -83,27 +74,18 @@ const Participo = () => {
         <>
           {data.activas?.length > 0 && (
             <div className="d-flex flex-column gap-3">
-              <p
-                className="mb-0 fw-bold text-uppercase text-muted"
-                style={{ fontSize: "0.8rem" }}
-              >
+              <p className="mb-0 fw-bold text-uppercase text-muted" style={{ fontSize: '0.8rem' }}>
                 Activas ({data.activas.length})
               </p>
               {data.activas.map((sub) => (
-                <SubastaCard
-                  key={sub.id}
-                  subasta={sub}
-                />
+                <SubastaCard key={sub.id} subasta={sub} />
               ))}
             </div>
           )}
 
           {data.finalizadas?.length > 0 && (
             <div className="d-flex flex-column gap-3">
-              <p
-                className="mb-0 fw-bold text-uppercase text-muted"
-                style={{ fontSize: "0.8rem" }}
-              >
+              <p className="mb-0 fw-bold text-uppercase text-muted" style={{ fontSize: '0.8rem' }}>
                 Finalizadas ({data.finalizadas.length})
               </p>
               {data.finalizadas.map((sub) => (
@@ -120,7 +102,7 @@ const Participo = () => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
 export default Participo;

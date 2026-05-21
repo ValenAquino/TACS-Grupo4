@@ -12,7 +12,7 @@ const Explorar = () => {
   const resultadosRef = useRef(null)
   const heroInputRef = useRef(null)
   const [filtros, setFiltros] = useState(FILTROS_INICIAL)
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(1)
 
   const { figuritas, totalPages, totalElements, loading, error } = useFiguritas(
     filtros.q,
@@ -25,7 +25,7 @@ const Explorar = () => {
 
   const handleAplicar = (nuevosFiltros) => {
     setFiltros(nuevosFiltros)
-    setPage(0)
+    setPage(1)
   }
 
   useEffect(() => {

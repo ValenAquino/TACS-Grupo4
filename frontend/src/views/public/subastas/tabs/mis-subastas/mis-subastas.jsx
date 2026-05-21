@@ -1,57 +1,47 @@
-import { useEffect, useState } from "react";
-import { buscarMisSubastas } from "../../../../../services/subastasService.js";
-import MiSubastaCard from "../../../../../components/ui/subasta-card/mi-subasta-card.jsx";
-import Button from "../../../../../components/ui/button/button.jsx";
-import { useNavigate } from "react-router";
-import useUsuarioActual from "../../../../../hooks/useUsuarioActual.js";
+import { useEffect, useState } from 'react'
+import { buscarMisSubastas } from '../../../../../services/subastasService.js'
+import MiSubasta from './components/mi-subasta/mi-subasta.jsx'
+import Button from '../../../../../components/ui/button/button.jsx'
+import { useNavigate } from 'react-router'
+import useUsuarioActual from '../../../../../hooks/useUsuarioActual.js'
 
 const MisSubastas = () => {
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [refresh, setRefresh] = useState(0);
-  const navigate = useNavigate();
-  const {userId} = useUsuarioActual()
+  const [data, setData] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [refresh, setRefresh] = useState(0)
+  const navigate = useNavigate()
+  const { userId } = useUsuarioActual()
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        setLoading(true);
-        const res = await buscarMisSubastas(userId);
-        setData(res);
-      } catch {
-        setError(true);
+        setLoading(true)
+        const res = await buscarMisSubastas(userId)
+        console.log('misSubastas res:', res)
+        setData(res)
+      } catch (e) {
+        console.log('error catch:', e)
+        setError(true)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    cargar();
-  }, [refresh]);
+    }
+    cargar()
+  }, [refresh])
 
-  if (error)
-    return (
-      <div className="text-center text-danger py-4">
-        Error al cargar subastas
-      </div>
-    );
+  if (error) return <div className="text-center text-danger py-4">Error al cargar subastas</div>
 
   return (
     <div className="container-fluid px-0 d-flex flex-column gap-4">
       <div className="d-flex justify-content-end">
-        <Button
-          label="Crear subasta ↗"
-          onClick={() => navigate("/subastas/crear")}
-        />
+        <Button label="Crear subasta ↗" onClick={() => navigate('/subastas/crear')} />
       </div>
 
       {loading ? (
         <div className="d-flex flex-column gap-3">
           {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="rounded-3 placeholder-glow border"
-              style={{ height: "180px" }}
-            >
+            <div key={i} className="rounded-3 placeholder-glow border" style={{ height: '180px' }}>
               <div className="placeholder w-100 h-100 rounded-3" />
             </div>
           ))}
@@ -62,16 +52,12 @@ const MisSubastas = () => {
             <div className="d-flex flex-column gap-3">
               <p
                 className="mb-0 fw-bold text-uppercase text-muted"
-                style={{ fontSize: "0.8rem", letterSpacing: "0.08em" }}
+                style={{ fontSize: '0.8rem', letterSpacing: '0.08em' }}
               >
                 Activas ({data.activas.length})
               </p>
               {data.activas.map((sub) => (
-                <MiSubastaCard
-                  key={sub.id}
-                  subasta={sub}
-                  onRefresh={() => setRefresh((r) => r + 1)}
-                />
+                <MiSubasta key={sub.id} subasta={sub} onRefresh={() => setRefresh((r) => r + 1)} />
               ))}
             </div>
           )}
@@ -80,12 +66,12 @@ const MisSubastas = () => {
             <div className="d-flex flex-column gap-3">
               <p
                 className="mb-0 fw-bold text-uppercase text-muted"
-                style={{ fontSize: "0.8rem", letterSpacing: "0.08em" }}
+                style={{ fontSize: '0.8rem', letterSpacing: '0.08em' }}
               >
                 Finalizadas ({data.finalizadas.length})
               </p>
               {data.finalizadas.map((sub) => (
-                <MiSubastaCard
+                <MiSubasta
                   key={sub.id}
                   subasta={sub}
                   onVerDetalle={() => navigate(`/subastas/${sub.id}`)}
@@ -105,7 +91,7 @@ const MisSubastas = () => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default MisSubastas;
+export default MisSubastas

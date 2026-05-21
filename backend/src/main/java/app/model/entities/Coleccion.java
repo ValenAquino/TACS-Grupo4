@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.BadRequestException;
 import app.exceptions.FiguritaDuplicadaException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +32,11 @@ public class Coleccion {
 
   /**
    * Agrega una figurita a la lista de faltantes.
-   * Lanza {@link FiguritaDuplicadaException} si ya está registrada como faltante.
+   * Lanza {@link BadRequestException} si ya está registrada como faltante.
    */
   public void agregarFaltante(Figurita faltante) {
     if (tieneFaltante(faltante)) {
-      throw new FiguritaDuplicadaException("Figurita ya listada como faltante");
+      throw new BadRequestException("Figurita ya listada como faltante");
     }
 
     this.faltantes.add(faltante);

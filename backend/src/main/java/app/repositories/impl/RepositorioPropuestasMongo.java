@@ -30,21 +30,21 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
     public PaginaResultado<Propuesta> buscarPorAutorId(String perfilId, PropuestasFiltro filtros) {
         Query query = new Query();
         query.addCriteria(
-            Criteria.where("autor.$id").is(perfilId)
+            Criteria.where("autor.id").is(perfilId)
         );
 
-        if (filtros.estado() != null) {
-            query.addCriteria(
-                Criteria.expr(
-                    MongoExpression.create(
-                        "{ $eq: [ " +
-                            "{ $arrayElemAt: ['$estado.estadoProceso', -1] }, " +
-                            "'" + filtros.estado().name() + "'" +
-                            "] }"
-                    )
-                )
-            );
-        }
+//        if (filtros.estado() != null) {
+//            query.addCriteria(
+//                Criteria.expr(
+//                    MongoExpression.create(
+//                        "{ $eq: [ " +
+//                            "{ $arrayElemAt: ['$estado.estadoProceso', -1] }, " +
+//                            "'" + filtros.estado().name() + "'" +
+//                            "] }"
+//                    )
+//                )
+//            );
+//        }
 
         long count = mongoTemplate.count(query, Propuesta.class);
 
@@ -66,7 +66,7 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
     public PaginaResultado<Propuesta> buscarPorDestinatarioId(String perfilId, PropuestasFiltro filtros) {
         Query query = new Query();
         query.addCriteria(
-            Criteria.where("destinatario.$id").is(new ObjectId(perfilId))
+            Criteria.where("destinatario.id").is(perfilId)
         );
 
         long count = mongoTemplate.count(query, Propuesta.class);

@@ -22,18 +22,22 @@ public class ControladorFigurita {
         @RequestParam(required = false) Integer numero,
         @RequestParam(required = false) Seleccion seleccion,
         @RequestParam(required = false) String jugador,
-        @RequestParam(required = false) MetodoIntercambio tipo,
+        @RequestParam(required = false) String tipo,
         @RequestParam(defaultValue = "0") int pagina,
         @RequestParam(defaultValue = "12") int tamanioPagina
     ) {
         int tamanioDePaginaAcotado = Math.min(tamanioPagina, 40);
+        MetodoIntercambio metodo = null;
+        if(tipo != null) {
+            metodo = MetodoIntercambio.fromString(tipo);
+        }
         if (q != null && !q.isBlank()) {
             return ResponseEntity.ok(
-                figuritaService.buscarPorQuery(q, tipo, pagina, tamanioDePaginaAcotado)
+                figuritaService.buscarPorQuery(q, metodo, pagina, tamanioDePaginaAcotado)
             );
         }
         return ResponseEntity.ok(
-            figuritaService.buscarFiguritas(numero, seleccion, jugador, tipo, pagina, tamanioDePaginaAcotado)
+            figuritaService.buscarFiguritas(numero, seleccion, jugador, metodo , pagina, tamanioDePaginaAcotado)
         );
     }
 }

@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.BadRequestException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,7 +9,7 @@ public class MetodoIntercambioTest {
 
   @Test
   void metodoDeIntercambioInvalidoTiraExcepcion() {
-    assertThrows(IllegalArgumentException.class, () -> {MetodoIntercambio.fromString("Hola");});
+    assertThrows(BadRequestException.class, () -> {MetodoIntercambio.fromString("Hola");});
   }
 
   @Test

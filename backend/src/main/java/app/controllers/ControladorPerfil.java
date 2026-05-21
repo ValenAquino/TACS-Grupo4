@@ -31,8 +31,8 @@ public class ControladorPerfil {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
 
         this.perfilService.agregarCalificacion(
-            body.getUserId(),
             perfilId,
+            body.getDestinatarioId(),
             body.getValor(),
             body.getDescripcion(),
             body.getTransactionId(),

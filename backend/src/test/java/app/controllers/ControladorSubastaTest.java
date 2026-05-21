@@ -2,8 +2,7 @@ package app.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import app.dto.paginacion.PaginaResultado;
 import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
+import app.model.entities.Subasta;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSubasta;
 import jakarta.servlet.http.Cookie;
@@ -28,7 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class ControladorSubastaTest {
 
@@ -240,9 +240,11 @@ class ControladorSubastaTest {
     @Test
     void obtenerSubasta_retorna200() throws Exception {
 
+        SubastaDto dto = mock(SubastaDto.class);
+
         when(
             subastaService.obtenerSubasta("s-1")
-        ).thenReturn(null);
+        ).thenReturn(dto);
 
         mockMvc.perform(
                 get("/subastas/s-1")
@@ -250,8 +252,6 @@ class ControladorSubastaTest {
             .andExpect(status().isOk());
 
         verify(subastaService)
-            .obtenerSubasta(
-                "s-1"
-            );
+            .obtenerSubasta("s-1");
     }
 }

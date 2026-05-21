@@ -12,14 +12,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 public class ControladorUsuarioTest {
   @Autowired
   MockMvc mockMvc;
 
   @Test
-  void agregarRepetidaNoFalla() throws Exception {
+  void crearUsuarioNoFalla() throws Exception {
     String json = """
         {
             "nombre": "lucas",
@@ -28,7 +28,7 @@ public class ControladorUsuarioTest {
         }
         """;
 
-    mockMvc.perform(post("/")
+    mockMvc.perform(post("/usuarios")
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
         .andExpect(status().is(204));

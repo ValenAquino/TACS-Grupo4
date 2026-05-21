@@ -6,6 +6,7 @@ import app.model.entities.Calificacion;
 import app.model.entities.Perfil;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioSubastas;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,29 +19,15 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   @Autowired
   MongoTemplate mongoTemplate;
 
-  //TODO: Borrar se usa el perfil!!!!!!!!!!!
-  @Override
-  public List<Subasta> buscarPorAutorUsuarioId(String userId) {
-    Query queryPerfil = new Query(Criteria.where("usuario.id").is(userId));
-    Perfil perfil = mongoTemplate.findOne(queryPerfil, Perfil.class);
-
-    if (perfil == null) return List.of();
-
-    Query querySubastas = new Query(
-        Criteria.where("autor.$id").is(perfil.getId())
-    );
-    return mongoTemplate.find(querySubastas, Subasta.class);
-  }
-
   @Override
   public PaginaResultado<Subasta> buscarPorAutor(String perfilId, Integer pagina, Integer limite) {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("autor.$id").is(perfilId)
+        Criteria.where("autor.$id").is(new ObjectId(perfilId))
     );
 
-    long count = mongoTemplate.count(query, Calificacion.class);
+    long count = mongoTemplate.count(query, Subasta.class);
 
     query.skip((long) pagina * limite);
     query.limit(limite);

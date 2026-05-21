@@ -151,7 +151,7 @@ class ControladorPerfilTest {
                 .contentType("application/json")
                 .content("""
                     {
-                      "user_id":"1001",
+                      "destinatario_id":"1001",
                       "valor":4,
                       "descripcion":"Buen intercambio",
                       "transaction_id":"i-1",
@@ -163,8 +163,8 @@ class ControladorPerfilTest {
 
     verify(perfilService)
         .agregarCalificacion(
-            eq("1001"),
             eq("1000"),
+            eq("1001"),
             eq(4),
             eq("Buen intercambio"),
             eq("i-1"),

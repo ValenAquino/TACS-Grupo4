@@ -100,6 +100,12 @@ public class ServicioJwt {
         .get("colId", String.class);
   }
 
+  public String getUsuarioId(String token) {
+    return obtenerAtributos(token)
+        .get("usuarioId", String.class);
+  }
+
+
   public String getPerfilId(String token) {
     return obtenerAtributos(token)
         .get("perfilId", String.class);

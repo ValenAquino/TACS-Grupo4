@@ -25,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class ControladorFiguritaTest {
 
@@ -61,8 +61,9 @@ class ControladorFiguritaTest {
     PaginaResultado<FiguritaIntercambiableDto> paginaVacia =
         new PaginaResultado<>(List.of(), 0, 0, 0);
 
-    when(figuritaService.buscarFiguritas(null, null, null, null, 0, 12))
-        .thenReturn(paginaVacia);
+    when(figuritaService.buscarFiguritas(
+        null, null, null, null, 0, 12
+    )).thenReturn(paginaVacia);
 
     mockMvc.perform(get("/figuritas").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())

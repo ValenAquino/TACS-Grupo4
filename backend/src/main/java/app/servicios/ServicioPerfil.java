@@ -39,7 +39,7 @@ public class ServicioPerfil {
   }
 
 
-  public void agregarCalificacion(String userAutorId, String perfilDestinoId,
+  public void agregarCalificacion(String AutorId, String DestinoId,
                                   Integer valor, String descripcion, String transactionId,
                                   MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
@@ -49,11 +49,11 @@ public class ServicioPerfil {
       throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
     }
 
-    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(perfilDestinoId);
-    if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + perfilDestinoId);
+    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(DestinoId);
+    if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + DestinoId);
 
-    Perfil autor = this.repositorioPerfiles.buscarPorId(userAutorId);
-    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + userAutorId);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(AutorId);
+    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + AutorId);
 
     boolean yaCalifico = perfilDestino.getCalificaciones().stream()
         .anyMatch(c -> autor.getId().equals(c.getAutor().getId())

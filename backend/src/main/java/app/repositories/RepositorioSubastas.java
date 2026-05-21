@@ -5,7 +5,6 @@ import app.model.entities.Subasta;
 import java.util.List;
 
 public interface RepositorioSubastas {
-    List<Subasta> buscarPorAutorUsuarioId(String userId);
 
     List<Subasta> buscarTodos();
 

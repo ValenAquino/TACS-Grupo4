@@ -28,6 +28,6 @@ public class Calificacion {
   private Integer valor;
   private String descripcion;
   //id subasta o id propuesta de intercambio
-  private String transactionId;
+  private String transaccionId;
   private MetodoIntercambio tipoTransaccion;
 }

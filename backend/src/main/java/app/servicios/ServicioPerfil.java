@@ -39,8 +39,8 @@ public class ServicioPerfil {
   }
 
 
-  public void agregarCalificacion(String AutorId, String DestinoId,
-                                  Integer valor, String descripcion, String transactionId,
+  public void agregarCalificacion(String autorId, String destinoId,
+                                  Integer valor, String descripcion, String transaccionId,
                                   MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
       throw new BadRequestException("El valor de la calificación no puede ser nulo");
@@ -49,15 +49,17 @@ public class ServicioPerfil {
       throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
     }
 
-    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(DestinoId);
-    Perfil autor = this.repositorioPerfiles.buscarPorId(AutorId);
+    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(destinoId);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
 
-//    boolean yaCalifico = perfilDestino.getCalificaciones().stream()
-//        .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
-//            && Objects.equals(transactionId, c.getTransactionId())
-//            && c.getTipoTransaccion() == tipoTransaccion);
-//
-//    if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
+    boolean yaCalifico = this.repositorioCalificacion.yaCalifico(
+        destinoId,
+        autorId,
+        transaccionId,
+        tipoTransaccion
+    );
+
+    if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
 
     Calificacion calificacion = Calificacion.builder()
         .autor(autor)
@@ -65,7 +67,7 @@ public class ServicioPerfil {
         .valor(valor)
         .descripcion(descripcion)
         .tipoTransaccion(tipoTransaccion)
-        .transactionId(transactionId)
+        .transaccionId(transaccionId)
         .build();
 
     perfilDestino.agregarNuevaCalificacion(calificacion);

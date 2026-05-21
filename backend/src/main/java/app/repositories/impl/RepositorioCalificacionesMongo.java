@@ -3,6 +3,7 @@ package app.repositories.impl;
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Calificacion;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
 import app.repositories.RepositorioCalificacion;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -27,7 +28,6 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     mongoTemplate.save(calificacion);
   }
 
-  @Override
   public PaginaResultado<Calificacion> buscarPorDestinatario(
       String destinatarioId,
       Integer pagina,
@@ -54,5 +54,33 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
         (int) Math.ceil((double) count / limite),
         pagina
     );
+  }
+
+  public boolean yaCalifico(
+      String perfilDestinoId,
+      String perfilAutorId,
+      String transaccionId,
+      MetodoIntercambio tipoTransaccion
+  ) {
+
+    Query query = new Query();
+
+    query.addCriteria(
+        Criteria.where("destinatario.$id").is(new ObjectId(perfilDestinoId))
+    );
+
+    query.addCriteria(
+        Criteria.where("autor.$id").is(new ObjectId(perfilAutorId))
+    );
+
+    query.addCriteria(
+        Criteria.where("transaccionId").is(transaccionId)
+    );
+
+    query.addCriteria(
+        Criteria.where("tipoTransaccion").is(tipoTransaccion.name())
+    );
+
+    return mongoTemplate.exists(query, Calificacion.class);
   }
 }

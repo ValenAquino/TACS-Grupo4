@@ -42,8 +42,7 @@ public class Perfil {
     public Perfil(Usuario usuario,
                   String nombre,
                   Coleccion coleccion,
-                  List<MedioDeContacto> mediosDeContacto,
-                  List<Calificacion> calificaciones) {
+                  List<MedioDeContacto> mediosDeContacto) {
         this.usuario = usuario;
         this.nombre = nombre;
         this.coleccion = coleccion;

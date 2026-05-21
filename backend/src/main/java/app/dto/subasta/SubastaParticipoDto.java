@@ -9,7 +9,6 @@ import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import lombok.Getter;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 public class SubastaParticipoDto {
@@ -21,19 +20,13 @@ public class SubastaParticipoDto {
   PropuestaDto tuOferta;
   private boolean yaCalificado;
 
-  public SubastaParticipoDto(Subasta subasta, Propuesta tuOferta) {
+  public SubastaParticipoDto(Subasta subasta, Propuesta tuOferta, boolean yaCalificado) {
     this.id = subasta.getId();
     this.autor = new PerfilDto(subasta.getAutor());
     this.figuritaSubastada = new FiguritaDto(subasta.getFiguritaSubastada());
     this.fechaInicio = subasta.getFechaInicio();
     this.fechaCierre = subasta.getFechaCierre();
     this.tuOferta = new PropuestaDto(tuOferta);
-
-//    if (this.tuOferta.getEstado() == EstadoProceso.ACEPTADO) {
-//      this.yaCalificado = subasta.getAutor().getCalificaciones().stream()
-//          .anyMatch(c -> tuOferta.getAutor().getId().equals(c.getAutor().getId())
-//              && subasta.getId().equals(c.getTransactionId())
-//              && c.getTipoTransaccion() == MetodoIntercambio.SUBASTA);
-//    }
+    this.yaCalificado = yaCalificado;
   }
 }

@@ -289,7 +289,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             .figuritaBuscada(mbappe)
             .build();
 
-        ofertaSofia.seleccionar(lucas);
+        ofertaSofia.seleccionar(lucas.getId());
 
         Subasta subasta1 = Subasta.builder()
             .id("1").autor(lucas)
@@ -361,7 +361,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             .figuritaSubastada(vinicius)
             .ofertas(new ArrayList<>(List.of(ofertaLucas4)))
             .build();
-        ofertaLucas4.seleccionar(sofia);
+        ofertaLucas4.seleccionar(sofia.getId());
         subastas.guardar(subasta4);
 
         // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
@@ -401,7 +401,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             .ofertas(new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)))
             .build();
 
-        ofertaJuan1.aceptar(sofia);
+        ofertaJuan1.aceptar(sofia.getId());
         Calificacion calificacion = new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA);
         sofia.agregarNuevaCalificacion(calificacion);
         subastas.guardar(subasta8);

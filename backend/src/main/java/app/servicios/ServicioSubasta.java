@@ -118,7 +118,7 @@ import org.springframework.stereotype.Service;
           .findFirst()
           .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
-      propuesta.seleccionar(subasta.getAutor());
+      propuesta.seleccionar(subasta.getAutor().getId());
       this.repoSubasta.guardar(subasta);
     }
 

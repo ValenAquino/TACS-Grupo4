@@ -8,3 +8,7 @@ export const mostrar_label = (propuesta) => {
                         </span>
     ))
 }
+
+export const truncarADosDecimales = (numero) =>  {
+    return Math.trunc(numero * 100) / 100;
+}

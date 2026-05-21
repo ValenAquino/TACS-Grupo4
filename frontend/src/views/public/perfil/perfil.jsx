@@ -6,6 +6,7 @@ import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 import {useToast} from "@/contexts/toastContext.jsx";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
+import {truncarADosDecimales} from "@/utils/estandarizar.jsx";
 
 const renderStars = (score) => {
     const fullStars = Math.floor(score);
@@ -35,9 +36,9 @@ const Perfil = () => {
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-    const { user, cerrarSesion} = useAuth();
+    const {user ,cerrarSesion} = useAuth();
 
-    const perfilId = user?.perfil_id
+    const perfilId = user.perfil_id;
 
     const manejarCierreDeSesion = () => {
         try {
@@ -67,7 +68,7 @@ const Perfil = () => {
       };
 
       cargar();
-    }, [perfilId]);
+    }, []);
 
     useEffect(() => {
         const cargarCalificaciones = async () => {
@@ -89,11 +90,9 @@ const Perfil = () => {
         };
 
         cargarCalificaciones();
-    }, [perfilId, filtros, pagina]);
+    }, [filtros, pagina]);
 
-    const promedio = reviews.resultados > 0
-        ? (reviews.data.reduce((acc, r) => acc + r.valor, 0) / reviews.resultados).toFixed(1)
-        : 0;
+    const promedio = truncarADosDecimales(perfil.calificacion_media)
 
     const guardarCambios = async () => {
 
@@ -146,7 +145,7 @@ const Perfil = () => {
                                             }}>
                                             {perfil?.nombre}</h2>
                                         <div>
-                                            {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.resultados})
+                                            {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.cantidad_de_elementos})
                                         </div>
                                     </>
                                 )
@@ -210,10 +209,10 @@ const Perfil = () => {
 
                         {loadingNotificaciones ? (
                             <p className="text-muted">Cargando reseñas...</p>
-                        ) : reviews.data?.length === 0 ? (
+                        ) : reviews.contenido?.length === 0 ? (
                             <p className="text-muted">Este usuario no tiene reseñas disponibles</p>
                         ) : (
-                            reviews.data?.map((r, i) => (
+                            reviews.contenido?.map((r, i) => (
                                 <div
                                     key={i}
                                     className="p-3 bg-white rounded shadow-sm d-flex align-items-center gap-3"
@@ -234,7 +233,7 @@ const Perfil = () => {
 
                                     <div className="flex-grow-1">
                                         <strong>{r.nombre}</strong>
-                                        <div>{renderStars(perfil.calificacion)} {r.calificacion_final}/5</div>
+                                        <div>{renderStars(r.valor)} {r.valor}/5</div>
                                         <p className="mb-0 text-muted" style={{ fontSize: "0.9rem" }}>
                                             "{r.descripcion}"
                                         </p>
@@ -247,7 +246,7 @@ const Perfil = () => {
                 </div>
                 <Paginacion
                     page={pagina}
-                    totalPages={reviews.paginas_totales ?? 1}
+                    totalPages={reviews.cantidad_de_paginas ?? 1}
                     onChange={setPagina}/>
             </div>
 

@@ -1,6 +1,7 @@
 package app.repositories.impl;
 
 import app.MongoTestBase;
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Coleccion;
 import app.model.entities.MedioComunicacion;
 import app.model.entities.MedioDeContacto;
@@ -13,6 +14,7 @@ import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +42,9 @@ class RepositorioSubastasTest extends MongoTestBase {
         repositorioColecciones.guardar(colec);
         repositorioUsuarios.guardar(user);
         p1 = Perfil.builder()
-            .id("1").usuario(user).nombre("Lucas")
+            .id(new ObjectId().toString())
+            .usuario(user)
+            .nombre("Lucas")
             .coleccion(colec)
             .mediosDeContacto(telegram("@lucas"))
             .build();
@@ -51,7 +55,7 @@ class RepositorioSubastasTest extends MongoTestBase {
         repositorioColecciones.guardar(colec);
         repositorioUsuarios.guardar(user);
         p2 = Perfil.builder()
-            .id("2").usuario(user).nombre("Sofía")
+            .id(new ObjectId().toString()).usuario(user).nombre("Sofía")
             .coleccion(colec)
             .mediosDeContacto(telegram("@sofia"))
             .build();
@@ -70,14 +74,14 @@ class RepositorioSubastasTest extends MongoTestBase {
         repositorioSubastas.guardar(s1);
         repositorioSubastas.guardar(s2);
 
-        List<Subasta> resultado = repositorioSubastas.buscarPorAutorUsuarioId("u-1000");
+        PaginaResultado<Subasta> resultado = repositorioSubastas.buscarPorAutor(p1.getId(), 0, 10);
 
-        assertEquals(1, resultado.size());
-        assertEquals("s-1", resultado.get(0).getId());
+        assertEquals(1, resultado.contenido().size());
+        assertEquals("s-1", resultado.contenido().get(0).getId());
     }
 
     @Test
     void findByUsuarioId_sinResultados_retornaListaVacia() {
-        assertTrue(repositorioSubastas.buscarPorAutorUsuarioId("u-99").isEmpty());
+        assertTrue(repositorioSubastas.buscarPorAutor(new ObjectId().toString(), 1, 10).contenido().isEmpty());
     }
 }

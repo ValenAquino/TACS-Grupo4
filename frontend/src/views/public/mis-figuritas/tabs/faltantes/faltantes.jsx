@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { buscarFaltantes } from "../../../../../services/coleccionService.js";
+import { buscarFaltantes } from "@/services/coleccionService.js";
 import FaltanteCard from "../../../../../components/ui/faltante-card/faltante-card.jsx";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import { useNavigate } from "react-router";
 import Button from "../../../../../components/ui/button/button.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
-const Faltantes = ({ colId }) => {
+const Faltantes = () => {
+
+    const {handleError} = useError()
+
     const [faltantes, setFaltantes] = useState([]);
     const [filtros, setFiltros] = useState({});
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [pagina, setPagina] = useState(1);
 
     const navigate = useNavigate();
@@ -19,7 +22,7 @@ const Faltantes = ({ colId }) => {
             try {
                 setLoading(true);
 
-                const faltantesApi = await buscarFaltantes(colId, {
+                const faltantesApi = await buscarFaltantes({
                     ...filtros,
                     pagina,
                     limite: 10,
@@ -27,22 +30,14 @@ const Faltantes = ({ colId }) => {
 
                 setFaltantes(faltantesApi);
             } catch (err) {
-                setError(true);
+                handleError(err, () => {});
             } finally {
                 setLoading(false);
             }
         };
 
         cargarFaltantes();
-    }, [colId, filtros, pagina]);
-
-    if (error) {
-        return (
-            <div className="text-center py-4 text-danger">
-                Error al cargar faltantes
-            </div>
-        );
-    }
+    }, [filtros, pagina]);
 
     return (
         <div className="container-fluid px-0 d-flex flex-column gap-4">

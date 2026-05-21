@@ -1,26 +1,19 @@
 package app.controllers;
 
-import app.dto.ContadorDto;
-import app.dto.FiguritaIntercambiableDto;
-import app.dto.FiguritaDto;
-import app.dto.NotificacionesDto;
-import app.dto.PerfilDto;
-import app.dto.SugerenciaDto;
+import app.dto.*;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.filtros.SugerenciasFiltro;
 import app.dto.request.CalificacionRequest;
-import app.dto.request.PerfilRequest;
 import java.util.List;
+import app.servicios.ServicioJwt;
 import app.servicios.ServicioPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/perfil")
@@ -28,30 +21,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class ControladorPerfil {
 
     private final ServicioPerfil perfilService;
+    private final ServicioJwt servicioJwt;
 
-    @PostMapping("")
-    public ResponseEntity<PerfilDto> crearPerfil(@RequestBody PerfilRequest body) {
-        return ResponseEntity.ok(perfilService.crearPerfil(body));
-    }
-
-    @GetMapping("/{user_id}/faltantes")
-    public ResponseEntity<List<FiguritaDto>> obtenerFaltantes(@PathVariable String user_id) {
-        return ResponseEntity.ok(perfilService.obtenerFaltantes(user_id));
-    }
-
-    @GetMapping("/{user_id}/repetidas")
-    public ResponseEntity<List<FiguritaIntercambiableDto>> obtenerRepetidas(@PathVariable String user_id) {
-        return ResponseEntity.ok(perfilService.obtenerRepetidas(user_id));
-    }
-
-    @PostMapping("/{perfil_id}/calificaciones")
+    @PostMapping("/calificaciones")
     public ResponseEntity<Void> calificarPerfil(
-        @PathVariable String perfil_id,
-        @RequestBody CalificacionRequest body) {
+        @CookieValue("token") String token,
+        @RequestBody CalificacionRequest body
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
 
         this.perfilService.agregarCalificacion(
-            body.getUserId(),
-            perfil_id,
+            perfilId,
+            body.getDestinatarioId(),
             body.getValor(),
             body.getDescripcion(),
             body.getTransactionId(),
@@ -61,34 +42,53 @@ public class ControladorPerfil {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{user_id}/intercambiables")
-    public ResponseEntity<List<FiguritaIntercambiableDto>> obtenerIntercambiables(
-        @PathVariable String user_id) {
+    @GetMapping("/calificaciones")
+    public ResponseEntity<PaginaResultado<CalificacionDto>> obtenerCalificaciones(
+        @CookieValue("token") String token,
+        @RequestParam Integer pagina,
+        @RequestParam Integer limite
 
-        return ResponseEntity.ok(
-            perfilService.obtenerIntercambiablesPerfil(user_id)
-        );
-    }
-    @GetMapping("/{user_id}/sugerencias")
-    public ResponseEntity<PaginaResultado<SugerenciaDto>> obtenerSugerencias(@PathVariable String user_id, @ModelAttribute SugerenciasFiltro filtro) {
-
-        PaginaResultado<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
-
-        return ResponseEntity.ok().body(sugerenciasDto);
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.perfilService.obtenerCalificaciones(perfilId, pagina, limite));
     }
 
-    @GetMapping("/{user_id}/contadores")
-    public ResponseEntity<List<ContadorDto>> obtenerContadores(@PathVariable String user_id) {
-        return ResponseEntity.ok(this.perfilService.obtenerContadores(user_id));
+//    @GetMapping("/sugerencias")
+//    public ResponseEntity<PaginaResultado<SugerenciaDto>> obtenerSugerencias(
+//        @CookieValue String token,
+//        @ModelAttribute SugerenciasFiltro filtro
+//    ) {
+//        String perfilId = this.obtenerPerfilIdDeCookie(token);
+//        PaginaResultado<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
+//
+//        return ResponseEntity.ok().body(sugerenciasDto);
+//    }
+
+    @GetMapping("/contadores")
+    public ResponseEntity<List<ContadorDto>> obtenerContadores(
+        @CookieValue("token") String token
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.perfilService.obtenerContadores(perfilId));
     }
 
-    @GetMapping("/{user_id}/notificaciones")
-    public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(@PathVariable String user_id) {
-        return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(user_id));
+    @GetMapping("/notificaciones")
+    public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(
+        @CookieValue String token
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(perfilId));
     }
 
-    @GetMapping("/{user_id}")
-    public ResponseEntity<PerfilDto> obtenerPerfil(@PathVariable String user_id) {
-        return ResponseEntity.ok(this.perfilService.obtenerPerfil(user_id));
+    @GetMapping
+    public ResponseEntity<PerfilDto> obtenerPerfil(
+        @CookieValue("token") String token
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.perfilService.obtenerPerfil(perfilId));
+    }
+
+    private String obtenerPerfilIdDeCookie(String token) {
+        return this.servicioJwt.getPerfilId(token);
     }
 }

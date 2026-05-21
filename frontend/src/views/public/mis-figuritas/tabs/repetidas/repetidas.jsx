@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { buscarRepetidas } from "../../../../../services/coleccionService.js";
+import { buscarRepetidas } from "@/services/coleccionService.js";
 import RepetidaCard from "../../../../../components/ui/repetida-card/repetida-card.jsx";
 import FilterChip from "../../../../../components/ui/filter-chip/filter-chip.jsx";
 import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
-const Repetidas = ({ colId }) => {
+const Repetidas = () => {
     const [repetidas, setRepetidas] = useState({});
     const [filtros, setFiltros] = useState({
         metodoIntercambio: "",
@@ -16,6 +17,8 @@ const Repetidas = ({ colId }) => {
     const [error, setError] = useState(false);
     const [pagina, setPagina] = useState(1);
 
+    const {handleError} = useError()
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +26,7 @@ const Repetidas = ({ colId }) => {
             try {
                 setLoading(true);
 
-                const repetidasApi = await buscarRepetidas(colId, {
+                const repetidasApi = await buscarRepetidas({
                     ...filtros,
                     pagina,
                     limite: 10,
@@ -31,14 +34,14 @@ const Repetidas = ({ colId }) => {
 
                 setRepetidas(repetidasApi);
             } catch (err) {
-                setError(true);
+                handleError(err, () => {});
             } finally {
                 setLoading(false);
             }
         };
 
         cargarRepetidas();
-    }, [colId, filtros, pagina]);
+    }, [filtros, pagina]);
 
     const cambiarFiltro = (nuevoTipo) => {
         setFiltros((prev) => {

@@ -11,7 +11,7 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioPerfiles;
+import app.repositories.RepositorioUsuarios;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -47,9 +47,15 @@ public class ServicioEstadisticas {
         FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);
         List<SeleccionCantidadDto> topSelecciones = calcularTopSelecciones(todasLasRepetidas);
 
-        return new EstadisticasDto(totalUsuarios, totalFiguritasPublicadas,
-            totalPropuestas, totalSubastasActivas,
-            propuestasPorEstado, figuritasPorModalidad, topSelecciones);
+        return new EstadisticasDto(
+            totalUsuarios,
+            totalFiguritasPublicadas,
+            totalPropuestas,
+            totalSubastasActivas,
+            propuestasPorEstado,
+            figuritasPorModalidad,
+            topSelecciones
+        );
     }
 
     private PropuestasPorEstadoDto calcularPropuestasPorEstado() {

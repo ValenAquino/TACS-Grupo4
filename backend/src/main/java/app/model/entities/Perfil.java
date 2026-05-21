@@ -43,6 +43,18 @@ public class Perfil {
     @Builder.Default
     private int cantidadCalificaciones = 0;
 
+    public Perfil(Usuario usuario,
+                  String nombre,
+                  Coleccion coleccion,
+                  List<MedioDeContacto> mediosDeContacto,
+                  List<Calificacion> calificaciones) {
+        this.usuario = usuario;
+        this.nombre = nombre;
+        this.coleccion = coleccion;
+        this.mediosDeContacto = mediosDeContacto;
+        this.calificaciones = calificaciones;
+    }
+
     /**
      * Calcula el promedio de las calificaciones recibidas.
      */
@@ -51,5 +63,9 @@ public class Perfil {
         this.cantidadCalificaciones++;
         this.calificacionMedia = this.calificacionMedia +
             (calificacion.getValor() - this.calificacionMedia) / this.cantidadCalificaciones;
+    }
+
+    public String getIniciales() {
+        return this.nombre.substring(0, 2).toUpperCase();
     }
 }

@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import {buscarContadores,buscarPerfil,buscarCalificaciones} from "../../../services/perfilService.js";
-import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+import {useAuth} from "@/contexts/userContext.jsx";
+import Button from "@/components/ui/button/button.jsx";
+import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
+import {useToast} from "@/contexts/toastContext.jsx";
+import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
 
 const renderStars = (score) => {
-    const fullStars = Math.floor(score / 2);
+    const fullStars = Math.floor(score);
     const emptyStars = 5 - fullStars;
 
     return (
@@ -17,45 +22,82 @@ const renderStars = (score) => {
 const Perfil = () => {
 
     const [showModal, setShowModal] = useState(false);
-    const [nombre, setNombre] = useState("Messi G.");
+    const [perfil, setPerfil] = useState({});
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({
-        intercambios: 0,
-        publicadas: 0,
-        faltantes: 0,
-        subastas: 0
-    });
+    const [loadingNotificaciones, setLoadingNotificaciones] = useState(false);
+    const [stats, setStats] = useState([]);
+    const [pagina, setPagina] = useState(1);
+    const [filtros, setFiltros] = useState({});
 
-    /* Datos Hardcodeados */
-    const { userId } = useUsuarioActual();
+    const {handleError} = useError();
+    const {showToast} = useToast();
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+    const { user, cerrarSesion} = useAuth();
+
+    const perfilId = user?.perfil_id
+
+    const manejarCierreDeSesion = () => {
+        try {
+            cerrarSesion()
+            showToast("Cierre de sesion exitoso", "success");
+        } catch (error) {
+            showToast("Error al cerra la sesion", "error");
+        }
+    }
 
     useEffect(() => {
       const cargar = async () => {
         try {
           setLoading(true);
 
-          const perfil = await buscarPerfil(userId);
-          const statsData = await buscarContadores({ userId });
-          const reviewsData = await buscarCalificaciones(userId);
+          const perfil = await buscarPerfil();
+          const statsData = await buscarContadores();
 
-          setNombre(perfil.nombre);
-          setReviews(reviewsData);
+          setPerfil(perfil);
           setStats(statsData);
 
-        } catch (e) {
-          console.error(e);
+        } catch (error) {
+          handleError(error, () => {});
         } finally {
           setLoading(false);
         }
       };
 
       cargar();
-    }, [userId]);
+    }, [perfilId]);
 
-    const promedio = reviews.length > 0
-        ? (reviews.reduce((acc, r) => acc + r.puntaje, 0) / reviews.length).toFixed(1)
+    useEffect(() => {
+        const cargarCalificaciones = async () => {
+            try {
+                setLoadingNotificaciones(true);
+
+                const calificacionesApi = await buscarCalificaciones({
+                    ...filtros,
+                    pagina,
+                    limite: 10,
+                });
+
+                setReviews(calificacionesApi);
+            } catch (error) {
+                handleError(error, () => {})
+            } finally {
+                setLoadingNotificaciones(false);
+            }
+        };
+
+        cargarCalificaciones();
+    }, [perfilId, filtros, pagina]);
+
+    const promedio = reviews.resultados > 0
+        ? (reviews.data.reduce((acc, r) => acc + r.valor, 0) / reviews.resultados).toFixed(1)
         : 0;
+
+    const guardarCambios = async () => {
+
+    }
 
     return (
         <div className="d-flex flex-column">
@@ -91,28 +133,42 @@ const Perfil = () => {
                         </div>
 
                         <div>
-                            <h2 className="mb-0 fw-bold"
-                            style={{
-                            maxWidth: "750px",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis"
-                            }}>
-                            {nombre}</h2>
-                            <p className="mb-1">@messi_g</p>
-                            <div>
-                                {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.length})
-                            </div>
+                            {loading
+                                ? <h2>Cargando datos...</h2>
+                                : (
+                                    <>
+                                        <h2 className="mb-0 fw-bold"
+                                            style={{
+                                                maxWidth: "750px",
+                                                whiteSpace: "nowrap",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis"
+                                            }}>
+                                            {perfil?.nombre}</h2>
+                                        <div>
+                                            {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.resultados})
+                                        </div>
+                                    </>
+                                )
+                            }
                         </div>
                     </div>
 
-                    <button
-                        className="btn btn-warning"
-                        style={{ padding: "10px 18px" }}
-                        onClick={() => setShowModal(true)}
-                    >
-                        Editar perfil
-                    </button>
+                    <div className="d-flex align-items-center gap-3 ">
+                        <button
+                            className="btn btn-warning"
+                            style={{ padding: "10px 18px" }}
+                            onClick={() => setShowModal(true)}
+                        >
+                            Editar perfil
+                        </button>
+
+                        {perfilId != null && <Button
+                            label={"Cerrar sesion"}
+                            onClick={() => setShowConfirmModal(true)}
+                        />}
+                    </div>
+
 
                 </div>
             </div>
@@ -126,12 +182,7 @@ const Perfil = () => {
                 marginLeft: "-50vw"
             }}>
                 <div className="mx-auto d-flex text-center text-white" style={{ maxWidth: "60%" }}>
-                    {[
-                         { valor: stats.intercambios, label: "Intercambios" },
-                         { valor: stats.publicadas, label: "Publicadas" },
-                         { valor: stats.faltantes, label: "Faltantes" },
-                         { valor: stats.subastas, label: "Subastas" }
-                     ].map((stat, i) => (
+                    {stats.map((stat, i) => (
                         <div
                             key={i}
                             className="flex-fill py-3"
@@ -143,7 +194,7 @@ const Perfil = () => {
                                 {stat.valor}
                             </div>
                             <div style={{ fontSize: "1rem", marginTop: "2px" }}>
-                                {stat.label}
+                                {stat.nombre}
                             </div>
                         </div>
                     ))}
@@ -157,12 +208,12 @@ const Perfil = () => {
 
                     <div className="d-flex flex-column gap-3">
 
-                        {loading ? (
+                        {loadingNotificaciones ? (
                             <p className="text-muted">Cargando reseñas...</p>
-                        ) : reviews.length === 0 ? (
+                        ) : reviews.data?.length === 0 ? (
                             <p className="text-muted">Este usuario no tiene reseñas disponibles</p>
                         ) : (
-                            reviews.map((r, i) => (
+                            reviews.data?.map((r, i) => (
                                 <div
                                     key={i}
                                     className="p-3 bg-white rounded shadow-sm d-flex align-items-center gap-3"
@@ -183,9 +234,9 @@ const Perfil = () => {
 
                                     <div className="flex-grow-1">
                                         <strong>{r.nombre}</strong>
-                                        <div>{renderStars(r.puntaje)} {r.puntaje}/10</div>
+                                        <div>{renderStars(perfil.calificacion)} {r.calificacion_final}/5</div>
                                         <p className="mb-0 text-muted" style={{ fontSize: "0.9rem" }}>
-                                            "{r.comentario}"
+                                            "{r.descripcion}"
                                         </p>
                                     </div>
                                 </div>
@@ -194,6 +245,10 @@ const Perfil = () => {
 
                     </div>
                 </div>
+                <Paginacion
+                    page={pagina}
+                    totalPages={reviews.paginas_totales ?? 1}
+                    onChange={setPagina}/>
             </div>
 
             {/* MODAL (sin cambios) */}
@@ -239,8 +294,10 @@ const Perfil = () => {
                         <label>Nombre</label>
                         <input
                             className="form-control mb-3"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
+                            value={perfil?.nombre}
+                            onChange={(e) => setPerfil((prev) =>
+                                setPerfil({ ...prev, nombre: e.target.value }))
+                            }
                         />
 
                         <label className="text-muted">@messi_g</label>
@@ -255,6 +312,14 @@ const Perfil = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                show={showConfirmModal}
+                titulo={"Esta seguro que quiere cerrar su sesion?"}
+                labelConfirmar={"Aceptar"}
+                onConfirmar={manejarCierreDeSesion}
+                onCancelar={() => setShowConfirmModal(false)}
+            />
         </div>
     );
 };

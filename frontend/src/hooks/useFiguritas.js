@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { explorarFiguritas } from '@/services/explorarService'
+import {useError} from "@/contexts/errorContext.jsx";
 
 const useFiguritas = (q, jugador, seleccion, numero, tipo, page) => {
   const [figuritas, setFiguritas] = useState([])
@@ -7,6 +8,7 @@ const useFiguritas = (q, jugador, seleccion, numero, tipo, page) => {
   const [totalElements, setTotalElements] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+  const {handleError} = useError()
 
   useEffect(() => {
     setLoading(true)
@@ -17,8 +19,8 @@ const useFiguritas = (q, jugador, seleccion, numero, tipo, page) => {
         setFiguritas(data.content)
         setTotalPages(data.totalPages)
         setTotalElements(data.totalElements)
-      } catch {
-        setError(true)
+      } catch (error) {
+        handleError(error, () => {})
       } finally {
         setLoading(false)
       }

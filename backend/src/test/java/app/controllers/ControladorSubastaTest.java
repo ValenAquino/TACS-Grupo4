@@ -1,15 +1,21 @@
 package app.controllers;
 
-import app.InicializadorDeDatos;
-import app.model.entities.*;
-import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioPerfiles;
-import app.repositories.RepositorioSubastas;
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.subasta.SubastaDto;
+import app.dto.subasta.SubastasParticipoResponseDto;
+import app.model.entities.Subasta;
+import app.servicios.ServicioJwt;
+import app.servicios.ServicioSubasta;
+import jakarta.servlet.http.Cookie;
+
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,16 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class ControladorSubastaTest {
 
@@ -35,237 +36,222 @@ class ControladorSubastaTest {
     MockMvc mockMvc;
 
     @MockBean
-    RepositorioPerfiles repositorioPerfiles;
+    ServicioSubasta subastaService;
 
     @MockBean
-    RepositorioSubastas repositorioSubastas;
+    ServicioJwt servicioJwt;
 
-    @MockBean
-    RepositorioFiguritas repositorioFiguritas;
-
-    @MockBean
-    InicializadorDeDatos inicializadorDeDatos;
-
-    private Perfil sofia;
-    private Perfil lucas;
-    private Figurita messi;
-    private Subasta subastaActiva;
-    private Subasta subastaCerrada;
+    private final Cookie cookie =
+        new Cookie("token","fake-token");
 
     @BeforeEach
-    void setUp() {
-        messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
-
-        Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
-        sofia = Perfil.builder()
-            .id("1").usuario(user).nombre("Sofía")
-            .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@sofia")))
-            .build();
-
-        user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
-        lucas = Perfil.builder()
-            .id("2").usuario(user).nombre("Lucas")
-            .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")))
-            .build();
-
-        subastaActiva =  Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-                LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
-            .figuritaSubastada(messi)
-            .build();
-
-        subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-                LocalDateTime.now().minusDays(1)).fechaCierre(LocalDateTime.now().minusHours(1))
-            .figuritaSubastada(messi)
-            .build();
+    void setup() {
+        when(servicioJwt.getPerfilId("fake-token"))
+            .thenReturn("1000");
     }
 
     @Test
     void crearSubasta_retorna200() throws Exception {
-        when(repositorioPerfiles.buscarPorUsuarioId("u-1")).thenReturn(sofia);
-        when(repositorioFiguritas.buscarPorId("ARG-10")).thenReturn(messi);
-        when(repositorioPerfiles.buscarPorFiguritaFaltante(messi)).thenReturn(List.of());
 
-        mockMvc.perform(post("/subastas")
-                .header("user_id", "u-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+        mockMvc.perform(
+                post("/subastas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
                     {
-                        "figurita_id": "ARG-10",
-                        "duracion_en_horas": 30
+                        "figurita_id":"ARG-10",
+                        "duracion_en_horas":30,
+                        "figuritas_deseadas_ids":["ARG-1"],
+                        "calificacion_minima":2
                     }
-                """))
+                    """)
+            )
             .andExpect(status().isOk());
+
+        verify(subastaService)
+            .crearSubasta(
+                eq("1000"),
+                eq("ARG-10"),
+                eq(30),
+                eq(List.of("ARG-1")),
+                eq(2)
+            );
     }
 
     @Test
     void ofertarEnSubasta_retorna200() throws Exception {
-        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
 
-        when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(lucas);
-        when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
-        when(repositorioFiguritas.buscarPorId("ARG-11")).thenReturn(diMaria);
-
-        mockMvc.perform(post("/subastas/s-1/ofertas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+        mockMvc.perform(
+                post("/subastas/s-1/ofertas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
                     {
-                        "user_id": "u-2",
-                        "figuritas_ofrecidas_id": ["ARG-11"]
+                      "figuritas_ofrecidas_id":[
+                        "ARG-11"
+                      ]
                     }
-                """))
+                    """)
+            )
             .andExpect(status().isOk());
+
+        verify(subastaService)
+            .ofertarEnSubasta(
+                "1000",
+                "s-1",
+                List.of("ARG-11")
+            );
     }
 
     @Test
-    void ofertarEnSubastaCerrada_retorna400() throws Exception {
-        when(repositorioPerfiles.buscarPorUsuarioId("u-2")).thenReturn(lucas);
-        when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaCerrada);
+    void mejorarOferta_retorna200() throws Exception {
 
-        mockMvc.perform(post("/subastas/s-2/ofertas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+        mockMvc.perform(
+                patch("/subastas/s-1/ofertas/o-1")
+                    .contentType("application/json")
+                    .content("""
                     {
-                        "user_id": "u-2",
-                        "figuritas_ofrecidas_id": ["ARG-11"]
+                      "figuritas_ofrecidas_id":[
+                        "ARG-15"
+                      ]
                     }
-                """))
-            .andExpect(status().isBadRequest());
+                    """)
+            )
+            .andExpect(status().isOk());
+
+        verify(subastaService)
+            .mejorarOfertaEnSubasta(
+                eq("s-1"),
+                eq("o-1"),
+                any()
+            );
     }
 
     @Test
     void seleccionarOferta_retorna200() throws Exception {
-        Propuesta propuesta = Propuesta.builder()
-            .id("o-1").autor(lucas).destinatario(sofia)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(messi)
-            .build();
-        subastaActiva.getOfertas().add(propuesta);
 
-        when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
-
-        mockMvc.perform(post("/subastas/s-1/ofertas/o-1/seleccionar")
-                .header("user_id", "u-1"))
+        mockMvc.perform(
+                post("/subastas/s-1/ofertas/o-1/seleccionar")
+            )
             .andExpect(status().isOk());
-    }
 
-    @Test
-    void seleccionarOferta_subastaInactiva_retorna400() throws Exception {
-        when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaCerrada);
-
-        mockMvc.perform(post("/subastas/s-2/ofertas/o-1/seleccionar")
-                .header("user_id", "u-1"))
-            .andExpect(status().isBadRequest());
+        verify(subastaService)
+            .seleccionarOferta(
+                "s-1",
+                "o-1"
+            );
     }
 
     @Test
     void rechazarOferta_retorna200() throws Exception {
-        Propuesta propuesta = Propuesta.builder()
-            .id("o-1").autor(lucas).destinatario(sofia)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(messi)
-            .build();
-        subastaActiva.getOfertas().add(propuesta);
 
-        when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
-
-        mockMvc.perform(post("/subastas/s-1/ofertas/o-1/rechazar")
-                .header("user_id", "u-1"))
+        mockMvc.perform(
+                post("/subastas/s-1/ofertas/o-1/rechazar")
+            )
             .andExpect(status().isOk());
-    }
 
-    @Test
-    void rechazarOferta_subastaInactiva_retorna400() throws Exception {
-        when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaCerrada);
-
-        mockMvc.perform(post("/subastas/s-2/ofertas/o-1/rechazar")
-                .header("user_id", "u-1"))
-            .andExpect(status().isBadRequest());
+        verify(subastaService)
+            .rechazarOferta(
+                "s-1",
+                "o-1"
+            );
     }
 
     @Test
     void cancelarSubasta_retorna200() throws Exception {
-        when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
 
-        mockMvc.perform(post("/subastas/s-1/cancelar")
-                .header("user_id", "u-1"))
+        mockMvc.perform(
+                post("/subastas/s-1/cancelar")
+            )
             .andExpect(status().isOk());
-    }
 
-    @Test
-    void cancelarSubasta_subastaInactiva_retorna400() throws Exception {
-        when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaCerrada);
-
-        mockMvc.perform(post("/subastas/s-2/cancelar")
-                .header("user_id", "u-1"))
-            .andExpect(status().isBadRequest());
+        verify(subastaService)
+            .cancelarSubasta("s-1");
     }
 
     @Test
     void cerrarSubasta_retorna200() throws Exception {
-        Propuesta propuesta = Propuesta.builder()
-            .id("o-1").autor(lucas).destinatario(sofia)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(messi)
-            .build();
-        propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
-        subastaActiva.getOfertas().add(propuesta);
 
-        when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
-
-        mockMvc.perform(post("/subastas/s-1/cerrar")
-                .header("user_id", "u-1"))
+        mockMvc.perform(
+                post("/subastas/s-1/cerrar")
+            )
             .andExpect(status().isOk());
-    }
 
-    @Test
-    void cerrarSubasta_sinOfertaSeleccionada_retorna400() throws Exception {
-        Propuesta propuesta = Propuesta.builder()
-            .id("o-1").autor(lucas).destinatario(sofia)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(messi)
-            .build();
-        subastaActiva.getOfertas().add(propuesta);
-
-        when(repositorioSubastas.buscarPorId("s-1")).thenReturn(subastaActiva);
-
-        mockMvc.perform(post("/subastas/s-1/cerrar")
-                .header("user_id", "u-1"))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void cerrarSubasta_subastaInactiva_retorna400() throws Exception {
-        when(repositorioSubastas.buscarPorId("s-2")).thenReturn(subastaCerrada);
-
-        mockMvc.perform(post("/subastas/s-2/cerrar")
-                .header("user_id", "u-1"))
-            .andExpect(status().isBadRequest());
+        verify(subastaService)
+            .cerrarSubasta("s-1");
     }
 
     @Test
     void obtenerMisSubastas_retorna200() throws Exception {
-        when(repositorioSubastas.buscarPorAutorUsuarioId("u-1"))
-            .thenReturn(List.of(subastaActiva));
 
-        mockMvc.perform(get("/subastas/mis-subastas")
-                .param("userId", "u-1"))
+        when(
+            subastaService.obtenerMisSubastas(
+                "1000",
+                10,
+                10
+            )
+        ).thenReturn(
+            new PaginaResultado<>(
+                List.of(),
+                0,
+                0,
+                0
+            )
+        );
+
+        mockMvc.perform(
+                get("/subastas/mis-subastas")
+                    .cookie(cookie)
+            )
             .andExpect(status().isOk());
+
+        verify(subastaService)
+            .obtenerMisSubastas(
+                "1000",
+                10,
+                10
+            );
     }
 
     @Test
     void obtenerSubastasParticipo_retorna200() throws Exception {
-        Propuesta propuesta = Propuesta.builder()
-            .id("o-1").autor(lucas).destinatario(sofia)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(messi)
-            .build();
-        subastaActiva.getOfertas().add(propuesta);
 
-        when(repositorioSubastas.buscarDondeParticipa("u-2"))
-            .thenReturn(List.of(subastaActiva));
+        when(
+            subastaService.obtenerSubastasParticipo("1000")
+        ).thenReturn(
+            new SubastasParticipoResponseDto(
+                List.of(),
+                List.of()
+            )
+        );
 
-        mockMvc.perform(get("/subastas/participo")
-                .param("userId", "u-2"))
+        mockMvc.perform(
+                get("/subastas/participo")
+                    .cookie(cookie)
+            )
             .andExpect(status().isOk());
+
+        verify(subastaService)
+            .obtenerSubastasParticipo(
+                "1000"
+            );
+    }
+
+    @Test
+    void obtenerSubasta_retorna200() throws Exception {
+
+        SubastaDto dto = mock(SubastaDto.class);
+
+        when(
+            subastaService.obtenerSubasta("s-1")
+        ).thenReturn(dto);
+
+        mockMvc.perform(
+                get("/subastas/s-1")
+            )
+            .andExpect(status().isOk());
+
+        verify(subastaService)
+            .obtenerSubasta("s-1");
     }
 }

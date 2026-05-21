@@ -1,20 +1,53 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import IntercambioCard from "../../../../components/ui/intercambio-card/intercambio-card.jsx";
 import IntercambioModal from "../../../../components/ui/intercambio-modal/intercambio-modal.jsx";
-import { rechazarIntercambio } from "../../../../services/intercambioService.js";
+import {buscarPropuestas} from "@/services/propuestasService.js";
+import useUsuarioActual from "@/hooks/useUsuarioActual.js";
+import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
+import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
+import {useAuth} from "@/contexts/userContext.jsx";
 
- const EnviadasTab = ({ esperando }) => {
+ const EnviadasTab = () => {
     const [selected, setSelected] = useState(null);
-    const [lista, setLista] = useState(esperando);
+    const [enviadas, setEnviadas] = useState([]);
+    const [filtros, setFiltros] = useState({
+        estado: "",
+        tipo: "ENVIADAS"
+    });
+    const [loading, setLoading] = useState(true);
+    const [pagina, setPagina] = useState(1);
 
-    const handleCancelar = async (id) => {
-        try {
-            await rechazarIntercambio(id);
-            setLista(prev => prev.filter(i => i.id !== id));
-        } catch (e) {
-            console.error("Error al cancelar", e);
-        }
-    };
+    const {handleError} = useError()
+
+     const cambiarFiltro = (nuevoEstado) => {
+         setFiltros((prev) => {
+             if (prev.estado === nuevoEstado) return prev;
+
+             return {
+                 ...prev,
+                 estado: nuevoEstado,
+             };
+         });
+
+         setPagina(1);
+     };
+
+     const cargarEnviadas = async () => {
+         try {
+             setLoading(true);
+             const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
+             setEnviadas(enviadasApi)
+         } catch (error) {
+             handleError(error, () => {})
+         } finally {
+             setLoading(false);
+         }
+     }
+
+    useEffect(() => {
+        cargarEnviadas();
+    }, [pagina, filtros])
 
     return (
         <div>
@@ -32,32 +65,68 @@ import { rechazarIntercambio } from "../../../../services/intercambioService.js"
                             }
                         `}</style>
 
-            <h6 className="fw-bold mt-3">ESPERANDO ({lista.length})</h6>
-
-            {lista.map(i => (
-                <IntercambioCard
-                    key={i.id}
-                    intercambio={i}
-                    izquierda="pedis"
-                    derecha="ofreces"
-                    labelIzq="Vos pedís"
-                    labelDer="Vos ofrecés"
-                    badge={{ etiqueta: "Enviada", color: "primary" }}
-                    botones={
-                        <>
-                            <button onClick={() => setSelected(i)} className="btn btn-outline-dark btn-sm flex-fill">
-                                Ver detalle
-                            </button>
-                            <button
-                                className="btn btn-sm flex-fill btn-rechazar"
-                                onClick={() => handleCancelar(i.id)}
-                            >
-                                Cancelar
-                            </button>
-                        </>
+            <div className="d-flex flex-wrap justify-content-start gap-2 mb-3">
+                <FilterChip
+                    label="Todas"
+                    selected={
+                        filtros.estado ===
+                        ""
+                    }
+                    onClick={() =>
+                        cambiarFiltro("")
                     }
                 />
-            ))}
+
+                <FilterChip
+                    label="Aceptadas"
+                    selected={
+                        filtros.estado === "ACEPTADO"
+                    }
+                    onClick={() => cambiarFiltro("ACEPTADO")}
+                />
+
+                <FilterChip
+                    label="Rechazadas"
+                    selected={
+                        filtros.estado === "RECHAZADO"
+                    }
+                    onClick={() => cambiarFiltro("RECHAZADO")}
+                />
+
+                <FilterChip
+                    label="Pendientes"
+                    selected={
+                        filtros.estado === "PENDIENTE"
+                    }
+                    onClick={() => cambiarFiltro("PENDIENTE")}
+                />
+            </div>
+
+            {loading ? <p>Cargando resultados...</p>
+                :
+                enviadas?.data?.length > 0 ?
+                <>
+                    <p className={"mb-3"}>Esperando Respuesta {`(${enviadas.resultados})`}</p>
+                    {enviadas.data.map(i => (
+                        <IntercambioCard
+                            key={i.id}
+                            intercambio={i}
+                            tipo={"ENVIADA"}
+                            onActualizado={cargarEnviadas}
+                        />
+                    ))}
+                </> : (
+                        <div className="col-12 text-center text-muted py-5">
+                            <div className="fs-1">📭</div>
+                            <p className="mb-0">No hay resultados...</p>
+                        </div>
+                )}
+
+            <Paginacion
+                page={pagina}
+                totalPages={enviadas.paginas_totales ?? 1}
+                onChange={setPagina}
+            />
 
             <IntercambioModal
                 selected={selected}

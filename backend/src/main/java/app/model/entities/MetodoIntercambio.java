@@ -1,12 +1,14 @@
 package app.model.entities;
 
+import app.exceptions.BadRequestException;
+
 public enum MetodoIntercambio {
   SUBASTA,
   INTERCAMBIO;
 
   /**
    * Convierte un string al enum correspondiente (case-insensitive).
-   * Lanza {@link IllegalArgumentException} si el valor no coincide con ningún método.
+   * Lanza {@link BadRequestException} si el valor no coincide con ningún método.
    */
   public static MetodoIntercambio fromString(String value) {
     for (MetodoIntercambio metodo : MetodoIntercambio.values()) {
@@ -14,6 +16,6 @@ public enum MetodoIntercambio {
         return metodo;
       }
     }
-    throw new IllegalArgumentException("Valor inválido: " + value);
+    throw new BadRequestException("Valor inválido: " + value);
   }
 }

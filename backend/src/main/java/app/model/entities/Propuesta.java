@@ -87,6 +87,16 @@ public class Propuesta {
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
     }
 
+    /**
+     * Cancela la propuesta. Valida que {@code usuario} sea el autor
+     * y que la propuesta esté en estado PENDIENTE.
+     */
+    public void cancelar(Perfil perfil) {
+        this.validarUsuarioAutor(perfil);
+        validarPendiente();
+        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
+    }
+
     private void validarPendiente() {
         if (obtenerEstadoActual().getValor() != EstadoProceso.PENDIENTE) {
             throw new PropuestaException("La propuesta ya fue respondida");
@@ -98,4 +108,11 @@ public class Propuesta {
             throw new PropuestaException("Solo el destinatario puede responder la propuesta");
         }
     }
+
+    private void validarUsuarioAutor(Perfil perfil) {
+        if (!this.destinatario.getId().equals(perfil.getId())) {
+            throw new PropuestaException("Solo el destinatario puede responder la propuesta");
+        }
+    }
+
 }

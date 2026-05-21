@@ -1,9 +1,12 @@
 package app.repositories.impl;
 
+import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
+import app.model.entities.Calificacion;
 import app.model.entities.Perfil;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioSubastas;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,16 +20,27 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   MongoTemplate mongoTemplate;
 
   @Override
-  public List<Subasta> buscarPorAutorUsuarioId(String userId) {
-    Query queryPerfil = new Query(Criteria.where("usuario.id").is(userId));
-    Perfil perfil = mongoTemplate.findOne(queryPerfil, Perfil.class);
+  public PaginaResultado<Subasta> buscarPorAutor(String perfilId, Integer pagina, Integer limite) {
+    Query query = new Query();
 
-    if (perfil == null) return List.of();
-
-    Query querySubastas = new Query(
-        Criteria.where("autor.$id").is(perfil.getId())
+    query.addCriteria(
+        Criteria.where("autor.$id").is(new ObjectId(perfilId))
     );
-    return mongoTemplate.find(querySubastas, Subasta.class);
+
+    long count = mongoTemplate.count(query, Subasta.class);
+
+    query.skip((long) pagina * limite);
+    query.limit(limite);
+
+    List<Subasta> contenido =
+        mongoTemplate.find(query, Subasta.class);
+
+    return new PaginaResultado<>(
+        contenido,
+        count,
+        (int) Math.ceil((double) count / limite),
+        pagina
+    );
   }
 
   @Override

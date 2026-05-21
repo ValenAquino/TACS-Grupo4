@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { buscarFaltantes, buscarRepetidas } from "../../../services/perfilService.js";
 import { crearSubasta } from "../../../services/subastasService.js";
 import { useNavigate } from "react-router";
 import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
@@ -34,7 +33,7 @@ const PasoFigurita = ({ seleccionada, onSeleccionar, userId }) => {
     const cargar = async () => {
       try {
         setLoading(true);
-        const res = await buscarRepetidas(userId);
+        //const res = await buscarRepetidas();
         setRepetidas(res ?? []);
       } catch {
         setRepetidas([]);
@@ -100,9 +99,9 @@ const PasoCondiciones = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    buscarFaltantes(userId)
-      .then((res) => setFiguritasFaltantes(res ?? []))
-      .finally(() => setLoading(false));
+    // buscarFaltantes(userId)
+    //   .then((res) => setFiguritasFaltantes(res ?? []))
+    //   .finally(() => setLoading(false));
   }, [userId]);
 
   const toggleFigurita = (fig) => {

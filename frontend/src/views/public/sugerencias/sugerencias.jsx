@@ -24,7 +24,7 @@ const Sugerencias = () => {
     const cargarContadores = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarContadoresSugerencias({userId})
+            const payload = await buscarContadoresSugerencias()
             setContadores(payload)
 
         } catch (error) {

@@ -16,7 +16,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias({userId, tipo, pagina: pagina, limite:10})
+            const payload = await buscarSugerencias({ tipo, pagina: pagina, limite:10})
             setPaginasTotales(payload.paginas_totales)
             setSugerencias(payload.data)
 

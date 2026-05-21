@@ -3,12 +3,15 @@ package app.servicios.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
 import app.MongoTestBase;
 import app.exceptions.BadRequestException;
 import app.model.entities.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import app.servicios.ServicioSubasta;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,27 +82,33 @@ public class ServicioSubastaTest extends MongoTestBase {
 
   @Test
   void ofertarEnSubastaCerrada_lanzaExcepcion() {
-    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-        LocalDateTime.now().minusDays(3)).fechaCierre(LocalDateTime.now().minusDays(1))
+    Subasta subastaCerrada = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(3))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
     repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
-        () -> service.ofertarEnSubasta("u-1", "s-1", List.of("ARG-11")));
+        () -> service.ofertarEnSubasta("2", "s-1", List.of("ARG-10")));
   }
 
   @Test
   void ofertarEnSubastaConFiguritasDuplicadas_lanzaExcepcion() {
-    Subasta subastaActiva = Subasta.builder().id("s-2").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+    Subasta subastaActiva = Subasta.builder()
+        .id("s-2")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi)
         .build();
 
     repositorioSubastas.guardar(subastaActiva);
 
     assertThrows(BadRequestException.class,
-        () -> service.ofertarEnSubasta("u-1","s-2", List.of("ARG-11", "ARG-11")));
+        () -> service.ofertarEnSubasta("2","s-2", List.of("ARG-10", "ARG-10")));
   }
 
   @Test

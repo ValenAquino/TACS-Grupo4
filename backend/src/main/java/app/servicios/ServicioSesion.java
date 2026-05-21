@@ -1,19 +1,36 @@
 package app.servicios;
 
-import app.dto.request.UsuarioRequest;
+import app.dto.request.LoginRequest;
+import app.exceptions.UsuarioException;
+import app.model.entities.Perfil;
 import app.model.entities.Usuario;
+import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioUsuarios;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ServicioSesion {
-  private final RepositorioUsuarios repoSesion;
+  private final RepositorioUsuarios repoUsuario;
+  private final RepositorioPerfiles repoPerfiles;
+  private final ServicioJwt servicioJwt;
 
-  public void crearUsuario(UsuarioRequest req) {
-    Usuario usuario = new Usuario(null, req.getRol(), req.getNombre(), req.getContrasenia());
+  public String login(LoginRequest request) {
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    this.repoSesion.guardar(usuario);
+    Usuario usuario = this.repoUsuario.buscarPorNombre(request.nombre());
+
+    boolean coincide = passwordEncoder.matches(request.contrasenia(), usuario.getContrasenia());
+
+    if(!coincide) {
+      throw new UsuarioException("Credenciales invalidas");
+    }
+
+    Perfil perfil = this.repoPerfiles.buscarPorUsuarioId(usuario.getId());
+
+    return this.servicioJwt.generarToken(usuario, perfil);
   }
 }

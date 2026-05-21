@@ -10,14 +10,12 @@ const MisFiguritas = () => {
         {
             key: "repetidas",
             label: "Repetidas",
-            component: Repetidas,
-            props: { colId },
+            component: Repetidas
         },
         {
             key: "faltantes",
             label: "Faltantes",
-            component: Faltantes,
-            props: { colId },
+            component: Faltantes
         },
     ];
 
@@ -26,7 +24,6 @@ const MisFiguritas = () => {
             <div className="mx-auto" style={{ maxWidth: "900px" }}>
                 <div className="d-flex flex-column gap-4">
                     <SectionTitle>Mis figuritas</SectionTitle>
-
                     <TabsContainer tabs={TABS} />
                 </div>
             </div>

@@ -1,21 +1,24 @@
 package app.controllers;
 
-import app.InicializadorDeDatos;
-import app.model.entities.EstadoProceso;
-import app.model.entities.EstadoPropuesta;
-import app.model.entities.Figurita;
-import app.model.entities.MedioComunicacion;
-import app.model.entities.MedioDeContacto;
-import app.model.entities.Propuesta;
-import app.model.entities.Perfil;
-import app.model.entities.Rol;
-import app.model.entities.Usuario;
-import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioPerfiles;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import app.dto.PropuestaDto;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.request.CrearPropuestaRequest;
+import app.servicios.ServicioJwt;
+import app.servicios.ServicioPropuesta;
+import jakarta.servlet.http.Cookie;
+
 import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,11 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -38,102 +36,116 @@ class ControladorPropuestaTest {
     MockMvc mockMvc;
 
     @MockBean
-    RepositorioPerfiles repoUser;
-    @MockBean
-    RepositorioFiguritas repoFigurita;
-    @MockBean
-    RepositorioPropuestas repoPropuesta;
-    @MockBean
-    InicializadorDeDatos inicializadorDeDatos;
-    private List<MedioDeContacto> telegram(String numero) {
-        return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
-    }
+    ServicioPropuesta propuestaService;
 
-    private Perfil perfil(String id, String usuarioId, String handle) {
-        Usuario user = new Usuario(usuarioId, Rol.USUARIO, "lucas", "fiscella");
-        return Perfil.builder()
-            .id(id).usuario(user).nombre("")
-            .mediosDeContacto(telegram(handle))
-            .build();
+    @MockBean
+    ServicioJwt servicioJwt;
+
+    private final Cookie cookie =
+        new Cookie("token","fake-token");
+
+    @BeforeEach
+    void setup() {
+        when(servicioJwt.getPerfilId("fake-token"))
+            .thenReturn("1000");
     }
 
     @Test
-    void crearPropuestaDevuelve201() throws Exception {
-        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
-        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
+    void crearPropuesta_retorna201() throws Exception {
 
-        Figurita buscada  = new Figurita("ARG-10", 2, null, null, null);
-        Figurita ofrecida = new Figurita("FRA-10", 2, null, null, null);
+        when(propuestaService.crearPropuesta(
+            eq("1000"),
+            any(CrearPropuestaRequest.class)
+        )).thenReturn(null);
 
-        String json = """
-        {
-            "autor_id": "1000",
-            "destinatario_id": "1001",
-            "figurita_buscada_id": "ARG-10",
-            "figuritas_ofrecidas_ids": ["FRA-10"]
-        }
-        """;
-
-        when(repoUser.buscarPorId("1000")).thenReturn(subastador);
-        when(repoUser.buscarPorId("1001")).thenReturn(userPropuesta);
-        when(repoFigurita.buscarPorId("ARG-10")).thenReturn(buscada);
-        when(repoFigurita.buscarPorId("FRA-10")).thenReturn(ofrecida);
-
-        mockMvc.perform(post("/propuestas")
-                .contentType("application/json")
-                .content(json))
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                    {
+                      "destinatario_id":"2000",
+                      "figurita_buscada_id":"ARG-10",
+                      "figuritas_ofrecidas_ids":[
+                        "ARG-1",
+                        "ARG-2"
+                      ]
+                    }
+                    """)
+            )
             .andExpect(status().isCreated());
+
+        verify(propuestaService)
+            .crearPropuesta(
+                eq("1000"),
+                any(CrearPropuestaRequest.class)
+            );
     }
 
     @Test
-    void aceptarPropuestaNoFalla() throws Exception {
-        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
-        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
+    void aceptarPropuesta_retorna204() throws Exception {
 
-        Propuesta propuesta = new Propuesta("p-1", subastador, userPropuesta,
-            new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
-
-        when(repoPropuesta.buscarPorId("p-1")).thenReturn(propuesta);
-        when(repoUser.buscarPorUsuarioId("u-1001")).thenReturn(userPropuesta);
-
-        mockMvc.perform(patch("/propuestas/p-1/aceptar")
-                .header("usuario_id", "u-1001"))
+        mockMvc.perform(
+                patch("/propuestas/p-1/aceptar")
+                    .cookie(cookie)
+            )
             .andExpect(status().isNoContent());
+
+        verify(propuestaService)
+            .aceptar("p-1","1000");
     }
 
     @Test
-    void rechazarPropuestaNoFalla() throws Exception {
-        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
-        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
+    void rechazarPropuesta_retorna204() throws Exception {
 
-        Propuesta propuesta = new Propuesta("p-2", subastador, userPropuesta,
-            new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
-
-        when(repoPropuesta.buscarPorId("p-2")).thenReturn(propuesta);
-        when(repoUser.buscarPorUsuarioId("u-1001")).thenReturn(userPropuesta);
-
-        mockMvc.perform(patch("/propuestas/p-2/rechazar")
-                .header("usuario_id", "u-1001"))
+        mockMvc.perform(
+                patch("/propuestas/p-1/rechazar")
+                    .cookie(cookie)
+            )
             .andExpect(status().isNoContent());
+
+        verify(propuestaService)
+            .rechazar("p-1","1000");
     }
 
     @Test
-    void aceptarPropuestaFallaConUsuarioIncorrecto() throws Exception {
-        Perfil subastador    = perfil("1000", "u-1000", "@subastador");
-        Perfil userPropuesta = perfil("1001", "u-1001", "@userPropuesta");
-        Perfil otroUsuario   = perfil("1002", "u-1002", "@otro");
+    void cancelarPropuesta_retorna204() throws Exception {
 
-        Propuesta propuesta = new Propuesta("p-3", subastador, userPropuesta,
-            new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+        mockMvc.perform(
+                patch("/propuestas/p-1/cancelar")
+                    .cookie(cookie)
+            )
+            .andExpect(status().isNoContent());
 
-        when(repoPropuesta.buscarPorId("p-3")).thenReturn(propuesta);
-        when(repoUser.buscarPorUsuarioId("u-1002")).thenReturn(otroUsuario);
+        verify(propuestaService)
+            .cancelar("p-1","1000");
+    }
 
-        mockMvc.perform(patch("/propuestas/p-3/aceptar")
-                .header("usuario_id", "u-1002"))
-            .andExpect(status().is(400));
+    @Test
+    void obtenerPropuestas_retorna200() throws Exception {
+
+        when(propuestaService.buscarPropuestas(
+            eq("1000"),
+            any()
+        )).thenReturn(
+            new PaginaResultado<>(
+                List.of(),
+                0,
+                0,
+                0
+            )
+        );
+
+        mockMvc.perform(
+                get("/propuestas")
+                    .cookie(cookie)
+            )
+            .andExpect(status().isOk());
+
+        verify(propuestaService)
+            .buscarPropuestas(
+                eq("1000"),
+                any()
+            );
     }
 }

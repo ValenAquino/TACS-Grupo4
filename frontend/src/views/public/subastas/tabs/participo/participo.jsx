@@ -3,12 +3,13 @@ import { buscarSubastasParticipo } from "../../../../../services/subastasService
 import SubastaCard from "../../../../../components/ui/subasta-card/subasta-card.jsx";
 import { useNavigate } from "react-router";
 import useUsuarioActual from "../../../../../hooks/useUsuarioActual.js";
+import {useError} from "@/contexts/errorContext.jsx";
 
 const Participo = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const {handleError} = useError();
   const {userId} = useUsuarioActual()
 
   useEffect(() => {
@@ -17,21 +18,14 @@ const Participo = () => {
         setLoading(true);
         const res = await buscarSubastasParticipo(userId);
         setData(res);
-      } catch {
-        setError(true);
+      } catch(error) {
+        handleError(error, () => {});
       } finally {
         setLoading(false);
       }
     };
     cargar();
   }, []);
-
-  if (error)
-    return (
-      <div className="text-center text-danger py-4">
-        Error al cargar subastas
-      </div>
-    );
 
   const activasCount = data.activas?.length ?? 0;
   const seleccionadasCount =

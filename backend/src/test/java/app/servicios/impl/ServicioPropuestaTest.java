@@ -63,10 +63,10 @@ class ServicioPropuestaTest  extends MongoTestBase {
 
   @Test
   void crearPropuestaDevuelveDto() {
-    CrearPropuestaRequest request = new CrearPropuestaRequest(
-        "1000", "1001", "ARG-10", List.of("FRA-10"));
+    String autorId = "1000";
+    CrearPropuestaRequest request = new CrearPropuestaRequest("1001", "ARG-10", List.of("FRA-10"));
 
-    PropuestaDto resultado = propuestaService.crearPropuesta(request);
+    PropuestaDto resultado = propuestaService.crearPropuesta(autorId, request);
 
     assertEquals("1000", resultado.getAutor().getId());
     assertEquals("1001", resultado.getDestinatario().getId());
@@ -76,20 +76,20 @@ class ServicioPropuestaTest  extends MongoTestBase {
 
   @Test
   void crearPropuestaUsuarioOrigenNoExisteLanzaNotFoundException() {
-    CrearPropuestaRequest request = new CrearPropuestaRequest(
-        "9999", "1001", "ARG-10", List.of("FRA-10"));
+    String autorId = "9999";
+    CrearPropuestaRequest request = new CrearPropuestaRequest("1001", "ARG-10", List.of("FRA-10"));
 
 
     assertThrows(NotFoundException.class,
-        () -> propuestaService.crearPropuesta(request));
+        () -> propuestaService.crearPropuesta(autorId, request));
   }
 
   @Test
   void crearPropuestaUsuarioDestinoNoExisteLanzaNotFoundException() {
-    CrearPropuestaRequest request = new CrearPropuestaRequest(
-        "1000", "9999", "ARG-10", List.of("FRA-10"));
+    String autorId = "1000";
+    CrearPropuestaRequest request = new CrearPropuestaRequest("9999", "ARG-10", List.of("FRA-10"));
 
     assertThrows(NotFoundException.class,
-        () -> propuestaService.crearPropuesta(request));
+        () -> propuestaService.crearPropuesta(autorId, request));
   }
 }

@@ -1,6 +1,10 @@
 package app.servicios;
 
+import app.dto.CalificacionDto;
 import app.dto.PropuestaDto;
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
@@ -9,6 +13,8 @@ import app.model.entities.Propuesta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
+
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,8 +32,8 @@ public class ServicioPropuesta {
    * Crea una propuesta de intercambio. Valida que el usuario origen,
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
-  public PropuestaDto crearPropuesta(CrearPropuestaRequest request) {
-    Perfil origen = repositorioPerfiles.buscarPorId(request.getAutorId());
+  public PropuestaDto crearPropuesta(String autorId, CrearPropuestaRequest request) {
+    Perfil origen = repositorioPerfiles.buscarPorId(autorId);
     Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId());
 
     if (origen == null) throw new NotFoundException("Usuario origen no encontrado");
@@ -57,17 +63,45 @@ public class ServicioPropuesta {
     return new PropuestaDto(propuesta);
   }
 
-  public void aceptar(String propuestaId, String usuarioId) {
+  public void aceptar(String propuestaId, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
-    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
+    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
     propuesta.aceptar(perfil);
     repositorioPropuestas.guardar(propuesta);
   }
 
-  public void rechazar(String id, String usuarioId) {
+  public void rechazar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
-    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(usuarioId);
+    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
     propuesta.rechazar(perfil);
     repositorioPropuestas.guardar(propuesta);
+  }
+
+  public void cancelar(String id, String perfilId) {
+    Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
+    Perfil perfil = repositorioPerfiles.buscarPorId(perfilId);
+    propuesta.cancelar(perfil);
+    this.repositorioPropuestas.guardar(propuesta);
+  }
+
+  public PaginaResultado<PropuestaDto> buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
+    PaginaResultado<Propuesta> resultado = new PaginaResultado<>(
+        new ArrayList<>(),
+        0,
+        0,
+        0
+    );
+
+    if(filtros.tipo().equals("RECIBIDAS")) {
+      resultado = this.repositorioPropuestas.buscarPorDestinatarioId(perfilId, filtros);
+    } else if (filtros.tipo().equals("ENVIADAS")) {
+      resultado = this.repositorioPropuestas.buscarPorAutorId(perfilId, filtros);
+    }
+
+    return new PaginaResultado<>(
+        resultado.contenido().stream().map(PropuestaDto::new).toList(),
+        resultado.cantidadDeElementos(),
+        resultado.cantidadDePaginas(),
+        resultado.numero());
   }
 }

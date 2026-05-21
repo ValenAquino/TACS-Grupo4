@@ -10,8 +10,6 @@ const NuevaFaltante = () => {
     const [numero, setNumero]   = useState('');
     const [jugador, setJugador] = useState('');
 
-    const colId = "2"
-
     const handleSelect = (fig) => {
         setFigurita(fig);
         setJugador(fig.jugador);
@@ -90,7 +88,7 @@ const NuevaFaltante = () => {
                 label="Publicar faltante ↗"
                 disabled={!figurita}
                 onClick={() => {
-                    agregarFaltante(colId, figurita)
+                    agregarFaltante(figurita)
                     alert("Se guardo la faltante")
                     setNumero('')
                     setJugador('')

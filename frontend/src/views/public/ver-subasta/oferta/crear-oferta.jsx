@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { buscarSubasta, crearOferta } from '@/services/subastasService.js'
-import { buscarRepetidas, buscarPerfil } from '@/services/perfilService.js'
+import { buscarPerfil } from '@/services/perfilService.js'
 import SectionTitle from '@/components/ui/section-title/section-title.jsx'
 import SectionCard from '@/components/ui/section-card/section-card.jsx'
 import ScrollRepetidas from '@/components/ui/scroll-figuritas/scroll-repetidas.jsx'
@@ -46,7 +46,7 @@ const CrearOferta = () => {
         setCargando(true)
         const [payloadSubasta, payloadRepetidas, payloadPerfil] = await Promise.all([
           buscarSubasta({ subId }),
-          buscarRepetidas(userId),
+          //buscarRepetidas(userId),
           buscarPerfil(userId),
         ])
         setSubasta(payloadSubasta)

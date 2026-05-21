@@ -26,7 +26,7 @@ class ServicioPerfilTest extends MongoTestBase {
 
   @BeforeEach
   void setUp() {
-    service = new ServicioPerfil(repositorioCalificacion, repositorioPerfiles, repositorioColecciones, repositorioNotificaciones);
+    service = new ServicioPerfil(repositorioCalificacion, repositorioPerfiles, repositorioNotificaciones);
 
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     Coleccion colec = new Coleccion("c-1");
@@ -63,47 +63,67 @@ class ServicioPerfilTest extends MongoTestBase {
         new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), estado))));
   }
 
-  @Test
-  void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
-    FiguritaIntercambiable fi = new FiguritaIntercambiable(messi, 2, new ArrayList<>());
-    usuario.getColeccion().agregarRepetida(fi);
-    repositorioColecciones.guardar(usuario.getColeccion());
-    repositorioPerfiles.guardar(usuario);
-
-    List<FiguritaIntercambiableDto> resultado = service.obtenerIntercambiablesPerfil("1");
-
-    assertEquals(1, resultado.size());
-    assertEquals("ARG-10", resultado.get(0).getFiguritaId());
-  }
-
-  @Test
-  void getIntercambiablesUsuario_usuarioInexistente_lanzaNotFoundException() {
-
-    assertThrows(NotFoundException.class,
-        () -> service.obtenerIntercambiablesPerfil("u-99"));
-  }
 
   @Test
   void agregarCalificacion_valida_guardaCalificacion() {
-    Calificacion calificacion = new Calificacion("c-0", usuario, 4, "Buen intercambio", "t-1", MetodoIntercambio.INTERCAMBIO);
+    Calificacion calificacion = new Calificacion(
+        "c-0",
+        usuario,
+        4,
+        "Buen intercambio",
+        "t-1",
+        MetodoIntercambio.INTERCAMBIO
+    );
+
     repositorioCalificacion.guardar(calificacion);
     usuario.agregarNuevaCalificacion(calificacion);
     repositorioPerfiles.guardar(usuario);
 
-    service.agregarCalificacion("u-2", "1", 2, "Tardó en responder", "t-1", MetodoIntercambio.INTERCAMBIO);
+    service.agregarCalificacion(
+        "otro",
+        "1",
+        2,
+        "Tardó en responder",
+        "t-1",
+        MetodoIntercambio.INTERCAMBIO
+    );
 
-    assertEquals(repositorioPerfiles.buscarPorId("1").getCalificacionMedia(), 3);
+    assertEquals(
+        3,
+        repositorioPerfiles.buscarPorId("1")
+            .getCalificacionMedia()
+    );
   }
 
   @Test
   void agregarCalificacion_yaCalificado_lanzaExcepcion() {
-    Calificacion existente = new Calificacion("c-0", otro, 4, "Buen intercambio", "t-1", MetodoIntercambio.INTERCAMBIO);
+
+    Perfil destino = repositorioPerfiles.buscarPorId("1");
+
+    Calificacion existente = new Calificacion(
+        "c-0",
+        otro,
+        4,
+        "Buen intercambio",
+        "t-1",
+        MetodoIntercambio.INTERCAMBIO
+    );
+
+    destino.agregarNuevaCalificacion(existente);
+
     repositorioCalificacion.guardar(existente);
-    usuario.getCalificaciones().add(existente);
-    repositorioPerfiles.guardar(usuario);
+    repositorioPerfiles.guardar(destino);
 
     assertThrows(BadRequestException.class,
-        () -> service.agregarCalificacion("u-2", "1", 3, "Otra vez", "t-1", MetodoIntercambio.INTERCAMBIO));
+        () -> service.agregarCalificacion(
+            "otro",
+            "1",
+            3,
+            "Otra vez",
+            "t-1",
+            MetodoIntercambio.INTERCAMBIO
+        )
+    );
   }
 
   @Test
@@ -132,14 +152,31 @@ class ServicioPerfilTest extends MongoTestBase {
 
   @Test
   void agregarCalificacion_valorLimiteMinimo_noLanzaExcepcion() {
-
-    assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "1", 1, "Muy malo", "t-1", MetodoIntercambio.INTERCAMBIO));
+    assertDoesNotThrow(() ->
+        service.agregarCalificacion(
+            "otro",
+            "1",
+            1,
+            "Muy malo",
+            "t-1",
+            MetodoIntercambio.INTERCAMBIO
+        )
+    );
   }
+
 
   @Test
   void agregarCalificacion_valorLimiteMaximo_noLanzaExcepcion() {
-
-    assertDoesNotThrow(() -> service.agregarCalificacion("u-2", "1", 5, "Excelente", "t-1", MetodoIntercambio.INTERCAMBIO));
+    assertDoesNotThrow(() ->
+        service.agregarCalificacion(
+            "otro",
+            "1",
+            5,
+            "Excelente",
+            "t-1",
+            MetodoIntercambio.INTERCAMBIO
+        )
+    );
   }
 
   @Test
@@ -198,22 +235,4 @@ class ServicioPerfilTest extends MongoTestBase {
         () -> service.obtenerFaltantes("u-99"));
   }
 
-  @Test
-  void obtenerRepetidas_usuarioInexistente_lanzaNotFoundException() {
-
-    assertThrows(NotFoundException.class,
-        () -> service.obtenerRepetidas("u-99"));
-  }
-
-  @Test
-  void obtenerRepetidas_usuarioExistente_retornaLista() {
-    usuario.getColeccion().getRepetidas().add(
-        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
-
-    repositorioColecciones.guardar(usuario.getColeccion());
-
-    var resultado = service.obtenerRepetidas("u-1");
-
-    assertEquals(1, resultado.size());
-  }
 }

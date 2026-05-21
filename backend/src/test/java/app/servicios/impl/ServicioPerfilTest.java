@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import app.servicios.ServicioPerfil;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,7 @@ class ServicioPerfilTest extends MongoTestBase {
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     Coleccion colec = new Coleccion("c-1");
     usuario = Perfil.builder()
-        .id("1").usuario(user).nombre("Lucas")
+        .id(new ObjectId().toString()).usuario(user).nombre("Lucas")
         .coleccion(colec)
         .mediosDeContacto(telegram("@lucas"))
         .build();
@@ -41,7 +42,7 @@ class ServicioPerfilTest extends MongoTestBase {
     user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
     colec = new Coleccion("c-2");
     otro = Perfil.builder()
-        .id("otro").usuario(user).nombre("Sofía")
+        .id(new ObjectId().toString()).usuario(user).nombre("Sofía")
         .coleccion(colec)
         .mediosDeContacto(telegram("@sofía"))
         .build();
@@ -68,8 +69,36 @@ class ServicioPerfilTest extends MongoTestBase {
   void agregarCalificacion_valida_guardaCalificacion() {
     Calificacion calificacion = new Calificacion(
         "c-0",
-        usuario,
         otro,
+        usuario,
+        4,
+        "Buen intercambio",
+        "t-1",
+        MetodoIntercambio.INTERCAMBIO
+    );
+
+    repositorioCalificacion.guardar(calificacion);
+    repositorioPerfiles.guardar(usuario);
+
+    assertDoesNotThrow(
+        () -> service.agregarCalificacion(
+            otro.getId(),
+            usuario.getId(),
+            2,
+            "t-2",
+            "Buen usuario",
+            MetodoIntercambio.INTERCAMBIO
+        ));
+
+  }
+
+  @Test
+  void agregarCalificacion_yaCalificado_lanzaExcepcion() {
+
+    Calificacion calificacion = new Calificacion(
+        "c-0",
+        otro,
+        usuario,
         4,
         "Buen intercambio",
         "t-1",
@@ -80,48 +109,12 @@ class ServicioPerfilTest extends MongoTestBase {
     usuario.agregarNuevaCalificacion(calificacion);
     repositorioPerfiles.guardar(usuario);
 
-    service.agregarCalificacion(
-        "otro",
-        "1",
-        2,
-        "Tardó en responder",
-        "t-1",
-        MetodoIntercambio.INTERCAMBIO
-    );
-
-    assertEquals(
-        3,
-        repositorioPerfiles.buscarPorId("1")
-            .getCalificacionMedia()
-    );
-  }
-
-  @Test
-  void agregarCalificacion_yaCalificado_lanzaExcepcion() {
-
-    Perfil destino = repositorioPerfiles.buscarPorId("1");
-
-    Calificacion existente = new Calificacion(
-        "c-0",
-        otro,
-        usuario,
-        4,
-        "Buen intercambio",
-        "t-1",
-        MetodoIntercambio.INTERCAMBIO
-    );
-
-    destino.agregarNuevaCalificacion(existente);
-
-    repositorioCalificacion.guardar(existente);
-    repositorioPerfiles.guardar(destino);
-
     assertThrows(BadRequestException.class,
         () -> service.agregarCalificacion(
-            "otro",
-            "1",
-            3,
-            "Otra vez",
+            otro.getId(),
+            usuario.getId(),
+            2,
+            "Tardó en responder",
             "t-1",
             MetodoIntercambio.INTERCAMBIO
         )
@@ -156,8 +149,8 @@ class ServicioPerfilTest extends MongoTestBase {
   void agregarCalificacion_valorLimiteMinimo_noLanzaExcepcion() {
     assertDoesNotThrow(() ->
         service.agregarCalificacion(
-            "otro",
-            "1",
+            otro.getId(),
+            usuario.getId(),
             1,
             "Muy malo",
             "t-1",
@@ -171,8 +164,8 @@ class ServicioPerfilTest extends MongoTestBase {
   void agregarCalificacion_valorLimiteMaximo_noLanzaExcepcion() {
     assertDoesNotThrow(() ->
         service.agregarCalificacion(
-            "otro",
-            "1",
+            otro.getId(),
+            usuario.getId(),
             5,
             "Excelente",
             "t-1",

@@ -7,8 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class CrearPropuestaRequest {
-  @JsonProperty("autor_id")
-  private String autorId;
 
   @JsonProperty("destinatario_id")
   private String destinatarioId;

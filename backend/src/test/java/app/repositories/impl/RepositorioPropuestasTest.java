@@ -1,98 +1,172 @@
 package app.repositories.impl;
 
-import app.dto.PropuestaDto;
-import app.dto.filtros.PropuestasFiltro;
-import app.dto.propuesta.PropuestasDto;
-import app.model.entities.Coleccion;
 import app.MongoTestBase;
-import app.model.entities.EstadoProceso;
-import app.model.entities.EstadoPropuesta;
-import app.model.entities.MedioComunicacion;
-import app.model.entities.MedioDeContacto;
-import app.model.entities.Propuesta;
-import app.model.entities.Perfil;
-import app.model.entities.Rol;
-import app.model.entities.Usuario;
-import java.time.LocalDateTime;
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.paginacion.PaginaResultado;
+import app.model.entities.*;
 
-import app.repositories.RepositorioPropuestas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.bson.types.ObjectId;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RepositorioPropuestasTest extends MongoTestBase {
+
     private Perfil u1;
     private Perfil u2;
     private Perfil u3;
-    private PropuestasFiltro filtros = new PropuestasFiltro("", 1, 10, EstadoProceso.PENDIENTE);
 
-    private List<MedioDeContacto> telegram(String numero) {
-        return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
+    private PropuestasFiltro filtros;
+
+    private List<MedioDeContacto> telegram(String usuario) {
+        return List.of(
+            new MedioDeContacto(
+                MedioComunicacion.TELEGRAM,
+                usuario
+            )
+        );
     }
 
     @BeforeEach
     void setUp() {
 
-        Usuario user = new Usuario("u-1", Rol.USUARIO,"lucas", "fiscella");
         u1 = Perfil.builder()
-            .id("1").usuario(user).nombre("Lucas")
+            .id(new ObjectId().toString())
+            .usuario(new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella"))
+            .nombre("Lucas")
             .mediosDeContacto(telegram("@lucas"))
             .build();
 
-        user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
         u2 = Perfil.builder()
-            .id("2").usuario(user).nombre("Sofía")
+            .id(new ObjectId().toString())
+            .usuario(new Usuario("u-2", Rol.USUARIO, "sofia", "fiscella"))
+            .nombre("Sofía")
             .mediosDeContacto(telegram("@sofia"))
             .build();
 
-        user = new Usuario("u-3",  Rol.USUARIO,"lucas", "fiscella");
-
         u3 = Perfil.builder()
-            .id("3").usuario(user).nombre("Matías")
+            .id(new ObjectId().toString())
+            .usuario(new Usuario("u-3", Rol.USUARIO, "matias", "fiscella"))
+            .nombre("Matías")
             .mediosDeContacto(telegram("@matias"))
             .build();
+
+        filtros = new PropuestasFiltro(
+            "",
+            0, // primera página
+            10,
+            EstadoProceso.PENDIENTE
+        );
     }
 
     @Test
     void findByOrigenId_retornaSoloPropuestasDelOrigen() {
-        Propuesta p1 = new Propuesta("p-1", u1, u2, new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
-        Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+
+        Propuesta p1 = new Propuesta(
+            "p-1",
+            u1,
+            u2,
+            new ArrayList<>(),
+            null,
+            List.of(
+                new EstadoPropuesta(
+                    LocalDateTime.now(),
+                    EstadoProceso.PENDIENTE
+                )
+            )
+        );
+
+        Propuesta p2 = new Propuesta(
+            "p-2",
+            u2,
+            u3,
+            new ArrayList<>(),
+            null,
+            List.of(
+                new EstadoPropuesta(
+                    LocalDateTime.now(),
+                    EstadoProceso.PENDIENTE
+                )
+            )
+        );
 
         repositorioPropuestas.guardar(p1);
         repositorioPropuestas.guardar(p2);
 
-        List<Propuesta> resultado = repositorioPropuestas.buscarPorAutorId("1");
+        PaginaResultado<Propuesta> resultado =
+            repositorioPropuestas.buscarPorAutorId(
+                u1.getId(),
+                filtros
+            );
 
-        assertEquals(1, resultado.size());
-        assertEquals("p-1", resultado.get(0).getId());
+        assertEquals(1, resultado.contenido().size());
+        assertEquals(
+            "p-1",
+            resultado.contenido().get(0).getId()
+        );
     }
 
     @Test
     void findByDestinoId_retornaSoloPropuestasDelDestino() {
-        Propuesta p1 = new Propuesta("p-1", u1, u2, new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
-        Propuesta p2 = new Propuesta("p-2", u2, u3, new ArrayList<>(), null,
-            new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))));
+
+        Propuesta p1 = new Propuesta(
+            "p-1",
+            u1,
+            u2,
+            new ArrayList<>(),
+            null,
+            List.of(
+                new EstadoPropuesta(
+                    LocalDateTime.now(),
+                    EstadoProceso.PENDIENTE
+                )
+            )
+        );
+
+        Propuesta p2 = new Propuesta(
+            "p-2",
+            u2,
+            u3,
+            new ArrayList<>(),
+            null,
+            List.of(
+                new EstadoPropuesta(
+                    LocalDateTime.now(),
+                    EstadoProceso.PENDIENTE
+                )
+            )
+        );
 
         repositorioPropuestas.guardar(p1);
         repositorioPropuestas.guardar(p2);
 
-        List<Propuesta> resultado = repositorioPropuestas.buscarPorDestinatarioId("2");
+        PaginaResultado<Propuesta> resultado =
+            repositorioPropuestas.buscarPorDestinatarioId(
+                u2.getId(),
+                filtros
+            );
 
-        assertEquals(1, resultado.size());
-        assertEquals("p-1", resultado.get(0).getId());
+        assertEquals(1, resultado.contenido().size());
+        assertEquals(
+            "p-1",
+            resultado.contenido().get(0).getId()
+        );
     }
 
     @Test
     void findByOrigenId_sinResultados_retornaListaVacia() {
-        assertTrue(repositorioPropuestas.buscarPorAutorId("u-99").isEmpty());
+
+        PaginaResultado<Propuesta> resultado =
+            repositorioPropuestas.buscarPorAutorId(
+                new ObjectId().toString(),
+                filtros
+            );
+
+        assertTrue(resultado.contenido().isEmpty());
     }
 }

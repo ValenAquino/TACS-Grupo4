@@ -32,8 +32,8 @@ public class ServicioPropuesta {
    * Crea una propuesta de intercambio. Valida que el usuario origen,
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
-  public PropuestaDto crearPropuesta(CrearPropuestaRequest request) {
-    Perfil origen = repositorioPerfiles.buscarPorId(request.getAutorId());
+  public PropuestaDto crearPropuesta(String autorId, CrearPropuestaRequest request) {
+    Perfil origen = repositorioPerfiles.buscarPorId(autorId);
     Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId());
 
     if (origen == null) throw new NotFoundException("Usuario origen no encontrado");

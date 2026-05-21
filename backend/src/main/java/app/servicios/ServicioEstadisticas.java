@@ -11,6 +11,7 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
+import app.repositories.RepositorioUsuarios;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,30 +28,35 @@ public class ServicioEstadisticas {
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
 
-//    public EstadisticasDto obtenerEstadisticas() {
-//        long totalUsuarios = repositorioUsuarios.contar();
-//
-//        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos().stream()
-//            .flatMap(u -> u.getColeccion().getRepetidas().stream())
-//            .collect(Collectors.toList());
-//
-//        int totalFiguritasPublicadas = todasLasRepetidas.size();
-//
-//        int totalPropuestas = repositorioPropuestas.contar();
-//
-//        int totalSubastasActivas = (int) repositorioSubastas.buscarTodos().stream()
-//                .filter(Subasta::estaActivo)
-//                .count();
-//
-//        PropuestasPorEstadoDto propuestasPorEstado = calcularPropuestasPorEstado();
-//        FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);
-//        List<SeleccionCantidadDto> topSelecciones = calcularTopSelecciones(todasLasRepetidas);
-//
-//        return new EstadisticasDto(totalUsuarios, totalFiguritasPublicadas,
-//                totalPropuestas, totalSubastasActivas);
-//            totalPropuestas, totalSubastasActivas,
-//            propuestasPorEstado, figuritasPorModalidad, topSelecciones);
-//    }
+    public EstadisticasDto obtenerEstadisticas() {
+        long totalUsuarios = repositorioPerfiles.contar();
+
+        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos().stream()
+            .flatMap(u -> u.getColeccion().getRepetidas().stream())
+            .collect(Collectors.toList());
+
+        int totalFiguritasPublicadas = todasLasRepetidas.size();
+
+        int totalPropuestas = repositorioPropuestas.contar();
+
+        int totalSubastasActivas = (int) repositorioSubastas.buscarTodos().stream()
+                .filter(Subasta::estaActivo)
+                .count();
+
+        PropuestasPorEstadoDto propuestasPorEstado = calcularPropuestasPorEstado();
+        FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);
+        List<SeleccionCantidadDto> topSelecciones = calcularTopSelecciones(todasLasRepetidas);
+
+        return new EstadisticasDto(
+            totalUsuarios,
+            totalFiguritasPublicadas,
+            totalPropuestas,
+            totalSubastasActivas,
+            propuestasPorEstado,
+            figuritasPorModalidad,
+            topSelecciones
+        );
+    }
 
     private PropuestasPorEstadoDto calcularPropuestasPorEstado() {
         Map<EstadoProceso, Long> porEstado = repositorioPropuestas.buscarTodos().stream()

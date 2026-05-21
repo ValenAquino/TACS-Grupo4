@@ -10,8 +10,6 @@ const NuevaFaltante = () => {
     const [numero, setNumero]   = useState('');
     const [jugador, setJugador] = useState('');
 
-    const colId = "2"
-
     const handleSelect = (fig) => {
         setFigurita(fig);
         setJugador(fig.jugador);

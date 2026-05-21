@@ -28,9 +28,6 @@ public class ServicioPerfil {
 
   private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
-  private final RepositorioColecciones repositorioColecciones;
-  private final RepositorioPropuestas repositorioPropuestas;
-  private final RepositorioSubastas repositorioSubastas;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
 

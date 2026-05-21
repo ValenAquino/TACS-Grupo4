@@ -5,7 +5,6 @@ import FilterChip from "../../../../../components/ui/filter-chip/filter-chip.jsx
 import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
-import {useAuth} from "@/contexts/userContext.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
 
 const Repetidas = () => {
@@ -18,10 +17,7 @@ const Repetidas = () => {
     const [error, setError] = useState(false);
     const [pagina, setPagina] = useState(1);
 
-    const { user } = useAuth()
     const {handleError} = useError()
-
-    const coleccionId = user?.colId
 
     const navigate = useNavigate();
 
@@ -45,7 +41,7 @@ const Repetidas = () => {
         };
 
         cargarRepetidas();
-    }, [coleccionId, filtros, pagina]);
+    }, [filtros, pagina]);
 
     const cambiarFiltro = (nuevoTipo) => {
         setFiltros((prev) => {

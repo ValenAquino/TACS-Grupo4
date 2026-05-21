@@ -4,12 +4,10 @@ import FaltanteCard from "../../../../../components/ui/faltante-card/faltante-ca
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import { useNavigate } from "react-router";
 import Button from "../../../../../components/ui/button/button.jsx";
-import {useAuth} from "@/contexts/userContext.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
 
 const Faltantes = () => {
 
-    const {user} = useAuth()
     const {handleError} = useError()
 
     const [faltantes, setFaltantes] = useState([]);
@@ -19,12 +17,7 @@ const Faltantes = () => {
 
     const navigate = useNavigate();
 
-    const coleccionId = user?.colId
-
     useEffect(() => {
-
-        if(!coleccionId) return;
-
         const cargarFaltantes = async () => {
             try {
                 setLoading(true);
@@ -44,7 +37,7 @@ const Faltantes = () => {
         };
 
         cargarFaltantes();
-    }, [coleccionId, filtros, pagina]);
+    }, [filtros, pagina]);
 
     return (
         <div className="container-fluid px-0 d-flex flex-column gap-4">

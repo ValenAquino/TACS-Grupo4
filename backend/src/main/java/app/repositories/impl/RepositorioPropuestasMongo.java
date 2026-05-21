@@ -6,6 +6,7 @@ import app.dto.propuesta.PropuestasDto;
 import app.model.entities.Calificacion;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioPropuestas;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -29,7 +30,7 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
     public PaginaResultado<Propuesta> buscarPorAutorId(String perfilId, PropuestasFiltro filtros) {
         Query query = new Query();
         query.addCriteria(
-            Criteria.where("autor").is(perfilId)
+            Criteria.where("autor.$id").is(perfilId)
         );
 
         if (filtros.estado() != null) {
@@ -45,7 +46,7 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
             );
         }
 
-        long count = mongoTemplate.count(query, Calificacion.class);
+        long count = mongoTemplate.count(query, Propuesta.class);
 
         query.skip((long) filtros.pagina() * filtros.limite());
         query.limit(filtros.limite());
@@ -65,10 +66,10 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
     public PaginaResultado<Propuesta> buscarPorDestinatarioId(String perfilId, PropuestasFiltro filtros) {
         Query query = new Query();
         query.addCriteria(
-            Criteria.where("destinatario").is(perfilId)
+            Criteria.where("destinatario.$id").is(new ObjectId(perfilId))
         );
 
-        long count = mongoTemplate.count(query, Calificacion.class);
+        long count = mongoTemplate.count(query, Propuesta.class);
 
         query.skip((long) filtros.pagina() * filtros.limite());
         query.limit(filtros.limite());

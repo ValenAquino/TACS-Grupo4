@@ -26,7 +26,7 @@ class ServicioPerfilTest extends MongoTestBase {
 
   @BeforeEach
   void setUp() {
-    service = new ServicioPerfil(repositorioCalificacion, repositorioPerfiles, repositorioColecciones, repositorioNotificaciones);
+    service = new ServicioPerfil(repositorioCalificacion, repositorioPerfiles, repositorioNotificaciones);
 
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     Coleccion colec = new Coleccion("c-1");
@@ -63,25 +63,6 @@ class ServicioPerfilTest extends MongoTestBase {
         new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), estado))));
   }
 
-  @Test
-  void getIntercambiablesUsuario_usuarioExistente_retornaLista() {
-    FiguritaIntercambiable fi = new FiguritaIntercambiable(messi, 2, new ArrayList<>());
-    usuario.getColeccion().agregarRepetida(fi);
-    repositorioColecciones.guardar(usuario.getColeccion());
-    repositorioPerfiles.guardar(usuario);
-
-    List<FiguritaIntercambiableDto> resultado = service.obtenerIntercambiablesPerfil("1");
-
-    assertEquals(1, resultado.size());
-    assertEquals("ARG-10", resultado.get(0).getFiguritaId());
-  }
-
-  @Test
-  void getIntercambiablesUsuario_usuarioInexistente_lanzaNotFoundException() {
-
-    assertThrows(NotFoundException.class,
-        () -> service.obtenerIntercambiablesPerfil("u-99"));
-  }
 
   @Test
   void agregarCalificacion_valida_guardaCalificacion() {
@@ -198,22 +179,4 @@ class ServicioPerfilTest extends MongoTestBase {
         () -> service.obtenerFaltantes("u-99"));
   }
 
-  @Test
-  void obtenerRepetidas_usuarioInexistente_lanzaNotFoundException() {
-
-    assertThrows(NotFoundException.class,
-        () -> service.obtenerRepetidas("u-99"));
-  }
-
-  @Test
-  void obtenerRepetidas_usuarioExistente_retornaLista() {
-    usuario.getColeccion().getRepetidas().add(
-        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
-
-    repositorioColecciones.guardar(usuario.getColeccion());
-
-    var resultado = service.obtenerRepetidas("u-1");
-
-    assertEquals(1, resultado.size());
-  }
 }

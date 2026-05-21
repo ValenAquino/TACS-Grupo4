@@ -18,8 +18,12 @@ public class ControladorPropuesta {
     private final ServicioJwt servicioJwt;
 
     @PostMapping
-    public ResponseEntity<PropuestaDto> crearPropuesta(@RequestBody CrearPropuestaRequest request) {
-        return ResponseEntity.status(201).body(propuestaService.crearPropuesta(request));
+    public ResponseEntity<PropuestaDto> crearPropuesta(
+        @CookieValue("token") String token,
+        @RequestBody CrearPropuestaRequest request
+    ) {
+        String autorId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.status(201).body(propuestaService.crearPropuesta(autorId, request));
     }
 
     @PatchMapping("/{prop_id}/aceptar")

@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Subasta;
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface RepositorioSubastas {
     int contar();
 
     void guardar(Subasta subasta);
+
+    PaginaResultado<Subasta> buscarPorAutor(String perfilId, Integer pagina, Integer limite);
 }

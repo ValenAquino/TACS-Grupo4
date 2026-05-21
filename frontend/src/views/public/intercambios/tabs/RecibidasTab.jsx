@@ -18,13 +18,11 @@ const RecibidasTab = () => {
     });
 
     const {handleError} = useError()
-    const { userId} = useUsuarioActual()
-    const user_id = userId
 
     const cargarRecibidas = async () => {
         try {
             setLoading(true);
-            const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
+            const enviadasApi = await buscarPropuestas({pagina: pagina, limite: 10, ...filtros})
             setRecibidas(enviadasApi)
         } catch (error) {
             handleError(error, () => {})

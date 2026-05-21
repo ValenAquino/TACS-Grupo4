@@ -19,12 +19,11 @@ export const buscarSubasta = async ({ subId }) => {
   }
 };
 
-export const buscarMisSubastas = async (userId, filtros) => {
+export const buscarMisSubastas = async (filtros) => {
   try {
     const { data } = await api.get(`${SUBASTAS_URL}/mis-subastas`, {
       params: {
-        ...filtros,
-        userId,
+        ...filtros
       },
     });
     return data;
@@ -33,12 +32,11 @@ export const buscarMisSubastas = async (userId, filtros) => {
   }
 };
 
-export const buscarSubastasParticipo = async (userId, filtros = {}) => {
+export const buscarSubastasParticipo = async (filtros = {}) => {
   try {
     const { data } = await api.get(`${SUBASTAS_URL}/participo`, {
       params: {
-        ...filtros,
-        userId,
+        ...filtros
       },
     });
     return data;

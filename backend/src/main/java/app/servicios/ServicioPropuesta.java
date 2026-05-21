@@ -1,7 +1,9 @@
 package app.servicios;
 
+import app.dto.CalificacionDto;
 import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
+import app.dto.paginacion.PaginaResultado;
 import app.dto.propuesta.PropuestasDto;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.NotFoundException;
@@ -11,6 +13,8 @@ import app.model.entities.Propuesta;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
+
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -80,13 +84,24 @@ public class ServicioPropuesta {
     this.repositorioPropuestas.guardar(propuesta);
   }
 
-  public PropuestasDto buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
+  public PaginaResultado<PropuestaDto> buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
+    PaginaResultado<Propuesta> resultado = new PaginaResultado<>(
+        new ArrayList<>(),
+        0,
+        0,
+        0
+    );
+
     if(filtros.tipo().equals("RECIBIDAS")) {
-      return this.repositorioPropuestas.buscarPorDestinatarioId(perfilId, filtros);
+      resultado = this.repositorioPropuestas.buscarPorDestinatarioId(perfilId, filtros);
     } else if (filtros.tipo().equals("ENVIADAS")) {
-      return this.repositorioPropuestas.buscarPorAutorId(perfilId, filtros);
+      resultado = this.repositorioPropuestas.buscarPorAutorId(perfilId, filtros);
     }
 
-    return null;
+    return new PaginaResultado<>(
+        resultado.contenido().stream().map(PropuestaDto::new).toList(),
+        resultado.cantidadDeElementos(),
+        resultado.cantidadDePaginas(),
+        resultado.numero());
   }
 }

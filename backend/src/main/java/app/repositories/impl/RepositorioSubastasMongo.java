@@ -1,6 +1,8 @@
 package app.repositories.impl;
 
+import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
+import app.model.entities.Calificacion;
 import app.model.entities.Perfil;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioSubastas;
@@ -16,6 +18,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   @Autowired
   MongoTemplate mongoTemplate;
 
+  //TODO: Borrar se usa el perfil!!!!!!!!!!!
   @Override
   public List<Subasta> buscarPorAutorUsuarioId(String userId) {
     Query queryPerfil = new Query(Criteria.where("usuario.id").is(userId));
@@ -27,6 +30,30 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
         Criteria.where("autor.$id").is(perfil.getId())
     );
     return mongoTemplate.find(querySubastas, Subasta.class);
+  }
+
+  @Override
+  public PaginaResultado<Subasta> buscarPorAutor(String perfilId, Integer pagina, Integer limite) {
+    Query query = new Query();
+
+    query.addCriteria(
+        Criteria.where("autor.$id").is(perfilId)
+    );
+
+    long count = mongoTemplate.count(query, Calificacion.class);
+
+    query.skip((long) pagina * limite);
+    query.limit(limite);
+
+    List<Subasta> contenido =
+        mongoTemplate.find(query, Subasta.class);
+
+    return new PaginaResultado<>(
+        contenido,
+        count,
+        (int) Math.ceil((double) count / limite),
+        pagina
+    );
   }
 
   @Override

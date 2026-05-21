@@ -1,5 +1,7 @@
 package app.servicios;
 
+import app.dto.CalificacionDto;
+import app.dto.paginacion.PaginaResultado;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.MiSubastaDto;
@@ -178,20 +180,14 @@ public class ServicioSubasta {
     this.repoSubasta.guardar(subasta);
   }
 
-  public MisSubastasResponseDto obtenerMisSubastas(String userId) {
-    List<Subasta> misSubastas = this.repoSubasta.buscarPorAutorUsuarioId(userId);
+  public PaginaResultado<SubastaDto> obtenerMisSubastas(String perfilId, Integer pagina, Integer limite) {
+    PaginaResultado<Subasta> resultado = this.repoSubasta.buscarPorAutor(perfilId, pagina, limite);
 
-    List<MiSubastaDto> activas = misSubastas.stream()
-        .filter(Subasta::estaActivo)
-        .map(MiSubastaDto::new)
-        .toList();
-
-    List<MiSubastaDto> finalizadas = misSubastas.stream()
-        .filter(s -> !s.estaActivo())
-        .map(MiSubastaDto::new)
-        .toList();
-
-    return new MisSubastasResponseDto(activas, finalizadas);
+    return new PaginaResultado<>(
+        resultado.contenido().stream().map(SubastaDto::new).toList(),
+        resultado.cantidadDeElementos(),
+        resultado.cantidadDePaginas(),
+        resultado.numero());
   }
 
   public SubastasParticipoResponseDto obtenerSubastasParticipo(String userId) {

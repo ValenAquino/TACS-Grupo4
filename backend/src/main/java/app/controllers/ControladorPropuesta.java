@@ -2,7 +2,7 @@ package app.controllers;
 
 import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
-import app.dto.propuesta.PropuestasDto;
+import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPropuesta;
@@ -53,7 +53,7 @@ public class ControladorPropuesta {
     }
 
     @GetMapping()
-    public ResponseEntity<PropuestasDto> obtenerPropuestas(
+    public ResponseEntity<PaginaResultado<PropuestaDto>> obtenerPropuestas(
         @CookieValue String token,
         @ModelAttribute PropuestasFiltro filtros
     ) {

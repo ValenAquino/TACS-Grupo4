@@ -6,6 +6,7 @@ import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
+import {useAuth} from "@/contexts/userContext.jsx";
 
  const EnviadasTab = () => {
     const [selected, setSelected] = useState(null);
@@ -18,9 +19,6 @@ import {useError} from "@/contexts/errorContext.jsx";
     const [pagina, setPagina] = useState(1);
 
     const {handleError} = useError()
-
-    const {userId} = useUsuarioActual()
-    const user_id = userId
 
      const cambiarFiltro = (nuevoEstado) => {
          setFiltros((prev) => {

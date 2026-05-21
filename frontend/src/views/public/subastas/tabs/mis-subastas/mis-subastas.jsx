@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
-import { buscarMisSubastas } from "../../../../../services/subastasService.js";
+import { buscarMisSubastas } from "@/services/subastasService.js";
 import MiSubastaCard from "../../../../../components/ui/subasta-card/mi-subasta-card.jsx";
 import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
-import useUsuarioActual from "../../../../../hooks/useUsuarioActual.js";
 import {useError} from "@/contexts/errorContext.jsx";
+import {useAuth} from "@/contexts/userContext.jsx";
 
 const MisSubastas = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
   const navigate = useNavigate();
-  const {userId} = useUsuarioActual()
+
+  const {user} = useAuth()
   const {handleError} = useError();
+
+
 
   useEffect(() => {
     const cargar = async () => {

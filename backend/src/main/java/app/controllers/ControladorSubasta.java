@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearSubastaRequest;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
@@ -98,11 +99,12 @@ public class ControladorSubasta {
     }
 
     @GetMapping("/mis-subastas")
-    public ResponseEntity<MisSubastasResponseDto> obtenerMisSubastas(
-        @CookieValue String token
+    public ResponseEntity<PaginaResultado<SubastaDto>> obtenerMisSubastas(
+        @CookieValue("token") String token
+
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
-        return ResponseEntity.ok(this.subastaService.obtenerMisSubastas(perfilId));
+        return ResponseEntity.ok(this.subastaService.obtenerMisSubastas(perfilId, 10, 10));
     }
 
     @GetMapping("/participo")

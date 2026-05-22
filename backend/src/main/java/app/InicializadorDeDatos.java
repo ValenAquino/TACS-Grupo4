@@ -127,7 +127,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
                                 Figurita pedri, Figurita kroos, Figurita neymar) {
       // Juan
-      Coleccion coleccionJuan = new Coleccion("3");
+      Coleccion coleccionJuan = new Coleccion();
       FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
       coleccionJuan.getRepetidas().add(interPedri);
       coleccionJuan.getFaltantes().add(pedri);
@@ -142,7 +142,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
       perfiles.guardar(juan);
         // Lucas
       Coleccion coleccionLucas = new Coleccion();
-      coleccionLucas.setId("1");
       FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
       FiguritaIntercambiable interLautaro   = new FiguritaIntercambiable(lautaro,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
       FiguritaIntercambiable interGriezmann1   = new FiguritaIntercambiable(griezmann,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
@@ -172,7 +171,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       perfiles.guardar(lucas);
 
       // Sofía
-      Coleccion coleccionSofia = new Coleccion("2");
+      Coleccion coleccionSofia = new Coleccion();
       FiguritaIntercambiable interMbappe2    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
       FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
       FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
@@ -191,7 +190,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .mediosDeContacto(telegram("@sofia")).build());
 
       // Matías
-      Coleccion coleccionMatias = new Coleccion("3");
+      Coleccion coleccionMatias = new Coleccion();
       FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1002");
       coleccionMatias.getRepetidas().add(interVinicius);
       coleccionMatias.getFaltantes().add(pedri);

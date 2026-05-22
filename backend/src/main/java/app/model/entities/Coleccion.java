@@ -44,7 +44,6 @@ public class Coleccion {
    * esa figurita, acumula la cantidad en lugar de crear una entrada duplicada.
    */
   public void agregarRepetida(FiguritaIntercambiable repetida) {
-
     for (FiguritaIntercambiable f : repetidas) {
       if (f.getFigurita().getId()
           .equals(repetida.getFigurita().getId())) {

@@ -41,8 +41,8 @@ class ServicioColeccionTest extends MongoTestBase {
   void agregarFaltante_agregaFiguritaAColeccion() {
     service.agregarFaltante(coleccion.getId(), "ARG-10");
 
-    assertEquals(1, repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false)).getFaltantes().size());
-    assertEquals(messi.getId(), repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false)).getFaltantes().get(0).getId());
+    assertEquals(1, repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, true)).getFaltantes().size());
+    assertEquals(messi.getId(), repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, true)).getFaltantes().get(0).getId());
   }
 
   @Test

@@ -34,10 +34,6 @@ class RepositorioPerfilesTest extends MongoTestBase {
         Coleccion coleccion2 = new Coleccion();
         Coleccion coleccion3 = new Coleccion();
 
-        repositorioColecciones.guardar(coleccion1);
-        repositorioColecciones.guardar(coleccion2);
-        repositorioColecciones.guardar(coleccion3);
-
         Perfil perfil = Perfil.builder()
             .id("u-1").usuario(user).nombre("Lucas")
             .coleccion(coleccion1)

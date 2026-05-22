@@ -2,6 +2,7 @@ package app.repositories.impl;
 
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
+import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
@@ -13,6 +14,7 @@ import app.dto.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.impl.campos.CamposColeccion;
 import com.mongodb.DBRef;
+import com.mongodb.client.result.UpdateResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bson.Document;
@@ -35,29 +37,36 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   @Autowired
   private MongoTemplate mongoTemplate;
 
-  private int limiteLista = 5;
-
   public void guardar(Coleccion coleccion) {
-    if (coleccion.getId() == null) {
-      mongoTemplate.save(coleccion);
-    } else {
-      Update update = new Update();
+    mongoTemplate.save(coleccion);
+  }
 
-      for (FiguritaIntercambiable repetida : coleccion.getRepetidas()) {
-        update.push("repetidas", repetida);
-      }
+  public void agregarFaltante(String colId, Figurita figurita) {
+    Query query = Query.query(
+        Criteria.where("_id").is(colId)
+            .and("faltantes").ne(figurita.getId())
+    );
+    Update update = new Update().push("faltantes", figurita);
 
-      for (Figurita faltante : coleccion.getFaltantes()) {
-        update.push("faltantes", faltante);
-      }
+    UpdateResult result = mongoTemplate.updateFirst(query, update, Coleccion.class);
 
-      if (!update.getUpdateObject().isEmpty()) {
-        mongoTemplate.updateFirst(
-            Query.query(Criteria.where("_id").is(coleccion.getId())),
-            update,
-            Coleccion.class
-        );
-      }
+    if (result.getMatchedCount() == 0) {
+      throw new BadRequestException("Figurita ya listada como faltante");
+    }
+  }
+
+  public void agregarRepetida(String colId, FiguritaIntercambiable repetida) {
+    Query query = Query.query(
+        Criteria.where("_id").is(colId)
+            .and("repetidas.figurita").is(repetida.getFigurita().getId())
+    );
+    Update incrementar = new Update().inc("repetidas.$.cantidadExistente", repetida.getCantidadExistente());
+    UpdateResult result = mongoTemplate.updateFirst(query, incrementar, Coleccion.class);
+
+    if (result.getMatchedCount() == 0) {
+      Query queryPush = Query.query(Criteria.where("_id").is(colId));
+      Update push = new Update().push("repetidas", repetida);
+      mongoTemplate.updateFirst(queryPush, push, Coleccion.class);
     }
   }
 
@@ -236,14 +245,10 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   }
 
   private void conCamposCargados(Query query, CamposColeccion campos) {
-    if(campos.getConRepetidas()) {
-      query.fields().slice("repetidas", limiteLista);
-    } else {
+    if(!campos.getConRepetidas()) {
       query.fields().exclude("repetidas");
     }
-    if(campos.getConFaltantes()) {
-      query.fields().slice("faltantes", limiteLista);
-    } else {
+    if(!campos.getConFaltantes()) {
       query.fields().exclude("faltantes");
     }
   }

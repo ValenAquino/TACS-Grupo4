@@ -29,28 +29,20 @@ public class ServicioColeccion {
   private final ServicioNotificacion notificacionService;
 
   public void agregarFaltante(String colId, String figId) {
-    CamposColeccion sinCampos = new CamposColeccion(false, true);
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId, sinCampos);
-
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
 
-    coleccion.agregarFaltante(faltante);
-
-    repositorioColecciones.guardar(coleccion);
+    repositorioColecciones.agregarFaltante(colId, faltante);
   }
 
   public void agregarRepetida(String colId, String figId, Integer
       cantidadExistente, List<MetodoIntercambio> modosIntercambio) {
 
-    CamposColeccion sinCampos = new CamposColeccion(true, false);
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId, sinCampos);
     Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
         figurita, cantidadExistente, modosIntercambio);
 
-    coleccion.agregarRepetida(repetida);
-    this.repositorioColecciones.guardar(coleccion);
+    this.repositorioColecciones.agregarRepetida(colId, repetida);
 
     List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
 

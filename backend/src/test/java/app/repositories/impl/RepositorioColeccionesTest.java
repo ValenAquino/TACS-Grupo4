@@ -72,25 +72,6 @@ public class RepositorioColeccionesTest extends MongoTestBase {
   }
 
   @Test
-  void actualizarCambiaIncrementaLaListaAunqueNoSeCargueLaLista() {
-    Coleccion coleccion = new Coleccion();
-    coleccion.getFaltantes().add(messi);
-    coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
-
-    repositorioColecciones.guardar(coleccion);
-
-    coleccion = repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false));
-
-    coleccion.agregarFaltante(dybala);
-
-    repositorioColecciones.guardar(coleccion);
-
-    coleccion = repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, true));
-
-    assertEquals(2, coleccion.getFaltantes().size());
-  }
-
-  @Test
   void findByIdValido() {
     Coleccion coleccion = new Coleccion();
 

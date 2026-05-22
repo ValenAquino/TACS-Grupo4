@@ -19,6 +19,9 @@ public interface RepositorioColecciones {
 
   void guardar(Coleccion coleccion);
 
+  void agregarFaltante(String colId, Figurita figId);
+  void agregarRepetida(String colId, FiguritaIntercambiable figId);
+
   Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros);
 
   PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros);

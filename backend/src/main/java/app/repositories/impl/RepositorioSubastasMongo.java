@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
@@ -9,6 +10,7 @@ import app.repositories.RepositorioSubastas;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -44,8 +46,41 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   }
 
   @Override
-  public List<Subasta> buscarTodos() {
-    return this.mongoTemplate.findAll(Subasta.class);
+  public PaginaResultado<Subasta> buscarTodos(SubastasFiltro filtros) {
+    Query query = new Query();
+
+    if(filtros.autorId() != null) {
+      query.addCriteria(
+          Criteria.where("autor.$id").is(new ObjectId(filtros.autorId()))
+      );
+    }
+
+    if ("ACTIVA".equals(filtros.estado())) {
+      Criteria.expr(
+          ComparisonOperators.Lt.valueOf("fechaInicio")
+              .lessThan("fechaCierre")
+      );
+    }
+
+    if (filtros.participanteId() != null) {
+      query.addCriteria(
+          Criteria.where("ofertas.autor.$id").is(new ObjectId(filtros.participanteId()))
+      );
+    }
+
+    long count = mongoTemplate.count(query, Subasta.class);
+
+    query.skip((long) (filtros.pagina() - 1) * filtros.limite());
+    query.limit(filtros.limite());
+
+    List<Subasta> contenido = mongoTemplate.find(query, Subasta.class);
+
+    return new PaginaResultado<>(
+        contenido,
+        count,
+        (int) Math.ceil((double) count / filtros.limite()),
+        filtros.pagina()
+    );
   }
 
   @Override

@@ -9,7 +9,6 @@ import app.model.entities.Propuesta;
 import app.model.entities.Subasta;
 import lombok.Getter;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 public class SubastaParticipoDto {

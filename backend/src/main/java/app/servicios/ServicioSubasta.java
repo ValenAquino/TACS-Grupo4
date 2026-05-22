@@ -1,5 +1,6 @@
 package app.servicios;
 
+import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.subasta.SubastaDto;
@@ -200,9 +201,28 @@ import org.springframework.stereotype.Service;
 
       return new SubastasParticipoResponseDto(activas, finalizadas);
     }
-    private Propuesta obtenerOferta(Subasta subasta, String userId) {
+
+    public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
+      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros);
+
+      if(filtros.participanteId() != null) {
+        return new PaginaResultado<>(
+            resultado.contenido().stream().map(s -> new SubastaParticipoDto(s, obtenerOferta(s, filtros.participanteId()))).toList(),
+            resultado.cantidadDeElementos(),
+            resultado.cantidadDePaginas(),
+            resultado.numero());
+      } else {
+        return new PaginaResultado<>(
+            resultado.contenido().stream().map(SubastaDto::new).toList(),
+            resultado.cantidadDeElementos(),
+            resultado.cantidadDePaginas(),
+            resultado.numero());
+      }
+    }
+
+    private Propuesta obtenerOferta(Subasta subasta, String perfilId) {
       return subasta.getOfertas().stream()
-          .filter(p -> p.getAutor().getUsuario().getId().equals(userId))
+          .filter(p -> p.getAutor().getId().equals(perfilId))
           .findFirst()
           .get();
     }

@@ -39,8 +39,8 @@ public class ServicioPerfil {
   }
 
 
-  public void agregarCalificacion(String AutorId, String DestinoId,
-                                  Integer valor, String descripcion, String transactionId,
+  public void agregarCalificacion(String autorId, String destinoId,
+                                  Integer valor, String descripcion, String transaccionId,
                                   MetodoIntercambio tipoTransaccion) {
     if (valor == null) {
       throw new BadRequestException("El valor de la calificación no puede ser nulo");
@@ -49,22 +49,26 @@ public class ServicioPerfil {
       throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
     }
 
-    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(DestinoId);
-    if (perfilDestino == null) throw new NotFoundException("Perfil no encontrado: " + DestinoId);
+    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(destinoId);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
 
-    Perfil autor = this.repositorioPerfiles.buscarPorId(AutorId);
-    if (autor == null) throw new NotFoundException("Perfil no encontrado: " + AutorId);
-
-    boolean yaCalifico = perfilDestino.getCalificaciones().stream()
-        .anyMatch(c -> autor.getId().equals(c.getAutor().getId())
-            && Objects.equals(transactionId, c.getTransactionId())
-            && c.getTipoTransaccion() == tipoTransaccion);
+    boolean yaCalifico = this.repositorioCalificacion.yaCalifico(
+        destinoId,
+        autorId,
+        transaccionId,
+        tipoTransaccion
+    );
 
     if (yaCalifico) throw new BadRequestException("Ya calificaste esta transacción");
 
     Calificacion calificacion = Calificacion.builder()
-        .autor(autor).valor(valor).descripcion(descripcion)
-        .tipoTransaccion(tipoTransaccion).transactionId(transactionId).build();
+        .autor(autor)
+        .destinatario(perfilDestino)
+        .valor(valor)
+        .descripcion(descripcion)
+        .tipoTransaccion(tipoTransaccion)
+        .transaccionId(transaccionId)
+        .build();
 
     perfilDestino.agregarNuevaCalificacion(calificacion);
 
@@ -105,7 +109,7 @@ public class ServicioPerfil {
   }
 
   public PaginaResultado<CalificacionDto> obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
-    PaginaResultado<Calificacion> resultado = this.repositorioCalificacion.buscarPorPerfil(perfilId, pagina, limite);
+    PaginaResultado<Calificacion> resultado = this.repositorioCalificacion.buscarPorDestinatario(perfilId, pagina, limite);
 
     return new PaginaResultado<>(
         resultado.contenido().stream().map(CalificacionDto::new).toList(),

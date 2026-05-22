@@ -3,8 +3,10 @@ package app.repositories.impl;
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Calificacion;
 import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
 import app.repositories.RepositorioCalificacion;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -26,9 +28,8 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     mongoTemplate.save(calificacion);
   }
 
-  @Override
-  public PaginaResultado<Calificacion> buscarPorPerfil(
-      String perfilId,
+  public PaginaResultado<Calificacion> buscarPorDestinatario(
+      String destinatarioId,
       Integer pagina,
       Integer limite
   ) {
@@ -36,12 +37,12 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("autor.$id").is(perfilId)
+        Criteria.where("destinatario.$id").is(new ObjectId(destinatarioId))
     );
 
     long count = mongoTemplate.count(query, Calificacion.class);
 
-    query.skip((long) pagina * limite);
+    query.skip((long) (pagina - 1) * limite);
     query.limit(limite);
 
     List<Calificacion> contenido =
@@ -53,5 +54,33 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
         (int) Math.ceil((double) count / limite),
         pagina
     );
+  }
+
+  public boolean yaCalifico(
+      String perfilDestinoId,
+      String perfilAutorId,
+      String transaccionId,
+      MetodoIntercambio tipoTransaccion
+  ) {
+
+    Query query = new Query();
+
+    query.addCriteria(
+        Criteria.where("destinatario.$id").is(new ObjectId(perfilDestinoId))
+    );
+
+    query.addCriteria(
+        Criteria.where("autor.$id").is(new ObjectId(perfilAutorId))
+    );
+
+    query.addCriteria(
+        Criteria.where("transaccionId").is(transaccionId)
+    );
+
+    query.addCriteria(
+        Criteria.where("tipoTransaccion").is(tipoTransaccion.name())
+    );
+
+    return mongoTemplate.exists(query, Calificacion.class);
   }
 }

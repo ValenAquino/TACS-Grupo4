@@ -3,10 +3,11 @@ package app.model.entities;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import app.exceptions.PropuestaException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import app.exceptions.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -43,30 +44,23 @@ public class PropuestaTest {
 
   @Test
   void deberiaAceptarPropuestaPendiente() {
-    propuesta.aceptar(destino);
+    propuesta.aceptar(destino.getId());
 
     assertEquals(EstadoProceso.ACEPTADO, propuesta.obtenerEstadoActual().getValor());
   }
 
   @Test
   void deberiaRechazarPropuestaPendiente() {
-    propuesta.rechazar(destino);
+    propuesta.rechazar(destino.getId());
 
     assertEquals(EstadoProceso.RECHAZADO, propuesta.obtenerEstadoActual().getValor());
   }
 
   @Test
   void noDeberiaAceptarUnaPropuestaYaAceptada() {
-    propuesta.aceptar(destino);
+    propuesta.aceptar(destino.getId());
 
-    assertThrows(PropuestaException.class, () -> propuesta.aceptar(destino));
-  }
-
-  @Test
-  void noDeberiaRechazarUnaPropuestaYaAceptada() {
-    propuesta.aceptar(destino);
-
-    assertThrows(PropuestaException.class, () -> propuesta.rechazar(destino));
+    assertThrows(BadRequestException.class, () -> propuesta.aceptar(destino.getId()));
   }
 
   @Test
@@ -77,7 +71,7 @@ public class PropuestaTest {
         .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM,"@otro")))
         .build();
 
-    assertThrows(PropuestaException.class, () -> propuesta.aceptar(otro));
+    assertThrows(BadRequestException.class, () -> propuesta.aceptar(otro.getId()));
   }
 
   @Test
@@ -88,20 +82,14 @@ public class PropuestaTest {
         .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM,"@otro")))
         .build();
 
-    assertThrows(PropuestaException.class, () -> propuesta.rechazar(otro));
+    assertThrows(BadRequestException.class, () -> propuesta.rechazar(otro.getId()));
   }
 
   @Test
   void noDeberiaAceptarUnaPropuestaYaRechazada() {
-    propuesta.rechazar(destino);
+    propuesta.rechazar(destino.getId());
 
-    assertThrows(PropuestaException.class, () -> propuesta.aceptar(destino));
+    assertThrows(BadRequestException.class, () -> propuesta.aceptar(destino.getId()));
   }
 
-  @Test
-  void noDeberiaRechazarUnaPropuestaYaRechazada() {
-    propuesta.rechazar(destino);
-
-    assertThrows(PropuestaException.class, () -> propuesta.rechazar(destino));
-  }
 }

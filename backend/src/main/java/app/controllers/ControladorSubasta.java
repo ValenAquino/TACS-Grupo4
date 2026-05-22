@@ -5,7 +5,6 @@ import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearSubastaRequest;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
-import app.dto.subasta.MisSubastasResponseDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import app.dto.subasta.SubastaDto;
 import app.servicios.ServicioJwt;
@@ -17,11 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 

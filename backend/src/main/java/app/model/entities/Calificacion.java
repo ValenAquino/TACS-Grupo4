@@ -18,12 +18,16 @@ public class Calificacion {
   @Id
   private String id;
   @JsonIgnore
+
   @DBRef
   private Perfil autor;
+
+  @DBRef
+  private Perfil destinatario;
   //valor es un entero de 1 a 5
   private Integer valor;
   private String descripcion;
   //id subasta o id propuesta de intercambio
-  private String transactionId;
+  private String transaccionId;
   private MetodoIntercambio tipoTransaccion;
 }

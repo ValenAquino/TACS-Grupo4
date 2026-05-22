@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
     private final RepositorioSubastas repoSubasta;
     private final RepositorioPerfiles repositorioPerfiles;
     private final RepositorioFiguritas repoFigurita;
+    private final RepositorioCalificacion repoCalificacion;
     private final ServicioNotificacion notificacionService;
 
     public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
@@ -119,7 +120,7 @@ import org.springframework.stereotype.Service;
           .findFirst()
           .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
-      propuesta.seleccionar(subasta.getAutor());
+      propuesta.seleccionar(subasta.getAutor().getId());
       this.repoSubasta.guardar(subasta);
     }
 
@@ -186,17 +187,33 @@ import org.springframework.stereotype.Service;
           resultado.numero());
     }
 
-    public SubastasParticipoResponseDto obtenerSubastasParticipo(String userId) {
-      List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(userId);
+    public SubastasParticipoResponseDto obtenerSubastasParticipo(String perfilId) {
+      List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(perfilId);
 
       List<SubastaParticipoDto> activas = subastas.stream()
           .filter(Subasta::estaActivo)
-          .map(s -> new SubastaParticipoDto(s, obtenerOferta(s, userId)))
+          .map(s -> {
+            boolean yaCalifico = this.repoCalificacion.yaCalifico(
+                s.getAutor().getId(),
+                perfilId,
+                s.getId(),
+                MetodoIntercambio.SUBASTA
+              );
+            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
+          })
           .toList();
 
       List<SubastaParticipoDto> finalizadas = subastas.stream()
           .filter(s -> !s.estaActivo())
-          .map(s -> new SubastaParticipoDto(s, obtenerOferta(s, userId)))
+          .map(s -> {
+            boolean yaCalifico = this.repoCalificacion.yaCalifico(
+                s.getAutor().getId(),
+                this.obtenerOferta(s, perfilId).getId(),
+                s.getId(),
+                MetodoIntercambio.SUBASTA
+            );
+            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
+          })
           .toList();
 
       return new SubastasParticipoResponseDto(activas, finalizadas);
@@ -221,6 +238,8 @@ import org.springframework.stereotype.Service;
     }
 
     private Propuesta obtenerOferta(Subasta subasta, String perfilId) {
+
+    private Propuesta obtenerOferta(Subasta subasta, String userId) {
       return subasta.getOfertas().stream()
           .filter(p -> p.getAutor().getId().equals(perfilId))
           .findFirst()

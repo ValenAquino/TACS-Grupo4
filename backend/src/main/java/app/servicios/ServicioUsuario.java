@@ -45,7 +45,7 @@ public class ServicioUsuario {
 
     this.repositorioColecciones.guardar(coleccion);
 
-    Perfil perfil = new Perfil(usuarioNuevo, usuarioNuevo.getNombre(), coleccion, new ArrayList<>(), new ArrayList<>());
+    Perfil perfil = new Perfil(usuarioNuevo, usuarioNuevo.getNombre(), coleccion, new ArrayList<>());
 
     this.repositorioPerfiles.guardar(perfil);
   }

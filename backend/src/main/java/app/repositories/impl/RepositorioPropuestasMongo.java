@@ -3,6 +3,7 @@ package app.repositories.impl;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.propuesta.PropuestasDto;
+import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioPropuestas;
@@ -95,7 +96,7 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
         Propuesta propuesta = this.mongoTemplate.findById(id, Propuesta.class);
 
         if(propuesta == null) {
-            throw new RuntimeException("Propuesta no encontrada");
+            throw new NotFoundException("Propuesta no encontrada");
         }
         return propuesta;
     }

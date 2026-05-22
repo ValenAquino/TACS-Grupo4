@@ -83,6 +83,7 @@ public class Propuesta {
     public void rechazar(String perfilId) {
         validarUsuarioDestino(perfilId);
         validarPendiente();
+
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
     }
 
@@ -96,12 +97,18 @@ public class Propuesta {
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
     }
 
-    public void ejecutarIntercambio() {
+    private void ejecutarIntercambio() {
         this.getFiguritasOfrecidas()
             .forEach(f -> this.destinatario.getColeccion().eliminarFaltante(f));
         this.destinatario.getColeccion()
             .descontarRepetida(this.getFiguritaBuscada());
 
+        this.getFiguritasOfrecidas()
+            .forEach(f -> this.autor.getColeccion().descontarRepetida(f));
+        this.autor.getColeccion().eliminarFaltante(this.getFiguritaBuscada());
+    }
+
+    public void ejecutarRechazo() {
         this.getFiguritasOfrecidas()
             .forEach(f -> this.autor.getColeccion().descontarRepetida(f));
         this.autor.getColeccion().eliminarFaltante(this.getFiguritaBuscada());

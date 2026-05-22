@@ -51,7 +51,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     if(filtros.autorId() != null) {
       query.addCriteria(
-          Criteria.where("autor.$id").is(new ObjectId(filtros.autorId()))
+          Criteria.where("autor").is(filtros.autorId())
       );
     }
 
@@ -64,7 +64,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     if (filtros.participanteId() != null) {
       query.addCriteria(
-          Criteria.where("ofertas.autor.$id").is(new ObjectId(filtros.participanteId()))
+          Criteria.where("ofertas.autor").is(filtros.participanteId())
       );
     }
 

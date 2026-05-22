@@ -6,12 +6,8 @@ import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
-import app.model.entities.EstadoProceso;
-import app.model.entities.EstadoPropuesta;
-import app.model.entities.Figurita;
-import app.model.entities.Perfil;
-import app.model.entities.Propuesta;
-import app.model.entities.Subasta;
+import app.model.entities.*;
+import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
@@ -27,6 +23,7 @@ import org.springframework.stereotype.Service;
     private final RepositorioSubastas repoSubasta;
     private final RepositorioPerfiles repositorioPerfiles;
     private final RepositorioFiguritas repoFigurita;
+    private final RepositorioCalificacion repoCalificacion;
     private final ServicioNotificacion notificacionService;
 
     public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
@@ -118,7 +115,7 @@ import org.springframework.stereotype.Service;
           .findFirst()
           .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
-      propuesta.seleccionar(subasta.getAutor());
+      propuesta.seleccionar(subasta.getAutor().getId());
       this.repoSubasta.guardar(subasta);
     }
 
@@ -185,21 +182,38 @@ import org.springframework.stereotype.Service;
           resultado.numero());
     }
 
-    public SubastasParticipoResponseDto obtenerSubastasParticipo(String userId) {
-      List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(userId);
+    public SubastasParticipoResponseDto obtenerSubastasParticipo(String perfilId) {
+      List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(perfilId);
 
       List<SubastaParticipoDto> activas = subastas.stream()
           .filter(Subasta::estaActivo)
-          .map(s -> new SubastaParticipoDto(s, obtenerOferta(s, userId)))
+          .map(s -> {
+            boolean yaCalifico = this.repoCalificacion.yaCalifico(
+                s.getAutor().getId(),
+                perfilId,
+                s.getId(),
+                MetodoIntercambio.SUBASTA
+              );
+            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
+          })
           .toList();
 
       List<SubastaParticipoDto> finalizadas = subastas.stream()
           .filter(s -> !s.estaActivo())
-          .map(s -> new SubastaParticipoDto(s, obtenerOferta(s, userId)))
+          .map(s -> {
+            boolean yaCalifico = this.repoCalificacion.yaCalifico(
+                s.getAutor().getId(),
+                this.obtenerOferta(s, perfilId).getId(),
+                s.getId(),
+                MetodoIntercambio.SUBASTA
+            );
+            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
+          })
           .toList();
 
       return new SubastasParticipoResponseDto(activas, finalizadas);
     }
+
     private Propuesta obtenerOferta(Subasta subasta, String userId) {
       return subasta.getOfertas().stream()
           .filter(p -> p.getAutor().getUsuario().getId().equals(userId))

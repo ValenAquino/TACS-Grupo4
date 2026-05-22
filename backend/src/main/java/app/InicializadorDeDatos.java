@@ -157,17 +157,18 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionLucas.getFaltantes().add(vinicius);
       colecciones.guardar(coleccionLucas);
 
-      Calificacion calificacion = new Calificacion("40002", juan, 4, "dasda", "612431", MetodoIntercambio.INTERCAMBIO);
-      List<Calificacion> calificaciones = new ArrayList<>();
-      calificaciones.add(calificacion);
-      this.calificaciones.guardar(calificacion);
+
       user = new Usuario("u-1000",  Rol.USUARIO,"lucas_fis","gordo123");
       usuarios.guardar(user);
       Perfil lucas = Perfil.builder()
           .id("1000").usuario(user)
           .nombre("lucas").coleccion(coleccionLucas)
-          .calificaciones(calificaciones)
           .mediosDeContacto(telegram("@lucas")).build();
+
+      Calificacion calificacion = new Calificacion("40002", juan, lucas, 4, "dasda", "612431", MetodoIntercambio.INTERCAMBIO);
+      List<Calificacion> calificaciones = new ArrayList<>();
+      calificaciones.add(calificacion);
+      this.calificaciones.guardar(calificacion);
       perfiles.guardar(lucas);
 
       // Sofía
@@ -215,21 +216,21 @@ public class InicializadorDeDatos implements CommandLineRunner {
       if (lucas == null || sofia == null || matias == null || juan == null) return;
 
         // Lucas: recibe 5 y 4 → promedio 4.5 → 5 estrellas
-      lucas.getCalificaciones().add(new Calificacion("C-1", sofia, 5, "Excelente trato, muy rápido", "2000", MetodoIntercambio.INTERCAMBIO));
-      lucas.getCalificaciones().add(new Calificacion("C-2", matias, 4, "Todo bien, lo recomiendo", "2002", MetodoIntercambio.INTERCAMBIO));
+      lucas.agregarNuevaCalificacion(new Calificacion("C-1", sofia, lucas, 5, "Excelente trato, muy rápido", "2000", MetodoIntercambio.INTERCAMBIO));
+      lucas.agregarNuevaCalificacion(new Calificacion("C-2", matias, lucas, 4, "Todo bien, lo recomiendo", "2002", MetodoIntercambio.INTERCAMBIO));
 
         // Sofía: recibe 4, 3 y 4 → promedio 3.67 → 4 estrellas
-      sofia.getCalificaciones().add(new Calificacion("C-3", lucas, 4, "Buena experiencia", "2000", MetodoIntercambio.INTERCAMBIO));
-      sofia.getCalificaciones().add(new Calificacion("C-4", matias, 3, "Normal, sin problemas", "2001", MetodoIntercambio.INTERCAMBIO));
-      sofia.getCalificaciones().add(new Calificacion("C-5", juan, 4, "Respondió rápido", "3000", MetodoIntercambio.SUBASTA));
+      sofia.agregarNuevaCalificacion(new Calificacion("C-3", lucas, sofia,  4, "Buena experiencia", "2000", MetodoIntercambio.INTERCAMBIO));
+      sofia.agregarNuevaCalificacion(new Calificacion("C-4", matias, sofia, 3, "Normal, sin problemas", "2001", MetodoIntercambio.INTERCAMBIO));
+      sofia.agregarNuevaCalificacion(new Calificacion("C-5", juan, sofia, 4, "Respondió rápido", "3000", MetodoIntercambio.SUBASTA));
 
         // Matías: recibe 2 y 3 → promedio 2.5 → 3 estrellas
-      matias.getCalificaciones().add(new Calificacion("C-6", lucas, 2, "Tardó bastante en responder", "2002", MetodoIntercambio.INTERCAMBIO));
-      matias.getCalificaciones().add(new Calificacion("C-7", sofia, 3, "Aceptable", "2001", MetodoIntercambio.INTERCAMBIO));
+      matias.agregarNuevaCalificacion(new Calificacion("C-6", lucas, matias,  2, "Tardó bastante en responder", "2002", MetodoIntercambio.INTERCAMBIO));
+      matias.agregarNuevaCalificacion(new Calificacion("C-7", sofia, matias,  3, "Aceptable", "2001", MetodoIntercambio.INTERCAMBIO));
 
         // Juan: recibe 1 y 2 → promedio 1.5 → 2 estrellas
-      juan.getCalificaciones().add(new Calificacion("C-8", lucas, 1, "No cumplió con el intercambio", "3001", MetodoIntercambio.SUBASTA));
-      juan.getCalificaciones().add(new Calificacion("C-9", sofia, 2, "Mala comunicación", "3000", MetodoIntercambio.SUBASTA));
+      juan.agregarNuevaCalificacion(new Calificacion("C-8", lucas, juan,  1, "No cumplió con el intercambio", "3001", MetodoIntercambio.SUBASTA));
+      juan.agregarNuevaCalificacion(new Calificacion("C-9", sofia, juan,  2, "Mala comunicación", "3000", MetodoIntercambio.SUBASTA));
     }
 
     private void cargarPropuestas(Figurita messi, Figurita diMaria,
@@ -289,7 +290,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             .figuritaBuscada(mbappe)
             .build();
 
-        ofertaSofia.seleccionar(lucas);
+        ofertaSofia.seleccionar(lucas.getId());
 
         Subasta subasta1 = Subasta.builder()
             .id("1").autor(lucas)
@@ -326,7 +327,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             .ofertas(new ArrayList<>(List.of(ofertaGanadora3)))
             .build();
 
-        ofertaGanadora3.aceptar(lucas);
+        ofertaGanadora3.aceptar(lucas.getId());
         subastas.guardar(subasta3);
 
         // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
@@ -361,7 +362,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
             .figuritaSubastada(vinicius)
             .ofertas(new ArrayList<>(List.of(ofertaLucas4)))
             .build();
-        ofertaLucas4.seleccionar(sofia);
+        ofertaLucas4.seleccionar(sofia.getId());
         subastas.guardar(subasta4);
 
         // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
@@ -401,8 +402,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
             .ofertas(new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)))
             .build();
 
-        ofertaJuan1.aceptar(sofia);
-        Calificacion calificacion = new Calificacion("202914", lucas, 2, "asda", "8",MetodoIntercambio.SUBASTA);
+        ofertaJuan1.aceptar(sofia.getId());
+        Calificacion calificacion = new Calificacion("202914", lucas, sofia,  2, "asda", "8",MetodoIntercambio.SUBASTA);
         sofia.agregarNuevaCalificacion(calificacion);
         subastas.guardar(subasta8);
         calificaciones.guardar(calificacion);

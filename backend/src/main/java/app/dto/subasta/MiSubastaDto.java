@@ -2,7 +2,6 @@ package app.dto.subasta;
 
 import app.dto.FiguritaDto;
 import app.dto.PerfilDto;
-import app.model.entities.MetodoIntercambio;
 import app.model.entities.Subasta;
 import app.model.entities.EstadoProceso;
 import lombok.Getter;
@@ -23,7 +22,7 @@ public class MiSubastaDto {
   private String ganadorLabel;
   private boolean yaCalificado;
 
-  public MiSubastaDto(Subasta subasta) {
+  public MiSubastaDto(Subasta subasta, boolean yaCalificado) {
     this.id = subasta.getId();
     this.fechaInicio = subasta.getFechaInicio();
     this.fechaCierre = subasta.getFechaCierre();
@@ -42,10 +41,11 @@ public class MiSubastaDto {
                 .map(f -> f.getJugador() + " #" + f.getNumero())
                 .reduce((a, b) -> a + " + " + b)
                 .orElse("");
-            this.yaCalificado = p.getAutor().getCalificaciones().stream()
-                .anyMatch(c -> subasta.getAutor().getId().equals(c.getAutor().getId())
-                    && subasta.getId().equals(c.getTransactionId())
-                    && c.getTipoTransaccion() == MetodoIntercambio.SUBASTA);
+            this.yaCalificado = yaCalificado;
+//            this.yaCalificado = p.getAutor().getCalificaciones().stream()
+//                .anyMatch(c -> subasta.getAutor().getId().equals(c.getAutor().getId())
+//                    && subasta.getId().equals(c.getTransactionId())
+//                    && c.getTipoTransaccion() == MetodoIntercambio.SUBASTA);
           });
     }
   }

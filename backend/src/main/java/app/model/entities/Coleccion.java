@@ -1,10 +1,8 @@
 package app.model.entities;
 
-import app.exceptions.FiguritaDuplicadaException;
+import app.exceptions.BadRequestException;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,11 +29,11 @@ public class Coleccion {
 
   /**
    * Agrega una figurita a la lista de faltantes.
-   * Lanza {@link FiguritaDuplicadaException} si ya está registrada como faltante.
+   * Lanza {@link BadRequestException} si ya está registrada como faltante.
    */
   public void agregarFaltante(Figurita faltante) {
     if (tieneFaltante(faltante)) {
-      throw new FiguritaDuplicadaException("Figurita ya listada como faltante");
+      throw new BadRequestException("Figurita ya listada como faltante");
     }
 
     this.faltantes.add(faltante);

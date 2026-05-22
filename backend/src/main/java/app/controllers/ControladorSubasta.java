@@ -95,21 +95,6 @@ public class ControladorSubasta {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/mis-subastas")
-    public ResponseEntity<PaginaResultado<SubastaDto>> obtenerMisSubastas(
-        @CookieValue("token") String token
-    ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
-        return ResponseEntity.ok(this.subastaService.obtenerMisSubastas(perfilId, 10, 10));
-    }
-
-    @GetMapping("/participo")
-    public ResponseEntity<SubastasParticipoResponseDto> obtenerSubastasParticipo(
-        @CookieValue String token
-    ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
-        return ResponseEntity.ok(this.subastaService.obtenerSubastasParticipo(perfilId));
-    }
 
     @GetMapping
     public ResponseEntity<PaginaResultado<?>> obtenerSubastas(

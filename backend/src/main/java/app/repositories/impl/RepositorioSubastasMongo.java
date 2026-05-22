@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -56,9 +59,13 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
     }
 
     if ("ACTIVA".equals(filtros.estado())) {
-      Criteria.expr(
-          ComparisonOperators.Lt.valueOf("fechaInicio")
-              .lessThan("fechaCierre")
+      Date ahora = new Date();
+
+      query.addCriteria(
+          new Criteria().andOperator(
+              Criteria.where("fechaInicio").lte(ahora),
+              Criteria.where("fechaCierre").gt(ahora)
+          )
       );
     }
 

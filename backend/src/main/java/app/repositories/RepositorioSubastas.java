@@ -11,8 +11,6 @@ public interface RepositorioSubastas {
 
     Subasta buscarPorId(String id);
 
-    List<Subasta> buscarDondeParticipa(String userId);
-
     int contar();
 
     void guardar(Subasta subasta);

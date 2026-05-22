@@ -69,6 +69,14 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
       );
     }
 
+    if ("FINALIZADA".equals(filtros.estado())) {
+      Date ahora = new Date();
+
+      query.addCriteria(
+          Criteria.where("fechaCierre").lte(ahora)
+      );
+    }
+
     if (filtros.participanteId() != null) {
       query.addCriteria(
           Criteria.where("ofertas.autor").is(filtros.participanteId())
@@ -103,21 +111,6 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
       throw new NotFoundException("Subasta no encontrada");
     }
     return subasta;
-  }
-
-  @Override
-  public List<Subasta> buscarDondeParticipa(String userId) {
-    Query queryPerfil = new Query(Criteria.where("usuario.id").is(userId));
-    Perfil perfil = mongoTemplate.findOne(queryPerfil, Perfil.class);
-
-    if (perfil == null) return List.of();
-
-    Query querySubastas = new Query(
-        Criteria.where("ofertas").elemMatch(
-            Criteria.where("$id").is(perfil.getId())
-        )
-    );
-    return mongoTemplate.find(querySubastas, Subasta.class);
   }
 
   @Override

@@ -173,52 +173,10 @@ import org.springframework.stereotype.Service;
       this.repoSubasta.guardar(subasta);
     }
 
-//    public PaginaResultado<SubastaDto> obtenerMisSubastas(String perfilId, Integer pagina, Integer limite) {
-//      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarPorAutor(perfilId, pagina, limite);
-//
-//      return new PaginaResultado<>(
-//          resultado.contenido().stream().map(SubastaDto::new).toList(),
-//          resultado.cantidadDeElementos(),
-//          resultado.cantidadDePaginas(),
-//          resultado.numero());
-//    }
-
-//    public SubastasParticipoResponseDto obtenerSubastasParticipo(String perfilId) {
-//      List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(perfilId);
-//
-//      List<SubastaParticipoDto> activas = subastas.stream()
-//          .filter(Subasta::estaActivo)
-//          .map(s -> {
-//            boolean yaCalifico = this.repoCalificacion.yaCalifico(
-//                s.getAutor().getId(),
-//                perfilId,
-//                s.getId(),
-//                MetodoIntercambio.SUBASTA
-//              );
-//            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
-//          })
-//          .toList();
-//
-//      List<SubastaParticipoDto> finalizadas = subastas.stream()
-//          .filter(s -> !s.estaActivo())
-//          .map(s -> {
-//            boolean yaCalifico = this.repoCalificacion.yaCalifico(
-//                s.getAutor().getId(),
-//                this.obtenerOferta(s, perfilId).getId(),
-//                s.getId(),
-//                MetodoIntercambio.SUBASTA
-//            );
-//            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
-//          })
-//          .toList();
-//
-//      return new SubastasParticipoResponseDto(activas, finalizadas);
-//    }
-
     public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
       PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros);
 
-      if(filtros.participanteId() != null) {
+      if(filtros.participanteId() != null ) {
         return new PaginaResultado<>(
             resultado.contenido().stream().map(s -> {
                   boolean yaCalifico = this.repoCalificacion.yaCalifico(

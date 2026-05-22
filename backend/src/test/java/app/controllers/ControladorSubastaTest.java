@@ -181,61 +181,7 @@ class ControladorSubastaTest {
             .cerrarSubasta("s-1");
     }
 
-    @Test
-    void obtenerMisSubastas_retorna200() throws Exception {
 
-        when(
-            subastaService.obtenerMisSubastas(
-                "1000",
-                10,
-                10
-            )
-        ).thenReturn(
-            new PaginaResultado<>(
-                List.of(),
-                0,
-                0,
-                0
-            )
-        );
-
-        mockMvc.perform(
-                get("/subastas/mis-subastas")
-                    .cookie(cookie)
-            )
-            .andExpect(status().isOk());
-
-        verify(subastaService)
-            .obtenerMisSubastas(
-                "1000",
-                10,
-                10
-            );
-    }
-
-    @Test
-    void obtenerSubastasParticipo_retorna200() throws Exception {
-
-        when(
-            subastaService.obtenerSubastasParticipo("1000")
-        ).thenReturn(
-            new SubastasParticipoResponseDto(
-                List.of(),
-                List.of()
-            )
-        );
-
-        mockMvc.perform(
-                get("/subastas/participo")
-                    .cookie(cookie)
-            )
-            .andExpect(status().isOk());
-
-        verify(subastaService)
-            .obtenerSubastasParticipo(
-                "1000"
-            );
-    }
 
     @Test
     void obtenerSubasta_retorna200() throws Exception {

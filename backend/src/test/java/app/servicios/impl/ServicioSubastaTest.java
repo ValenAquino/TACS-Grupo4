@@ -5,15 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import app.MongoTestBase;
+import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.subasta.SubastaDto;
+import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
 import app.model.entities.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import app.servicios.ServicioSubasta;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +44,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     lucas = Perfil.builder()
-        .id("1").usuario(user).nombre("Lucas")
+        .id(new ObjectId().toString()).usuario(user).nombre("Lucas")
         .coleccion(coleccionSinMessi)
         .mediosDeContacto(telegram("@lucas"))
         .build();
@@ -55,7 +58,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
     sofia = Perfil.builder()
-        .id("2").usuario(user).nombre("Sofía")
+        .id(new ObjectId().toString()).usuario(user).nombre("Sofía")
         .coleccion(coleccionRepetidos)
         .mediosDeContacto(telegram("@sofia"))
         .build();
@@ -94,7 +97,7 @@ public class ServicioSubastaTest extends MongoTestBase {
     repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
-        () -> service.ofertarEnSubasta("2", "s-1", List.of("ARG-10")));
+        () -> service.ofertarEnSubasta(sofia.getId(), "s-1", List.of("ARG-10")));
   }
 
   @Test
@@ -110,7 +113,7 @@ public class ServicioSubastaTest extends MongoTestBase {
     repositorioSubastas.guardar(subastaActiva);
 
     assertThrows(BadRequestException.class,
-        () -> service.ofertarEnSubasta("2","s-2", List.of("ARG-10", "ARG-10")));
+        () -> service.ofertarEnSubasta(sofia.getId(),"s-2", List.of("ARG-10", "ARG-10")));
   }
 
   @Test
@@ -347,7 +350,7 @@ public class ServicioSubastaTest extends MongoTestBase {
     repositorioSubastas.guardar(subasta);
 
     service.ofertarEnSubasta(
-        "1",
+        lucas.getId(),
         "s-1",
         List.of("ARG-10")
     );
@@ -501,6 +504,157 @@ public class ServicioSubastaTest extends MongoTestBase {
             "s-1",
             "inexistente"
         )
+    );
+  }
+
+  @Test
+  void obtenerSubastas_sinParticipante_retornaSubastaDto() {
+
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(
+            LocalDateTime.now().minusHours(1)
+        )
+        .fechaCierre(
+            LocalDateTime.now().plusDays(1)
+        )
+        .figuritaSubastada(messi)
+        .build();
+
+    repositorioSubastas.guardar(subasta);
+
+    SubastasFiltro filtros =
+        new SubastasFiltro(
+            1,
+            10,
+            null,
+            null,
+            null
+        );
+
+    PaginaResultado<?> resultado =
+        service.obtenerSubastas(filtros);
+
+    assertEquals(
+        1,
+        resultado.contenido().size()
+    );
+
+    assertTrue(
+        resultado.contenido()
+            .get(0) instanceof SubastaDto
+    );
+
+    SubastaDto dto =
+        (SubastaDto) resultado
+            .contenido()
+            .get(0);
+
+    assertEquals(
+        "s-1",
+        dto.getId()
+    );
+  }
+
+  @Test
+  void obtenerSubastas_conParticipante_retornaSubastaParticipoDto() {
+
+    Propuesta propuesta =
+        Propuesta.builder()
+            .id("o-1")
+            .autor(lucas)
+            .destinatario(sofia)
+            .figuritaBuscada(messi)
+            .figuritasOfrecidas(List.of())
+            .build();
+
+    Subasta subasta =
+        Subasta.builder()
+            .id("s-1")
+            .autor(sofia)
+            .fechaInicio(
+                LocalDateTime.now().minusHours(1)
+            )
+            .fechaCierre(
+                LocalDateTime.now().plusDays(1)
+            )
+            .figuritaSubastada(messi)
+            .ofertas(List.of(propuesta))
+            .build();
+
+    repositorioSubastas.guardar(subasta);
+
+    SubastasFiltro filtros =
+        new SubastasFiltro(
+            1,
+            10,
+            null,
+            lucas.getId(),
+            null
+        );
+
+    PaginaResultado<?> resultado =
+        service.obtenerSubastas(filtros);
+
+    assertEquals(
+        1,
+        resultado.contenido().size()
+    );
+
+    assertTrue(
+        resultado.contenido()
+            .get(0) instanceof SubastaParticipoDto
+    );
+
+    SubastaParticipoDto dto =
+        (SubastaParticipoDto)
+            resultado.contenido()
+                .get(0);
+
+    assertEquals(
+        "s-1",
+        dto.getId()
+    );
+
+    assertEquals(
+        "o-1",
+        dto.getTuOferta().getId()
+    );
+  }
+
+  @Test
+  void obtenerSubastas_conParticipante_sinOfertaNoRetornaResultados() {
+
+    Subasta subasta =
+        Subasta.builder()
+            .id("s-1")
+            .autor(sofia)
+            .fechaInicio(
+                LocalDateTime.now().minusHours(1)
+            )
+            .fechaCierre(
+                LocalDateTime.now().plusDays(1)
+            )
+            .figuritaSubastada(messi)
+            .build();
+
+    repositorioSubastas.guardar(subasta);
+
+    SubastasFiltro filtros =
+        new SubastasFiltro(
+            1,
+            10,
+            null,
+            lucas.getId(),
+            null
+        );
+
+    PaginaResultado<?> resultado =
+        service.obtenerSubastas(filtros);
+
+    assertTrue(
+        resultado.contenido().isEmpty()
     );
   }
 

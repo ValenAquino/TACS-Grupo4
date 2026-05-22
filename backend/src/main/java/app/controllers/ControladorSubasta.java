@@ -5,7 +5,6 @@ import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearSubastaRequest;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
-import app.dto.subasta.SubastasParticipoResponseDto;
 import app.dto.subasta.SubastaDto;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSubasta;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequestMapping("/subastas")
@@ -94,7 +92,6 @@ public class ControladorSubasta {
         this.subastaService.cerrarSubasta(sub_id);
         return ResponseEntity.ok().build();
     }
-
 
     @GetMapping
     public ResponseEntity<PaginaResultado<?>> obtenerSubastas(

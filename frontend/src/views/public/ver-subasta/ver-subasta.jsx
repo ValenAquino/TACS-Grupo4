@@ -60,7 +60,7 @@ const VerSubasta = () => {
       subastaAbierta && (
         <div className={'d-flex flex-row justify-content-center align-items-center gap-2'}>
           <p>¿Aún no ofertaste?</p>
-          <Button onClick={() => navigate(`/subastas/${subId}/nuevaOferta`)}>
+          <Button onClick={() => navigate(`/subastas/${subId}/crearOferta`)}>
             Proponer Oferta
           </Button>
         </div>

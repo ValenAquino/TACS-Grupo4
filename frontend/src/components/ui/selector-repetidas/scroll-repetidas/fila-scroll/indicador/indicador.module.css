@@ -1,0 +1,42 @@
+.scroll-indicador {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color-dark);
+}
+
+.scroll-indicador.radio {
+    border-radius: 50%;
+}
+
+.scroll-indicador.checkbox {
+    border-radius: 3px;
+}
+
+.scroll-indicador.seleccionado {
+    border-color: var(--color-secondary);
+}
+
+.scroll-indicador.sin-stock {
+    opacity: 0.25;
+}
+
+.scroll-indicador.bloqueada-sin-stock {
+    background-color: var(--color-terciary);
+    border-color: var(--color-terciary);
+}
+
+.scroll-indicador-radio-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--color-secondary);
+}
+
+.scroll-indicador-check {
+    color: var(--color-primary);
+    font-size: 0.65rem;
+}

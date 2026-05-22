@@ -71,9 +71,13 @@ const CrearOferta = () => {
   const puedeOfertar = cumpleCalificacion && tieneTodasRequeridas
 
   const onEnviar = async () => {
-    const ids = [...bloqueadas, ...figuritasExtra].map((f) => f.figuritaId)
-    await crearOferta(subId, ids)
-    navigate('/subastas')
+    try {
+      const ids = [...bloqueadas, ...figuritasExtra].map((f) => f.figuritaId)
+      await crearOferta(subId, ids)
+      navigate('/subastas')
+    } catch (e) {
+      handleError(e, (err) => showToast(err.mensaje, 'error'))
+    }
   }
 
   return (

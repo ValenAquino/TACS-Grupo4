@@ -13,9 +13,9 @@ export const buscarFaltantes = async (filtros) => {
 
 export const buscarRepetidas = async (filtros) => {
   try {
-    const { coleccion } = await api.get(`${COLECCIONES_URL}/repetidas`, { params: filtros })
+    const { data } = await api.get(`${COLECCIONES_URL}/repetidas`, { params: filtros })
 
-    return coleccion
+    return data
   } catch (error) {
     handleAxiosError(error)
   }

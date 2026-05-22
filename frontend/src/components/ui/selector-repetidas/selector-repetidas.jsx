@@ -16,7 +16,7 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
     try {
       const payload = await buscarRepetidas({ jugador: busqueda, pagina: 1, limite: LIMITE })
       setFiguritas(payload.contenido ?? [])
-      setTotal(payload.cantidadDeElementos ?? null)
+      setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {
     } finally {
       setLoading(false)
@@ -28,18 +28,18 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
   }, [fetchRepetidas])
 
   const toggle = (fig) => {
-    const esBloqueada = bloqueadas.some((b) => b.figuritaId === fig.figuritaId)
+    const esBloqueada = bloqueadas.some((b) => b.figurita_id === fig.figurita_id)
     if (esBloqueada) return
 
     setSeleccionadas((prev) => {
-      const existe = prev.some((f) => f.figuritaId === fig.figuritaId)
+      const existe = prev.some((f) => f.figurita_id === fig.figurita_id)
       const next =
         modo === 'unica'
           ? existe
             ? []
             : [fig]
           : existe
-            ? prev.filter((f) => f.figuritaId !== fig.figuritaId)
+            ? prev.filter((f) => f.figurita_id !== fig.figurita_id)
             : [...prev, fig]
       onChange?.(next)
       return next
@@ -66,10 +66,10 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
       {todasVisibles.length > 0 && (
         <div className={styles['selector-tags']}>
           {todasVisibles.map((f) => {
-            const esBloqueada = bloqueadas.some((b) => b.figuritaId === f.figuritaId)
+            const esBloqueada = bloqueadas.some((b) => b.figurita_id === f.figurita_id)
             return (
               <span
-                key={f.figuritaId}
+                key={f.figurita_id}
                 className={`${styles['selector-tag']} ${esBloqueada ? styles['bloqueada'] : styles['opcional']}`}
               >
                 {f.jugador}

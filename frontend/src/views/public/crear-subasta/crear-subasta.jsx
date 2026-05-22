@@ -19,6 +19,7 @@ const calcularCierreEstimado = (horas) => {
 }
 
 const CALIFICACION_MIN_OPTS = [
+  { label: 'Sin mínimo', value: 0 },
   { label: '1+', value: 1 },
   { label: '2+', value: 2 },
   { label: '3+', value: 3 },
@@ -102,7 +103,7 @@ const PasoCondiciones = ({ figuritasDeseadas, onCambiarFiguritas, calificacionMi
         })}
       </div>
       <p className={styles['calificacion-hint']}>
-        {calificacionMin === 1
+        {calificacionMin === 0
           ? 'Cualquier usuario puede ofertar en tu subasta'
           : `Solo usuarios con ${calificacionMin}★ o más pueden ofertar`}
       </p>
@@ -135,7 +136,7 @@ const Resumen = ({ figurita, duracion, figuritasDeseadas, calificacionMin }) => 
     },
     {
       label: 'Calificación mínima',
-      valor: calificacionMin === 1 ? 'Sin mínimo' : `${calificacionMin}★ o más`,
+      valor: calificacionMin === 0 ? 'Sin mínimo' : `${calificacionMin}★ o más`,
     },
   ]
 

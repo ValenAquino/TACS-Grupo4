@@ -11,8 +11,8 @@ const InsigniaFila = ({ fig, bloqueada, bloqueadaSinStock, seleccionada, sinStoc
       {sinStock ? "Sin stock" : (
         <>
           ×{disponibles}
-          {(fig.cantidadReservada > 0 || seleccionada) && (
-            <span className={styles['scroll-badge-total']}> de {fig.cantidadExistente}</span>
+          {(fig.cantidad_reservada > 0 || seleccionada) && (
+            <span className={styles['scroll-badge-total']}> de {fig.cantidad_existente}</span>
           )}
         </>
       )}

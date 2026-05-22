@@ -4,9 +4,9 @@ import InsigniaFila from './insignia-fila/insignia-fila'
 import styles from './fila-scroll.module.css'
 
 const FilaScroll = ({ fig, modo, bloqueada, seleccionada, onToggle }) => {
-  const tieneCantidad = fig.cantidadExistente !== undefined
+  const tieneCantidad = fig.cantidad_existente !== undefined
   const disponibles = tieneCantidad
-    ? fig.cantidadExistente - fig.cantidadReservada - (seleccionada ? 1 : 0)
+    ? fig.cantidad_existente - fig.cantidad_reservada - (seleccionada ? 1 : 0)
     : null
   const sinStock = tieneCantidad ? disponibles <= 0 : false
   const bloqueadaSinStock = bloqueada && sinStock

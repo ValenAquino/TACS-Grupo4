@@ -45,7 +45,7 @@ const ScrollFiguritas = ({
           f.jugador.toLowerCase().includes(busqueda.toLowerCase()) ||
           f.numero?.toString().includes(busqueda),
       )
-  const getId = (fig) => fig.figuritaId ?? fig.id
+  const getId = (fig) => fig.figurita_id ?? fig.id
   const esBloqueada = (fig) => bloqueadas.some((b) => getId(b) === getId(fig))
   const estaSeleccionada = (fig) =>
     esBloqueada(fig) || seleccionadas.some((f) => getId(f) === getId(fig))
@@ -85,7 +85,7 @@ const ScrollFiguritas = ({
           ) : (
             filtradas.map((fig) => (
               <FilaScroll
-                key={fig.figuritaId}
+                key={fig.figurita_id}
                 fig={fig}
                 modo={modo}
                 bloqueada={esBloqueada(fig)}

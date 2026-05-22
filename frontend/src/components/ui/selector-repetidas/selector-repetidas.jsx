@@ -70,7 +70,7 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
             return (
               <span
                 key={f.figuritaId}
-                className={styles[`selector-tag ${esBloqueada ? 'bloqueada' : 'opcional'}`]}
+                className={`${styles['selector-tag']} ${esBloqueada ? styles['bloqueada'] : styles['opcional']}`}
               >
                 {f.jugador}
                 {!esBloqueada && (

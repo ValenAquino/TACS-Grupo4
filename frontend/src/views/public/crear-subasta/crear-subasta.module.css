@@ -1,0 +1,164 @@
+.page {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1.5rem 1rem;
+}
+
+.header-titulo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+}
+
+.header-subtitulo {
+    font-size: 0.88rem;
+    color: var(--color-subtitle);
+    margin: 0;
+}
+
+/* ── Pasos ───────────────────────────────────────────────────────────────── */
+
+.paso {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.paso-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.paso-numero {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.paso-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-subtitle);
+    margin: 0;
+}
+
+.paso-contenido {
+    margin-left: 0.25rem;
+}
+
+/* ── Duración ─────────────────────────────────────────────────────────────── */
+
+.duracion-hint {
+    font-size: 0.82rem;
+    color: var(--color-subtitle);
+    margin: 0;
+}
+
+/* ── Condiciones ─────────────────────────────────────────────────────────── */
+
+.condiciones-titulo {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.condiciones-hint {
+    font-size: 0.78rem;
+    color: var(--color-subtitle);
+    margin: 0;
+}
+
+.condiciones-sin-restriccion {
+    font-size: 0.78rem;
+    color: var(--color-subtitle);
+    font-style: italic;
+    margin: 0;
+}
+
+.calificacion-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.calificacion-hint {
+    font-size: 0.78rem;
+    color: var(--color-subtitle);
+    margin: 0;
+}
+
+/* ── Resumen ──────────────────────────────────────────────────────────────── */
+
+.resumen {
+    border: 1px solid var(--color-secondary-acent);
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.resumen-header {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-secondary-acent);
+    background-color: color-mix(in srgb, var(--color-secondary-acent) 20%, transparent);
+}
+
+.resumen-header-titulo {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-subtitle);
+}
+
+.resumen-body {
+    padding: 0 0.75rem;
+}
+
+.resumen-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-secondary-acent) 30%, transparent);
+    font-size: 0.85rem;
+}
+
+.resumen-fila:last-child {
+    border-bottom: none;
+}
+
+.resumen-label {
+    color: var(--color-subtitle);
+}
+
+.resumen-valor {
+    font-weight: 600;
+}
+
+.resumen-vacio {
+    color: var(--color-subtitle);
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* ── Acciones ─────────────────────────────────────────────────────────────── */
+
+.acciones {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    padding-bottom: 1.5rem;
+}

@@ -45,10 +45,10 @@ const ScrollFiguritas = ({
           f.jugador.toLowerCase().includes(busqueda.toLowerCase()) ||
           f.numero?.toString().includes(busqueda),
       )
-
-  const esBloqueada = (fig) => bloqueadas.some((b) => b.figuritaId === fig.figuritaId)
+  const getId = (fig) => fig.figuritaId ?? fig.id
+  const esBloqueada = (fig) => bloqueadas.some((b) => getId(b) === getId(fig))
   const estaSeleccionada = (fig) =>
-    esBloqueada(fig) || seleccionadas.some((f) => f.figuritaId === fig.figuritaId)
+    esBloqueada(fig) || seleccionadas.some((f) => getId(f) === getId(fig))
   const mostrandoParcial = totalDisponibles !== null && totalDisponibles > filtradas.length
 
   return (

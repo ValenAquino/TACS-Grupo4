@@ -19,8 +19,8 @@
 }
 
 .selector-tag.bloqueada {
-  background-color: color-mix(in srgb, #93c5fd 30%, transparent);
-  color: #1e40af;
+  background-color: color-mix(in srgb, var(--color-terciary) 15%, transparent);
+  color: var(--color-terciary);
 }
 
 .selector-tag-quitar {

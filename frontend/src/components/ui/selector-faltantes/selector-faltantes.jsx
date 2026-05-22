@@ -15,6 +15,7 @@ const SelectorFaltantes = ({ modo = 'multiple', onChange }) => {
     setLoading(true)
     try {
       const payload = await buscarFaltantes({ jugador: busqueda, pagina: 1, limite: LIMITE })
+      console.log(payload.contenido[0])
       setFiguritas(payload.contenido ?? [])
       setTotal(payload.cantidadDeElementos ?? null)
     } catch (e) {

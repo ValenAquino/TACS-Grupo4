@@ -4,6 +4,8 @@ import app.dto.EstadisticasDto;
 import app.dto.FiguritasPorModalidadDto;
 import app.dto.PropuestasPorEstadoDto;
 import app.dto.SeleccionCantidadDto;
+import app.dto.filtros.SubastasFiltro;
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.EstadoProceso;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
@@ -39,9 +41,9 @@ public class ServicioEstadisticas {
 
         int totalPropuestas = repositorioPropuestas.contar();
 
-        int totalSubastasActivas = (int) repositorioSubastas.buscarTodos().stream()
-                .filter(Subasta::estaActivo)
-                .count();
+        SubastasFiltro filtros = new SubastasFiltro(0, 20, null, null, "ACTIVA");
+
+        PaginaResultado<Subasta> totalSubastasActivas = repositorioSubastas.buscarTodos(filtros);
 
         PropuestasPorEstadoDto propuestasPorEstado = calcularPropuestasPorEstado();
         FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);
@@ -51,7 +53,7 @@ public class ServicioEstadisticas {
             totalUsuarios,
             totalFiguritasPublicadas,
             totalPropuestas,
-            totalSubastasActivas,
+            (int) totalSubastasActivas.cantidadDeElementos(),
             propuestasPorEstado,
             figuritasPorModalidad,
             topSelecciones

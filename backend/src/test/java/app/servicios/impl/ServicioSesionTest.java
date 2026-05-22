@@ -52,7 +52,8 @@ class ServicioSesionTest {
     Perfil perfil = mock(Perfil.class);
 
     when(repoUsuario.buscarPorNombre("juan")).thenReturn(usuario);
-    when(repoPerfiles.buscarPorUsuarioId("user-1")).thenReturn(perfil);
+    when(repoPerfiles.buscarPorUsuarioId(eq("user-1"), any()))
+        .thenReturn(perfil);
     when(servicioJwt.generarToken(usuario, perfil)).thenReturn("jwt-token");
 
     String token = servicioSesion.login(request);
@@ -60,7 +61,7 @@ class ServicioSesionTest {
     assertEquals("jwt-token", token);
 
     verify(repoUsuario).buscarPorNombre("juan");
-    verify(repoPerfiles).buscarPorUsuarioId("user-1");
+    verify(repoPerfiles).buscarPorUsuarioId(eq("user-1"), any());
     verify(servicioJwt).generarToken(usuario, perfil);
   }
 
@@ -83,7 +84,7 @@ class ServicioSesionTest {
       servicioSesion.login(request);
     });
 
-    verify(repoPerfiles, never()).buscarPorUsuarioId(any());
+    verify(repoPerfiles, never()).buscarPorUsuarioId(any(), any());
     verify(servicioJwt, never()).generarToken(any(), any());
   }
 

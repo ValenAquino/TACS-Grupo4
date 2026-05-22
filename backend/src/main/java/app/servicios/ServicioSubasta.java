@@ -14,6 +14,7 @@ import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,9 @@ import org.springframework.stereotype.Service;
 
     public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
                              List<String> figuritasDeseadasIds, Integer calificacionMinima) {
-      Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+      CamposPerfil sinCamposPerfil = new CamposPerfil(false);
+
+      Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId, sinCamposPerfil);
       Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
       List<Figurita> figuritasDeseadas = figuritasDeseadasIds.stream()
@@ -47,8 +50,9 @@ import org.springframework.stereotype.Service;
 
       this.repoSubasta.guardar(nuevaSubasta);
 
+      CamposPerfil conMedio = new CamposPerfil(true);
       List<Perfil> interesados = this.repositorioPerfiles
-          .buscarPorFiguritaFaltante(figuritaSubastada);
+          .buscarPorFiguritaFaltante(figuritaSubastada, conMedio);
 
       this.notificacionService.notificarInteresados(
           interesados, "Encontramos una subasta de una figurita que te falta!");
@@ -58,7 +62,7 @@ import org.springframework.stereotype.Service;
                                  String subastaId,
                                  List<String> rawFiguritasId
     ) {
-      Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
+      Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, new CamposPerfil(false));
       Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
       Perfil destinatario = subasta.getAutor();
 

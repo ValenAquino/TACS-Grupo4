@@ -17,6 +17,7 @@ import app.repositories.RepositorioPerfiles;
 import java.util.List;
 
 import app.repositories.impl.campos.CamposColeccion;
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class ServicioColeccion {
 
     this.repositorioColecciones.agregarRepetida(colId, repetida);
 
-    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
+    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita, new CamposPerfil(true));
 
     String cuerpo = "Nueva figurita disponible, Numero: " + figurita.getId() +
         ", Cantidad: " + cantidadExistente;

@@ -8,6 +8,7 @@ import app.model.entities.*;
 import java.util.List;
 
 import app.repositories.impl.campos.CamposColeccion;
+import app.repositories.impl.campos.CamposPerfil;
 import app.servicios.ServicioColeccion;
 import app.servicios.ServicioNotificacion;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,6 +80,6 @@ class ServicioColeccionTest extends MongoTestBase {
   void agregarRepetida_sinInteresados_noNotifica() {
     service.agregarRepetida(this.coleccion.getId(), "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
-    repositorioPerfiles.buscarTodos().forEach(p -> assertEquals(0, repositorioNotificaciones.buscarPorPerfil(p).size()));
+    repositorioPerfiles.buscarTodos(new CamposPerfil(false)).forEach(p -> assertEquals(0, repositorioNotificaciones.buscarPorPerfil(p).size()));
   }
 }

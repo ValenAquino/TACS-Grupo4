@@ -87,12 +87,11 @@ const CrearOferta = () => {
         <h6 className={'text-white'}>{subasta.figurita.seleccion}</h6>
       </div>
 
-      {/* Condiciones */}
       <SectionCard>
         <SectionTitle>CONDICIONES PARA OFERTAR</SectionTitle>
         <SectionCard.Section>
           <div className="d-flex flex-column gap-3">
-            {/* Figuritas requeridas */}
+
             <div className="d-flex flex-column gap-2">
               <p className={styles.crearOfertaLabel}>Figuritas requeridas</p>
               {subasta.figuritas_solicitadas.length > 0 ? (
@@ -119,7 +118,6 @@ const CrearOferta = () => {
               )}
             </div>
 
-            {/* Calificación mínima */}
             <div className={styles.crearOfertaCalificacionDivider}>
               <div>
                 <p className={styles.crearOfertaLabel}>Calificación mínima</p>

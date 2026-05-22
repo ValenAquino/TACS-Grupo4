@@ -9,22 +9,22 @@ const Indicador = ({ modo, seleccionada, sinStock, bloqueadaSinStock }) => {
       : seleccionada
         ? styles['seleccionado']
         : sinStock
-          ? 'sin-stock'
+          ? styles['sin-stock']
           : '',
   ].join(' ')
 
   if (modo === 'unica') {
     return (
       <div className={indicadorClass}>
-        {seleccionada && <div className="scroll-indicador-radio-dot" />}
+        {seleccionada && <div className={styles['scroll-indicador-radio-dot']} />}
       </div>
     )
   }
 
   return (
     <div className={indicadorClass}>
-      {seleccionada && !bloqueadaSinStock && <span className="scroll-indicador-check">✓</span>}
-      {bloqueadaSinStock && <span className="scroll-indicador-check">!</span>}
+      {seleccionada && !bloqueadaSinStock && <span className={styles['scroll-indicador-check']}>✓</span>}
+      {bloqueadaSinStock && <span className={styles['scroll-indicador-check']}>!</span>}
     </div>
   )
 }

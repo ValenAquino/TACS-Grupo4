@@ -4,6 +4,8 @@ import { crearSubasta } from '@/services/subastasService.js'
 import SelectorRepetidas from '@/components/ui/selector-repetidas/selector-repetidas.jsx'
 import SelectorFaltantes from '@/components/ui/selector-faltantes/selector-faltantes.jsx'
 import Button from '@/components/ui/button/button.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 import styles from './crear-subasta.module.css'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -24,7 +26,7 @@ const CALIFICACION_MIN_OPTS = [
   { label: '2+', value: 2 },
   { label: '3+', value: 3 },
   { label: '4+', value: 4 },
-  { label: '5',  value: 5 },
+  { label: '5', value: 5 },
 ]
 
 // ─── Paso 1: Figurita a subastar ──────────────────────────────────────────────
@@ -51,11 +53,17 @@ const PasoDuracion = ({ duracion, onCambiar }) => (
           onCambiar(isNaN(num) || num <= 0 ? null : num)
         }}
       />
-      <span className="text-muted" style={{ fontSize: '0.85rem' }}>horas</span>
+      <span className="text-muted" style={{ fontSize: '0.85rem' }}>
+        horas
+      </span>
     </div>
     {duracion && (
       <p className={styles['duracion-hint']}>
-        La subasta durará <strong>{duracion} {duracion === 1 ? 'hora' : 'horas'}</strong>.
+        La subasta durará{' '}
+        <strong>
+          {duracion} {duracion === 1 ? 'hora' : 'horas'}
+        </strong>
+        .
       </p>
     )}
   </div>
@@ -63,9 +71,13 @@ const PasoDuracion = ({ duracion, onCambiar }) => (
 
 // ─── Paso 3: Condiciones ──────────────────────────────────────────────────────
 
-const PasoCondiciones = ({ figuritasDeseadas, onCambiarFiguritas, calificacionMin, onCambiarCalificacion }) => (
+const PasoCondiciones = ({
+  figuritasDeseadas,
+  onCambiarFiguritas,
+  calificacionMin,
+  onCambiarCalificacion,
+}) => (
   <div className="d-flex flex-column gap-4">
-
     <div className="d-flex flex-column gap-2">
       <div>
         <p className={styles['condiciones-titulo']}>Figuritas que aceptás como oferta</p>
@@ -108,7 +120,6 @@ const PasoCondiciones = ({ figuritasDeseadas, onCambiarFiguritas, calificacionMi
           : `Solo usuarios con ${calificacionMin}★ o más pueden ofertar`}
       </p>
     </div>
-
   </div>
 )
 
@@ -130,9 +141,10 @@ const Resumen = ({ figurita, duracion, figuritasDeseadas, calificacionMin }) => 
     },
     {
       label: 'Figuritas deseadas',
-      valor: figuritasDeseadas.length > 0
-        ? figuritasDeseadas.map((f) => f.jugador).join(', ')
-        : 'Sin restricción',
+      valor:
+        figuritasDeseadas.length > 0
+          ? figuritasDeseadas.map((f) => f.jugador).join(', ')
+          : 'Sin restricción',
     },
     {
       label: 'Calificación mínima',
@@ -170,12 +182,13 @@ const PASOS = [
 const CrearSubasta = () => {
   const navigate = useNavigate()
 
-  const [figurita, setFigurita]               = useState(null)
-  const [duracion, setDuracion]               = useState(6)
+  const [figurita, setFigurita] = useState(null)
+  const [duracion, setDuracion] = useState(6)
   const [figuritasDeseadas, setFiguritasDeseadas] = useState([])
   const [calificacionMin, setCalificacionMin] = useState(1)
-  const [loading, setLoading]                 = useState(false)
-  const [error, setError]                     = useState(null)
+  const [loading, setLoading] = useState(false)
+  const { handleError } = useError()
+  const { showToast } = useToast()
 
   const handleFigurita = (seleccionadas) => setFigurita(seleccionadas[0] ?? null)
 
@@ -185,7 +198,6 @@ const CrearSubasta = () => {
     if (!puedePublicar) return
     try {
       setLoading(true)
-      setError(null)
       await crearSubasta({
         figurita_id: figurita.figuritaId,
         duracion_en_horas: duracion,
@@ -193,8 +205,8 @@ const CrearSubasta = () => {
         calificacion_minima: calificacionMin,
       })
       navigate('/subastas')
-    } catch {
-      setError('Ocurrió un error al publicar la subasta. Intentá de nuevo.')
+    } catch (e) {
+      handleError(e, (err) => showToast(err.mensaje, 'error'))
     } finally {
       setLoading(false)
     }
@@ -202,7 +214,6 @@ const CrearSubasta = () => {
 
   return (
     <main className={styles.page}>
-
       <div>
         <h1 className={styles['header-titulo']}>Crear subasta</h1>
         <p className={styles['header-subtitulo']}>Completá los pasos para publicar tu figurita</p>
@@ -239,12 +250,6 @@ const CrearSubasta = () => {
         calificacionMin={calificacionMin}
       />
 
-      {error && (
-        <div className="alert alert-danger py-2" style={{ fontSize: '0.85rem' }}>
-          {error}
-        </div>
-      )}
-
       <div className={styles.acciones}>
         <Button label="Cancelar" variant="secondary" onClick={() => navigate(-1)} />
         <Button
@@ -253,7 +258,6 @@ const CrearSubasta = () => {
           onClick={handlePublicar}
         />
       </div>
-
     </main>
   )
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { buscarRepetidas } from '@/services/coleccionService.js'
 import ScrollFiguritas from './scroll-figuritas/scroll-figuritas.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 import styles from './selector-repetidas.module.css'
 
 const LIMITE = 10
@@ -10,6 +12,8 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
   const [loading, setLoading] = useState(false)
   const [seleccionadas, setSeleccionadas] = useState([])
   const [total, setTotal] = useState(null)
+  const { handleError } = useError()
+  const { showToast } = useToast()
 
   const fetchRepetidas = useCallback(async (busqueda = '') => {
     setLoading(true)
@@ -18,6 +22,7 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
       setFiguritas(payload.contenido ?? [])
       setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {
+      handleError(e, (err) => showToast(err.mensaje, 'error'))
     } finally {
       setLoading(false)
     }

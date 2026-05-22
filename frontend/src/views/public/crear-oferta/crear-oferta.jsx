@@ -7,6 +7,8 @@ import SectionTitle from '@/components/ui/section-title/section-title.jsx'
 import SectionCard from '@/components/ui/section-card/section-card.jsx'
 import SelectorRepetidas from '@/components/ui/selector-repetidas/selector-repetidas.jsx'
 import Button from '@/components/ui/button/button.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 import styles from './crear-oferta.module.css'
 
 const obtenerBloqueadas = (repetidas, figuritasSolicitadas) => {
@@ -32,6 +34,8 @@ const CrearOferta = () => {
   const [calificacionUsuario, setCalificacion] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [figuritasExtra, setFiguritasExtra] = useState([])
+  const { handleError } = useError()
+  const { showToast } = useToast()
 
   useEffect(() => {
     const cargar = async () => {
@@ -45,8 +49,8 @@ const CrearOferta = () => {
         setSubasta(payloadSubasta)
         setRepetidas(payloadRepetidas ?? [])
         setCalificacion(payloadPerfil?.calificacion_media ?? null)
-      } catch (error) {
-        console.error('Error al cargar datos:', error)
+      } catch (e) {
+        handleError(e, (err) => showToast(err.mensaje, 'error'))
       } finally {
         setCargando(false)
       }
@@ -91,7 +95,6 @@ const CrearOferta = () => {
         <SectionTitle>CONDICIONES PARA OFERTAR</SectionTitle>
         <SectionCard.Section>
           <div className="d-flex flex-column gap-3">
-
             <div className="d-flex flex-column gap-2">
               <p className={styles.crearOfertaLabel}>Figuritas requeridas</p>
               {subasta.figuritas_solicitadas.length > 0 ? (

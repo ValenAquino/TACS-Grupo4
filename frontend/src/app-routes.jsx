@@ -96,7 +96,7 @@ const privates = [
     element: <Subastas />,
   },
   {
-    path: '/subastas/:subId/crearOferta',
+    path: '/subastas/:subId/crear-oferta',
     element: <CrearOferta />,
   },
 ]

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { buscarFaltantes } from '@/services/coleccionService.js'
 import ScrollFiguritas from '../selector-repetidas/scroll-figuritas/scroll-figuritas.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 import styles from './selector-faltantes.module.css'
 
 const LIMITE = 10
@@ -10,16 +12,17 @@ const SelectorFaltantes = ({ modo = 'multiple', onChange }) => {
   const [total, setTotal] = useState(null)
   const [loading, setLoading] = useState(false)
   const [seleccionadas, setSeleccionadas] = useState([])
+  const { handleError } = useError()
+  const { showToast } = useToast()
 
   const fetchFaltantes = useCallback(async (busqueda = '') => {
     setLoading(true)
     try {
       const payload = await buscarFaltantes({ jugador: busqueda, pagina: 1, limite: LIMITE })
-      console.log(payload.contenido[0])
       setFiguritas(payload.contenido ?? [])
-      setTotal(payload.cantidadDeElementos ?? null)
+      setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {
-      console.error(e)
+      handleError(e, (err) => showToast(err.mensaje, 'error'))
     } finally {
       setLoading(false)
     }

@@ -5,25 +5,33 @@ import SectionCard from '@/components/ui/section-card/section-card.jsx'
 import SectionTitle from '@/components/ui/section-title/section-title.jsx'
 import SelectorRepetidas from '@/components/ui/selector-repetidas/selector-repetidas.jsx'
 import Button from '@/components/ui/button/button.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 import styles from './crear-propuesta-intercambio.module.css'
 
 const CrearPropuestaIntercambio = () => {
   const { state } = useLocation()
   const navigate = useNavigate()
   const figurita = state?.figurita
-  console.log(figurita)
 
   const [seleccionadas, setSeleccionadas] = useState([])
+
+  const { handleError } = useError()
+  const { showToast } = useToast()
 
   if (!figurita) return <h2>No se pudo cargar la figurita.</h2>
 
   const onEnviar = async () => {
-    await crearPropuesta(
-      figurita.usuarioId,
-      figurita.figuritaId,
-      seleccionadas.map((f) => f.figuritaId),
-    )
-    navigate('/intercambios')
+    try {
+      await crearPropuesta(
+        figurita.usuarioId,
+        figurita.figuritaId,
+        seleccionadas.map((f) => f.figuritaId),
+      )
+      navigate('/intercambios')
+    } catch (e) {
+      handleError(e, (err) => showToast(err.mensaje, 'error'))
+    }
   }
 
   return (

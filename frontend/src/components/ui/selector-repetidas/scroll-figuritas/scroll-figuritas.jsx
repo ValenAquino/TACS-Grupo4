@@ -85,7 +85,7 @@ const ScrollFiguritas = ({
           ) : (
             filtradas.map((fig) => (
               <FilaScroll
-                key={fig.figurita_id}
+                key={getId(fig)}
                 fig={fig}
                 modo={modo}
                 bloqueada={esBloqueada(fig)}

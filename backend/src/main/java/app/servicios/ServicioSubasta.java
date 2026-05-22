@@ -7,12 +7,8 @@ import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
-import app.model.entities.EstadoProceso;
-import app.model.entities.EstadoPropuesta;
-import app.model.entities.Figurita;
-import app.model.entities.Perfil;
-import app.model.entities.Propuesta;
-import app.model.entities.Subasta;
+import app.model.entities.*;
+import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
@@ -224,7 +220,16 @@ import org.springframework.stereotype.Service;
 
       if(filtros.participanteId() != null) {
         return new PaginaResultado<>(
-            resultado.contenido().stream().map(s -> new SubastaParticipoDto(s, obtenerOferta(s, filtros.participanteId()))).toList(),
+            resultado.contenido().stream().map(s -> {
+                  boolean yaCalifico = this.repoCalificacion.yaCalifico(
+                      s.getAutor().getId(),
+                      filtros.participanteId(),
+                      s.getId(),
+                      MetodoIntercambio.SUBASTA
+                  );
+                  return new SubastaParticipoDto(s, obtenerOferta(s, filtros.participanteId()), yaCalifico);
+            }
+            ).toList(),
             resultado.cantidadDeElementos(),
             resultado.cantidadDePaginas(),
             resultado.numero());
@@ -238,8 +243,6 @@ import org.springframework.stereotype.Service;
     }
 
     private Propuesta obtenerOferta(Subasta subasta, String perfilId) {
-
-    private Propuesta obtenerOferta(Subasta subasta, String userId) {
       return subasta.getOfertas().stream()
           .filter(p -> p.getAutor().getId().equals(perfilId))
           .findFirst()

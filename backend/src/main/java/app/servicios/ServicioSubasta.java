@@ -190,7 +190,7 @@ import org.springframework.stereotype.Service;
           .map(s -> {
             boolean yaCalifico = this.repoCalificacion.yaCalifico(
                 s.getAutor().getId(),
-                this.obtenerOferta(s, perfilId).getId(),
+                perfilId,
                 s.getId(),
                 MetodoIntercambio.SUBASTA
               );

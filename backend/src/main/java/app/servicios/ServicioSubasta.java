@@ -7,6 +7,7 @@ import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
+import app.exceptions.NotFoundException;
 import app.model.entities.*;
 import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioFiguritas;
@@ -204,7 +205,7 @@ import org.springframework.stereotype.Service;
       return subasta.getOfertas().stream()
           .filter(p -> p.getAutor().getId().equals(perfilId))
           .findFirst()
-          .get();
+          .orElseThrow(() -> new NotFoundException("No se encontró oferta del perfil " + perfilId + " en la subasta " + subasta.getId()));
     }
 
     public SubastaDto obtenerSubasta(String subastaId) {

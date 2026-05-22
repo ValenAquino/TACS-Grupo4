@@ -2,19 +2,23 @@ package app.repositories;
 
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Subasta;
+import app.repositories.impl.campos.CamposSubasta;
+
 import java.util.List;
 
 public interface RepositorioSubastas {
 
-    List<Subasta> buscarTodos();
+    List<Subasta> buscarTodos(CamposSubasta campos);
 
-    Subasta buscarPorId(String id);
+    Subasta buscarPorId(String id, CamposSubasta campos);
 
-    List<Subasta> buscarDondeParticipa(String userId);
+    List<Subasta> buscarDondeParticipa(String userId, CamposSubasta campos);
 
     int contar();
 
     void guardar(Subasta subasta);
 
-    PaginaResultado<Subasta> buscarPorAutor(String perfilId, Integer pagina, Integer limite);
+    void guardar(Subasta subasta, CamposSubasta campos);
+
+    PaginaResultado<Subasta> buscarPorAutor(String perfilId, Integer pagina, Integer limite, CamposSubasta campos);
 }

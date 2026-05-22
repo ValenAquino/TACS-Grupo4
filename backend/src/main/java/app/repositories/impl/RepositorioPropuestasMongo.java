@@ -34,19 +34,6 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
             Criteria.where("autor.id").is(perfilId)
         );
 
-//        if (filtros.estado() != null) {
-//            query.addCriteria(
-//                Criteria.expr(
-//                    MongoExpression.create(
-//                        "{ $eq: [ " +
-//                            "{ $arrayElemAt: ['$estado.estadoProceso', -1] }, " +
-//                            "'" + filtros.estado().name() + "'" +
-//                            "] }"
-//                    )
-//                )
-//            );
-//        }
-
         long count = mongoTemplate.count(query, Propuesta.class);
 
         query.skip((long) filtros.pagina() * filtros.limite());

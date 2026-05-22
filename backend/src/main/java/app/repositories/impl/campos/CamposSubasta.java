@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CamposPerfil {
-  Boolean conMedioDeContacto;
+public class CamposSubasta {
+  Boolean solicitadas;
+  Boolean ofertadas;
 }

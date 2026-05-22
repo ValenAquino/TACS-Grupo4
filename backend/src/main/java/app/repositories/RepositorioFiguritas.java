@@ -10,6 +10,8 @@ public interface RepositorioFiguritas {
   /** @throws app.exceptions.NotFoundException si no existe figurita con ese id */
   Figurita buscarPorId(String id);
 
+
+  List<Figurita> buscarPorIds(List<String> ids);
   /**
    * Retorna las figuritas que cumplan los filtros provistos.
    * Los parámetros nulos se ignoran. {@code jugador} usa contains case-insensitive.

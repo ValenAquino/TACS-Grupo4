@@ -232,12 +232,6 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
   }
 
   private Perfil normalizar(Perfil perfil) {
-    if(perfil.getColeccion().getRepetidas() == null) {
-      perfil.getColeccion().setRepetidas(new ArrayList<>());
-    }
-    if(perfil.getColeccion().getFaltantes() == null) {
-      perfil.getColeccion().setFaltantes(new ArrayList<>());
-    }
     if(perfil.getMediosDeContacto() == null) {
       perfil.setMediosDeContacto(new ArrayList<>());
     }

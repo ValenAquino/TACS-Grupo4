@@ -14,6 +14,7 @@ import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposSubasta;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,7 @@ class RepositorioSubastasTest extends MongoTestBase {
         repositorioSubastas.guardar(s1);
         repositorioSubastas.guardar(s2);
 
-        PaginaResultado<Subasta> resultado = repositorioSubastas.buscarPorAutor(p1.getId(), 0, 10);
+        PaginaResultado<Subasta> resultado = repositorioSubastas.buscarPorAutor(p1.getId(), 0, 10, new CamposSubasta(true, true));
 
         assertEquals(1, resultado.contenido().size());
         assertEquals("s-1", resultado.contenido().get(0).getId());
@@ -82,6 +83,6 @@ class RepositorioSubastasTest extends MongoTestBase {
 
     @Test
     void findByUsuarioId_sinResultados_retornaListaVacia() {
-        assertTrue(repositorioSubastas.buscarPorAutor(new ObjectId().toString(), 1, 10).contenido().isEmpty());
+        assertTrue(repositorioSubastas.buscarPorAutor(new ObjectId().toString(), 1, 10, new CamposSubasta(true, true)).contenido().isEmpty());
     }
 }

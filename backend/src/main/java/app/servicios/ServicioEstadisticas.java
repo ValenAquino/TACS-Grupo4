@@ -13,6 +13,7 @@ import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
 import app.repositories.impl.campos.CamposPerfil;
+import app.repositories.impl.campos.CamposSubasta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class ServicioEstadisticas {
 
         int totalPropuestas = repositorioPropuestas.contar();
 
-        int totalSubastasActivas = (int) repositorioSubastas.buscarTodos().stream()
+        int totalSubastasActivas = (int) repositorioSubastas.buscarTodos(new CamposSubasta(true, true)).stream()
                 .filter(Subasta::estaActivo)
                 .count();
 

@@ -40,8 +40,6 @@ public class Propuesta {
     private List<EstadoPropuesta> estado= new ArrayList<>(
         List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))
     );
-    //Valído que no este pendiente y que solo lo pueda aceptar el usuario Correspondiente.
-    //Chequear si eso está bien o no es necesario.
 
     /**
      * Retorna el estado más reciente de la propuesta. Si la lista está vacía
@@ -64,6 +62,7 @@ public class Propuesta {
     public void aceptar(String perfilId) {
         validarUsuarioDestino(perfilId);
         validarPendiente();
+        ejecutarIntercambio();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
     }
 
@@ -95,6 +94,17 @@ public class Propuesta {
         this.validarUsuarioAutor(perfilId);
         validarPendiente();
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
+    }
+
+    public void ejecutarIntercambio() {
+        this.getFiguritasOfrecidas()
+            .forEach(f -> this.destinatario.getColeccion().eliminarFaltante(f));
+        this.destinatario.getColeccion()
+            .descontarRepetida(this.getFiguritaBuscada());
+
+        this.getFiguritasOfrecidas()
+            .forEach(f -> this.autor.getColeccion().descontarRepetida(f));
+        this.autor.getColeccion().eliminarFaltante(this.getFiguritaBuscada());
     }
 
     private void validarPendiente() {

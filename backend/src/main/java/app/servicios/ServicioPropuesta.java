@@ -4,7 +4,6 @@ import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
-import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
@@ -90,12 +89,22 @@ public class ServicioPropuesta {
   public void rechazar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.rechazar(perfilId);
+
+    Perfil autor = propuesta.getAutor();;
+
+    repositorioColecciones.guardar(autor.getColeccion());
+
     repositorioPropuestas.guardar(propuesta);
   }
 
   public void cancelar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.cancelar(perfilId);
+
+    Perfil autor = propuesta.getAutor();;
+
+    repositorioColecciones.guardar(autor.getColeccion());
+
     this.repositorioPropuestas.guardar(propuesta);
   }
 

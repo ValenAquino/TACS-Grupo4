@@ -130,6 +130,12 @@ class PropuestaTest {
 
   @Test
   void deberiaRechazarPropuestaPendiente() {
+
+    origen.getColeccion()
+        .getRepetidas()
+        .get(0)
+        .reservar(MetodoIntercambio.INTERCAMBIO);
+
     propuesta.rechazar(destino.getId());
 
     assertEquals(
@@ -150,6 +156,12 @@ class PropuestaTest {
 
   @Test
   void deberiaCancelarPropuestaPendiente() {
+
+    origen.getColeccion()
+        .getRepetidas()
+        .get(0)
+        .reservar(MetodoIntercambio.INTERCAMBIO);
+
     propuesta.cancelar(origen.getId());
 
     assertEquals(
@@ -197,6 +209,12 @@ class PropuestaTest {
   @Test
   void noDebeAceptarPropuestaYaRespondida() {
 
+    origen.getColeccion()
+        .getRepetidas()
+        .get(0)
+        .reservar(MetodoIntercambio.INTERCAMBIO);
+
+
     propuesta.rechazar(destino.getId());
 
     assertThrows(
@@ -237,6 +255,81 @@ class PropuestaTest {
     assertFalse(
         destino.getColeccion()
             .tieneFaltante(diMaria)
+    );
+  }
+
+
+  @Test
+  void noDebeCancelarPropuestaYaRespondida() {
+
+    origen.getColeccion()
+        .getRepetidas()
+        .get(0)
+        .reservar(MetodoIntercambio.INTERCAMBIO);
+
+
+    propuesta.rechazar(destino.getId());
+
+    assertThrows(
+        BadRequestException.class,
+        () -> propuesta.cancelar(origen.getId())
+    );
+  }
+
+  @Test
+  void noDebeRechazarPropuestaYaRespondida() {
+
+    propuesta.aceptar(destino.getId());
+
+    assertThrows(
+        BadRequestException.class,
+        () -> propuesta.rechazar(destino.getId())
+    );
+  }
+
+  @Test
+  void rechazarLiberaReservasDeFiguritasOfrecidas() {
+
+    FiguritaIntercambiable repetida =
+        origen.getColeccion()
+            .getRepetidas()
+            .get(0);
+
+    repetida.reservar(MetodoIntercambio.INTERCAMBIO);
+
+    assertEquals(
+        1,
+        repetida.getCantidadReservada()
+    );
+
+    propuesta.rechazar(destino.getId());
+
+    assertEquals(
+        0,
+        repetida.getCantidadReservada()
+    );
+  }
+
+  @Test
+  void cancelarLiberaReservasDeFiguritasOfrecidas() {
+
+    FiguritaIntercambiable repetida =
+        origen.getColeccion()
+            .getRepetidas()
+            .get(0);
+
+    repetida.reservar(MetodoIntercambio.INTERCAMBIO);
+
+    assertEquals(
+        1,
+        repetida.getCantidadReservada()
+    );
+
+    propuesta.cancelar(origen.getId());
+
+    assertEquals(
+        0,
+        repetida.getCantidadReservada()
     );
   }
 }

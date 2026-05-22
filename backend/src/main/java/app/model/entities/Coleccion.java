@@ -111,11 +111,24 @@ public class Coleccion {
         .isEmpty();
   }
 
-
+  /**
+   * Reserva la lista de figuritas dadas.
+   */
   public void reservarRepetidas(List<Figurita> repetidas, MetodoIntercambio metodo) {
     repetidas.forEach(figurita -> {
       if (tieneRepetida(figurita)) {
         obtenerRepetida(figurita).reservar(metodo);
+      }
+    });
+  }
+
+  /**
+   * Elimina la reserva de la lista de figuritas dadas.
+   */
+  public void sacarReservasRepetidas(List<Figurita> repetidas) {
+    repetidas.forEach(figurita -> {
+      if (tieneRepetida(figurita)) {
+        obtenerRepetida(figurita).eliminarReserva();
       }
     });
   }

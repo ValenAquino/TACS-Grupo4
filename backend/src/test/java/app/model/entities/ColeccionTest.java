@@ -249,4 +249,96 @@ class ColeccionTest {
         repetida.getCantidadReservada()
     );
   }
+
+  @Test
+  void sacarReservasRepetidas_reduceReservadas() {
+    Coleccion coleccion = new Coleccion("10");
+
+    FiguritaIntercambiable repetida =
+        new FiguritaIntercambiable(
+            messi,
+            3,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        );
+
+    coleccion.agregarRepetida(repetida);
+
+    coleccion.reservarRepetidas(
+        List.of(messi),
+        MetodoIntercambio.INTERCAMBIO
+    );
+
+    coleccion.sacarReservasRepetidas(
+        List.of(messi)
+    );
+
+    assertEquals(
+        0,
+        repetida.getCantidadReservada()
+    );
+  }
+
+  @Test
+  void sacarReservasRepetidas_conVariasFiguritas_reduceTodasLasReservas() {
+    Coleccion coleccion = new Coleccion("10");
+
+    FiguritaIntercambiable repetidaMessi =
+        new FiguritaIntercambiable(
+            messi,
+            3,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        );
+
+    FiguritaIntercambiable repetidaDiMaria =
+        new FiguritaIntercambiable(
+            diMaria,
+            3,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        );
+
+    coleccion.agregarRepetida(repetidaMessi);
+    coleccion.agregarRepetida(repetidaDiMaria);
+
+    coleccion.reservarRepetidas(
+        List.of(messi, diMaria),
+        MetodoIntercambio.INTERCAMBIO
+    );
+
+    coleccion.sacarReservasRepetidas(
+        List.of(messi, diMaria)
+    );
+
+    assertEquals(
+        0,
+        repetidaMessi.getCantidadReservada()
+    );
+
+    assertEquals(
+        0,
+        repetidaDiMaria.getCantidadReservada()
+    );
+  }
+
+  @Test
+  void sacarReservasRepetidas_figutitaInexistente_noHaceNada() {
+    Coleccion coleccion = new Coleccion("10");
+
+    FiguritaIntercambiable repetida =
+        new FiguritaIntercambiable(
+            messi,
+            3,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        );
+
+    coleccion.agregarRepetida(repetida);
+
+    coleccion.sacarReservasRepetidas(
+        List.of(diMaria)
+    );
+
+    assertEquals(
+        0,
+        repetida.getCantidadReservada()
+    );
+  }
 }

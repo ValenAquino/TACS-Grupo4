@@ -30,9 +30,13 @@ class RepositorioPerfilesTest extends MongoTestBase {
     void buscarPorFiguritaFaltanteDevuelve2() {
         Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
         repositorioUsuarios.guardar(user);
-        Coleccion coleccion1 = new Coleccion("c-1");
-        Coleccion coleccion2 = new Coleccion("c-2");
-        Coleccion coleccion3 = new Coleccion("c-3");
+        Coleccion coleccion1 = new Coleccion();
+        Coleccion coleccion2 = new Coleccion();
+        Coleccion coleccion3 = new Coleccion();
+
+        repositorioColecciones.guardar(coleccion1);
+        repositorioColecciones.guardar(coleccion2);
+        repositorioColecciones.guardar(coleccion3);
 
         Perfil perfil = Perfil.builder()
             .id("u-1").usuario(user).nombre("Lucas")

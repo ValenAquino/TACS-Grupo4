@@ -7,6 +7,7 @@ import app.exceptions.BadRequestException;
 import app.model.entities.*;
 import java.util.List;
 
+import app.repositories.impl.campos.CamposColeccion;
 import app.servicios.ServicioColeccion;
 import app.servicios.ServicioNotificacion;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,16 +33,16 @@ class ServicioColeccionTest extends MongoTestBase {
 
     repositorioFiguritas.guardar(messi);
 
-    coleccion = new Coleccion("col-1");
+    coleccion = new Coleccion();
     repositorioColecciones.guardar(coleccion);
   }
 
   @Test
   void agregarFaltante_agregaFiguritaAColeccion() {
-    service.agregarFaltante("col-1", "ARG-10");
+    service.agregarFaltante(coleccion.getId(), "ARG-10");
 
-    assertEquals(1, repositorioColecciones.buscarPorId("col-1").getFaltantes().size());
-    assertEquals(messi.getId(), repositorioColecciones.buscarPorId("col-1").getFaltantes().get(0).getId());
+    assertEquals(1, repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false)).getFaltantes().size());
+    assertEquals(messi.getId(), repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false)).getFaltantes().get(0).getId());
   }
 
   @Test
@@ -50,14 +51,14 @@ class ServicioColeccionTest extends MongoTestBase {
     repositorioColecciones.guardar(coleccion);
 
     assertThrows(BadRequestException.class,
-        () -> service.agregarFaltante("col-1", "ARG-10"));
+        () -> service.agregarFaltante(coleccion.getId(), "ARG-10"));
   }
 
   @Test
   void agregarRepetida_agregaFiguritaYNotificaInteresados() {
     Usuario user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
     repositorioUsuarios.guardar(user);
-    Coleccion coleccion2 = new Coleccion("col-2");
+    Coleccion coleccion2 = new Coleccion();
     coleccion2.agregarFaltante(messi);
     repositorioColecciones.guardar(coleccion2);
     Perfil interesado = Perfil.builder()
@@ -66,9 +67,9 @@ class ServicioColeccionTest extends MongoTestBase {
         .build();
     repositorioPerfiles.guardar(interesado);
 
-    service.agregarRepetida("col-1",  "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
+    service.agregarRepetida(this.coleccion.getId(),  "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
-    Coleccion coleccion = repositorioColecciones.buscarPorId("col-1");
+    Coleccion coleccion = repositorioColecciones.buscarPorId(this.coleccion.getId(), new CamposColeccion(true, false));
 
     assertEquals(1, coleccion.getRepetidas().size());
     assertEquals(1, repositorioNotificaciones.buscarPorPerfil(interesado).size());
@@ -76,7 +77,7 @@ class ServicioColeccionTest extends MongoTestBase {
 
   @Test
   void agregarRepetida_sinInteresados_noNotifica() {
-    service.agregarRepetida("col-1", "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
+    service.agregarRepetida(this.coleccion.getId(), "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     repositorioPerfiles.buscarTodos().forEach(p -> assertEquals(0, repositorioNotificaciones.buscarPorPerfil(p).size()));
   }

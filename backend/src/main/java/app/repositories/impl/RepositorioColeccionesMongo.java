@@ -11,7 +11,10 @@ import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.FiguritasFiltro;
 import app.dto.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
+import app.repositories.impl.campos.CamposColeccion;
 import com.mongodb.DBRef;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,6 +24,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -31,18 +35,44 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   @Autowired
   private MongoTemplate mongoTemplate;
 
+  private int limiteLista = 5;
+
   public void guardar(Coleccion coleccion) {
-    mongoTemplate.save(coleccion);
+    if (coleccion.getId() == null) {
+      mongoTemplate.save(coleccion);
+    } else {
+      Update update = new Update();
+
+      for (FiguritaIntercambiable repetida : coleccion.getRepetidas()) {
+        update.push("repetidas", repetida);
+      }
+
+      for (Figurita faltante : coleccion.getFaltantes()) {
+        update.push("faltantes", faltante);
+      }
+
+      if (!update.getUpdateObject().isEmpty()) {
+        mongoTemplate.updateFirst(
+            Query.query(Criteria.where("_id").is(coleccion.getId())),
+            update,
+            Coleccion.class
+        );
+      }
+    }
   }
 
-  public Coleccion buscarPorId(String colId){
-    Coleccion coleccion = mongoTemplate.findById(colId, Coleccion.class);
+  public Coleccion buscarPorId(String colId, CamposColeccion campos) {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id").is(colId));
+    this.conCamposCargados(query, campos);
+
+    Coleccion coleccion = mongoTemplate.findOne(query, Coleccion.class);
 
     if(coleccion == null) {
       throw new NotFoundException("No se encontro la coleccion");
     }
 
-    return coleccion;
+    return this.normalizar(coleccion);
   }
 
   public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
@@ -175,11 +205,6 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     return new PaginaResultado<>(contenido, count, (int) Math.ceil((double) count / limite), pagina);
   }
 
-  private Integer parseNumero(String termino) {
-    try { return Integer.parseInt(termino); }
-    catch (NumberFormatException e) { return null; }
-  }
-
   @Override
   public List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds) {
     List<AggregationOperation> ops = new ArrayList<>();
@@ -208,6 +233,29 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
 
     AggregationResults<Document> figuritas = this.buscarCampoEnColeccion(colId, "repetidas", new ArrayList<>(), 1,100);
     return this.mapearADominio(figuritas);
+  }
+
+  private void conCamposCargados(Query query, CamposColeccion campos) {
+    if(campos.getConRepetidas()) {
+      query.fields().slice("repetidas", limiteLista);
+    } else {
+      query.fields().exclude("repetidas");
+    }
+    if(campos.getConFaltantes()) {
+      query.fields().slice("faltantes", limiteLista);
+    } else {
+      query.fields().exclude("faltantes");
+    }
+  }
+
+  private Coleccion normalizar(Coleccion coleccion) {
+    if(coleccion.getRepetidas() == null) {
+      coleccion.setRepetidas(new ArrayList<>());
+    }
+    if(coleccion.getFaltantes() == null) {
+      coleccion.setFaltantes(new ArrayList<>());
+    }
+    return coleccion;
   }
 
   private int contarCampoEnColeccion(String colId, String campo, List<AggregationOperation> ops) {
@@ -276,5 +324,10 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
         .stream()
         .map(doc -> converter.read(FiguritaIntercambiable.class, doc))
         .toList();
+  }
+
+  private Integer parseNumero(String termino) {
+    try { return Integer.parseInt(termino); }
+    catch (NumberFormatException e) { return null; }
   }
 }

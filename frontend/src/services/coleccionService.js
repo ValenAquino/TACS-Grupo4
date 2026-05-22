@@ -2,14 +2,14 @@ import { api, handleAxiosError } from './api.js'
 
 const COLECCIONES_URL = '/colecciones'
 
-export const buscarFaltantes = async (filtros) => {
-  try {
-    const { data } = await api.get(`${COLECCIONES_URL}/faltantes`, { params: filtros })
-    return data
-  } catch (error) {
-    handleAxiosError(error)
-  }
-}
+// export const buscarFaltantes = async (filtros) => {
+//   try {
+//     const { data } = await api.get(`${COLECCIONES_URL}/faltantes`, { params: filtros })
+//     return data
+//   } catch (error) {
+//     handleAxiosError(error)
+//   }
+// }
 
 // export const buscarRepetidas = async (filtros) => {
 //     try {
@@ -23,7 +23,35 @@ export const buscarFaltantes = async (filtros) => {
 //         handleAxiosError(error);
 //     }
 // };
+export const buscarFaltantes = async (filtros) => {
+  const { jugador = '', pagina = 1, limite = 10 } = filtros ?? {}
 
+  const todas = [
+    { id: 'ARG-1', numero: 1, jugador: 'Emiliano Martínez', seleccion: 'Argentina' },
+    { id: 'ARG-2', numero: 2, jugador: 'Nahuel Molina', seleccion: 'Argentina' },
+    { id: 'ARG-3', numero: 3, jugador: 'Cristian Romero', seleccion: 'Argentina' },
+    { id: 'BRA-1', numero: 1, jugador: 'Alisson', seleccion: 'Brasil' },
+    { id: 'BRA-2', numero: 2, jugador: 'Danilo', seleccion: 'Brasil' },
+    { id: 'FRA-1', numero: 1, jugador: 'Hugo Lloris', seleccion: 'Francia' },
+    { id: 'FRA-2', numero: 2, jugador: 'Kylian Mbappé', seleccion: 'Francia' },
+  ]
+
+  const filtradas = jugador
+    ? todas.filter((f) => f.jugador.toLowerCase().includes(jugador.toLowerCase()))
+    : todas
+
+  const inicio = (pagina - 1) * limite
+  const contenido = filtradas.slice(inicio, inicio + limite)
+
+  await new Promise((res) => setTimeout(res, 400))
+
+  return {
+    contenido,
+    cantidadDeElementos: filtradas.length,
+    cantidadDePaginas: Math.ceil(filtradas.length / limite),
+    numero: limite,
+  }
+}
 export const buscarRepetidas = async (filtros) => {
   const { jugador = '', pagina = 1, limite = 10 } = filtros ?? {}
 

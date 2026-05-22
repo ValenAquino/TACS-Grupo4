@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { crearSubasta } from '../../../services/subastasService.js'
 import { useNavigate } from 'react-router'
 import useUsuarioActual from '../../../hooks/useUsuarioActual.js'
-import ScrollRepetidas from '../../../components/ui/selector-repetidas/scroll-repetidas/scroll-repetidas.jsx'
+import ScrollRepetidas from '../../../components/ui/selector-repetidas/scroll-figuritas/scroll-figuritas.jsx'
 import ScrollFaltantes from '../../../components/ui/scroll-faltantes/scroll-faltantes.jsx'
 
 const calcularCierreEstimado = (horas) => {

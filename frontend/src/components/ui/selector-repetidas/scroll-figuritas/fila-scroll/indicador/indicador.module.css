@@ -18,6 +18,7 @@
 
 .scroll-indicador.seleccionado {
     border-color: var(--color-secondary);
+    background-color: var(--color-secondary);
 }
 
 .scroll-indicador.sin-stock {

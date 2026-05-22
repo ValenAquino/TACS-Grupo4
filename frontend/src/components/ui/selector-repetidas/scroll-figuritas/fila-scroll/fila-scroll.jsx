@@ -4,8 +4,11 @@ import InsigniaFila from './insignia-fila/insignia-fila'
 import styles from './fila-scroll.module.css'
 
 const FilaScroll = ({ fig, modo, bloqueada, seleccionada, onToggle }) => {
-  const disponibles = fig.cantidadExistente - fig.cantidadReservada - (seleccionada ? 1 : 0)
-  const sinStock = disponibles <= 0
+  const tieneCantidad = fig.cantidadExistente !== undefined
+  const disponibles = tieneCantidad
+    ? fig.cantidadExistente - fig.cantidadReservada - (seleccionada ? 1 : 0)
+    : null
+  const sinStock = tieneCantidad ? disponibles <= 0 : false
   const bloqueadaSinStock = bloqueada && sinStock
   const deshabilitado = bloqueada || sinStock
 
@@ -33,14 +36,16 @@ const FilaScroll = ({ fig, modo, bloqueada, seleccionada, onToggle }) => {
         bloqueadaSinStock={bloqueadaSinStock}
       />
       <FiguritaInfo fig={fig} opaco={sinStock && !bloqueada} />
-      <InsigniaFila
-        fig={fig}
-        bloqueada={bloqueada}
-        bloqueadaSinStock={bloqueadaSinStock}
-        seleccionada={seleccionada}
-        sinStock={sinStock}
-        disponibles={disponibles}
-      />
+      {tieneCantidad && (
+        <InsigniaFila
+          fig={fig}
+          bloqueada={bloqueada}
+          bloqueadaSinStock={bloqueadaSinStock}
+          seleccionada={seleccionada}
+          sinStock={sinStock}
+          disponibles={disponibles}
+        />
+      )}
     </button>
   )
 }

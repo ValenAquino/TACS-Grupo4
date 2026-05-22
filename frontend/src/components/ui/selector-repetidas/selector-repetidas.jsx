@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { buscarRepetidas } from '@/services/coleccionService.js'
-import ScrollRepetidas from './scroll-repetidas/scroll-repetidas.jsx'
+import ScrollFiguritas from './scroll-figuritas/scroll-figuritas.jsx'
 import styles from './selector-repetidas.module.css'
 
 const LIMITE = 10
@@ -50,7 +50,7 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
 
   return (
     <div className="d-flex flex-column gap-3">
-      <ScrollRepetidas
+      <ScrollFiguritas
         figuritas={figuritas}
         loading={loading}
         totalDisponibles={total}
@@ -59,6 +59,8 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
         seleccionadas={seleccionadas}
         onToggle={toggle}
         bloqueadas={bloqueadas}
+        titulo="Tus repetidas"
+        placeholder="Buscar en tus repetidas..."
       />
 
       {todasVisibles.length > 0 && (

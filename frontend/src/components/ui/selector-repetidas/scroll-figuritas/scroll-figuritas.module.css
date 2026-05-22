@@ -1,8 +1,8 @@
-.scroll-repetidas-buscador {
+.scroll-figuritas-buscador {
     position: relative;
 }
 
-.scroll-repetidas-buscador-icono {
+.scroll-figuritas-buscador-icono {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -11,13 +11,13 @@
     color: var(--color-subtitle);
 }
 
-.scroll-repetidas-lista {
+.scroll-figuritas-lista {
     border: 1px solid var(--border-color-light);
     border-radius: 0.5rem;
     overflow: hidden;
 }
 
-.scroll-repetidas-header {
+.scroll-figuritas-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -26,7 +26,7 @@
     background-color: var(--color-background);
 }
 
-.scroll-repetidas-header-titulo {
+.scroll-figuritas-header-titulo {
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -34,23 +34,23 @@
     color: var(--color-subtitle);
 }
 
-.scroll-repetidas-header-parcial {
+.scroll-figuritas-header-parcial {
     font-weight: 400;
     font-size: 0.7rem;
     margin-left: 0.25rem;
 }
 
-.scroll-repetidas-header-seleccion {
+.scroll-figuritas-header-seleccion {
     font-size: 0.78rem;
     color: var(--color-subtitle);
 }
 
-.scroll-repetidas-header-seleccion.activa {
+.scroll-figuritas-header-seleccion.activa {
     color: var(--color-secondary);
     font-weight: 600;
 }
 
-.scroll-repetidas-scroll {
+.scroll-figuritas-scroll {
     max-height: 240px;
     overflow-y: auto;
 }

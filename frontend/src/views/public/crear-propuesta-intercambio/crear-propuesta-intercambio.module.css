@@ -1,0 +1,59 @@
+.crear-propuesta-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: var(--color-secondary);
+}
+
+.crear-propuesta-preview h4,
+.crear-propuesta-preview h6 {
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.crear-propuesta-preview-imagen {
+  width: 80px;
+  height: 80px;
+  background-color: var(--color-primary);
+  border-radius: 0.75rem;
+}
+
+.crear-propuesta-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-subtitle);
+  margin: 0;
+}
+
+.crear-propuesta-duenio {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.crear-propuesta-seleccion-titulo {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.figuritaAIntercambiar {
+  background-color: var(--color-secondary);
+}
+
+.figuritaImagen {
+  min-height: 360px;
+  max-height: 480px;
+
+  min-width: 240px;
+  max-width: 360px;
+}

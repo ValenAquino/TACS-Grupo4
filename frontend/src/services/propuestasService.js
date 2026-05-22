@@ -43,3 +43,16 @@ export const rechazarPropuesta = async (prop_id) => {
         handleAxiosError(error);
     }
 }
+
+export const crearPropuesta = async (destinatarioId, figuritaBuscadaId, figuritasOfrecidasIds) => {
+    try {
+        const { data } = await api.post(PROPUESTAS_URL, {
+            destinatario_id: destinatarioId,
+            figurita_buscada_id: figuritaBuscadaId,
+            figuritas_ofrecidas_ids: figuritasOfrecidasIds,
+        });
+        return data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};

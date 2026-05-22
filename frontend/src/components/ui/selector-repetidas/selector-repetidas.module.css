@@ -1,0 +1,33 @@
+.selector-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.selector-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.73rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.selector-tag.opcional {
+  background-color: color-mix(in srgb, var(--color-secondary-acent) 40%, transparent);
+  color: var(--color-secondary);
+}
+
+.selector-tag.bloqueada {
+  background-color: color-mix(in srgb, var(--color-terciary) 15%, transparent);
+  color: var(--color-terciary);
+}
+
+.selector-tag-quitar {
+  border: none;
+  background: transparent;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-secondary);
+}

@@ -4,8 +4,8 @@ import UserChip from '@/components/ui/user-chip/user-chip'
 
 const TYPE_LABELS = {
   intercambio: { label: 'intercambio', className: styles.badgeIntercambio },
-  subasta:     { label: 'subasta',     className: styles.badgeSubasta },
-  ambos:       { label: 'ambos',       className: styles.badgeAmbos },
+  subasta: { label: 'subasta', className: styles.badgeSubasta },
+  ambos: { label: 'ambos', className: styles.badgeAmbos },
 }
 
 const FiguritaCard = ({
@@ -20,12 +20,12 @@ const FiguritaCard = ({
   available,
   extra,
   user,
+  figurita,
 }) => {
   const badge = TYPE_LABELS[type] ?? TYPE_LABELS.intercambio
 
   return (
     <div className={`${styles.card} ${type === 'subasta' ? styles.cardSubasta : ''}`}>
-
       {/* Número y tipo */}
       <div className={styles.cardHeader}>
         <span className={styles.cardNumber}>#{number}</span>
@@ -56,13 +56,16 @@ const FiguritaCard = ({
         {user && <UserChip user={user} />}
 
         {(type === 'intercambio' || type === 'ambos') && (
-          <CardActionBtn to={`/intercambios/nuevo?figurita=${id}`} label="Proponer intercambio ↗" />
+          <CardActionBtn
+            to="/intercambios/crear"
+            label="Proponer intercambio ↗"
+            state={{ figurita }}
+          />
         )}
         {(type === 'subasta' || type === 'ambos') && (
           <CardActionBtn to={`/subastas?figurita=${id}`} label="Ver subasta ↗" variant="subasta" />
         )}
       </div>
-
     </div>
   )
 }

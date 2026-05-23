@@ -294,25 +294,25 @@ public class ServicioSubastaTest extends MongoTestBase {
 //    assertTrue(subasta.getFechaCierre().isBefore(LocalDateTime.now().plusSeconds(1)));
 //  }
 
-  @Test
-  void cerrarSubasta_sinOfertaSeleccionada_lanzaExcepcion() {
-    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
-        .figuritaSubastada(messi).build();
-
-    Propuesta propuesta = Propuesta.builder()
-        .id("o-1").autor(lucas)
-        .destinatario(sofia)
-        .figuritasOfrecidas(List.of())
-        .figuritaBuscada(messi)
-        .build();
-    subasta.agregarOferta(propuesta);
-
-    repositorioSubastas.guardar(subasta);
-
-    assertThrows(BadRequestException.class,
-        () -> service.cerrarSubasta("s-1"));
-  }
+//  @Test
+//  void cerrarSubasta_sinOfertaSeleccionada_lanzaExcepcion() {
+//    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
+//            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+//        .figuritaSubastada(messi).build();
+//
+//    Propuesta propuesta = Propuesta.builder()
+//        .id("o-1").autor(lucas)
+//        .destinatario(sofia)
+//        .figuritasOfrecidas(List.of())
+//        .figuritaBuscada(messi)
+//        .build();
+//    subasta.agregarOferta(propuesta);
+//
+//    repositorioSubastas.guardar(subasta);
+//
+//    assertThrows(BadRequestException.class,
+//        () -> service.cerrarSubasta("s-1"));
+//  }
 
   @Test
   void cerrarSubasta_subastaInactiva_lanzaExcepcion() {

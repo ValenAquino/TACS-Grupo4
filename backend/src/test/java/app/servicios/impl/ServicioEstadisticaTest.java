@@ -343,24 +343,19 @@ class ServicioEstadisticaTest extends MongoTestBase {
         Perfil destinatario,
         EstadoProceso estado
     ) {
-        return new Propuesta(
-            id,
-            autor,
-            destinatario,
-            List.of(),
-            null,
-            new ArrayList<>(
-                List.of(
-                    new EstadoPropuesta(
-                        LocalDateTime.now(),
-                        estado
-                    )
-                )
-            ),
-            new EstadoPropuesta(
-                LocalDateTime.now(),
-                EstadoProceso.PENDIENTE
-            )
+        EstadoPropuesta estadoActual = new EstadoPropuesta(
+            LocalDateTime.now(),
+            estado
         );
+
+        return Propuesta.builder()
+            .id(id)
+            .autor(autor)
+            .destinatario(destinatario)
+            .figuritasOfrecidas(List.of())
+            .figuritaBuscada(null)
+            .estado(new ArrayList<>(List.of(estadoActual)))
+            .estadoActual(estadoActual)
+            .build();
     }
 }

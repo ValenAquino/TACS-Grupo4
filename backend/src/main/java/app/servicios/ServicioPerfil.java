@@ -82,9 +82,9 @@ public class ServicioPerfil {
     this.repositorioPerfiles.guardar(perfilDestino, sinCampos);
   }
 
-  public PaginaResultado<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
+  public PaginaResultado<SugerenciaDto> obtenerSugerencias(String perfilId, SugerenciasFiltro filtros) {
     CamposPerfil campos = new CamposPerfil(false);
-    Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId, campos);
+    Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorId(perfilId, campos);
 
     PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), filtros);
 

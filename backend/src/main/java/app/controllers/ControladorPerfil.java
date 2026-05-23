@@ -1,6 +1,7 @@
 package app.controllers;
 
 import app.dto.*;
+import app.dto.filtros.SugerenciasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CalificacionRequest;
 import java.util.List;
@@ -53,16 +54,16 @@ public class ControladorPerfil {
         return ResponseEntity.ok(this.perfilService.obtenerCalificaciones(perfilId, pagina, limite));
     }
 
-//    @GetMapping("/sugerencias")
-//    public ResponseEntity<PaginaResultado<SugerenciaDto>> obtenerSugerencias(
-//        @CookieValue String token,
-//        @ModelAttribute SugerenciasFiltro filtro
-//    ) {
-//        String perfilId = this.obtenerPerfilIdDeCookie(token);
-//        PaginaResultado<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(user_id, filtro);
-//
-//        return ResponseEntity.ok().body(sugerenciasDto);
-//    }
+    @GetMapping("/sugerencias")
+    public ResponseEntity<PaginaResultado<SugerenciaDto>> obtenerSugerencias(
+        @CookieValue String token,
+        @ModelAttribute SugerenciasFiltro filtro
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        PaginaResultado<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(perfilId, filtro);
+
+        return ResponseEntity.ok().body(sugerenciasDto);
+    }
 
     @GetMapping("/contadores")
     public ResponseEntity<List<ContadorDto>> obtenerContadores(

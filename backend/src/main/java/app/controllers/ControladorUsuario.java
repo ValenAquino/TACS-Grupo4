@@ -20,5 +20,4 @@ public class ControladorUsuario {
     this.servicioUsuario.registrar(request);
     return ResponseEntity.noContent().build();
   }
-
 }

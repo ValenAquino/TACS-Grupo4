@@ -28,14 +28,12 @@ public class ServicioUsuario {
   public void registrarUsuario(UsuarioRequest request) {
     request.setRol(Rol.USUARIO);
 
-    System.out.println("Publico - Se registra un: " + request.getRol());
     this.registrar(request);
   }
 
   public void registrarAdministrador(UsuarioRequest request, Rol rol) {
 
     if(rol == Rol.ADMINISTRADOR) {
-      System.out.println("Admin - Se registra un: " + request.getRol());
       this.registrar(request);
     } else {
       throw new UnauthorizedException("Acceso denegado por rol invalido");

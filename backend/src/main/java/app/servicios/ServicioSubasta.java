@@ -151,24 +151,7 @@ import org.springframework.stereotype.Service;
 
     public void cerrarSubasta(String subastaId) {
       Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
-
-      if (!subasta.estaActivo()) {
-        throw new BadRequestException("La subasta ya cerro");
-      }
-
-      Propuesta seleccionada = subasta.getOfertas().stream()
-          .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
-          .findFirst()
-          .orElseThrow(() -> new BadRequestException("No hay una oferta seleccionada"));
-
-      subasta.getOfertas().forEach(p -> {
-        EstadoProceso nuevoEstado = p.getId().equals(seleccionada.getId())
-            ? EstadoProceso.ACEPTADO
-            : EstadoProceso.RECHAZADO;
-        p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), nuevoEstado));
-      });
-
-      subasta.setFechaCierre(LocalDateTime.now());
+      subasta.cerrar(subastaId);
       this.repoSubasta.guardar(subasta);
     }
 

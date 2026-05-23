@@ -1,11 +1,13 @@
 package app.servicios;
 
+import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
+import app.exceptions.NotFoundException;
 import app.model.entities.*;
 import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioFiguritas;
@@ -181,53 +183,38 @@ import org.springframework.stereotype.Service;
       this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
-    public PaginaResultado<SubastaDto> obtenerMisSubastas(String perfilId, Integer pagina, Integer limite) {
-      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarPorAutor(perfilId, pagina, limite, new CamposSubasta(true, true));
+    public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
+      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros);
 
-      return new PaginaResultado<>(
-          resultado.contenido().stream().map(SubastaDto::new).toList(),
-          resultado.cantidadDeElementos(),
-          resultado.cantidadDePaginas(),
-          resultado.numero());
+      if(filtros.participanteId() != null ) {
+        return new PaginaResultado<>(
+            resultado.contenido().stream().map(s -> {
+                  boolean yaCalifico = this.repoCalificacion.yaCalifico(
+                      s.getAutor().getId(),
+                      filtros.participanteId(),
+                      s.getId(),
+                      MetodoIntercambio.SUBASTA
+                  );
+                  return new SubastaParticipoDto(s, obtenerOferta(s, filtros.participanteId()), yaCalifico);
+            }
+            ).toList(),
+            resultado.cantidadDeElementos(),
+            resultado.cantidadDePaginas(),
+            resultado.numero());
+      } else {
+        return new PaginaResultado<>(
+            resultado.contenido().stream().map(SubastaDto::new).toList(),
+            resultado.cantidadDeElementos(),
+            resultado.cantidadDePaginas(),
+            resultado.numero());
+      }
     }
 
-    public SubastasParticipoResponseDto obtenerSubastasParticipo(String perfilId) {
-      List<Subasta> subastas = this.repoSubasta.buscarDondeParticipa(perfilId, new CamposSubasta(false, false));
-
-      List<SubastaParticipoDto> activas = subastas.stream()
-          .filter(Subasta::estaActivo)
-          .map(s -> {
-            boolean yaCalifico = this.repoCalificacion.yaCalifico(
-                s.getAutor().getId(),
-                this.obtenerOferta(s, perfilId).getId(),
-                s.getId(),
-                MetodoIntercambio.SUBASTA
-              );
-            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
-          })
-          .toList();
-
-      List<SubastaParticipoDto> finalizadas = subastas.stream()
-          .filter(s -> !s.estaActivo())
-          .map(s -> {
-            boolean yaCalifico = this.repoCalificacion.yaCalifico(
-                s.getAutor().getId(),
-                this.obtenerOferta(s, perfilId).getId(),
-                s.getId(),
-                MetodoIntercambio.SUBASTA
-            );
-            return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
-          })
-          .toList();
-
-      return new SubastasParticipoResponseDto(activas, finalizadas);
-    }
-
-    private Propuesta obtenerOferta(Subasta subasta, String userId) {
+    private Propuesta obtenerOferta(Subasta subasta, String perfilId) {
       return subasta.getOfertas().stream()
-          .filter(p -> p.getAutor().getUsuario().getId().equals(userId))
+          .filter(p -> p.getAutor().getId().equals(perfilId))
           .findFirst()
-          .get();
+          .orElseThrow(() -> new NotFoundException("No se encontró oferta del perfil " + perfilId + " en la subasta " + subasta.getId()));
     }
 
     public SubastaDto obtenerSubasta(String subastaId) {

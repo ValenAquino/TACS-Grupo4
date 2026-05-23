@@ -1,5 +1,6 @@
 package app.repositories;
 
+import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Subasta;
 import app.repositories.impl.campos.CamposSubasta;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface RepositorioSubastas {
 
-    List<Subasta> buscarTodos(CamposSubasta campos);
+    PaginaResultado<Subasta> buscarTodos(SubastasFiltro filtros);
 
     Subasta buscarPorId(String id, CamposSubasta campos);
 

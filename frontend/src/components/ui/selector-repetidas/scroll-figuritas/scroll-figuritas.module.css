@@ -1,0 +1,68 @@
+.scroll-figuritas-buscador {
+    position: relative;
+}
+
+.scroll-figuritas-buscador-icono {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--color-subtitle);
+}
+
+.scroll-figuritas-lista {
+    border: 1px solid var(--border-color-light);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.scroll-figuritas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border-color-light);
+    background-color: var(--color-background);
+}
+
+.scroll-figuritas-header-titulo {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-subtitle);
+}
+
+.scroll-figuritas-header-parcial {
+    font-weight: 400;
+    font-size: 0.7rem;
+    margin-left: 0.25rem;
+}
+
+.scroll-figuritas-header-seleccion {
+    font-size: 0.78rem;
+    color: var(--color-subtitle);
+}
+
+.scroll-figuritas-header-seleccion.activa {
+    color: var(--color-secondary);
+    font-weight: 600;
+}
+
+.scroll-figuritas-scroll {
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.scroll-skeleton-fila {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.scroll-sin-resultados {
+    text-align: center;
+    color: var(--color-subtitle);
+    padding: 1rem;
+    font-size: 0.85rem;
+}

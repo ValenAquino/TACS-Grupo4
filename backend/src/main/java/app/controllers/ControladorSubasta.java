@@ -1,10 +1,10 @@
 package app.controllers;
 
+import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearSubastaRequest;
 import app.dto.request.MejorarOfertaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
-import app.dto.subasta.SubastasParticipoResponseDto;
 import app.dto.subasta.SubastaDto;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSubasta;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequestMapping("/subastas")
@@ -94,21 +93,12 @@ public class ControladorSubasta {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/mis-subastas")
-    public ResponseEntity<PaginaResultado<SubastaDto>> obtenerMisSubastas(
-        @CookieValue("token") String token
-
-    ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
-        return ResponseEntity.ok(this.subastaService.obtenerMisSubastas(perfilId, 10, 10));
-    }
-
-    @GetMapping("/participo")
-    public ResponseEntity<SubastasParticipoResponseDto> obtenerSubastasParticipo(
-        @CookieValue String token
-    ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
-        return ResponseEntity.ok(this.subastaService.obtenerSubastasParticipo(perfilId));
+    @GetMapping
+    public ResponseEntity<PaginaResultado<?>> obtenerSubastas(
+        @CookieValue("token") String token,
+        @ModelAttribute SubastasFiltro filtros
+        ) {
+        return ResponseEntity.ok(this.subastaService.obtenerSubastas(filtros));
     }
 
   @GetMapping("/{sub_id}")

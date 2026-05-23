@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
@@ -12,12 +13,15 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -81,11 +85,53 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   }
 
   @Override
-  public List<Subasta> buscarTodos(CamposSubasta campos) {
+  public PaginaResultado<Subasta> buscarTodos(SubastasFiltro filtros) {
     Query query = new Query();
-    this.conCamposCargados(query, campos);
 
-    return this.mongoTemplate.find(query, Subasta.class).stream().map(this::normalizar).toList();
+    if(filtros.autorId() != null) {
+      query.addCriteria(
+          Criteria.where("autor").is(filtros.autorId())
+      );
+    }
+
+    if ("ACTIVA".equals(filtros.estado())) {
+      Date ahora = new Date();
+
+      query.addCriteria(
+          new Criteria().andOperator(
+              Criteria.where("fechaInicio").lte(ahora),
+              Criteria.where("fechaCierre").gt(ahora)
+          )
+      );
+    }
+
+    if ("FINALIZADA".equals(filtros.estado())) {
+      Date ahora = new Date();
+
+      query.addCriteria(
+          Criteria.where("fechaCierre").lte(ahora)
+      );
+    }
+
+    if (filtros.participanteId() != null) {
+      query.addCriteria(
+          Criteria.where("ofertas.autor").is(filtros.participanteId())
+      );
+    }
+
+    long count = mongoTemplate.count(query, Subasta.class);
+
+    query.skip((long) (filtros.pagina() - 1) * filtros.limite());
+    query.limit(filtros.limite());
+
+    List<Subasta> contenido = mongoTemplate.find(query, Subasta.class);
+
+    return new PaginaResultado<>(
+        contenido,
+        count,
+        (int) Math.ceil((double) count / filtros.limite()),
+        filtros.pagina()
+    );
   }
 
   @Override

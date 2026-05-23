@@ -22,6 +22,7 @@ import ServidorCaido from '@/views/public/errores/servidor-caido/servidor-caido.
 import ErrorInterno from '@/views/public/errores/error-interno/error-interno.jsx'
 import CrearOferta from './views/public/crear-oferta/crear-oferta.jsx'
 import Administrador from './views/public/administrador/administrador.jsx'
+import VerIntercambio from './views/public/ver-intercambio/ver-intercambio.jsx'
 
 const publics = [
   {
@@ -86,6 +87,10 @@ const privates = [
   {
     path: '/intercambios/crear',
     element: <CrearPropuestaIntercambio />,
+  },
+  {
+    path: '/intercambios/:intercambioId',
+    element: <VerIntercambio />,
   },
   {
     path: '/subastas/:subId',

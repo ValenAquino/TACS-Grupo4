@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import IntercambioCard from "../../../../components/ui/intercambio-card/intercambio-card.jsx";
 import IntercambioModal from "../../../../components/ui/intercambio-modal/intercambio-modal.jsx";
-import {aceptarIntercambio,rechazarIntercambio} from "../../../../services/intercambioService.js";
+import {aceptarPropuesta,rechazarPropuesta} from "@/services/propuestasService.js";
 import {buscarPropuestas} from "@/services/propuestasService.js";
 import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
@@ -10,7 +10,7 @@ import {useError} from "@/contexts/errorContext.jsx";
 const RecibidasTab = () => {
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [pagina, setPagina] = useState(1);
+    const [pagina, setPagina] = useState(0);
     const [recibidas, setRecibidas] = useState([]);
     const [filtros, setFiltros] = useState({
         estado: "",
@@ -23,6 +23,7 @@ const RecibidasTab = () => {
         try {
             setLoading(true);
             const enviadasApi = await buscarPropuestas({pagina: pagina, limite: 10, ...filtros})
+            //console.log(JSON.stringify(recibidas.contenido, null, 2))
             setRecibidas(enviadasApi)
         } catch (error) {
             handleError(error, () => {})
@@ -36,14 +37,14 @@ const RecibidasTab = () => {
     }, [pagina, filtros]);
 
     const handleAceptar = async (id) => {
-      await aceptarIntercambio(id);
-      setLista(prev => prev.filter(i => i.id !== id));
+      await aceptarPropuesta(id);
+      await cargarRecibidas();
       setSelected(null);
     };
 
     const handleRechazar = async (id) => {
-      await rechazarIntercambio(id);
-      setLista(prev => prev.filter(i => i.id !== id));
+      await rechazarPropuesta(id);
+      await cargarRecibidas();
       setSelected(null);
     };
 
@@ -81,11 +82,11 @@ const RecibidasTab = () => {
             ) : (
                 <>
                     <h6 className="fw-bold mt-3">
-                        PENDIENTES ({recibidas?.resultados})
+                        PENDIENTES ({recibidas?.cantidad_de_elementos})
                     </h6>
 
-                    {recibidas?.data?.length > 0 ? (
-                        recibidas.data.map(i => (
+                    {recibidas?.contenido?.length > 0 ? (
+                        recibidas.contenido.map(i => (
                             <IntercambioCard
                                 key={i.id}
                                 intercambio={i}
@@ -104,7 +105,7 @@ const RecibidasTab = () => {
 
             <Paginacion
                 page={pagina}
-                totalPages={recibidas.paginas_totales ?? 1}
+                totalPages={recibidas.cantidad_de_paginas ?? 1}
                 onChange={setPagina}
             />
 

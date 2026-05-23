@@ -16,7 +16,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
         tipo: "ENVIADAS"
     });
     const [loading, setLoading] = useState(true);
-    const [pagina, setPagina] = useState(1);
+    const [pagina, setPagina] = useState(0);
 
     const {handleError} = useError()
 
@@ -104,10 +104,10 @@ import {useAuth} from "@/contexts/userContext.jsx";
 
             {loading ? <p>Cargando resultados...</p>
                 :
-                enviadas?.data?.length > 0 ?
+                enviadas?.contenido?.length > 0 ?
                 <>
-                    <p className={"mb-3"}>Esperando Respuesta {`(${enviadas.resultados})`}</p>
-                    {enviadas.data.map(i => (
+                    <p className={"mb-3"}>Esperando Respuesta {`(${enviadas.cantidad_de_elementos})`}</p>
+                    {enviadas.contenido.map(i => (
                         <IntercambioCard
                             key={i.id}
                             intercambio={i}
@@ -124,7 +124,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
 
             <Paginacion
                 page={pagina}
-                totalPages={enviadas.paginas_totales ?? 1}
+                totalPages={enviadas.cantidad_de_paginas ?? 1}
                 onChange={setPagina}
             />
 

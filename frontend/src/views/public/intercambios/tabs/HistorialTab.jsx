@@ -4,11 +4,13 @@ import IntercambioModal from "../../../../components/ui/intercambio-modal/interc
 import CalificarModal from "../../../../components/ui/calificar-modal/calificar-modal.jsx";
 import { calificarPerfil } from "../../../../services/perfilService.js";
 import useUsuarioActual from "../../../../hooks/useUsuarioActual.js";
+import { useNavigate } from "react-router-dom";
 
 const HistorialTab = ({ intercambios }) => {
     const [selected, setSelected] = useState(null);
     const [calificando, setCalificando] = useState(null);
     const { userId } = useUsuarioActual();
+    const navigate = useNavigate();
 
     return (
         <div>
@@ -36,7 +38,7 @@ const HistorialTab = ({ intercambios }) => {
                             )}
 
                             <button
-                                onClick={() => setSelected(i)}
+                                onClick={() => navigate(`/intercambios/${i.id}`)}
                                 className="btn btn-outline-dark btn-sm flex-fill"
                             >
                                 Ver detalle

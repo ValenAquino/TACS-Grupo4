@@ -24,9 +24,9 @@ const CrearPropuestaIntercambio = () => {
   const onEnviar = async () => {
     try {
       await crearPropuesta(
-        figurita.usuarioId,
-        figurita.figuritaId,
-        seleccionadas.map((f) => f.figuritaId),
+        figurita.usuario_id,
+        figurita.figurita_id,
+        seleccionadas.map((f) => f.figurita_id),
       )
       navigate('/intercambios')
     } catch (e) {
@@ -61,7 +61,7 @@ const CrearPropuestaIntercambio = () => {
 
       <div className="d-flex flex-column gap-2">
         <p className={styles.crearPropuestaSeleccionTitulo}>
-          Seleccioná la figurita que querés ofrecer
+          Seleccioná las figurita que querés ofrecer
         </p>
         <SelectorRepetidas modo="multiple" bloqueadas={[]} onChange={setSeleccionadas} />
       </div>

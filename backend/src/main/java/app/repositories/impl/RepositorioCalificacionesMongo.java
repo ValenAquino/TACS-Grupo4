@@ -66,11 +66,11 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("destinatario.$id").is(new ObjectId(perfilDestinoId))
+        Criteria.where("destinatario.$id").is(perfilDestinoId)
     );
 
     query.addCriteria(
-        Criteria.where("autor.$id").is(new ObjectId(perfilAutorId))
+        Criteria.where("autor.$id").is(perfilAutorId)
     );
 
     query.addCriteria(

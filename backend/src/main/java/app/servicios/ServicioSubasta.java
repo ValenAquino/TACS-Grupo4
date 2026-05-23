@@ -15,6 +15,8 @@ import app.repositories.RepositorioSubastas;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import app.repositories.impl.campos.CamposPerfil;
+import app.repositories.impl.campos.CamposSubasta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,9 @@ import org.springframework.stereotype.Service;
 
     public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
                              List<String> figuritasDeseadasIds, Integer calificacionMinima) {
-      Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+      CamposPerfil sinCamposPerfil = new CamposPerfil(false);
+
+      Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId, sinCamposPerfil);
       Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
       List<Figurita> figuritasDeseadas = figuritasDeseadasIds.stream()
@@ -48,8 +52,9 @@ import org.springframework.stereotype.Service;
 
       this.repoSubasta.guardar(nuevaSubasta);
 
+      CamposPerfil conMedio = new CamposPerfil(true);
       List<Perfil> interesados = this.repositorioPerfiles
-          .buscarPorFiguritaFaltante(figuritaSubastada);
+          .buscarPorFiguritaFaltante(figuritaSubastada, conMedio);
 
       this.notificacionService.notificarInteresados(
           interesados, "Encontramos una subasta de una figurita que te falta!");
@@ -59,8 +64,9 @@ import org.springframework.stereotype.Service;
                                  String subastaId,
                                  List<String> rawFiguritasId
     ) {
-      Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, new CamposPerfil(false));
+      CamposSubasta camposSubasta = new CamposSubasta(false, true);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
       Perfil destinatario = subasta.getAutor();
 
       if (!subasta.estaActivo()) {
@@ -82,7 +88,7 @@ import org.springframework.stereotype.Service;
           .figuritasOfrecidas(figuritasOfrecidas).build();
 
       subasta.agregarOferta(nuevaPropuesta);
-      this.repoSubasta.guardar(subasta);
+      this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
     public void editarOfertaEnSubasta(String perfilId, String subastaId, String ofertaId, EditarOfertaRequest body){
@@ -91,9 +97,7 @@ import org.springframework.stereotype.Service;
           .filter(o -> o.getId().equals(ofertaId))
           .findFirst().orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
-      List<Figurita> nuevas_figuritas = body.getFiguritasOfrecidasId().stream().map(
-          this.repoFigurita::buscarPorId
-      ).toList();
+      List<Figurita> nuevas_figuritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
 
       oferta.setFiguritasOfrecidas(nuevas_figuritas);
       oferta.resetearAPendiente(perfilId);
@@ -112,7 +116,8 @@ import org.springframework.stereotype.Service;
     }
 
     public void seleccionarOferta(String subastaId, String ofertaId) {
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      CamposSubasta camposSubasta = new CamposSubasta(false, true);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
       if (!subasta.estaActivo()) {
         throw new BadRequestException("La subasta ya cerro");
@@ -129,11 +134,12 @@ import org.springframework.stereotype.Service;
           .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
       propuesta.seleccionar(subasta.getAutor().getId());
-      this.repoSubasta.guardar(subasta);
+      this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
     public void rechazarOferta(String subastaId, String ofertaId) {
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      CamposSubasta camposSubasta = new CamposSubasta(false, true);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
       if (!subasta.estaActivo()) {
         throw new BadRequestException("La subasta ya cerro");
@@ -145,11 +151,12 @@ import org.springframework.stereotype.Service;
           .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
       propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
-      this.repoSubasta.guardar(subasta);
+      this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
     public void cancelarSubasta(String subastaId) {
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      CamposSubasta camposSubasta = new CamposSubasta(false, true);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
       if (!subasta.estaActivo()) {
         throw new BadRequestException("La subasta ya cerro");
@@ -159,11 +166,12 @@ import org.springframework.stereotype.Service;
           p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO))
       );
       subasta.setFechaCierre(LocalDateTime.now());
-      this.repoSubasta.guardar(subasta);
+      this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
     public void cerrarSubasta(String subastaId) {
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      CamposSubasta camposSubasta = new CamposSubasta(false, true);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
       if (!subasta.estaActivo()) {
         throw new BadRequestException("La subasta ya cerro");
@@ -182,11 +190,11 @@ import org.springframework.stereotype.Service;
       });
 
       subasta.setFechaCierre(LocalDateTime.now());
-      this.repoSubasta.guardar(subasta);
+      this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
     public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
-      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros);
+      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros, new CamposSubasta(true, true));
 
       if(filtros.participanteId() != null ) {
         return new PaginaResultado<>(
@@ -220,7 +228,7 @@ import org.springframework.stereotype.Service;
     }
 
     public SubastaDto obtenerSubasta(String subastaId) {
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, new CamposSubasta(true, true));
 
       return new SubastaDto(subasta);
     }

@@ -2,6 +2,7 @@ package app.repositories.impl;
 
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
+import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
@@ -11,7 +12,11 @@ import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.FiguritasFiltro;
 import app.dto.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
+import app.repositories.impl.campos.CamposColeccion;
 import com.mongodb.DBRef;
+import com.mongodb.client.result.UpdateResult;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,6 +26,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -35,14 +41,47 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     mongoTemplate.save(coleccion);
   }
 
-  public Coleccion buscarPorId(String colId){
-    Coleccion coleccion = mongoTemplate.findById(colId, Coleccion.class);
+  public void agregarFaltante(String colId, Figurita figurita) {
+    Query query = Query.query(
+        Criteria.where("_id").is(colId)
+            .and("faltantes").ne(figurita.getId())
+    );
+    Update update = new Update().push("faltantes", figurita);
+
+    UpdateResult result = mongoTemplate.updateFirst(query, update, Coleccion.class);
+
+    if (result.getMatchedCount() == 0) {
+      throw new BadRequestException("Figurita ya listada como faltante");
+    }
+  }
+
+  public void agregarRepetida(String colId, FiguritaIntercambiable repetida) {
+    Query query = Query.query(
+        Criteria.where("_id").is(colId)
+            .and("repetidas.figurita").is(repetida.getFigurita().getId())
+    );
+    Update incrementar = new Update().inc("repetidas.$.cantidadExistente", repetida.getCantidadExistente());
+    UpdateResult result = mongoTemplate.updateFirst(query, incrementar, Coleccion.class);
+
+    if (result.getMatchedCount() == 0) {
+      Query queryPush = Query.query(Criteria.where("_id").is(colId));
+      Update push = new Update().push("repetidas", repetida);
+      mongoTemplate.updateFirst(queryPush, push, Coleccion.class);
+    }
+  }
+
+  public Coleccion buscarPorId(String colId, CamposColeccion campos) {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id").is(colId));
+    this.conCamposCargados(query, campos);
+
+    Coleccion coleccion = mongoTemplate.findOne(query, Coleccion.class);
 
     if(coleccion == null) {
       throw new NotFoundException("No se encontro la coleccion");
     }
 
-    return coleccion;
+    return this.normalizar(coleccion);
   }
 
   public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
@@ -175,11 +214,6 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     return new PaginaResultado<>(contenido, count, (int) Math.ceil((double) count / limite), pagina);
   }
 
-  private Integer parseNumero(String termino) {
-    try { return Integer.parseInt(termino); }
-    catch (NumberFormatException e) { return null; }
-  }
-
   @Override
   public List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds) {
     List<AggregationOperation> ops = new ArrayList<>();
@@ -208,6 +242,25 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
 
     AggregationResults<Document> figuritas = this.buscarCampoEnColeccion(colId, "repetidas", new ArrayList<>(), 1,100);
     return this.mapearADominio(figuritas);
+  }
+
+  private void conCamposCargados(Query query, CamposColeccion campos) {
+    if(!campos.getConRepetidas()) {
+      query.fields().exclude("repetidas");
+    }
+    if(!campos.getConFaltantes()) {
+      query.fields().exclude("faltantes");
+    }
+  }
+
+  private Coleccion normalizar(Coleccion coleccion) {
+    if(coleccion.getRepetidas() == null) {
+      coleccion.setRepetidas(new ArrayList<>());
+    }
+    if(coleccion.getFaltantes() == null) {
+      coleccion.setFaltantes(new ArrayList<>());
+    }
+    return coleccion;
   }
 
   private int contarCampoEnColeccion(String colId, String campo, List<AggregationOperation> ops) {
@@ -276,5 +329,10 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
         .stream()
         .map(doc -> converter.read(FiguritaIntercambiable.class, doc))
         .toList();
+  }
+
+  private Integer parseNumero(String termino) {
+    try { return Integer.parseInt(termino); }
+    catch (NumberFormatException e) { return null; }
   }
 }

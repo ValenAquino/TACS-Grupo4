@@ -14,6 +14,8 @@ import app.exceptions.BadRequestException;
 import app.model.entities.*;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import app.repositories.impl.campos.CamposSubasta;
 import app.servicios.ServicioSubasta;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -133,7 +135,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.seleccionarOferta("s-1", "o-1");
 
-    subasta = repositorioSubastas.buscarPorId("s-1");
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
     assertEquals(EstadoProceso.SELECCIONADO, buscarOfertaEn(subasta,propuesta.getId()).obtenerEstadoActual().getValor());
   }
@@ -165,7 +167,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.seleccionarOferta("s-1", "o-2");
 
-    subasta = repositorioSubastas.buscarPorId("s-1");
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
     assertEquals(EstadoProceso.PENDIENTE, buscarOfertaEn(subasta,propuestaAnterior.getId()).obtenerEstadoActual().getValor());
     assertEquals(EstadoProceso.SELECCIONADO,  buscarOfertaEn(subasta,propuestaNueva.getId()).obtenerEstadoActual().getValor());
@@ -201,7 +203,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.rechazarOferta("s-1", "o-1");
 
-    subasta = repositorioSubastas.buscarPorId("s-1");
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
     assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta.getId()).obtenerEstadoActual().getValor());
   }
@@ -244,7 +246,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.cancelarSubasta("s-1");
 
-    subasta = repositorioSubastas.buscarPorId("s-1");
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
     assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta1.getId()).obtenerEstadoActual().getValor());
     assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta2.getId()).obtenerEstadoActual().getValor());
@@ -292,7 +294,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.cerrarSubasta("s-1");
 
-    subasta = repositorioSubastas.buscarPorId("s-1");
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
     assertEquals(EstadoProceso.ACEPTADO, buscarOfertaEn(subasta, propuestaSeleccionada.getId()).obtenerEstadoActual().getValor());
     assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuestaPendiente.getId()).obtenerEstadoActual().getValor());
@@ -356,7 +358,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     subasta =
         repositorioSubastas.buscarPorId(
-            "s-1"
+            "s-1", new CamposSubasta(true, true)
         );
 
     assertEquals(
@@ -412,7 +414,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     subasta =
         repositorioSubastas.buscarPorId(
-            "s-1"
+            "s-1", new CamposSubasta(true, true)
         );
 
     assertEquals(

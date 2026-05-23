@@ -11,6 +11,8 @@ import app.model.entities.Seleccion;
 import app.model.entities.Perfil;
 import app.model.entities.Usuario;
 import java.util.List;
+
+import app.repositories.impl.campos.CamposPerfil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,16 +25,16 @@ class RepositorioPerfilesTest extends MongoTestBase {
 
     @Test
     void findById_inexistente_retornaNull() {
-        assertThrows(NotFoundException.class, () -> repositorioPerfiles.buscarPorId("inexistente"));
+        assertThrows(NotFoundException.class, () -> repositorioPerfiles.buscarPorId("inexistente", new CamposPerfil(false)));
     }
 
     @Test
     void buscarPorFiguritaFaltanteDevuelve2() {
         Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
         repositorioUsuarios.guardar(user);
-        Coleccion coleccion1 = new Coleccion("c-1");
-        Coleccion coleccion2 = new Coleccion("c-2");
-        Coleccion coleccion3 = new Coleccion("c-3");
+        Coleccion coleccion1 = new Coleccion();
+        Coleccion coleccion2 = new Coleccion();
+        Coleccion coleccion3 = new Coleccion();
 
         Perfil perfil = Perfil.builder()
             .id("u-1").usuario(user).nombre("Lucas")
@@ -77,6 +79,6 @@ class RepositorioPerfilesTest extends MongoTestBase {
         repositorioPerfiles.guardar(perfil2);
         repositorioPerfiles.guardar(perfil3);
 
-        assertEquals(2, repositorioPerfiles.buscarPorFiguritaFaltante(messi).size());
+        assertEquals(2, repositorioPerfiles.buscarPorFiguritaFaltante(messi, new CamposPerfil(false)).size());
     }
 }

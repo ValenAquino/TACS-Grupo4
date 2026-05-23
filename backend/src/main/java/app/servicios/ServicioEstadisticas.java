@@ -59,7 +59,7 @@ public class ServicioEstadisticas {
     }
 
     private PropuestasPorEstadoDto calcularPropuestasPorEstado() {
-        Map<EstadoProceso, Long> porEstado = repositorioPropuestas.buscarTodos().stream()
+        Map<EstadoProceso, Long> porEstado = repositorioPropuestas.buscarTodosEstadisticas().stream()
             .collect(Collectors.groupingBy(p -> p.obtenerEstadoActual().getValor(), Collectors.counting()));
 
         return new PropuestasPorEstadoDto(

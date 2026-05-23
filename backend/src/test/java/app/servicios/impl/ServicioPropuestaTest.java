@@ -825,4 +825,136 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
   }
 
+  @Test
+  void buscarPropuestasConvierteEntidadADto() {
+
+    propuestaService.crearPropuesta(
+        "1000",
+        new CrearPropuestaRequest(
+            "1001",
+            "ARG-10",
+            List.of("FRA-10")
+        )
+    );
+
+    PropuestasFiltro filtro =
+        new PropuestasFiltro(
+            "ENVIADAS",
+            0,
+            10,
+            null
+        );
+
+    PaginaResultado<PropuestaDto> resultado =
+        propuestaService.buscarPropuestas(
+            "1000",
+            filtro
+        );
+
+    assertEquals(
+        1,
+        resultado.contenido().size()
+    );
+
+    PropuestaDto dto =
+        resultado.contenido().get(0);
+
+    assertEquals(
+        "1000",
+        dto.getAutor().getId()
+    );
+
+    assertEquals(
+        "1001",
+        dto.getDestinatario().getId()
+    );
+
+    assertEquals(
+        "ARG-10",
+        dto.getFiguritaBuscada().getId()
+    );
+
+    assertEquals(
+        EstadoProceso.PENDIENTE,
+        dto.getEstado()
+    );
+  }
+
+  @Test
+  void buscarPropuestasFiltraPorEstadoActual() {
+
+    PropuestaDto propuesta =
+        propuestaService.crearPropuesta(
+            "1000",
+            new CrearPropuestaRequest(
+                "1001",
+                "ARG-10",
+                List.of("FRA-10")
+            )
+        );
+
+    propuestaService.rechazar(
+        propuesta.getId(),
+        "1001"
+    );
+
+    PropuestasFiltro filtro =
+        new PropuestasFiltro(
+            "RECIBIDAS",
+            0,
+            10,
+            EstadoProceso.RECHAZADO
+        );
+
+    PaginaResultado<PropuestaDto> resultado =
+        propuestaService.buscarPropuestas(
+            "1001",
+            filtro
+        );
+
+    assertEquals(
+        1,
+        resultado.contenido().size()
+    );
+
+    assertEquals(
+        EstadoProceso.RECHAZADO,
+        resultado.contenido()
+            .get(0)
+            .getEstado()
+    );
+  }
+
+  @Test
+  void buscarPropuestasSinResultadosDevuelvePaginaVacia() {
+
+    PropuestasFiltro filtro =
+        new PropuestasFiltro(
+            "RECIBIDAS",
+            0,
+            10,
+            EstadoProceso.ACEPTADO
+        );
+
+    PaginaResultado<PropuestaDto> resultado =
+        propuestaService.buscarPropuestas(
+            "1001",
+            filtro
+        );
+
+    assertTrue(
+        resultado.contenido().isEmpty()
+    );
+
+    assertEquals(
+        0,
+        resultado.cantidadDeElementos()
+    );
+
+    assertEquals(
+        0,
+        resultado.cantidadDePaginas()
+    );
+  }
+
 }

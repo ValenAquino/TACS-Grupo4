@@ -109,18 +109,7 @@ public class ServicioPropuesta {
   }
 
   public PaginaResultado<PropuestaDto> buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
-    PaginaResultado<Propuesta> resultado = new PaginaResultado<>(
-        new ArrayList<>(),
-        0,
-        0,
-        0
-    );
-
-    if(filtros.tipo().equals("RECIBIDAS")) {
-      resultado = this.repositorioPropuestas.buscarPorDestinatarioId(perfilId, filtros);
-    } else if (filtros.tipo().equals("ENVIADAS")) {
-      resultado = this.repositorioPropuestas.buscarPorAutorId(perfilId, filtros);
-    }
+    PaginaResultado<Propuesta> resultado = this.repositorioPropuestas.buscarTodos(perfilId, filtros);
 
     return new PaginaResultado<>(
         resultado.contenido().stream().map(PropuestaDto::new).toList(),

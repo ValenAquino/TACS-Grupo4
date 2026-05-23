@@ -1,4 +1,4 @@
-import useEstadisticasAdmin from '../../../hooks/use-estadisticas-admin.js'
+import useEstadisticasAdmin from '@/hooks/use-estadisticas-admin.js'
 import StatCard from './stat-card.jsx'
 import SeccionBarras from './seccion-barras.jsx'
 import TopSelecciones from './top-selecciones.jsx'

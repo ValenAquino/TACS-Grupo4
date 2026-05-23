@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import IntercambioCard from '../../../../components/ui/intercambio-card/intercambio-card.jsx'
-import IntercambioModal from '../../../../components/ui/intercambio-modal/intercambio-modal.jsx'
-import CalificarModal from '../../../../components/ui/calificar-modal/calificar-modal.jsx'
-import { calificarPerfil } from '../../../../services/perfilService.js'
-import useUsuarioActual from '../../../../hooks/useUsuarioActual.js'
+import IntercambioCard from '@/components/ui/intercambio-card/intercambio-card.jsx'
+import IntercambioModal from '@/components/ui/intercambio-modal/intercambio-modal.jsx'
+import CalificarModal from '@/components/ui/calificar-modal/calificar-modal.jsx'
+import { calificarPerfil } from '@/services/perfilService.js'
+import useUsuarioActual from '@/hooks/useUsuarioActual.js'
 
 const HistorialTab = ({ intercambios }) => {
   const [selected, setSelected] = useState(null)

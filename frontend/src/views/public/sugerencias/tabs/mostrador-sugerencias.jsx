@@ -1,13 +1,14 @@
-import SugerenciaCard from "../sugerencia-card.jsx";
+import SugerenciaCard from "@/views/public/sugerencias/sugerencia-card.jsx";
 import {useCallback, useEffect, useState} from "react";
-import {buscarSugerencias} from "../../../../services/perfilService.js";
-import ExtraInfo from "../../../../components/ui/extra-info/extra-info.jsx";
-import Paginacion from "../../../../components/ui/paginacion/paginacion.jsx";
-import useUsuarioActual from "../../../../hooks/useUsuarioActual.js";
+import {buscarSugerencias} from "@/services/perfilService.js";
+import ExtraInfo from "@/components/ui/extra-info/extra-info.jsx";
+import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
+import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 
 const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
 
     const [cargando, setCargando] = useState(true)
+    const [error, setError] = useState(false)
     const [sugerencias, setSugerencias] = useState([])
     const [pagina, setPagina] = useState(1)
     const [paginasTotales, setPaginasTotales] = useState(1)
@@ -21,7 +22,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
             setSugerencias(payload.data)
 
         } catch (error) {
-            // silencio intencional
+            setError(true)
         } finally {
             setCargando(false)
         }
@@ -32,6 +33,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     }, [tipo]);
 
     const mostrarSugerencias = () => {
+        if (error) return <h2>No se pudo cargar la información</h2>
         return (
             <>
                 {

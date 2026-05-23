@@ -50,6 +50,8 @@ class FiltroJwtTest {
 
     when(request.getMethod())
         .thenReturn("GET");
+    when(request.getServletPath()).thenReturn("/login/test");
+    when(request.getMethod()).thenReturn("GET");
 
     when(request.getServletPath())
         .thenReturn("/login/test");

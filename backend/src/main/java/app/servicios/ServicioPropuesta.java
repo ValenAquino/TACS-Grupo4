@@ -8,13 +8,13 @@ import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Propuesta;
-import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,9 +33,12 @@ public class ServicioPropuesta {
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
   //TODO: Agregar transaccion para crear propuesta.
+  @Transactional
   public PropuestaDto crearPropuesta(String autorId, CrearPropuestaRequest request) {
-    Perfil autor = repositorioPerfiles.buscarPorId(autorId);
-    Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId());
+    CamposPerfil sinCampos = new CamposPerfil(false);
+
+    Perfil autor = repositorioPerfiles.buscarPorId(autorId, sinCampos);
+    Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId(), sinCampos);
 
     Figurita figuritaBuscada = repositorioFiguritas
         .buscarPorId(request.getFiguritaBuscadaId());
@@ -65,6 +68,7 @@ public class ServicioPropuesta {
     return new PropuestaDto(propuesta);
   }
 
+  @Transactional
   public void aceptar(String propuestaId, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
 
@@ -86,6 +90,7 @@ public class ServicioPropuesta {
 
   }
 
+  @Transactional
   public void rechazar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.rechazar(perfilId);
@@ -97,6 +102,7 @@ public class ServicioPropuesta {
     repositorioPropuestas.guardar(propuesta);
   }
 
+  @Transactional
   public void cancelar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.cancelar(perfilId);

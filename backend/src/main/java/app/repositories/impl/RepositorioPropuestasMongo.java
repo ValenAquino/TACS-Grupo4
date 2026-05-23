@@ -2,16 +2,11 @@ package app.repositories.impl;
 
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.propuesta.PropuestasDto;
 import app.exceptions.NotFoundException;
-import app.model.entities.Calificacion;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioPropuestas;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;

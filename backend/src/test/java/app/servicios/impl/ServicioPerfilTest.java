@@ -3,6 +3,9 @@ package app.servicios.impl;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import app.MongoTestBase;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.filtros.SugerenciasFiltro;
@@ -12,18 +15,23 @@ import app.model.entities.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import app.servicios.ServicioJwt;
 import app.servicios.ServicioPerfil;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 class ServicioPerfilTest extends MongoTestBase {
 
   private ServicioPerfil service;
   private Perfil usuario;
   private Perfil otro;
-
   private Figurita messi;
+
+  @Mock
+  private ServicioJwt jwt;
 
   @BeforeEach
   void setUp() {
@@ -32,7 +40,7 @@ class ServicioPerfilTest extends MongoTestBase {
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     Coleccion colec = new Coleccion("c-1");
     usuario = Perfil.builder()
-        .id(new ObjectId().toString()).usuario(user).nombre("Lucas")
+        .id("1").usuario(user).nombre("Lucas")
         .coleccion(colec)
         .mediosDeContacto(telegram("@lucas"))
         .build();
@@ -42,7 +50,7 @@ class ServicioPerfilTest extends MongoTestBase {
     user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
     colec = new Coleccion("c-2");
     otro = Perfil.builder()
-        .id(new ObjectId().toString()).usuario(user).nombre("Sofía")
+        .id("2").usuario(user).nombre("Sofía")
         .coleccion(colec)
         .mediosDeContacto(telegram("@sofía"))
         .build();
@@ -198,7 +206,9 @@ class ServicioPerfilTest extends MongoTestBase {
         .build();
     repositorioPerfiles.guardar(otroConMessi);
 
-    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null, 1, 10));
+    when(jwt.getPerfilId(any())).thenReturn("1");
+
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(1, resultado.contenido().size());
   }
@@ -208,7 +218,9 @@ class ServicioPerfilTest extends MongoTestBase {
     Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
     usuario.getColeccion().getFaltantes().add(messi);
 
-    var resultado = service.obtenerSugerencias("u-1", new SugerenciasFiltro(null, 1, 10));
+    when(jwt.getPerfilId(any())).thenReturn("1");
+
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
 
     assertEquals(0, resultado.contenido().size());
   }

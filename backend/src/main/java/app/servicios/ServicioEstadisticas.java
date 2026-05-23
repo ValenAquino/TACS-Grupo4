@@ -4,6 +4,8 @@ import app.dto.EstadisticasDto;
 import app.dto.FiguritasPorModalidadDto;
 import app.dto.PropuestasPorEstadoDto;
 import app.dto.SeleccionCantidadDto;
+import app.dto.filtros.SubastasFiltro;
+import app.dto.paginacion.PaginaResultado;
 import app.model.entities.EstadoProceso;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
@@ -11,8 +13,11 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
+import app.repositories.impl.campos.CamposPerfil;
+import app.repositories.impl.campos.CamposSubasta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -27,10 +32,12 @@ public class ServicioEstadisticas {
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
 
+    @Transactional
     public EstadisticasDto obtenerEstadisticas() {
         long totalUsuarios = repositorioPerfiles.contar();
 
-        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos().stream()
+        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos(new CamposPerfil(false))
+            .stream()
             .flatMap(u -> u.getColeccion().getRepetidas().stream())
             .collect(Collectors.toList());
 
@@ -38,9 +45,9 @@ public class ServicioEstadisticas {
 
         int totalPropuestas = repositorioPropuestas.contar();
 
-        int totalSubastasActivas = (int) repositorioSubastas.buscarTodos().stream()
-                .filter(Subasta::estaActivo)
-                .count();
+        SubastasFiltro filtros = new SubastasFiltro(0, 20, null, null, "ACTIVA");
+
+        PaginaResultado<Subasta> totalSubastasActivas = repositorioSubastas.buscarTodos(filtros, new CamposSubasta(false, false));
 
         PropuestasPorEstadoDto propuestasPorEstado = calcularPropuestasPorEstado();
         FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);
@@ -50,7 +57,7 @@ public class ServicioEstadisticas {
             totalUsuarios,
             totalFiguritasPublicadas,
             totalPropuestas,
-            totalSubastasActivas,
+            (int) totalSubastasActivas.cantidadDeElementos(),
             propuestasPorEstado,
             figuritasPorModalidad,
             topSelecciones

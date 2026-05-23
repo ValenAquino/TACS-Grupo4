@@ -6,6 +6,7 @@ import app.model.entities.Perfil;
 import app.model.entities.Usuario;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,9 @@ public class ServicioSesion {
       throw new UsuarioException("Credenciales invalidas");
     }
 
-    Perfil perfil = this.repoPerfiles.buscarPorUsuarioId(usuario.getId());
+    CamposPerfil sinCampos = new CamposPerfil(false);
+
+    Perfil perfil = this.repoPerfiles.buscarPorUsuarioId(usuario.getId(), sinCampos);
 
     return this.servicioJwt.generarToken(usuario, perfil);
   }

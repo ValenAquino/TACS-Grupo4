@@ -19,8 +19,11 @@ import app.repositories.RepositorioPerfiles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +33,17 @@ public class ServicioPerfil {
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioNotificaciones repositorioNotificaciones;
 
-
   public List<FiguritaDto> obtenerFaltantes(String userId) {
-    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId);
+    CamposPerfil campos = new CamposPerfil(false);
+
+    Perfil perfil = repositorioPerfiles.buscarPorUsuarioId(userId, campos);
     return perfil.getColeccion().getFaltantes().stream()
         .map(FiguritaDto::new)
         .toList();
   }
 
 
+  @Transactional
   public void agregarCalificacion(String autorId, String destinoId,
                                   Integer valor, String descripcion, String transaccionId,
                                   MetodoIntercambio tipoTransaccion) {
@@ -49,8 +54,10 @@ public class ServicioPerfil {
       throw new BadRequestException("El valor de la calificación debe estar entre 1 y 5");
     }
 
-    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(destinoId);
-    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId);
+    CamposPerfil sinCampos = new CamposPerfil(false);
+
+    Perfil perfilDestino = this.repositorioPerfiles.buscarPorId(destinoId, sinCampos);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, sinCampos);
 
     boolean yaCalifico = this.repositorioCalificacion.yaCalifico(
         destinoId,
@@ -73,11 +80,12 @@ public class ServicioPerfil {
     perfilDestino.agregarNuevaCalificacion(calificacion);
 
     this.repositorioCalificacion.guardar(calificacion);
-    this.repositorioPerfiles.guardar(perfilDestino);
+    this.repositorioPerfiles.guardar(perfilDestino, sinCampos);
   }
 
-  public PaginaResultado<SugerenciaDto> obtenerSugerencias(String userId, SugerenciasFiltro filtros) {
-    Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorUsuarioId(userId);
+  public PaginaResultado<SugerenciaDto> obtenerSugerencias(String perfilId, SugerenciasFiltro filtros) {
+    CamposPerfil campos = new CamposPerfil(false);
+    Perfil perfilObjetivo = this.repositorioPerfiles.buscarPorId(perfilId, campos);
 
     PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), filtros);
 
@@ -86,7 +94,8 @@ public class ServicioPerfil {
   }
 
   public List<ContadorDto> obtenerContadores(String perfilId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
+    CamposPerfil campos = new CamposPerfil(false);
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, campos);
 
     List<ContadorDto> contadores = new ArrayList<>();
 
@@ -97,13 +106,14 @@ public class ServicioPerfil {
   }
 
   public List<NotificacionesDto> obtenerNotificaciones(String userId) {
-      Perfil perfil = repositorioPerfiles.buscarPorId(userId);
+    CamposPerfil sinCampos = new CamposPerfil(false);
+    Perfil perfil = repositorioPerfiles.buscarPorId(userId, sinCampos);
 
     return this.repositorioNotificaciones.buscarPorPerfil(perfil).stream().map(NotificacionesDto::new).toList();
   }
 
   public PerfilDto obtenerPerfil(String perfilId) {
-    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId);
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(true));
     if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + perfilId);
     return new PerfilDto(perfil);
   }

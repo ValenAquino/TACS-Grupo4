@@ -33,6 +33,7 @@ const ExplorarResultados = ({
                 available={fig.available}
                 extra={fig.extra}
                 user={fig.user}
+                figurita={fig}
               />
             </div>
           ))

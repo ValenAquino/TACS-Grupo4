@@ -30,7 +30,7 @@ public class Propuesta {
     @DBRef
     private Perfil destinatario;
 
-    @DBRef
+    @DBRef(lazy = true)
     private List<Figurita> figuritasOfrecidas;
 
     @DBRef
@@ -109,6 +109,15 @@ public class Propuesta {
 
     private void ejecutarRechazo() {
         this.autor.getColeccion().sacarReservasRepetidas(this.getFiguritasOfrecidas());
+    }
+
+    /**
+     * Resetea la propuesta a estado PENDIENTE. Se utiliza cuando el ofertante
+     * modifica las figuritas ofrecidas y la oferta debe ser revisada nuevamente.
+     */
+    public void resetearAPendiente(String perfilId) {
+        this.validarUsuarioAutor(perfilId);
+        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE));
     }
 
     private void validarPendiente() {

@@ -11,6 +11,8 @@ import app.dto.filtros.FiguritasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
+
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +55,7 @@ public class ServicioFigurita {
 
   private Perfil buscarPerfil(String perfilId) {
     try {
-      return repositorioPerfiles.buscarPorId(perfilId);
+      return repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
     } catch (NotFoundException e) {
       return null;
     }

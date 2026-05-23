@@ -92,7 +92,8 @@ import org.springframework.stereotype.Service;
     }
 
     public void editarOfertaEnSubasta(String perfilId, String subastaId, String ofertaId, EditarOfertaRequest body){
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      CamposSubasta camposSubasta = new CamposSubasta(false, true);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
       Propuesta oferta = subasta.getOfertas().stream()
           .filter(o -> o.getId().equals(ofertaId))
           .findFirst().orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
@@ -105,7 +106,8 @@ import org.springframework.stereotype.Service;
     }
 
     public void cancelarOferta(String perfilId, String subastaId, String ofertaId) {
-      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      CamposSubasta camposSubasta = new CamposSubasta(false, true);
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
       Propuesta oferta = subasta.getOfertas().stream()
           .filter(o -> o.getId().equals(ofertaId))
           .findFirst()

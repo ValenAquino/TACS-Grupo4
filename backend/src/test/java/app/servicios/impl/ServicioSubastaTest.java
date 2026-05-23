@@ -486,7 +486,7 @@ public class ServicioSubastaTest extends MongoTestBase {
         new EditarOfertaRequest(List.of("ARG-10"))
     );
 
-    subasta = repositorioSubastas.buscarPorId("s-1");
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(false, true));
 
     assertEquals(EstadoProceso.PENDIENTE, buscarOfertaEn(subasta, "o-1").obtenerEstadoActual().getValor());
   }
@@ -513,7 +513,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.cancelarOferta(lucas.getId(), "s-1", "o-1");
 
-    subasta = repositorioSubastas.buscarPorId("s-1");
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(false, true));
 
     assertEquals(EstadoProceso.CANCELADO, buscarOfertaEn(subasta, "o-1").obtenerEstadoActual().getValor());
   }

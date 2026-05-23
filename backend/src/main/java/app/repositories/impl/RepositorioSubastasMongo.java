@@ -97,7 +97,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   public Subasta buscarPorId(String id, CamposSubasta campos) {
     Query query = new Query();
     this.conCamposCargados(query, campos);
-    Subasta subasta = this.mongoTemplate.findById(id, Subasta.class);
+    Subasta subasta = this.mongoTemplate.findOne(query, Subasta.class);
 
     if(subasta == null) {
       throw new NotFoundException("Subasta no encontrada");

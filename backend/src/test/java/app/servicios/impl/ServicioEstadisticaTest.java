@@ -4,20 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import app.MongoTestBase;
 import app.dto.EstadisticasDto;
-import app.model.entities.Coleccion;
-import app.model.entities.Figurita;
-import app.model.entities.FiguritaIntercambiable;
-import app.model.entities.MedioComunicacion;
-import app.model.entities.MedioDeContacto;
-import app.model.entities.MetodoIntercambio;
-import app.model.entities.Perfil;
-import app.model.entities.Propuesta;
-import app.model.entities.Rol;
-import app.model.entities.Seleccion;
-import app.model.entities.Subasta;
-import app.model.entities.Usuario;
+import app.model.entities.*;
 import app.servicios.ServicioEstadisticas;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -166,25 +156,29 @@ class ServicioEstadisticaTest extends MongoTestBase {
         Perfil autor = perfil("a", "usr-a", "Autor");
         Perfil destinatario = perfil("d", "usr-d", "Dest");
 
-        Propuesta pendiente = Propuesta.builder()
-            .id("p1").autor(autor).destinatario(destinatario)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(null)
-            .build();
+        Propuesta pendiente =
+            propuestaConEstado(
+                "p1",
+                autor,
+                destinatario,
+                EstadoProceso.PENDIENTE
+            );
 
-        Propuesta aceptada = Propuesta.builder()
-            .id("p2").autor(autor).destinatario(destinatario)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(null)
-            .build();
-        aceptada.aceptar(destinatario.getId());
+        Propuesta aceptada =
+            propuestaConEstado(
+                "p2",
+                autor,
+                destinatario,
+                EstadoProceso.ACEPTADO
+            );
 
-        Propuesta rechazada = Propuesta.builder()
-            .id("p3").autor(autor).destinatario(destinatario)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(null)
-            .build();
-        rechazada.rechazar(destinatario.getId());
+        Propuesta rechazada =
+            propuestaConEstado(
+                "p3",
+                autor,
+                destinatario,
+                EstadoProceso.RECHAZADO
+            );
 
         repositorioPropuestas.guardar(pendiente);
         repositorioPropuestas.guardar(aceptada);
@@ -198,31 +192,38 @@ class ServicioEstadisticaTest extends MongoTestBase {
     }
 
     @Test
-    void propuestasPorEstado_variasDelMismoEstado_acumulaCorrectamente() {
+    void ropuestasPorEstado_variasDelMismoEstado_acumulaCorrectamente() {
         Perfil autor = perfil("a", "usr-a", "Autor");
         Perfil destinatario = perfil("d", "usr-d", "Dest");
 
-        Propuesta p1 = Propuesta.builder()
-            .id("p1").autor(autor).destinatario(destinatario)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(null)
-            .build();
+        Propuesta pendiente =
+            propuestaConEstado(
+                "p1",
+                autor,
+                destinatario,
+                EstadoProceso.PENDIENTE
+            );
 
-        Propuesta p2 = Propuesta.builder()
-            .id("p2").autor(autor).destinatario(destinatario)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(null)
-            .build();
-        Propuesta p3 = Propuesta.builder()
-            .id("p3").autor(autor).destinatario(destinatario)
-            .figuritasOfrecidas(List.of())
-            .figuritaBuscada(null)
-            .build();
-        p3.aceptar(destinatario.getId());
+        Propuesta pendiente2 =
+            propuestaConEstado(
+                "p3",
+                autor,
+                destinatario,
+                EstadoProceso.PENDIENTE
+            );
 
-        repositorioPropuestas.guardar(p1);
-        repositorioPropuestas.guardar(p2);
-        repositorioPropuestas.guardar(p3);
+        Propuesta aceptada =
+            propuestaConEstado(
+                "p2",
+                autor,
+                destinatario,
+                EstadoProceso.ACEPTADO
+            );
+
+
+        repositorioPropuestas.guardar(pendiente);
+        repositorioPropuestas.guardar(pendiente2);
+        repositorioPropuestas.guardar(aceptada);
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
@@ -334,5 +335,28 @@ class ServicioEstadisticaTest extends MongoTestBase {
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
         assertEquals(2, resultado.getTopSelecciones().size());
+    }
+
+    private Propuesta propuestaConEstado(
+        String id,
+        Perfil autor,
+        Perfil destinatario,
+        EstadoProceso estado
+    ) {
+        return new Propuesta(
+            id,
+            autor,
+            destinatario,
+            List.of(),
+            null,
+            new ArrayList<>(
+                List.of(
+                    new EstadoPropuesta(
+                        LocalDateTime.now(),
+                        estado
+                    )
+                )
+            )
+        );
     }
 }

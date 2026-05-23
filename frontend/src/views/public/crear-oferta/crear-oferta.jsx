@@ -71,10 +71,6 @@ const CrearOferta = () => {
   const puedeOfertar = cumpleCalificacion && tieneTodasRequeridas
 
   const onEnviar = async () => {
-    if ([...bloqueadas, ...figuritasExtra].length === 0) {
-      showToast('Tenés que seleccionar al menos una figurita', 'warning')
-      return
-    }
     try {
       const ids = [...bloqueadas, ...figuritasExtra].map((f) => f.figurita_id ?? f.id)
       await crearOferta(subId, ids)
@@ -185,7 +181,11 @@ const CrearOferta = () => {
 
           <SelectorRepetidas modo="multiple" bloqueadas={bloqueadas} onChange={setFiguritasExtra} />
 
-          <Button label="Enviar oferta ↗" disabled={!puedeOfertar} onClick={onEnviar} />
+          <Button
+            label="Enviar oferta ↗"
+            disabled={!puedeOfertar || [...bloqueadas, ...figuritasExtra].length === 0}
+            onClick={onEnviar}
+          />
         </div>
       )}
     </div>

@@ -63,7 +63,7 @@ const CrearPropuestaIntercambio = () => {
         <p className={styles.crearPropuestaSeleccionTitulo}>
           Seleccioná la figurita que querés ofrecer
         </p>
-        <SelectorRepetidas modo="unica" bloqueadas={[]} onChange={setSeleccionadas} />
+        <SelectorRepetidas modo="multiple" bloqueadas={[]} onChange={setSeleccionadas} />
       </div>
 
       <Button label="Enviar propuesta ↗" disabled={seleccionadas.length === 0} onClick={onEnviar} />

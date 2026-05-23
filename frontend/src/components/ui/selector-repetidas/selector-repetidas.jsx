@@ -25,7 +25,6 @@ const SelectorRepetidas = ({
     try {
       const payload = await buscarRepetidas({ jugador: busqueda, pagina: 1, limite: LIMITE })
       setFiguritas(payload.contenido ?? [])
-      console.log('figuritas fetch', payload.contenido)
       setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))

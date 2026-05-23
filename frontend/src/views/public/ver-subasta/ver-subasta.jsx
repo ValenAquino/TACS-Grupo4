@@ -1,7 +1,7 @@
 import styles from './ver-subasta.module.css'
 import { useParams } from 'react-router'
 import { useEffect, useState } from 'react'
-import { buscarSubasta, crearOferta } from '../../../services/subastasService.js'
+import { buscarSubasta } from '../../../services/subastasService.js'
 import Breadcrumb from '../../../components/ui/breadcrumb/breadcrumb.jsx'
 import SectionCard from '../../../components/ui/section-card/section-card.jsx'
 import SectionTitle from '../../../components/ui/section-title/section-title.jsx'

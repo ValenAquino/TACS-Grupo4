@@ -51,11 +51,13 @@ const SelectorRepetidas = ({
           : existe
             ? prev.filter((f) => f.figurita_id !== fig.figurita_id)
             : [...prev, fig]
-      onChange?.(next)
       return next
     })
   }
 
+  useEffect(() => {
+    onChange?.(seleccionadas)
+  }, [seleccionadas])
   const todasVisibles = [...bloqueadas, ...seleccionadas]
 
   return (

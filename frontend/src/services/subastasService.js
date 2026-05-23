@@ -60,7 +60,7 @@ export const crearOferta = async (subastaId, userId, body) => {
 export const editarOferta = async (subId, ofertaId, figuritasIds) => {
   try {
     const { data } = await api.patch(`${SUBASTAS_URL}/${subId}/ofertas/${ofertaId}`, {
-      figuritas_ids: figuritasIds,
+      figuritas_ofrecidas_id: figuritasIds,
     })
     return data
   } catch (error) {
@@ -70,7 +70,7 @@ export const editarOferta = async (subId, ofertaId, figuritasIds) => {
 
 export const cancelarOferta = async (subId, ofertaId) => {
   try {
-    const { data } = await api.post(`${SUBASTAS_URL}/${subId}/ofertas/${ofertaId}/cancelar`)
+    const { data } = await api.patch(`${SUBASTAS_URL}/${subId}/ofertas/${ofertaId}/cancelar`)
     return data
   } catch (error) {
     handleAxiosError(error)

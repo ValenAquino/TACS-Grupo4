@@ -122,8 +122,6 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
       );
     }
     //TODO where estadoActual != CANCELADO
-    System.out.println("participanteId: " + filtros.participanteId());
-    System.out.println("query: " + query.getQueryObject().toJson());
     long count = mongoTemplate.count(query, Subasta.class);
 
     query.skip((long) (filtros.pagina() - 1) * filtros.limite());
@@ -147,6 +145,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   @Override
   public Subasta buscarPorId(String id, CamposSubasta campos) {
     Query query = new Query();
+    query.addCriteria(Criteria.where("_id").is(id));
     this.conCamposCargados(query, campos);
     Subasta subasta = this.mongoTemplate.findOne(query, Subasta.class);
 

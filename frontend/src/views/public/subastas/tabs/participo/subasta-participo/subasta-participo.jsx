@@ -26,7 +26,8 @@ const SubastaParticipo = ({ subasta, finalizada }) => {
       : { label: 'Activa', className: 'text-success bg-success-subtle' }
 
   const handleCalificar = async ({ valor, descripcion }) => {
-    await calificarPerfil(userId, autor.id, {
+    await calificarPerfil({
+      destinatarioId: autor.id,
       valor,
       descripcion,
       transactionId: id,

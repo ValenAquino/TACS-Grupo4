@@ -1,74 +1,66 @@
-import { api, handleAxiosError } from "./api.js";
+import { api, handleAxiosError } from './api.js'
 
-const PERFIL_URL = "/perfil";
+const PERFIL_URL = '/perfil'
 
 export const buscarContadoresSugerencias = async () => {
-    try {
-        const { data } = await api.get(
-            `${PERFIL_URL}/contadores`,
-            {}
-        );
-        return data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
+  try {
+    const { data } = await api.get(`${PERFIL_URL}/contadores`, {})
+    return data
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}
 
-};
+export const buscarSugerencias = async ({ tipo, pagina, limite }) => {
+  try {
+    const { data } = await api.get(`${PERFIL_URL}/sugerencias`, {
+      params: { tipo, paginaActual: pagina, limite },
+    })
+    return data
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}
 
-export const buscarSugerencias = async ({tipo, pagina, limite}) => {
-    try {
-        const { data } = await api.get(
-            `${PERFIL_URL}/sugerencias`,
-            {params: {tipo, paginaActual: pagina, limite}}
-        );
-        return data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
-};
-
-export const calificarPerfil = async (
-  autorId,
-  perfilId,
-  { valor, descripcion, transactionId, tipoTransaccion },
-) => {
-  await api.post(
-    `/perfil/${perfilId}/calificaciones`,
-    {
-        user_id: autorId,
-      valor,
-      descripcion,
-      transaction_id: transactionId,
-      tipo_transaccion: tipoTransaccion,
-    }
-  );
-};
+export const calificarPerfil = async ({
+  destinatarioId,
+  valor,
+  descripcion,
+  transactionId,
+  tipoTransaccion,
+}) => {
+  await api.post(`/perfil/calificaciones`, {
+    destinatario_id: destinatarioId,
+    valor,
+    descripcion,
+    transaction_id: transactionId,
+    tipo_transaccion: tipoTransaccion,
+  })
+}
 
 export const buscarPerfil = async () => {
   try {
-    const { data } = await api.get(`${PERFIL_URL}`);
-    return data;
+    const { data } = await api.get(`${PERFIL_URL}`)
+    return data
   } catch (error) {
-    handleAxiosError(error);
+    handleAxiosError(error)
   }
-};
+}
 
 export const buscarCalificaciones = async (filtros) => {
-    try {
-        const { data } = await api.get(`${PERFIL_URL}/calificaciones`,
-            {params: filtros}
-        );
-        return data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
-};
+  try {
+    const { data } = await api.get(`${PERFIL_URL}/calificaciones`, { params: filtros })
+    return data
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}
 
 export const buscarContadores = async () => {
-    try {
-        const { data } = await api.get(`${PERFIL_URL}/contadores`);
-        return data;
-    } catch (error) {
-        handleAxiosError(error);
-    }
-};
+  try {
+    const { data } = await api.get(`${PERFIL_URL}/contadores`)
+    return data
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}

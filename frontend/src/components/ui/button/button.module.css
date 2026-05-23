@@ -15,10 +15,6 @@
   color: var(--color-text);
 }
 
-.button:active:not(:disabled) {
-  background-color: var(--color-primary-acent);;
-}
-
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -49,4 +45,37 @@
 .exito:hover:not(:disabled) {
   background-color: #146c43;
   color: white;
+}
+
+.peligroBorde {
+  background-color: transparent;
+  border-color: var(--bs-danger);
+  color: var(--bs-danger);
+}
+
+.peligroBorde:hover:not(:disabled) {
+  background-color: #f8d7da;
+  color: var(--bs-danger);
+}
+
+.exitoBorde {
+  background-color: transparent;
+  border-color: var(--bs-success);
+  color: var(--bs-success);
+}
+
+.exitoBorde:hover:not(:disabled) {
+  background-color: #d1e7dd;
+  color: var(--bs-success);
+}
+
+.secundarioBorde {
+  background-color: transparent;
+  border-color: var(--bs-secondary);
+  color: var(--bs-secondary);
+}
+
+.secundarioBorde:hover:not(:disabled) {
+  background-color: #e2e3e5;
+  color: var(--bs-secondary);
 }

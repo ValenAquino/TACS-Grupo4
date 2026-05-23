@@ -203,8 +203,8 @@ import org.springframework.stereotype.Service;
       if (filtros.participanteId() != null) {
         return resultado.mapearA(s -> {
           boolean yaCalifico = this.repoCalificacion.yaCalifico(
-              s.getAutor().getId(),
               perfilId,
+              s.getAutor().getId(),
               s.getId(),
               MetodoIntercambio.SUBASTA
           );
@@ -223,8 +223,8 @@ import org.springframework.stereotype.Service;
               .orElse(null);
 
           boolean yaCalifico = ganadorId != null && this.repoCalificacion.yaCalifico(
-              perfilId,
               ganadorId,
+              perfilId,
               s.getId(),
               MetodoIntercambio.SUBASTA
           );

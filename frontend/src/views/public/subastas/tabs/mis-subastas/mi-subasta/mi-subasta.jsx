@@ -87,7 +87,8 @@ const MiSubasta = ({ subasta, finalizada, onRefresh }) => {
   }
 
   const handleCalificar = async ({ valor, descripcion }) => {
-    await calificarPerfil(userId, oferta_ganadora.autor.id, {
+    await calificarPerfil({
+      destinatarioId: oferta_ganadora.autor.id,
       valor,
       descripcion,
       transactionId: subastaId,
@@ -156,14 +157,14 @@ const MiSubasta = ({ subasta, finalizada, onRefresh }) => {
             <>
               <Button
                 label="Ver resumen"
-                variante="secundario_borde"
+                variante="secundarioBorde"
                 className="flex-fill"
                 onClick={() => navigate(`/subastas/${subastaId}`)}
               />
               {oferta_ganadora && !ya_calificado && (
                 <Button
                   label="Calificar usuario"
-                  variante="secundario_borde"
+                  variante="secundarioBorde"
                   className="flex-fill"
                   onClick={() => setMostrarCalificar(true)}
                 />

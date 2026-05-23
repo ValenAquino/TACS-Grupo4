@@ -1,20 +1,25 @@
-# --- Etapa de build ---
-# Usa Maven con JDK 17 para compilar el proyecto
-FROM maven:3.9-eclipse-temurin-17 AS build
+# --- Etapa de dependencias ---
+# Descarga todas las dependencias y plugins sin compilar
+# Lo usamos como base en dev
+FROM maven:3.9-eclipse-temurin-17 AS dependencies
 WORKDIR /app
-
-# Copiamos solo el pom para cachear la descarga de dependencias
-# Si src/ cambia pero pom.xml no, Docker reutiliza esta capa
 COPY pom.xml .
-RUN mvn dependency:go-offline
-
-# Copiamos el resto de archivos de configuración y el código fuente
 COPY spotbugs-exclude.xml .
 COPY lombok.config .
+RUN mvn dependency:go-offline
+
+# --- Etapa de desarrollo ---
+# Agrega el código fuente sin correr tests ni validaciones
+# Lo usamos en docker compose watch para dev
+FROM dependencies AS dev
 COPY src ./src
 
-# Compilamos, corremos tests y validaciones, y generamos el JAR
-RUN mvn verify
+# --- Etapa de build ---
+# Por defecto corre tests + SpotBugs + JaCoCo. En CI se puede pasar
+# MAVEN_ARGS="package -DskipTests" porque los tests ya corrieron en un step previo.
+FROM dev AS build
+ARG MAVEN_ARGS=verify
+RUN mvn $MAVEN_ARGS
 
 # --- Etapa de runtime ---
 # Se usa JRE Alpine para ejecutar — imagen mas liviana que la estandar

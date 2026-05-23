@@ -2,20 +2,35 @@ services:
 
   mongodb:
     image: mongo:7
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_DB}
+    command: ["--replSet", "rs0"]
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data_dev:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
+      interval: 5s
+      timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 10s
+
+  mongo-init:
+    image: mongo:7
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command:
+      - mongosh
+      - --host
+      - mongodb:27017
+      - --eval
+      - |
+        // Intenta obtener el estado del replica set.
+        // Si falla, significa que todavía no fue inicializado → lo iniciamos.
+        // En arranques posteriores rs.status() ya funciona y el catch no se ejecuta.
+        try { rs.status() }
+        catch(e) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongodb:27017'}]}) }
+    restart: "no"
 
   backend:
     build:
@@ -27,8 +42,8 @@ services:
       - "8080:8080"
     command: mvn spring-boot:run
     depends_on:
-      mongodb:
-        condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
 
   frontend:
     build:

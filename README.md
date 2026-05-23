@@ -71,11 +71,14 @@ El backend se recarga manualmente con `make dev-back` cuando se cambia código J
 
 ### Variables de entorno
 
-Para sobreescribir la configuración por defecto, crear un archivo `.env` en la raíz:
+Crear un `.env` en la raíz a partir del ejemplo antes de levantar el stack:
 
 ```bash
-CORS_ORIGIN=http://tacs-dominio.com
+cp .env.example .env
 ```
+
+Los valores por defecto funcionan para dev sin modificaciones.
+En prod reemplazar `MONGO_URI` con la URI de Atlas y `CORS_ORIGIN` con el dominio real.
 
 ---
 
@@ -293,8 +296,8 @@ Para el backend, el redespliegue es manual con `make dev-back`.
 
 ### Docker: health check y orden de inicio
 
-El backend expone `/ping` como endpoint de salud. Docker Compose espera que esté `healthy` antes de iniciar el frontend (`condition: service_healthy`), 
-evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)). 
+El backend expone `/ping` como endpoint de salud. Docker Compose espera que esté `healthy` antes de iniciar el frontend (`condition: service_healthy`),
+evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)).
 El `start_period` de 15s le da margen a Spring Boot para inicializar.
 
 Ambos servicios tienen `restart: unless-stopped` para que Docker los recupere automáticamente ante una caída.
@@ -312,3 +315,35 @@ intercambio, el cambio es deliberado y controlado.
 
 `Coleccion` es un agregado con identidad propia y lógica no trivial (deduplicación de faltantes, acumulación de repetidas). Separar su repositorio del de `Perfil` respeta el principio de responsabilidad única y facilita la futura migración a base de datos, donde serán tablas distintas. Además,
 permite que operaciones sobre la colección no requieran cargar el perfil completo.
+
+---
+
+## Ejecutar tests
+
+```bash
+make test
+```
+
+Corre los tests dentro de un contenedor efímero sin levantar el stack completo. No requiere Java instalado localmente.
+
+## Validar el proyecto
+
+```bash
+docker compose -f docker-compose.dev.yml run --rm backend mvn verify
+```
+
+Ejecuta tests, análisis de SpotBugs y cobertura mínima con JaCoCo (80%). Este mismo comando corre automáticamente en cada `make build` (producción).
+
+## Configuración del IDE (IntelliJ)
+
+### SDK de Java 17
+
+En **File > Project Structure > Project**, seleccionar SDK 17 y language level 17.
+
+### Fin de línea Unix
+
+En **File > Settings > Editor > Code Style**, seleccionar `Unix and OS X (\n)` en **Line separator**.
+
+### Indentación con 2 espacios
+
+En **File > Settings > Editor > Code Style > Java > Tabs and Indents**, setear Tab size, Indent y Continuation indent en 2, 2 y 4.

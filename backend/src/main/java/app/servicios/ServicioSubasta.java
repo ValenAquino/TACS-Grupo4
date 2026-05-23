@@ -102,7 +102,7 @@ import org.springframework.stereotype.Service;
 
       oferta.setFiguritasOfrecidas(nuevas_figuritas);
       oferta.resetearAPendiente(perfilId);
-      this.repoSubasta.guardar(subasta);
+      this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
     public void cancelarOferta(String perfilId, String subastaId, String ofertaId) {
@@ -114,7 +114,7 @@ import org.springframework.stereotype.Service;
           .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
       oferta.cancelar(perfilId);
-      this.repoSubasta.guardar(subasta);
+      this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
     public void seleccionarOferta(String subastaId, String ofertaId) {

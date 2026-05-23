@@ -57,7 +57,8 @@ const SelectorRepetidas = ({
 
   useEffect(() => {
     onChange?.(seleccionadas)
-  }, [seleccionadas])
+  }, [seleccionadas, onChange])
+
   const todasVisibles = [...bloqueadas, ...seleccionadas]
 
   return (

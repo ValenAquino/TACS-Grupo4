@@ -75,8 +75,9 @@ const VerSubasta = () => {
       setSubasta(payload)
       setSubastaAbierta(new Date(payload.cierre) > new Date())
       setTiempo(payload.tiempo_restante)
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      console.log(err)
+      // silencio intencional
     } finally {
       setCargando(false)
     }

@@ -27,8 +27,9 @@ const Sugerencias = () => {
             const payload = await buscarContadoresSugerencias()
             setContadores(payload)
 
+          // eslint-disable-next-line no-unused-vars
         } catch (error) {
-            console.log(error)
+            // silencio intencional
         } finally {
             setCargando(false)
         }

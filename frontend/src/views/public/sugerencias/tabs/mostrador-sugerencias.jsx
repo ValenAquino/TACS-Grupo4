@@ -21,7 +21,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
             setSugerencias(payload.data)
 
         } catch (error) {
-            console.log(error)
+            // silencio intencional
         } finally {
             setCargando(false)
         }

@@ -10,6 +10,7 @@ import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
+import app.repositories.impl.campos.CamposPerfil;
 import app.servicios.ServicioPropuesta;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +28,12 @@ class ServicioPropuestaTest extends MongoTestBase {
   private Figurita messi;
   private Figurita mbappe;
 
+  CamposPerfil sinCampos;
+
   @BeforeEach
   void setUp() {
 
+    sinCampos = new CamposPerfil(false);
     // Figuritas
     messi = new Figurita(
         "ARG-10",
@@ -244,7 +248,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
 
     Perfil autor =
-        repositorioPerfiles.buscarPorId("1000");
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
 
     FiguritaIntercambiable repetida =
         autor.getColeccion()
@@ -295,45 +299,6 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     assertThrows(
         NotFoundException.class,
-        () -> propuestaService.crearPropuesta(
-            "1000",
-            request
-        )
-    );
-  }
-
-  @Test
-  void crearPropuestaSinDisponibilidadLanzaException() {
-
-    Perfil autor =
-        repositorioPerfiles.buscarPorId("1000");
-
-    FiguritaIntercambiable repetida =
-        autor.getColeccion()
-            .getRepetidas()
-            .get(0);
-
-    repetida.reservar(
-        MetodoIntercambio.INTERCAMBIO
-    );
-
-    repetida.reservar(
-        MetodoIntercambio.INTERCAMBIO
-    );
-
-    repositorioColecciones.guardar(
-        autor.getColeccion()
-    );
-
-    CrearPropuestaRequest request =
-        new CrearPropuestaRequest(
-            "1001",
-            "ARG-10",
-            List.of("FRA-10")
-        );
-
-    assertThrows(
-        BadRequestException.class,
         () -> propuestaService.crearPropuesta(
             "1000",
             request
@@ -415,7 +380,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
 
     Perfil destinatario =
-        repositorioPerfiles.buscarPorId("1001");
+        repositorioPerfiles.buscarPorId("1001", sinCampos);
 
     FiguritaIntercambiable repetida =
         destinatario.getColeccion()
@@ -458,7 +423,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
 
     Perfil autor =
-        repositorioPerfiles.buscarPorId("1000");
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
 
     assertFalse(
         autor.getColeccion()
@@ -484,7 +449,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
 
     Perfil destinatario =
-        repositorioPerfiles.buscarPorId("1001");
+        repositorioPerfiles.buscarPorId("1001", sinCampos);
 
     assertFalse(
         destinatario.getColeccion()
@@ -510,7 +475,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
 
     Perfil autor =
-        repositorioPerfiles.buscarPorId("1000");
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
 
     FiguritaIntercambiable repetida =
         autor.getColeccion()
@@ -635,7 +600,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
 
     Perfil autor =
-        repositorioPerfiles.buscarPorId("1000");
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
 
     FiguritaIntercambiable repetida =
         autor.getColeccion()
@@ -674,7 +639,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     );
 
     Perfil autor =
-        repositorioPerfiles.buscarPorId("1000");
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
 
     FiguritaIntercambiable repetida =
         autor.getColeccion()

@@ -8,15 +8,17 @@ import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Propuesta;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

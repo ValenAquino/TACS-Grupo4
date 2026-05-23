@@ -37,23 +37,13 @@ public class Propuesta {
     private Figurita figuritaBuscada;
 
     @Builder.Default
-    private List<EstadoPropuesta> estado= new ArrayList<>(
+    private List<EstadoPropuesta> estado = new ArrayList<>(
         List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))
     );
 
-    /**
-     * Retorna el estado más reciente de la propuesta. Si la lista está vacía
-     * (puede ocurrir al deserializar), inicializa con PENDIENTE.
-     */
-    public EstadoPropuesta obtenerEstadoActual() {
-        if (estado == null || estado.isEmpty()) {
-            EstadoPropuesta inicial = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
-            estado = new ArrayList<>();
-            estado.add(inicial);
-            return inicial;
-        }
-        return estado.get(estado.size() - 1);
-    }
+    @Builder.Default
+    private EstadoPropuesta estadoActual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
+
 
     /**
      * Acepta la propuesta. Valida que {@code usuario} sea el destinatario
@@ -61,9 +51,11 @@ public class Propuesta {
      */
     public void aceptar(String perfilId) {
         validarUsuarioDestino(perfilId);
-        validarPendiente();
+        validarAceptable();
         ejecutarIntercambio();
-        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
+        EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO);
+        estado.add(actual);
+        setEstadoActual(actual);
     }
 
     /**
@@ -73,7 +65,9 @@ public class Propuesta {
     public void seleccionar(String perfilId) {
         validarUsuarioDestino(perfilId);
         validarPendiente();
-        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
+        EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO);
+        estado.add(actual);
+        setEstadoActual(actual);
     }
 
     /**
@@ -84,7 +78,9 @@ public class Propuesta {
         validarUsuarioDestino(perfilId);
         validarPendiente();
         ejecutarRechazo();
-        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
+        EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO);
+        estado.add(actual);
+        setEstadoActual(actual);
     }
 
     /**
@@ -95,7 +91,9 @@ public class Propuesta {
         validarUsuarioAutor(perfilId);
         validarPendiente();
         ejecutarRechazo();
-        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
+        EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO);
+        estado.add(actual);
+        setEstadoActual(actual);
     }
 
     private void ejecutarIntercambio() {
@@ -114,8 +112,21 @@ public class Propuesta {
     }
 
     private void validarPendiente() {
-        if (obtenerEstadoActual().getValor() != EstadoProceso.PENDIENTE) {
+        if (getEstadoActual().getValor() != EstadoProceso.PENDIENTE) {
             throw new BadRequestException("La propuesta ya fue respondida");
+        }
+    }
+
+    private void validarAceptable() {
+        EstadoProceso estado = getEstadoActual().getValor();
+
+        if (
+            estado != EstadoProceso.PENDIENTE &&
+                estado != EstadoProceso.SELECCIONADO
+        ) {
+            throw new BadRequestException(
+                "La propuesta ya fue respondida"
+            );
         }
     }
 

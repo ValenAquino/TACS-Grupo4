@@ -9,7 +9,6 @@ import app.model.entities.*;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -75,13 +74,23 @@ class RepositorioPropuestasTest extends MongoTestBase {
             .figuritasOfrecidas(List.of())
             .build();
 
-        List<EstadoPropuesta> estadosPropuesta = new ArrayList<>();
+        List<EstadoPropuesta> historial = new ArrayList<>();
 
         for (EstadoProceso estado : estados) {
-            estadosPropuesta.add(new EstadoPropuesta(LocalDateTime.now(), estado));
+            historial.add(
+                new EstadoPropuesta(
+                    LocalDateTime.now(),
+                    estado
+                )
+            );
         }
 
-        propuesta.setEstado(estadosPropuesta);
+        propuesta.setEstado(historial);
+
+        // sincroniza estadoActual con el último estado
+        propuesta.setEstadoActual(
+            historial.get(historial.size() - 1)
+        );
 
         return propuesta;
     }
@@ -217,7 +226,7 @@ class RepositorioPropuestasTest extends MongoTestBase {
     }
 
     @Test
-    void buscarTodos_estadoFiltraPorUltimoEstado() {
+    void buscarTodos_estadoFiltraPorEstadoActual() {
 
         repositorio.guardar(
             propuesta(
@@ -255,14 +264,12 @@ class RepositorioPropuestasTest extends MongoTestBase {
             resultado.contenido().size()
         );
 
-        assertTrue(
+        assertEquals(
+            EstadoProceso.RECHAZADO,
             resultado.contenido()
                 .get(0)
-                .getEstado()
-                .stream()
-                .map(EstadoPropuesta::getValor)
-                .toList()
-                .contains(EstadoProceso.RECHAZADO)
+                .getEstadoActual()
+                .getValor()
         );
     }
 

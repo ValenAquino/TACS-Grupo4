@@ -364,7 +364,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     assertEquals(
         EstadoProceso.PENDIENTE,
         propuesta
-            .obtenerEstadoActual()
+            .getEstadoActual()
             .getValor()
     );
   }
@@ -393,7 +393,7 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     assertEquals(
         EstadoProceso.ACEPTADO,
-        actualizada.obtenerEstadoActual().getValor()
+        actualizada.getEstadoActual().getValor()
     );
   }
 
@@ -583,7 +583,7 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     assertEquals(
         EstadoProceso.RECHAZADO,
-        actualizada.obtenerEstadoActual().getValor()
+        actualizada.getEstadoActual().getValor()
     );
   }
 
@@ -612,7 +612,7 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     assertEquals(
         EstadoProceso.CANCELADO,
-        actualizada.obtenerEstadoActual().getValor()
+        actualizada.getEstadoActual().getValor()
     );
   }
 

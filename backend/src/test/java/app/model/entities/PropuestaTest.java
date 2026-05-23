@@ -114,17 +114,29 @@ class PropuestaTest {
                     EstadoProceso.PENDIENTE
                 )
             )
+        ),
+        new EstadoPropuesta(
+            LocalDateTime.now(),
+            EstadoProceso.PENDIENTE
         )
     );
   }
 
   @Test
   void deberiaAceptarPropuestaPendiente() {
+
     propuesta.aceptar(destino.getId());
 
     assertEquals(
         EstadoProceso.ACEPTADO,
-        propuesta.obtenerEstadoActual().getValor()
+        propuesta.getEstadoActual().getValor()
+    );
+
+    assertEquals(
+        EstadoProceso.ACEPTADO,
+        propuesta.getEstado()
+            .get(propuesta.getEstado().size() - 1)
+            .getValor()
     );
   }
 
@@ -140,7 +152,7 @@ class PropuestaTest {
 
     assertEquals(
         EstadoProceso.RECHAZADO,
-        propuesta.obtenerEstadoActual().getValor()
+        propuesta.getEstadoActual().getValor()
     );
   }
 
@@ -150,7 +162,7 @@ class PropuestaTest {
 
     assertEquals(
         EstadoProceso.SELECCIONADO,
-        propuesta.obtenerEstadoActual().getValor()
+        propuesta.getEstadoActual().getValor()
     );
   }
 
@@ -166,7 +178,7 @@ class PropuestaTest {
 
     assertEquals(
         EstadoProceso.CANCELADO,
-        propuesta.obtenerEstadoActual().getValor()
+        propuesta.getEstadoActual().getValor()
     );
   }
 
@@ -224,21 +236,28 @@ class PropuestaTest {
   }
 
   @Test
-  void obtenerEstadoActual_listaVacia_inicializaPendiente() {
+  void propuestaNueva_inicializaPendientePorDefecto() {
 
-    propuesta.setEstado(new ArrayList<>());
-
-    EstadoPropuesta estado =
-        propuesta.obtenerEstadoActual();
+    Propuesta propuesta = Propuesta.builder()
+        .autor(origen)
+        .destinatario(destino)
+        .build();
 
     assertEquals(
         EstadoProceso.PENDIENTE,
-        estado.getValor()
+        propuesta.getEstadoActual().getValor()
     );
 
     assertEquals(
         1,
         propuesta.getEstado().size()
+    );
+
+    assertEquals(
+        EstadoProceso.PENDIENTE,
+        propuesta.getEstado()
+            .get(0)
+            .getValor()
     );
   }
 
@@ -288,7 +307,7 @@ class PropuestaTest {
   }
 
   @Test
-  void rechazarLiberaReservasDeFiguritasOfrecidas() {
+  void rechazarLiberaReservasYActualizaEstado() {
 
     FiguritaIntercambiable repetida =
         origen.getColeccion()
@@ -296,11 +315,6 @@ class PropuestaTest {
             .get(0);
 
     repetida.reservar(MetodoIntercambio.INTERCAMBIO);
-
-    assertEquals(
-        1,
-        repetida.getCantidadReservada()
-    );
 
     propuesta.rechazar(destino.getId());
 
@@ -308,10 +322,22 @@ class PropuestaTest {
         0,
         repetida.getCantidadReservada()
     );
+
+    assertEquals(
+        EstadoProceso.RECHAZADO,
+        propuesta.getEstadoActual().getValor()
+    );
+
+    assertEquals(
+        EstadoProceso.RECHAZADO,
+        propuesta.getEstado()
+            .get(propuesta.getEstado().size() - 1)
+            .getValor()
+    );
   }
 
   @Test
-  void cancelarLiberaReservasDeFiguritasOfrecidas() {
+  void cancelarLiberaReservasYActualizaEstado() {
 
     FiguritaIntercambiable repetida =
         origen.getColeccion()
@@ -320,16 +346,23 @@ class PropuestaTest {
 
     repetida.reservar(MetodoIntercambio.INTERCAMBIO);
 
-    assertEquals(
-        1,
-        repetida.getCantidadReservada()
-    );
-
     propuesta.cancelar(origen.getId());
 
     assertEquals(
         0,
         repetida.getCantidadReservada()
+    );
+
+    assertEquals(
+        EstadoProceso.CANCELADO,
+        propuesta.getEstadoActual().getValor()
+    );
+
+    assertEquals(
+        EstadoProceso.CANCELADO,
+        propuesta.getEstado()
+            .get(propuesta.getEstado().size() - 1)
+            .getValor()
     );
   }
 }

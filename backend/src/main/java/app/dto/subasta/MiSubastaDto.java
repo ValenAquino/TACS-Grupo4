@@ -33,7 +33,7 @@ public class MiSubastaDto {
 
     if (!subasta.estaActivo()) {
       subasta.getOfertas().stream()
-          .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO)
+          .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.ACEPTADO)
           .findFirst()
           .ifPresent(p -> {
             this.ganador = new PerfilDto(p.getAutor());

@@ -106,7 +106,7 @@ import org.springframework.stereotype.Service;
       }
 
       subasta.getOfertas().stream()
-          .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
+          .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
           .findFirst()
           .ifPresent(p -> p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE)));
 
@@ -157,7 +157,7 @@ import org.springframework.stereotype.Service;
       }
 
       Propuesta seleccionada = subasta.getOfertas().stream()
-          .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
+          .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
           .findFirst()
           .orElseThrow(() -> new BadRequestException("No hay una oferta seleccionada"));
 

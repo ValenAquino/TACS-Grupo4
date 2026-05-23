@@ -356,6 +356,10 @@ class ServicioEstadisticaTest extends MongoTestBase {
                         estado
                     )
                 )
+            ),
+            new EstadoPropuesta(
+                LocalDateTime.now(),
+                EstadoProceso.PENDIENTE
             )
         );
     }

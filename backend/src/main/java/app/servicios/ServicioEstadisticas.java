@@ -11,7 +11,6 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +59,7 @@ public class ServicioEstadisticas {
 
     private PropuestasPorEstadoDto calcularPropuestasPorEstado() {
         Map<EstadoProceso, Long> porEstado = repositorioPropuestas.buscarTodosEstadisticas().stream()
-            .collect(Collectors.groupingBy(p -> p.obtenerEstadoActual().getValor(), Collectors.counting()));
+            .collect(Collectors.groupingBy(p -> p.getEstadoActual().getValor(), Collectors.counting()));
 
         return new PropuestasPorEstadoDto(
             porEstado.getOrDefault(EstadoProceso.PENDIENTE, 0L).intValue(),

@@ -46,14 +46,7 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
 
         if (filtros.estado() != null) {
             query.addCriteria(
-                Criteria.expr(
-                    MongoExpression.create(
-                        "{ $eq: [" +
-                            "{ $arrayElemAt: ['$estado.valor', -1] }, " +
-                            "'" + filtros.estado().name() + "'" +
-                            "] }"
-                    )
-                )
+                Criteria.where("estadoActual.valor").is(filtros.estado())
             );
         }
 

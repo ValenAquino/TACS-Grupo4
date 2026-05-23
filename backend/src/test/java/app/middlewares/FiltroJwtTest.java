@@ -47,18 +47,45 @@ class FiltroJwtTest {
 
   @Test
   void shouldNotFilter_rutasPublicas_devuelveTrue() {
-    when(request.getServletPath()).thenReturn("/login/test");
 
-    assertTrue(jwtFilter.shouldNotFilter(request));
+    when(request.getMethod())
+        .thenReturn("GET");
+
+    when(request.getServletPath())
+        .thenReturn("/login/test");
+
+    assertTrue(
+        jwtFilter.shouldNotFilter(request)
+    );
   }
 
   @Test
   void shouldNotFilter_rutasProtegidas_devuelveFalse() {
-    when(request.getServletPath()).thenReturn("/subastas/123");
 
-    assertFalse(jwtFilter.shouldNotFilter(request));
+    when(request.getMethod())
+        .thenReturn("GET");
+
+    when(request.getServletPath())
+        .thenReturn("/subastas/123");
+
+    assertFalse(
+        jwtFilter.shouldNotFilter(request)
+    );
   }
 
+  @Test
+  void shouldNotFilter_options_devuelveTrue() {
+
+    when(request.getMethod())
+        .thenReturn("OPTIONS");
+
+    when(request.getServletPath())
+        .thenReturn("/subastas/123");
+
+    assertTrue(
+        jwtFilter.shouldNotFilter(request)
+    );
+  }
   // -----------------------------
   // doFilterInternal - éxito
   // -----------------------------

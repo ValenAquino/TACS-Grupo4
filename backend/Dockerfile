@@ -15,9 +15,11 @@ FROM dependencies AS dev
 COPY src ./src
 
 # --- Etapa de build ---
-# Corremos tests, SpotBugs y JaCoCo antes de generar el JAR
+# Por defecto corre tests + SpotBugs + JaCoCo. En CI se puede pasar
+# MAVEN_ARGS="package -DskipTests" porque los tests ya corrieron en un step previo.
 FROM dev AS build
-RUN mvn verify
+ARG MAVEN_ARGS=verify
+RUN mvn $MAVEN_ARGS
 
 # --- Etapa de runtime ---
 # Se usa JRE Alpine para ejecutar — imagen mas liviana que la estandar

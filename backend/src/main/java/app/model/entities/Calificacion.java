@@ -18,7 +18,6 @@ public class Calificacion {
   @Id
   private String id;
   @JsonIgnore
-
   @DBRef
   private Perfil autor;
 

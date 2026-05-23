@@ -30,7 +30,7 @@ public class Propuesta {
     @DBRef
     private Perfil destinatario;
 
-    @DBRef
+    @DBRef(lazy = true)
     private List<Figurita> figuritasOfrecidas;
 
     @DBRef

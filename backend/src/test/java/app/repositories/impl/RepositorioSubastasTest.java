@@ -4,6 +4,7 @@ import app.MongoTestBase;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.*;
+import app.repositories.impl.campos.CamposSubasta;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,8 +95,7 @@ class RepositorioSubastasTest extends MongoTestBase {
         repositorioSubastas.guardar(s1);
         repositorioSubastas.guardar(s2);
 
-        PaginaResultado<Subasta> resultado =
-            repositorioSubastas.buscarPorAutor(p1.getId(), 0, 10);
+        PaginaResultado<Subasta> resultado = repositorioSubastas.buscarPorAutor(p1.getId(), 0, 10, new CamposSubasta(true, true));
 
         assertEquals(1, resultado.contenido().size());
         assertEquals("s-1", resultado.contenido().get(0).getId());
@@ -103,9 +103,10 @@ class RepositorioSubastasTest extends MongoTestBase {
 
     @Test
     void findByUsuarioId_sinResultados_retornaListaVacia() {
+        assertTrue(repositorioSubastas.buscarPorAutor(new ObjectId().toString(), 1, 10, new CamposSubasta(true, true)).contenido().isEmpty());
         assertTrue(
             repositorioSubastas
-                .buscarPorAutor(new ObjectId().toString(), 1, 10)
+                .buscarPorAutor(new ObjectId().toString(), 1, 10, new CamposSubasta(true, true))
                 .contenido()
                 .isEmpty()
         );
@@ -136,7 +137,7 @@ class RepositorioSubastasTest extends MongoTestBase {
             new SubastasFiltro(1,10,null,null,null);
 
         PaginaResultado<Subasta> resultado =
-            repositorioSubastas.buscarTodos(filtros);
+            repositorioSubastas.buscarTodos(filtros, new CamposSubasta(true, true));
 
         assertEquals(2, resultado.cantidadDeElementos());
         assertEquals(2, resultado.contenido().size());
@@ -173,7 +174,7 @@ class RepositorioSubastasTest extends MongoTestBase {
             );
 
         PaginaResultado<Subasta> resultado =
-            repositorioSubastas.buscarTodos(filtros);
+            repositorioSubastas.buscarTodos(filtros, new CamposSubasta(true, true));
 
         assertEquals(1, resultado.contenido().size());
         assertEquals(
@@ -213,7 +214,7 @@ class RepositorioSubastasTest extends MongoTestBase {
             );
 
         PaginaResultado<Subasta> resultado =
-            repositorioSubastas.buscarTodos(filtros);
+            repositorioSubastas.buscarTodos(filtros, new CamposSubasta(true, true));
 
         assertEquals(1, resultado.contenido().size());
         assertEquals(
@@ -253,7 +254,7 @@ class RepositorioSubastasTest extends MongoTestBase {
             );
 
         PaginaResultado<Subasta> resultado =
-            repositorioSubastas.buscarTodos(filtros);
+            repositorioSubastas.buscarTodos(filtros, new CamposSubasta(true, true));
 
         assertEquals(1, resultado.contenido().size());
         assertEquals(
@@ -300,7 +301,7 @@ class RepositorioSubastasTest extends MongoTestBase {
             );
 
         PaginaResultado<Subasta> resultado =
-            repositorioSubastas.buscarTodos(filtros);
+            repositorioSubastas.buscarTodos(filtros, new CamposSubasta(true, true));
 
         assertEquals(1, resultado.contenido().size());
         assertEquals(
@@ -349,7 +350,7 @@ class RepositorioSubastasTest extends MongoTestBase {
             );
 
         PaginaResultado<Subasta> resultado =
-            repositorioSubastas.buscarTodos(filtros);
+            repositorioSubastas.buscarTodos(filtros, new CamposSubasta(true, true));
 
         assertEquals(3, resultado.cantidadDeElementos());
         assertEquals(2, resultado.cantidadDePaginas());

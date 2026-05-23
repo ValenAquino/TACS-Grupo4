@@ -14,6 +14,8 @@ import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposPerfil;
+import app.repositories.impl.campos.CamposSubasta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,8 @@ public class ServicioEstadisticas {
     public EstadisticasDto obtenerEstadisticas() {
         long totalUsuarios = repositorioPerfiles.contar();
 
-        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos().stream()
+        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos(new CamposPerfil(false))
+            .stream()
             .flatMap(u -> u.getColeccion().getRepetidas().stream())
             .collect(Collectors.toList());
 
@@ -43,7 +46,7 @@ public class ServicioEstadisticas {
 
         SubastasFiltro filtros = new SubastasFiltro(0, 20, null, null, "ACTIVA");
 
-        PaginaResultado<Subasta> totalSubastasActivas = repositorioSubastas.buscarTodos(filtros);
+        PaginaResultado<Subasta> totalSubastasActivas = repositorioSubastas.buscarTodos(filtros, new CamposSubasta(false, false));
 
         PropuestasPorEstadoDto propuestasPorEstado = calcularPropuestasPorEstado();
         FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);

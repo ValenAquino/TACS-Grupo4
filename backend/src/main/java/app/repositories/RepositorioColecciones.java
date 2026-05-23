@@ -9,14 +9,18 @@ import app.model.entities.MetodoIntercambio;
 import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.FiguritasFiltro;
 import app.dto.filtros.RepetidasFiltro;
+import app.repositories.impl.campos.CamposColeccion;
 
 import java.util.List;
 
 public interface RepositorioColecciones {
 
-  Coleccion buscarPorId(String colId);
+  Coleccion buscarPorId(String colId, CamposColeccion campos);
 
   void guardar(Coleccion coleccion);
+
+  void agregarFaltante(String colId, Figurita figId);
+  void agregarRepetida(String colId, FiguritaIntercambiable figId);
 
   Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros);
 

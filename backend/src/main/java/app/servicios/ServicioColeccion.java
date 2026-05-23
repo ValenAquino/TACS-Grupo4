@@ -15,6 +15,9 @@ import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
+
+import app.repositories.impl.campos.CamposColeccion;
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,28 +30,22 @@ public class ServicioColeccion {
   private final ServicioNotificacion notificacionService;
 
   public void agregarFaltante(String colId, String figId) {
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
-
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
 
-    coleccion.agregarFaltante(faltante);
-
-    repositorioColecciones.guardar(coleccion);
+    repositorioColecciones.agregarFaltante(colId, faltante);
   }
 
   public void agregarRepetida(String colId, String figId, Integer
       cantidadExistente, List<MetodoIntercambio> modosIntercambio) {
 
-    Coleccion coleccion = this.repositorioColecciones.buscarPorId(colId);
     Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
         figurita, cantidadExistente, modosIntercambio);
 
-    coleccion.agregarRepetida(repetida);
-    repositorioColecciones.guardar(coleccion);
+    this.repositorioColecciones.agregarRepetida(colId, repetida);
 
-    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita);
+    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita, new CamposPerfil(true));
 
     String cuerpo = "Nueva figurita disponible, Numero: " + figurita.getId() +
         ", Cantidad: " + cantidadExistente;

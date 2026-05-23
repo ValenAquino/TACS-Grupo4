@@ -14,6 +14,8 @@ import app.repositories.RepositorioPropuestas;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +33,9 @@ public class ServicioPropuesta {
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
   public PropuestaDto crearPropuesta(String autorId, CrearPropuestaRequest request) {
-    Perfil origen = repositorioPerfiles.buscarPorId(autorId);
-    Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId());
+    CamposPerfil sinCampos = new CamposPerfil(false);
+    Perfil origen = repositorioPerfiles.buscarPorId(autorId, sinCampos);
+    Perfil destino = repositorioPerfiles.buscarPorId(request.getDestinatarioId(), sinCampos);
 
     if (origen == null) throw new NotFoundException("Usuario origen no encontrado");
     if (destino == null) throw new NotFoundException("Usuario destino no encontrado");

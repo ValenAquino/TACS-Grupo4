@@ -6,22 +6,26 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.Perfil;
 import app.model.entities.Sugerencia;
+import app.repositories.impl.campos.CamposPerfil;
 
 import java.util.List;
 
 public interface RepositorioPerfiles {
 
-    Perfil buscarPorId(String id);
+    void guardar(Perfil perfil);
 
-    Perfil buscarPorUsuarioId(String usuarioId);
+    void guardar(Perfil perfil, CamposPerfil campos);
 
-    List<Perfil> buscarTodos();
+    Perfil buscarPorId(String id, CamposPerfil campos);
+
+    Perfil buscarPorUsuarioId(String usuarioId, CamposPerfil campos);
+
+    List<Perfil> buscarTodos(CamposPerfil campos);
 
     long contar();
 
-    List<Perfil> buscarPorFiguritaFaltante(Figurita figurita);
+    List<Perfil> buscarPorFiguritaFaltante(Figurita figurita, CamposPerfil campos);
 
-    void guardar(Perfil perfil);
 
     PaginaResultado<Sugerencia> generarSugerencias(Coleccion coleccion, SugerenciasFiltro filtros);
 }

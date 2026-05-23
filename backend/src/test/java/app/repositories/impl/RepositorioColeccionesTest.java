@@ -6,8 +6,11 @@ import app.dto.paginacion.Repetidas;
 import app.model.entities.*;
 import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.RepetidasFiltro;
+import app.repositories.impl.campos.CamposColeccion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,25 +33,57 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
   @Test
   void findByIdNoEncuentraYtiraExcepcion() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     repositorioColecciones.guardar(coleccion);
 
-    assertThrows(RuntimeException.class, () -> repositorioColecciones.buscarPorId("11"));
+    CamposColeccion sinCampos = new CamposColeccion(false, false);
+
+    assertThrows(RuntimeException.class, () -> repositorioColecciones.buscarPorId("11", sinCampos));
+  }
+
+  @Test
+  void findByIdNoCargaListas() {
+    Coleccion coleccion = new Coleccion();
+    coleccion.getFaltantes().add(messi);
+    coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
+
+    repositorioColecciones.guardar(coleccion);
+
+    coleccion = repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false));
+    assertEquals(0, coleccion.getFaltantes().size());
+    assertEquals(0, coleccion.getRepetidas().size());
+    assertInstanceOf(List.class, coleccion.getFaltantes());
+    assertInstanceOf(List.class, coleccion.getRepetidas());
+  }
+
+  @Test
+  void findByIdCargaListaRepetidaYNoFaltante() {
+    Coleccion coleccion = new Coleccion();
+    coleccion.getFaltantes().add(messi);
+    coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
+
+    repositorioColecciones.guardar(coleccion);
+
+    coleccion = repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(true, false));
+    assertEquals(0, coleccion.getFaltantes().size());
+    assertEquals(1, coleccion.getRepetidas().size());
+    assertInstanceOf(List.class, coleccion.getFaltantes());
   }
 
   @Test
   void findByIdValido() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     repositorioColecciones.guardar(coleccion);
 
-    assertEquals(coleccion.getId(), repositorioColecciones.buscarPorId("10").getId());
+
+    assertEquals(coleccion.getId(), repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false)).getId());
   }
 
   @Test
   void buscarFaltantesDevuelveResultadosPaginados() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     coleccion.getFaltantes().addAll(List.of(
         messi,
@@ -59,7 +94,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     repositorioColecciones.guardar(coleccion);
 
     PaginaResultado<Figurita> dto = repositorioColecciones.buscarFaltantes(
-        "10",
+        coleccion.getId(),
         new FaltantesFiltro(2, 1)
     );
 
@@ -71,7 +106,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
   @Test
   void buscarFaltantesSegundaPagina() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     coleccion.getFaltantes().addAll(List.of(
         messi,
@@ -82,7 +117,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     repositorioColecciones.guardar(coleccion);
 
     PaginaResultado dto = repositorioColecciones.buscarFaltantes(
-        "10",
+        coleccion.getId(),
         new FaltantesFiltro(2, 2)
     );
 
@@ -92,7 +127,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
   @Test
   void buscarRepetidasSinFiltroDevuelveTodo() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     coleccion.getRepetidas().addAll(List.of(
         FiguritaIntercambiable.builder().figurita(messi).cantidadExistente(2).metodos(List.of(MetodoIntercambio.SUBASTA)).build(),
@@ -103,7 +138,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     repositorioColecciones.guardar(coleccion);
 
     Repetidas dto = repositorioColecciones.buscarRepetidas(
-        "10",
+        coleccion.getId(),
         new RepetidasFiltro(null, 10, 1)
     );
 
@@ -115,7 +150,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
   @Test
   void buscarRepetidasFiltraPorSubasta() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     coleccion.getRepetidas().addAll(List.of(
         new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
@@ -126,7 +161,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     repositorioColecciones.guardar(coleccion);
 
     Repetidas dto = repositorioColecciones.buscarRepetidas(
-        "10",
+        coleccion.getId(),
         new RepetidasFiltro(MetodoIntercambio.SUBASTA, 10, 1)
     );
 
@@ -136,7 +171,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
   @Test
   void buscarRepetidasFiltraPorIntercambio() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     coleccion.getRepetidas().addAll(List.of(
         new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
@@ -147,7 +182,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     repositorioColecciones.guardar(coleccion);
 
     Repetidas<FiguritaIntercambiable> dto = repositorioColecciones.buscarRepetidas(
-        "10",
+        coleccion.getId(),
         new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, 10, 1)
     );
 
@@ -157,7 +192,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
   @Test
   void buscarRepetidasRespetaPaginacion() {
-    Coleccion coleccion = new Coleccion("10");
+    Coleccion coleccion = new Coleccion();
 
     coleccion.getRepetidas().addAll(List.of(
         new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
@@ -168,7 +203,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     repositorioColecciones.guardar(coleccion);
 
     Repetidas dto = repositorioColecciones.buscarRepetidas(
-        "10",
+        coleccion.getId(),
         new RepetidasFiltro(null, 2, 2)
     );
 

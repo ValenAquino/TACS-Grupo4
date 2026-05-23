@@ -18,8 +18,8 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
         try {
             setCargando(true)
             const payload = await buscarSugerencias({ tipo, pagina: pagina, limite:10})
-            setPaginasTotales(payload.paginas_totales)
-            setSugerencias(payload.data)
+            setPaginasTotales(payload.cantidadDePaginas)
+            setSugerencias(payload.contenido)
 
         } catch (error) {
             setError(true)
@@ -33,7 +33,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     }, [tipo]);
 
     const mostrarSugerencias = () => {
-        if (error) return <h2>No se pudo cargar la información</h2>
+        if (error) return <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
         return (
             <>
                 {
@@ -46,7 +46,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
                         sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}
                                                      figuritasNecesarias = {s.figuritas_necesarias}
                                                      figuritasRecomendadas = {s.figuritas_recomendadas}/>
-                        ) : <h2>No pudimos encontrar sugerencias!</h2>
+                        ) : <h2 className="text-center text-muted py-4 fw-light">No pudimos encontrar sugerencias!</h2>
                 }
                 <Paginacion page={pagina} totalPages={paginasTotales} onChange={setPagina}/>
             </>

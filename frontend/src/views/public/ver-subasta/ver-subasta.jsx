@@ -300,7 +300,7 @@ const VerSubasta = () => {
       {cargando ? (
         <h2>Cargando subasta...</h2>
       ) : error ? (
-        <h2>No se pudo cargar la información</h2>
+        <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
       ) : (
         mostrarSubasta()
       )}

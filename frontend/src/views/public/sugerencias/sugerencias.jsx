@@ -68,7 +68,7 @@ const Sugerencias = () => {
                 <div
                     className={styles.statGrid + " d-grid gap-3"}
                 >
-                    {cargando ? <h2>Cargando estadisticas...</h2> : error ? <p>No se pudo cargar la información</p> : mostrarContadores()}
+                    {cargando ? <h2>Cargando estadisticas...</h2> : error ? <p className="text-center text-secondary">No se pudo cargar la información</p> : mostrarContadores()}
                 </div>
                 <ExtraInfo>
                     <h6 className="m-0"><strong>¿Cómo funciona?</strong></h6>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {buscarContadores,buscarPerfil,buscarCalificaciones} from "../../../services/perfilService.js";
+import {buscarContadores,buscarPerfil,buscarCalificaciones,editarPerfil} from "../../../services/perfilService.js";
 import {useAuth} from "@/contexts/userContext.jsx";
 import Button from "@/components/ui/button/button.jsx";
 import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
@@ -23,6 +23,7 @@ const renderStars = (score) => {
 const Perfil = () => {
 
     const [showModal, setShowModal] = useState(false);
+    const [nombreEditando, setNombreEditando] = useState("");
     const [perfil, setPerfil] = useState({});
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -94,9 +95,21 @@ const Perfil = () => {
 
     const promedio = truncarADosDecimales(perfil.calificacion_media)
 
-    const guardarCambios = async () => {
+    const abrirModalEdicion = () => {
+        setNombreEditando(perfil.nombre);
+        setShowModal(true);
+    };
 
-    }
+    const guardarCambios = async () => {
+        try {
+            await editarPerfil({ nombre: nombreEditando });
+            setPerfil((prev) => ({ ...prev, nombre: nombreEditando }));
+            setShowModal(false);
+            showToast("Perfil actualizado correctamente", "success");
+        } catch (error) {
+            showToast("Error al guardar los cambios", "error");
+        }
+    };
 
     return (
         <div className="d-flex flex-column">
@@ -157,7 +170,7 @@ const Perfil = () => {
                         <button
                             className="btn btn-warning"
                             style={{ padding: "10px 18px" }}
-                            onClick={() => setShowModal(true)}
+                            onClick={abrirModalEdicion}
                         >
                             Editar perfil
                         </button>
@@ -293,18 +306,14 @@ const Perfil = () => {
                         <label>Nombre</label>
                         <input
                             className="form-control mb-3"
-                            value={perfil?.nombre}
-                            onChange={(e) => setPerfil((prev) =>
-                                setPerfil({ ...prev, nombre: e.target.value }))
-                            }
+                            value={nombreEditando}
+                            onChange={(e) => setNombreEditando(e.target.value)}
                         />
-
-                        <label className="text-muted">@messi_g</label>
 
                         <button
                             className="btn mt-3 w-100"
                             style={{ backgroundColor: "#175A2D", color: "white" }}
-                            onClick={() => setShowModal(false)}
+                            onClick={guardarCambios}
                         >
                             Guardar cambios
                         </button>

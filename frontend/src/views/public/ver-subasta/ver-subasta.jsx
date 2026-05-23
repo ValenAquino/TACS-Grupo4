@@ -55,7 +55,7 @@ const VerSubasta = () => {
   const mostrarOfertaDeUsuario = (ofertas) => {
     const ofertaPropia = ofertas.find((o) => o.autor.usuario_id === userId.toString()) //Mismo Id que la sesion
     return ofertaPropia !== undefined ? (
-      <TuOfertaCard oferta={ofertaPropia} subastaAbierta={subastaAbierta} />
+      <TuOfertaCard oferta={ofertaPropia} subasta={subasta} subastaAbierta={subastaAbierta} />
     ) : (
       subastaAbierta && (
         <div className={'d-flex flex-row justify-content-center align-items-center gap-2'}>

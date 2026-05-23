@@ -7,10 +7,15 @@ import styles from './selector-repetidas.module.css'
 
 const LIMITE = 10
 
-const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
+const SelectorRepetidas = ({
+  modo = 'unica',
+  bloqueadas = [],
+  onChange,
+  seleccionadasIniciales = [],
+}) => {
   const [figuritas, setFiguritas] = useState([])
   const [loading, setLoading] = useState(false)
-  const [seleccionadas, setSeleccionadas] = useState([])
+  const [seleccionadas, setSeleccionadas] = useState(seleccionadasIniciales)
   const [total, setTotal] = useState(null)
   const { handleError } = useError()
   const { showToast } = useToast()
@@ -20,6 +25,7 @@ const SelectorRepetidas = ({ modo = 'unica', bloqueadas = [], onChange }) => {
     try {
       const payload = await buscarRepetidas({ jugador: busqueda, pagina: 1, limite: LIMITE })
       setFiguritas(payload.contenido ?? [])
+      console.log('figuritas fetch', payload.contenido)
       setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))

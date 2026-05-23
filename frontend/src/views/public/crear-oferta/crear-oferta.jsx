@@ -13,15 +13,15 @@ import styles from './crear-oferta.module.css'
 
 const obtenerBloqueadas = (repetidas, figuritasSolicitadas) => {
   if (!figuritasSolicitadas?.length) return []
-  const idsRepetidas = new Set(repetidas.map((r) => r.figuritaId))
+  const idsRepetidas = new Set(repetidas.map((r) => r.figurita_id))
   return figuritasSolicitadas
     .filter((sol) => idsRepetidas.has(sol.id))
-    .map((sol) => repetidas.find((r) => r.figuritaId === sol.id))
+    .map((sol) => repetidas.find((r) => r.figurita_id === sol.id))
 }
 
 const obtenerFaltantesRequeridas = (repetidas, figuritasSolicitadas) => {
   if (!figuritasSolicitadas?.length) return []
-  const idsRepetidas = new Set(repetidas.map((r) => r.figuritaId))
+  const idsRepetidas = new Set(repetidas.map((r) => r.figurita_id))
   return figuritasSolicitadas.filter((sol) => !idsRepetidas.has(sol.id))
 }
 
@@ -71,8 +71,12 @@ const CrearOferta = () => {
   const puedeOfertar = cumpleCalificacion && tieneTodasRequeridas
 
   const onEnviar = async () => {
+    if ([...bloqueadas, ...figuritasExtra].length === 0) {
+      showToast('Tenés que seleccionar al menos una figurita', 'warning')
+      return
+    }
     try {
-      const ids = [...bloqueadas, ...figuritasExtra].map((f) => f.figuritaId)
+      const ids = [...bloqueadas, ...figuritasExtra].map((f) => f.figurita_id ?? f.id)
       await crearOferta(subId, ids)
       navigate('/subastas')
     } catch (e) {

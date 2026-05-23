@@ -3,7 +3,6 @@ import IntercambioCard from "../../../../components/ui/intercambio-card/intercam
 import IntercambioModal from "../../../../components/ui/intercambio-modal/intercambio-modal.jsx";
 import {aceptarIntercambio,rechazarIntercambio} from "../../../../services/intercambioService.js";
 import {buscarPropuestas} from "@/services/propuestasService.js";
-import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
 
@@ -49,7 +48,6 @@ const RecibidasTab = () => {
 
     return (
         <div>
-
             {/* ESTILOS */}
                         <style>{`
                             .btn-aceptar {
@@ -81,11 +79,11 @@ const RecibidasTab = () => {
             ) : (
                 <>
                     <h6 className="fw-bold mt-3">
-                        PENDIENTES ({recibidas?.resultados})
+                        PENDIENTES ({recibidas?.cantidad_de_elementos})
                     </h6>
 
-                    {recibidas?.data?.length > 0 ? (
-                        recibidas.data.map(i => (
+                    {recibidas?.contenido?.length > 0 ? (
+                        recibidas.contenido.map(i => (
                             <IntercambioCard
                                 key={i.id}
                                 intercambio={i}
@@ -104,7 +102,7 @@ const RecibidasTab = () => {
 
             <Paginacion
                 page={pagina}
-                totalPages={recibidas.paginas_totales ?? 1}
+                totalPages={recibidas.cantidad_de_paginas ?? 1}
                 onChange={setPagina}
             />
 

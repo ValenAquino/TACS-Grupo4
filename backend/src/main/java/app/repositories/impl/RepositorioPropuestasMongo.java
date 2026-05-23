@@ -59,7 +59,7 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
 
         long count = mongoTemplate.count(query, Propuesta.class);
 
-        query.skip((long) filtros.pagina() * filtros.limite());
+        query.skip((long) filtros.pagina() - 1 * filtros.limite());
         query.limit(filtros.limite());
 
         List<Propuesta> contenido =

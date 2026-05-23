@@ -25,6 +25,7 @@ public class Perfil {
 
     @DBRef
     private Usuario usuario;
+
     private String nombre;
 
     @DBRef
@@ -59,6 +60,8 @@ public class Perfil {
     }
 
     public String getIniciales() {
-        return this.nombre.substring(0, 2).toUpperCase();
+        return this.nombre
+            .substring(0, Math.min(2, this.nombre.length()))
+            .toUpperCase();
     }
 }

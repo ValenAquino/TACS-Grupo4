@@ -22,6 +22,7 @@ public class FiguritaIntercambiable {
     private Figurita figurita;
 
     private Integer cantidadExistente;
+
     @Builder.Default
     private Integer cantidadReservada = 0;
     private List<MetodoIntercambio> metodos;

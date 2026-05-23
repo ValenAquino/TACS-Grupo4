@@ -1,6 +1,7 @@
 package app.repositories.impl;
 
 import app.MongoTestBase;
+import app.dto.filtros.FiguritasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
 import app.model.entities.*;
@@ -175,5 +176,42 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     assertEquals(1, dto.getData().contenido().size());
     assertEquals(2, dto.getData().numero());
     assertEquals(2, dto.getData().cantidadDePaginas());
+  }
+
+  @Test
+  void buscarIntercambiablesConFiltrosPorTipo() {
+    Coleccion coleccion = new Coleccion("10");
+
+    coleccion.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(
+            messi,
+            2,
+            List.of(MetodoIntercambio.SUBASTA)
+        ),
+        new FiguritaIntercambiable(
+            diMaria,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        )
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    PaginaResultado<FiguritaIntercambiable> resultado =
+        repositorioColecciones.buscarIntercambiablesConFiltros(
+            new FiguritasFiltro(
+                null,
+                null,
+                null,
+                null,
+                MetodoIntercambio.SUBASTA
+            ),
+            1,
+            10
+        );
+
+    assertEquals(1, resultado.contenido().size());
+    assertEquals("Messi",
+        resultado.contenido().get(0).getFigurita().getJugador());
   }
 }

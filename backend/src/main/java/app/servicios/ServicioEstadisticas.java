@@ -46,7 +46,7 @@ public class ServicioEstadisticas {
 
         SubastasFiltro filtros = new SubastasFiltro(0, 20, null, null, "ACTIVA");
 
-        PaginaResultado<Subasta> totalSubastasActivas = repositorioSubastas.buscarTodos(filtros);
+        PaginaResultado<Subasta> totalSubastasActivas = repositorioSubastas.buscarTodos(filtros, new CamposSubasta(false, false));
 
         PropuestasPorEstadoDto propuestasPorEstado = calcularPropuestasPorEstado();
         FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);

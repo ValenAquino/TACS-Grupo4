@@ -184,7 +184,7 @@ import org.springframework.stereotype.Service;
     }
 
     public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
-      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros);
+      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros, new CamposSubasta(true, true));
 
       if(filtros.participanteId() != null ) {
         return new PaginaResultado<>(

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface RepositorioSubastas {
 
-    PaginaResultado<Subasta> buscarTodos(SubastasFiltro filtros);
+    PaginaResultado<Subasta> buscarTodos(SubastasFiltro filtros, CamposSubasta campos);
 
     Subasta buscarPorId(String id, CamposSubasta campos);
 

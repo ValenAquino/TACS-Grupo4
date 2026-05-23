@@ -359,7 +359,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     subasta =
         repositorioSubastas.buscarPorId(
-            "s-1"
+            "s-1", new CamposSubasta(true, true)
         );
 
     assertEquals(
@@ -414,7 +414,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     subasta =
         repositorioSubastas.buscarPorId(
-            "s-1"
+            "s-1", new CamposSubasta(true, true)
         );
 
     assertEquals(

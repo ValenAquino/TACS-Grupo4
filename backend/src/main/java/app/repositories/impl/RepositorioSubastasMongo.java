@@ -85,8 +85,10 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   }
 
   @Override
-  public PaginaResultado<Subasta> buscarTodos(SubastasFiltro filtros) {
+  public PaginaResultado<Subasta> buscarTodos(SubastasFiltro filtros, CamposSubasta campos) {
     Query query = new Query();
+
+    this.conCamposCargados(query, campos);
 
     if(filtros.autorId() != null) {
       query.addCriteria(
@@ -124,7 +126,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
     query.skip((long) (filtros.pagina() - 1) * filtros.limite());
     query.limit(filtros.limite());
 
-    List<Subasta> contenido = mongoTemplate.find(query, Subasta.class);
+    List<Subasta> contenido = mongoTemplate.find(query, Subasta.class).stream().map(this::normalizar).toList();
 
     return new PaginaResultado<>(
         contenido,

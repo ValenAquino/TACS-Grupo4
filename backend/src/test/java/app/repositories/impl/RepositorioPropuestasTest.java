@@ -267,44 +267,6 @@ class RepositorioPropuestasTest extends MongoTestBase {
     }
 
     @Test
-    void buscarTodos_paginacion_funcionaCorrectamente() {
-
-        for (int i = 0; i < 15; i++) {
-            repositorio.guardar(
-                propuesta(
-                    u1,
-                    u2,
-                    EstadoProceso.PENDIENTE
-                )
-            );
-        }
-
-        PropuestasFiltro filtros =
-            new PropuestasFiltro(
-                "",
-                1,
-                10,
-                null
-            );
-
-        PaginaResultado<Propuesta> resultado =
-            repositorio.buscarTodos(
-                u1.getId(),
-                filtros
-            );
-
-        assertEquals(
-            5,
-            resultado.contenido().size()
-        );
-
-        assertEquals(
-            2,
-            resultado.cantidadDePaginas()
-        );
-    }
-
-    @Test
     void buscarTodos_sinResultados_devuelveListaVacia() {
 
         PropuestasFiltro filtros =

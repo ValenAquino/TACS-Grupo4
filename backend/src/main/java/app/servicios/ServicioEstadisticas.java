@@ -18,6 +18,7 @@ import app.repositories.impl.campos.CamposPerfil;
 import app.repositories.impl.campos.CamposSubasta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ServicioEstadisticas {
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
 
+    @Transactional
     public EstadisticasDto obtenerEstadisticas() {
         long totalUsuarios = repositorioPerfiles.contar();
 

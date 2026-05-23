@@ -22,8 +22,23 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
     const [showCalificacion, setShowCalificacion] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null);
 
-    const izq = [intercambio.figurita_buscada] || [];
-    const der = intercambio.figuritas_ofrecidas || [];
+    const izq = tipo === "RECIBIDA"
+        ? intercambio.figuritas_ofrecidas || []
+        : [intercambio.figurita_buscada];
+
+    const der = tipo === "RECIBIDA"
+        ? [intercambio.figurita_buscada]
+        : intercambio.figuritas_ofrecidas || [];
+
+    const tituloIzq =
+        tipo === "RECIBIDA"
+            ? "Vos recibís"
+            : "Vos recibís";
+
+    const tituloDer =
+        tipo === "RECIBIDA"
+            ? "Vos entregás"
+            : "Vos entregás";
 
     const estado = intercambio.estado;
 
@@ -147,7 +162,7 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
                     <div className="row mt-2">
                         <div className="col">
                             <small className="text-uppercase text-muted fw-semibold">
-                                Vos pedís
+                                {tituloIzq}
                             </small>
 
                             {izq.map((f) => (
@@ -161,7 +176,7 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
 
                         <div className="col">
                             <small className="text-uppercase text-muted fw-semibold">
-                                Vos ofrecés
+                                {tituloDer}
                             </small>
 
                             {der.map((f) => (

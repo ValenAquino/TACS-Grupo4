@@ -1,25 +1,26 @@
 import { useState } from 'react'
-import ConfirmModal from '../../../../../../../components/ui/confirm-modal/confirm-modal.jsx'
-import CalificarModal from '../../../../../../../components/ui/calificar-modal/calificar-modal.jsx'
-import CabeceraFigurita from '../../../../../../../components/ui/cabecera-figurita/cabecera-figurita.jsx'
-import BarraTiempo from '../../../../../../../components/ui/barra-tiempo/barra-tiempo.jsx'
-import Oferta from '../oferta/oferta.jsx'
+import ConfirmModal from '../../../../../../components/ui/confirm-modal/confirm-modal.jsx'
+import CalificarModal from '../../../../../../components/ui/calificar-modal/calificar-modal.jsx'
+import CabeceraFigurita from '../../../../../../components/ui/cabecera-figurita/cabecera-figurita.jsx'
+import BarraTiempo from '../../../../../../components/ui/barra-tiempo/barra-tiempo.jsx'
+import Button from '../../../../../../components/ui/button/button.jsx'
+import Oferta from './oferta/oferta.jsx'
 import {
   seleccionarOferta,
   rechazarOferta,
   cancelarSubasta,
   cerrarSubasta,
-} from '../../../../../../../services/subastasService.js'
-import { calificarPerfil } from '../../../../../../../services/perfilService.js'
-import { derivarTiempo } from '../../../../../../../utils/subastasTiempo.js'
-import useUsuarioActual from '../../../../../../../hooks/useUsuarioActual.js'
+} from '../../../../../../services/subastasService.js'
+import { calificarPerfil } from '../../../../../../services/perfilService.js'
+import { derivarTiempo } from '../../../../../../utils/subastasTiempo.js'
+import useUsuarioActual from '../../../../../../hooks/useUsuarioActual.js'
 import { useNavigate } from 'react-router'
 import './mi-subasta.css'
 
 const BADGE_ESTADO = {
-  activa: { label: 'Activa', className: 'text-success bg-success-subtle' },
-  finaliza_pronto: { label: 'Finaliza pronto', className: 'text-warning bg-warning-subtle' },
-  adjudicada: { label: 'Adjudicada', className: 'text-secondary bg-secondary-subtle' },
+  activa: { label: 'Activa', variante: 'exito' },
+  finaliza_pronto: { label: 'Finaliza pronto', variante: 'advertencia' },
+  adjudicada: { label: 'Adjudicada', variante: 'secundario' },
 }
 
 const MODAL_CONFIG = {
@@ -47,21 +48,17 @@ const MODAL_CONFIG = {
   },
 }
 
-const MiSubasta = ({ subasta, onRefresh }) => {
+const MiSubasta = ({ subasta, finalizada, onRefresh }) => {
   const {
     id: subastaId,
     figurita_subastada,
     fecha_cierre,
     ofertas,
-    cantidad_ofertas,
-    ganador,
-    ganador_label,
-    ya_calificado: yaCalificado,
+    oferta_ganadora,
+    ya_calificado,
   } = subasta
 
-  const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } = derivarTiempo({
-    fecha_cierre,
-  })
+  const { tiempoRestante, finalizadaHace, finalizaPronto } = derivarTiempo({ fecha_cierre })
   const { userId } = useUsuarioActual()
   const navigate = useNavigate()
   const [modal, setModal] = useState(null)
@@ -90,7 +87,7 @@ const MiSubasta = ({ subasta, onRefresh }) => {
   }
 
   const handleCalificar = async ({ valor, descripcion }) => {
-    await calificarPerfil(userId, ganador.id, {
+    await calificarPerfil(userId, oferta_ganadora.autor.id, {
       valor,
       descripcion,
       transactionId: subastaId,
@@ -110,13 +107,16 @@ const MiSubasta = ({ subasta, onRefresh }) => {
           tiempoRestante={tiempoRestante}
           finalizadaHace={finalizadaHace}
           derecha={
-            <>
-              <strong>{cantidad_ofertas}</strong>{' '}
-              {cantidad_ofertas === 1 ? 'oferta recibida' : 'ofertas recibidas'}
-            </>
+            !finalizada && (
+              <>
+                <strong>{ofertas?.length ?? 0}</strong>{' '}
+                {ofertas?.length === 1 ? 'oferta recibida' : 'ofertas recibidas'}
+              </>
+            )
           }
         />
 
+        {/* Activa: lista de ofertas */}
         {!finalizada && (
           <div className="px-3 py-2 d-flex flex-column gap-2 border-top">
             <p className="texto-chico mb-0 text-muted">Ofertas recibidas</p>
@@ -137,11 +137,17 @@ const MiSubasta = ({ subasta, onRefresh }) => {
           </div>
         )}
 
-        {finalizada && ganador && (
+        {/* Finalizada: ganador o sin ganador */}
+        {finalizada && (
           <div className="texto-ganador px-3 py-2 border-top">
-            <span className="text-muted">Ganador: </span>
-            <strong>{ganador.nombre}</strong>
-            <span className="text-muted"> · {ganador_label}</span>
+            {oferta_ganadora ? (
+              <>
+                <span className="text-muted">Ganador: </span>
+                <strong>{oferta_ganadora.autor.nombre}</strong>
+              </>
+            ) : (
+              <span className="text-muted">Sin oferta ganadora</span>
+            )}
           </div>
         )}
 
@@ -152,9 +158,9 @@ const MiSubasta = ({ subasta, onRefresh }) => {
                 label="Ver resumen"
                 variante="secundario_borde"
                 className="flex-fill"
-                onClick={() => navigate(`/subastas/${subasta.id}`)}
+                onClick={() => navigate(`/subastas/${subastaId}`)}
               />
-              {ganador && !yaCalificado && (
+              {oferta_ganadora && !ya_calificado && (
                 <Button
                   label="Calificar usuario"
                   variante="secundario_borde"
@@ -167,13 +173,13 @@ const MiSubasta = ({ subasta, onRefresh }) => {
             <>
               <Button
                 label="Ver detalle"
-                variante="secundario_borde"
+                variante="secundarioBorde"
                 className="flex-fill"
-                onClick={() => navigate(`/subastas/${subasta.id}`)}
+                onClick={() => navigate(`/subastas/${subastaId}`)}
               />
               <Button
                 label="Cancelar subasta"
-                variante="peligro_borde"
+                variante="peligroBorde"
                 className="flex-fill"
                 onClick={() => setModal({ tipo: 'cancelar' })}
               />
@@ -199,12 +205,14 @@ const MiSubasta = ({ subasta, onRefresh }) => {
         onCancelar={() => setModal(null)}
       />
 
-      <CalificarModal
-        show={mostrarCalificar}
-        usuario={ganador?.usuario}
-        onConfirmar={handleCalificar}
-        onCancelar={() => setMostrarCalificar(false)}
-      />
+      {oferta_ganadora && (
+        <CalificarModal
+          show={mostrarCalificar}
+          usuario={oferta_ganadora.autor.nombre}
+          onConfirmar={handleCalificar}
+          onCancelar={() => setMostrarCalificar(false)}
+        />
+      )}
     </>
   )
 }

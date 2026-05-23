@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import org.bson.types.ObjectId;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
@@ -113,19 +114,16 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
           Criteria.where("fechaCierre").lte(ahora)
       );
     }
-
     if (filtros.participanteId() != null) {
       query.addCriteria(
           Criteria.where("ofertas").elemMatch(
-              new Criteria().andOperator(
-                  Criteria.where("autor").is(filtros.participanteId())
-                  //TODO where estadoActual != CANCELADO
-              )
+              Criteria.where("autor.$id").is(filtros.participanteId())
           )
       );
     }
-
-
+    //TODO where estadoActual != CANCELADO
+    System.out.println("participanteId: " + filtros.participanteId());
+    System.out.println("query: " + query.getQueryObject().toJson());
     long count = mongoTemplate.count(query, Subasta.class);
 
     query.skip((long) (filtros.pagina() - 1) * filtros.limite());

@@ -1,37 +1,29 @@
-import { derivarTiempo } from '../../../../../../../utils/subastasTiempo.js'
-import useUsuarioActual from '../../../../../../../hooks/useUsuarioActual.js'
-import { calificarPerfil } from '../../../../../../../services/perfilService.js'
-import CalificarModal from '../../../../../../../components/ui/calificar-modal/calificar-modal.jsx'
-import CabeceraFigurita from '../../../../../../../components/ui/cabecera-figurita/cabecera-figurita.jsx'
-import BarraTiempo from '../../../../../../../components/ui/barra-tiempo/barra-tiempo.jsx'
-import EtiquetaPropuesta from '../../../../../../../components/ui/etiqueta-propuesta/etiqueta-propuesta.jsx'
+import { derivarTiempo } from '../../../../../../utils/subastasTiempo.js'
+import useUsuarioActual from '../../../../../../hooks/useUsuarioActual.js'
+import { calificarPerfil } from '../../../../../../services/perfilService.js'
+import CalificarModal from '../../../../../../components/ui/calificar-modal/calificar-modal.jsx'
+import CabeceraFigurita from '../../../../../../components/ui/cabecera-figurita/cabecera-figurita.jsx'
+import BarraTiempo from '../../../../../../components/ui/barra-tiempo/barra-tiempo.jsx'
+import EtiquetaFiguritasOfrecidas from '../../../../../../components/ui/etiqueta-figuritas-propuesta/etiqueta-figuritas-propuesta.jsx'
+import Etiqueta from '../../../../../../components/ui/etiqueta/etiqueta.jsx'
+import Button from '../../../../../../components/ui/button/button.jsx'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-const BADGE_OFERTA = {
-  SELECCIONADO: { label: 'Mejor oferta', className: 'text-success bg-success-subtle' },
-  RECHAZADO: { label: 'No elegida', className: 'text-danger bg-danger-subtle' },
-  PENDIENTE: { label: 'No elegida', className: 'text-danger bg-danger-subtle' },
-  ACEPTADO: { label: 'Elegida', className: 'text-success bg-success-subtle' },
-}
-
-const SubastaCard = ({ subasta }) => {
+const SubastaParticipo = ({ subasta, finalizada }) => {
   const { userId } = useUsuarioActual()
-  const { id, autor, figurita_subastada, fecha_cierre, tu_oferta } = subasta
+  console.log(subasta)
+  const { id, autor, figurita_subastada, fecha_cierre, tu_oferta, ya_calificado } = subasta
   const [mostrarCalificar, setMostrarCalificar] = useState(false)
   const navigate = useNavigate()
 
-  const { finalizada, tiempoRestante, finalizadaHace, finalizaPronto } = derivarTiempo({
-    fecha_cierre,
-  })
+  const { tiempoRestante, finalizadaHace, finalizaPronto } = derivarTiempo({ fecha_cierre })
 
   const badgeEstado = finalizada
     ? null
     : finalizaPronto
       ? { label: '⏱ Finaliza pronto', className: 'text-warning bg-warning-subtle' }
       : { label: 'Activa', className: 'text-success bg-success-subtle' }
-
-  const badgeOferta = tu_oferta.estado ? (BADGE_OFERTA[tu_oferta.estado] ?? null) : null
 
   const handleCalificar = async ({ valor, descripcion }) => {
     await calificarPerfil(userId, autor.id, {
@@ -43,7 +35,7 @@ const SubastaCard = ({ subasta }) => {
     setMostrarCalificar(false)
   }
 
-  const puedoCalificar = finalizada && tu_oferta.estado === 'ACEPTADO' && !subasta.ya_calificado
+  const puedoCalificar = finalizada && tu_oferta?.seleccionada && !ya_calificado
 
   return (
     <div className="border rounded-3 overflow-hidden bg-white">
@@ -65,15 +57,8 @@ const SubastaCard = ({ subasta }) => {
           Tu oferta
         </span>
         <div className="d-flex align-items-center gap-2">
-          <EtiquetaPropuesta propuesta={tu_oferta.propuesta} />
-          {badgeOferta && (
-            <span
-              className={`badge rounded-pill px-2 py-1 ${badgeOferta.className}`}
-              style={{ fontSize: '0.7rem', fontWeight: 500 }}
-            >
-              {badgeOferta.label}
-            </span>
-          )}
+          <EtiquetaFiguritasOfrecidas propuesta={tu_oferta} />
+          {tu_oferta?.seleccionada && <Etiqueta label="Mejor oferta" variante="exito" />}
         </div>
       </div>
 
@@ -82,31 +67,25 @@ const SubastaCard = ({ subasta }) => {
           label={finalizada ? 'Ver resumen' : 'Ver subasta'}
           variante="secundario_borde"
           className="flex-fill"
-          onClick={() => navigate(`/subastas/${subasta.id}`)}
+          onClick={() => navigate(`/subastas/${id}`)}
         />
-        {finalizada ? (
-          <>
-            {puedoCalificar && (
+        {finalizada
+          ? puedoCalificar && (
               <Button
                 label="Calificar usuario"
                 variante="secundario_borde"
                 className="flex-fill"
                 onClick={() => setMostrarCalificar(true)}
               />
-            )}
-          </>
-        ) : (
-          <>
-            {tu_oferta.figuritas_ofrecidas?.length > 0 && (
+            )
+          : tu_oferta?.figuritas_ofrecidas?.length > 0 && (
               <Button
                 label="Mejorar oferta"
                 variante="secundario_borde"
                 className="flex-fill"
-                onClick={() => navigate(`/subastas/${subasta.id}/ofertas/${tu_oferta.id}`)}
+                onClick={() => navigate(`/subastas/${id}/ofertas/${tu_oferta.id}`)}
               />
             )}
-          </>
-        )}
       </div>
 
       <CalificarModal
@@ -119,4 +98,4 @@ const SubastaCard = ({ subasta }) => {
   )
 }
 
-export default SubastaCard
+export default SubastaParticipo

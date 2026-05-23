@@ -19,25 +19,10 @@ export const buscarSubasta = async ({ subId }) => {
   }
 }
 
-export const buscarMisSubastas = async (filtros) => {
+export const buscarSubastas = async (filtros) => {
   try {
-    const { data } = await api.get(`${SUBASTAS_URL}/mis-subastas`, {
-      params: {
-        ...filtros,
-      },
-    })
-    return data
-  } catch (error) {
-    handleAxiosError(error)
-  }
-}
-
-export const buscarSubastasParticipo = async (filtros = {}) => {
-  try {
-    const { data } = await api.get(`${SUBASTAS_URL}/participo`, {
-      params: {
-        ...filtros,
-      },
+    const { data } = await api.get(SUBASTAS_URL, {
+      params: { ...filtros },
     })
     return data
   } catch (error) {

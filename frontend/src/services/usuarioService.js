@@ -1,13 +1,22 @@
 import {api, handleAxiosError } from "./api.js";
 
-const USUARIOS_URL = "/usuarios"
-
 export const crearUsuario = async ({nombre, contrasenia}) => {
     try {
-        const { data } = await api.post(USUARIOS_URL, {nombre, contrasenia, rol: "USUARIO"})
+        const { data } = await api.post("/usuarios", {nombre, contrasenia, rol: "USUARIO"})
 
         return data
     } catch (error) {
         handleAxiosError(error)
     }
+}
+
+export const crearAdministrador = async ({nombre, contrasenia, rol}) => {
+  try {
+    console.log(rol)
+    const { data } = await api.post("/administradores", {nombre, contrasenia, rol: rol ?? "USUARIO"})
+
+    return data
+  } catch (error) {
+    handleAxiosError(error)
+  }
 }

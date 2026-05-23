@@ -28,6 +28,8 @@ import app.repositories.RepositorioUsuarios;
 import app.repositories.impl.campos.CamposPerfil;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -127,6 +129,18 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
                                 Figurita mbappe, Figurita griezmann, Figurita vinicius,
                                 Figurita pedri, Figurita kroos, Figurita neymar) {
+      PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+      Usuario user = new Usuario("admin", passwordEncoder.encode("admin"), Rol.ADMINISTRADOR);
+      usuarios.guardar(user);
+      Coleccion coleccionAdmin = new Coleccion();
+      Perfil perfilAdmin = Perfil.builder()
+          .usuario(user).nombre(user.getNombre())
+          .coleccion(coleccionAdmin)
+          .build();
+
+      colecciones.guardar(coleccionAdmin);
+      perfiles.guardar(perfilAdmin);
+
       // Juan
       Coleccion coleccionJuan = new Coleccion();
       FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
@@ -134,7 +148,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionJuan.getFaltantes().add(pedri);
       coleccionJuan.getFaltantes().add(kroos);
       colecciones.guardar(coleccionJuan);
-      Usuario user =  new Usuario("u-1003",  Rol.USUARIO, "juan_jose","una contrasenia");
+      user =  new Usuario("juan_jose",passwordEncoder.encode("una contrasenia"), Rol.USUARIO);
       usuarios.guardar(user);
       Perfil juan = Perfil.builder()
           .id("1003").usuario(user)
@@ -158,7 +172,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       colecciones.guardar(coleccionLucas);
 
 
-      user = new Usuario("u-1000",  Rol.USUARIO,"lucas_fis","gordo123");
+      user = new Usuario("lucas_fis",passwordEncoder.encode("gordo123"), Rol.USUARIO);
       usuarios.guardar(user);
       Perfil lucas = Perfil.builder()
           .id("1000").usuario(user)
@@ -182,7 +196,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionSofia.getFaltantes().add(messi);
       coleccionSofia.getFaltantes().add(lautaro);
       colecciones.guardar(coleccionSofia);
-      user = new Usuario("u-1001", Rol.USUARIO,"sofia_ape","password");
+      user = new Usuario("sofia_ape",passwordEncoder.encode("password"), Rol.USUARIO);
       usuarios.guardar(user);
 
       perfiles.guardar(Perfil.builder()
@@ -197,14 +211,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
       coleccionMatias.getFaltantes().add(pedri);
       coleccionMatias.getFaltantes().add(kroos);
       colecciones.guardar(coleccionMatias);
-      user = new Usuario("u-1002",  Rol.USUARIO,"mati_crim","wordpass");
+      user = new Usuario("mati_crim",passwordEncoder.encode("wordpass"), Rol.USUARIO);
       usuarios.guardar(user);
       perfiles.guardar(Perfil.builder()
         .id("1002").usuario(user)
         .nombre("Matías").coleccion(coleccionMatias)
         .mediosDeContacto(telegram("@matias")).build());
-
-
     }
 
     private void cargarCalificaciones() {

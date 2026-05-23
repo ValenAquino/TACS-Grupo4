@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {crearUsuario} from "@/services/usuarioService.js";
+import { crearAdministrador, crearUsuario} from '@/services/usuarioService.js'
 import {useToast} from "@/contexts/toastContext.jsx";
 import {useAuth} from "@/contexts/userContext.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
@@ -8,9 +8,10 @@ import ModalInformativo from "@/components/ui/modales/modal-informativo/modal-in
 
 function Registrar() {
     const [formData, setFormData] = useState({
-        nombre: "",
-        contrasenia: "",
-        confirmarContrasenia: ""
+      nombre: "",
+      contrasenia: "",
+      confirmarContrasenia: "",
+      rol: "USUARIO"
     });
 
     const {handleError, errorTemplate} = useError();
@@ -19,7 +20,7 @@ function Registrar() {
     const [onSubmit, setOnSubmit] = useState(false);
 
     const {showToast} = useToast();
-    const {asignarUsuario} = useAuth()
+    const {user} = useAuth()
     const navigate = useNavigate()
 
     const handleChange = (e) => {
@@ -48,12 +49,17 @@ function Registrar() {
 
         const usuario = {
             nombre: formData.nombre,
-            contrasenia: formData.contrasenia
+            contrasenia: formData.contrasenia,
+            rol: formData.rol
         };
 
         try {
             setOnSubmit(true);
-            await crearUsuario(usuario)
+            if (user?.rol === "ADMINISTRADOR") {
+              await crearAdministrador(usuario);
+            } else {
+              await crearUsuario(usuario);
+            }
             showToast(`Usuario creado correctamente`)
             navigate("/")
         } catch (error) {
@@ -65,132 +71,134 @@ function Registrar() {
     };
 
     return (
+      <div
+        className="container-fluid d-flex justify-content-center align-items-center py-5"
+        style={{
+          minHeight: '100vh',
+          backgroundColor: 'var(--color-background)',
+        }}
+      >
         <div
-            className="container-fluid d-flex justify-content-center align-items-center py-5"
-            style={{
-                minHeight: "100vh",
-                backgroundColor: "var(--color-background)"
-            }}
+          className="card shadow p-4"
+          style={{
+            width: '100%',
+            maxWidth: '450px',
+            backgroundColor: 'var(--color-primary)',
+            border: 'var(--border-weight) solid var(--border-color-light)',
+            borderRadius: '16px',
+          }}
         >
-            <div
-                className="card shadow p-4"
+          <h1
+            className="text-center mb-2"
+            style={{
+              color: 'var(--color-secondary)',
+            }}
+          >
+            Registrarse
+          </h1>
+
+          <p
+            className="text-center mb-4"
+            style={{
+              color: 'var(--color-subtitle)',
+            }}
+          >
+            Creá una cuenta nueva
+          </p>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Nombre</label>
+
+              <input
+                type="text"
+                name="nombre"
+                className="form-control"
+                placeholder="Juan Pérez"
+                value={formData.nombre}
+                onChange={handleChange}
                 style={{
-                    width: "100%",
-                    maxWidth: "450px",
-                    backgroundColor: "var(--color-primary)",
-                    border: "var(--border-weight) solid var(--border-color-light)",
-                    borderRadius: "16px"
+                  borderColor: 'var(--border-color-dark)',
                 }}
-            >
-                <h1
-                    className="text-center mb-2"
-                    style={{
-                        color: "var(--color-secondary)"
-                    }}
-                >
-                    Registrarse
-                </h1>
-
-                <p
-                    className="text-center mb-4"
-                    style={{
-                        color: "var(--color-subtitle)"
-                    }}
-                >
-                    Creá una cuenta nueva
-                </p>
-
-                <form onSubmit={handleSubmit}>
-
-                    <div className="mb-3">
-                        <label className="form-label">
-                            Nombre
-                        </label>
-
-                        <input
-                            type="text"
-                            name="nombre"
-                            className="form-control"
-                            placeholder="Juan Pérez"
-                            value={formData.nombre}
-                            onChange={handleChange}
-                            style={{
-                                borderColor: "var(--border-color-dark)"
-                            }}
-                        />
-                    </div>
-
-                    <div className="mb-3">
-                        <label className="form-label">
-                            Contraseña
-                        </label>
-
-                        <input
-                            type="password"
-                            name="contrasenia"
-                            className="form-control"
-                            placeholder="********"
-                            value={formData.contrasenia}
-                            onChange={handleChange}
-                            style={{
-                                borderColor: "var(--border-color-dark)"
-                            }}
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label className="form-label">
-                            Confirmar contraseña
-                        </label>
-
-                        <input
-                            type="password"
-                            name="confirmarContrasenia"
-                            className="form-control"
-                            placeholder="********"
-                            value={formData.confirmarContrasenia}
-                            onChange={handleChange}
-                            style={{
-                                borderColor: "var(--border-color-dark)"
-                            }}
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="btn w-100 fw-bold"
-                        style={{
-                            backgroundColor: "var(--color-secondary)",
-                            color: "white"
-                        }}
-                    >
-                        Crear cuenta
-                    </button>
-
-                </form>
-
-                <div className="text-center mt-4">
-                    <p>
-                        ¿Ya tenés cuenta?{" "}
-                        <Link
-                            to="/login"
-                            style={{
-                                color: "var(--color-terciary)",
-                                textDecoration: "none",
-                                fontWeight: "600"
-                            }}
-                        >
-                            Iniciar sesión
-                        </Link>
-                    </p>
-                </div>
+              />
             </div>
-            <ModalInformativo open={onSubmit}>
-                <h3>Registrando usuario...</h3>
-                <p>Esto puede tardar unos segundos</p>
-            </ModalInformativo>
+
+            <div className="mb-3">
+              <label className="form-label">Contraseña</label>
+
+              <input
+                type="password"
+                name="contrasenia"
+                className="form-control"
+                placeholder="********"
+                value={formData.contrasenia}
+                onChange={handleChange}
+                style={{
+                  borderColor: 'var(--border-color-dark)',
+                }}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label">Confirmar contraseña</label>
+
+              <input
+                type="password"
+                name="confirmarContrasenia"
+                className="form-control"
+                placeholder="********"
+                value={formData.confirmarContrasenia}
+                onChange={handleChange}
+                style={{
+                  borderColor: 'var(--border-color-dark)',
+                }}
+              />
+            </div>
+
+            { user?.rol === "ADMINISTRADOR" &&
+              <div className="mb-4">
+                <label className="form-label">Rol</label>
+                <select className="form-select" name="rol" onChange={handleChange} value={formData.rol}>
+                  <option value="USUARIO">USUARIO</option>
+                  <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+                </select>
+              </div>
+            }
+
+            <button
+              type="submit"
+              className="btn w-100 fw-bold"
+              style={{
+                backgroundColor: 'var(--color-secondary)',
+                color: 'white',
+              }}
+            >
+              Crear cuenta
+            </button>
+          </form>
+
+          <div className="text-center mt-4">
+            <p>
+              ¿Ya tenés cuenta?{' '}
+              <Link
+                to="/login"
+                style={{
+                  color: 'var(--color-terciary)',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                }}
+              >
+                Iniciar sesión
+              </Link>
+            </p>
+          </div>
         </div>
-    );
+        <ModalInformativo open={onSubmit}>
+          <h3>Registrando usuario...</h3>
+          <p>Esto puede tardar unos segundos</p>
+        </ModalInformativo>
+      </div>
+    )
 }
 
 export default Registrar;

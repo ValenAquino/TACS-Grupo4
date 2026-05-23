@@ -10,8 +10,6 @@ import { useError } from '@/contexts/errorContext.jsx'
 import { useToast } from '@/contexts/toastContext.jsx'
 import styles from './editar-oferta.module.css'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 const obtenerBloqueadas = (repetidas, figuritasSolicitadas) => {
   if (!figuritasSolicitadas?.length) return []
   const idsRepetidas = new Set(repetidas.map((r) => r.figurita_id))
@@ -25,8 +23,6 @@ const mismasFiguritas = (anteriores, actuales) => {
   const idsAnteriores = new Set(anteriores.map((f) => f.figurita_id ?? f.id))
   return actuales.every((f) => idsAnteriores.has(f.figurita_id ?? f.id))
 }
-
-// ─── EditarOferta ─────────────────────────────────────────────────────────────
 
 const EditarOferta = () => {
   const navigate = useNavigate()
@@ -66,6 +62,7 @@ const EditarOferta = () => {
     try {
       setLoadingEnviar(true)
       await editarOferta(
+        subasta.id,
         oferta.id,
         todasSeleccionadas.map((f) => f.figurita_id ?? f.id),
       )
@@ -80,7 +77,7 @@ const EditarOferta = () => {
   const onEliminar = async () => {
     try {
       setLoadingEliminar(true)
-      await cancelarOferta(oferta.id)
+      await cancelarOferta(subasta.id, oferta.id)
       navigate('/subastas')
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))

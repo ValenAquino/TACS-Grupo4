@@ -57,9 +57,9 @@ export const crearOferta = async (subastaId, userId, body) => {
   }
 }
 
-export const editarOferta = async (ofertaId, figuritasIds) => {
+export const editarOferta = async (subId, ofertaId, figuritasIds) => {
   try {
-    const { data } = await api.patch(`${SUBASTAS_URL}/ofertas/${ofertaId}`, {
+    const { data } = await api.patch(`${SUBASTAS_URL}/${subId}/ofertas/${ofertaId}`, {
       figuritas_ids: figuritasIds,
     })
     return data
@@ -68,9 +68,9 @@ export const editarOferta = async (ofertaId, figuritasIds) => {
   }
 }
 
-export const cancelarOferta = async (ofertaId) => {
+export const cancelarOferta = async (subId, ofertaId) => {
   try {
-    const { data } = await api.patch(`${SUBASTAS_URL}/ofertas/${ofertaId}/cancelar`)
+    const { data } = await api.post(`${SUBASTAS_URL}/${subId}/ofertas/${ofertaId}/cancelar`)
     return data
   } catch (error) {
     handleAxiosError(error)

@@ -2,10 +2,9 @@ package app.servicios;
 
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.request.MejorarOfertaRequest;
+import app.dto.request.EditarOfertaRequest;
 import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
-import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
@@ -86,7 +85,7 @@ import org.springframework.stereotype.Service;
       this.repoSubasta.guardar(subasta);
     }
 
-    public void mejorarOfertaEnSubasta(String subastaId, String ofertaId, MejorarOfertaRequest body){
+    public void editarOfertaEnSubasta(String perfilId, String subastaId, String ofertaId, EditarOfertaRequest body){
       Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
       Propuesta oferta = subasta.getOfertas().stream()
           .filter(o -> o.getId().equals(ofertaId))
@@ -97,6 +96,18 @@ import org.springframework.stereotype.Service;
       ).toList();
 
       oferta.setFiguritasOfrecidas(nuevas_figuritas);
+      oferta.resetearAPendiente(perfilId);
+      this.repoSubasta.guardar(subasta);
+    }
+
+    public void cancelarOferta(String perfilId, String subastaId, String ofertaId) {
+      Subasta subasta = this.repoSubasta.buscarPorId(subastaId);
+      Propuesta oferta = subasta.getOfertas().stream()
+          .filter(o -> o.getId().equals(ofertaId))
+          .findFirst()
+          .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+
+      oferta.cancelar(perfilId);
       this.repoSubasta.guardar(subasta);
     }
 

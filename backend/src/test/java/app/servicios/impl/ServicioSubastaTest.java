@@ -7,10 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import app.MongoTestBase;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.request.MejorarOfertaRequest;
+import app.dto.request.EditarOfertaRequest;
 import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
-import app.dto.subasta.SubastasParticipoResponseDto;
 import app.exceptions.BadRequestException;
 import app.model.entities.*;
 import java.time.LocalDateTime;
@@ -375,7 +374,7 @@ public class ServicioSubastaTest extends MongoTestBase {
   }
 
   @Test
-  void mejorarOferta_actualizaFiguritas() {
+  void editarOferta_actualizaFiguritas() {
 
     Subasta subasta = Subasta.builder()
         .id("s-1")
@@ -402,10 +401,11 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     repositorioSubastas.guardar(subasta);
 
-    service.mejorarOfertaEnSubasta(
+    service.editarOfertaEnSubasta(
+        lucas.getId(),
         "s-1",
         "o-1",
-        new MejorarOfertaRequest(
+        new EditarOfertaRequest(
             List.of("ARG-10")
         )
     );
@@ -427,7 +427,7 @@ public class ServicioSubastaTest extends MongoTestBase {
   }
 
   @Test
-  void mejorarOferta_ofertaInexistente_lanzaExcepcion() {
+  void editarOferta_ofertaInexistente_lanzaExcepcion() {
 
     Subasta subasta = Subasta.builder()
         .id("s-1")
@@ -445,16 +445,91 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     assertThrows(
         BadRequestException.class,
-        () -> service.mejorarOfertaEnSubasta(
+        () -> service.editarOfertaEnSubasta(
+            lucas.getId(),
             "s-1",
             "inexistente",
-            new MejorarOfertaRequest(
+            new EditarOfertaRequest(
                 List.of("ARG-10")
             )
         )
     );
   }
+  @Test
+  void editarOferta_resetearEstadoAPendiente() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .build();
 
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1")
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of())
+        .build();
+
+    propuesta.seleccionar(sofia.getId());
+    subasta.agregarOferta(propuesta);
+    repositorioSubastas.guardar(subasta);
+
+    service.editarOfertaEnSubasta(
+        lucas.getId(),
+        "s-1",
+        "o-1",
+        new EditarOfertaRequest(List.of("ARG-10"))
+    );
+
+    subasta = repositorioSubastas.buscarPorId("s-1");
+
+    assertEquals(EstadoProceso.PENDIENTE, buscarOfertaEn(subasta, "o-1").obtenerEstadoActual().getValor());
+  }
+  @Test
+  void cancelarOferta_marcaComoCancelada() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .build();
+
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1")
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of())
+        .build();
+
+    subasta.agregarOferta(propuesta);
+    repositorioSubastas.guardar(subasta);
+
+    service.cancelarOferta(lucas.getId(), "s-1", "o-1");
+
+    subasta = repositorioSubastas.buscarPorId("s-1");
+
+    assertEquals(EstadoProceso.CANCELADO, buscarOfertaEn(subasta, "o-1").obtenerEstadoActual().getValor());
+  }
+  @Test
+  void cancelarOferta_ofertaInexistente_lanzaExcepcion() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .build();
+
+    repositorioSubastas.guardar(subasta);
+
+    assertThrows(BadRequestException.class,
+        () -> service.cancelarOferta(lucas.getId(), "s-1", "inexistente"));
+  }
   @Test
   void seleccionarOferta_ofertaInexistente_lanzaExcepcion() {
 

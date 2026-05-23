@@ -45,9 +45,21 @@ import {useAuth} from "@/contexts/userContext.jsx";
          }
      }
 
-    useEffect(() => {
+     useEffect(() => {
         cargarEnviadas();
-    }, [pagina, filtros])
+     }, [pagina, filtros])
+
+     const textosEstado = {
+         "": "Todas las propuestas",
+         "PENDIENTE": "Esperando respuesta",
+         "ACEPTADO": "Propuestas aceptadas",
+         "RECHAZADO": "Propuestas rechazadas",
+         "CANCELADO": "Propuestas canceladas"
+     };
+
+     const textoResultados =
+         textosEstado[filtros.estado] ||
+         "Propuestas";
 
     return (
         <div>
@@ -116,7 +128,9 @@ import {useAuth} from "@/contexts/userContext.jsx";
                 :
                 enviadas?.contenido?.length > 0 ?
                 <>
-                    <p className={"mb-3"}>Esperando Respuesta {`(${enviadas.cantidad_de_elementos})`}</p>
+                    <p className={"mb-3"}>
+                        {textoResultados} ({enviadas.cantidad_de_elementos})
+                    </p>
                     {enviadas.contenido.map(i => (
                         <IntercambioCard
                             key={i.id}

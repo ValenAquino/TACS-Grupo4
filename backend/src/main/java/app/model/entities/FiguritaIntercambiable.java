@@ -54,7 +54,7 @@ public class FiguritaIntercambiable {
 
     public void eliminarReserva() {
         if (cantidadReservada <= 0) {
-            throw new RuntimeException("No hay reservas para eliminar");
+            throw new BadRequestException("No hay reservas para eliminar");
         }
         this.cantidadReservada -= 1;
     }

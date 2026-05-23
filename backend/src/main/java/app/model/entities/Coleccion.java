@@ -128,7 +128,8 @@ public class Coleccion {
   public void sacarReservasRepetidas(List<Figurita> repetidas) {
     repetidas.forEach(figurita -> {
       if (tieneRepetida(figurita)) {
-        obtenerRepetida(figurita).eliminarReserva();
+        FiguritaIntercambiable repetida = obtenerRepetida(figurita);
+        repetida.eliminarReserva();
       }
     });
   }

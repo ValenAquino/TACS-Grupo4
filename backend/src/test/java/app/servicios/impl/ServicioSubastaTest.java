@@ -1,6 +1,9 @@
 package app.servicios.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,7 +11,8 @@ import app.MongoTestBase;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.EditarOfertaRequest;
-import app.dto.subasta.SubastaDto;
+import app.dto.subasta.MiSubastaActivaDto;
+import app.dto.subasta.MiSubastaFinalizadaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.exceptions.BadRequestException;
 import app.model.entities.*;
@@ -585,156 +589,205 @@ public class ServicioSubastaTest extends MongoTestBase {
   }
 
   @Test
-  void obtenerSubastas_sinParticipante_retornaSubastaDto() {
-
+  void obtenerSubastas_misActivas_retornaMiSubastaActivaDto() {
     Subasta subasta = Subasta.builder()
         .id("s-1")
         .autor(sofia)
-        .fechaInicio(
-            LocalDateTime.now().minusHours(1)
-        )
-        .fechaCierre(
-            LocalDateTime.now().plusDays(1)
-        )
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi)
         .build();
 
     repositorioSubastas.guardar(subasta);
 
-    SubastasFiltro filtros =
-        new SubastasFiltro(
-            1,
-            10,
-            null,
-            null,
-            null
-        );
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "ACTIVA");
 
-    PaginaResultado<?> resultado =
-        service.obtenerSubastas(filtros);
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
 
-    assertEquals(
-        1,
-        resultado.contenido().size()
-    );
+    assertEquals(1, resultado.contenido().size());
+    assertInstanceOf(MiSubastaActivaDto.class, resultado.contenido().get(0));
+    assertEquals("s-1", ((MiSubastaActivaDto) resultado.contenido().get(0)).getId());
+  }
 
-    assertTrue(
-        resultado.contenido()
-            .get(0) instanceof SubastaDto
-    );
+  @Test
+  void obtenerSubastas_misFinalizadas_retornaMiSubastaFinalizadaDto() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(3))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi)
+        .build();
 
-    SubastaDto dto =
-        (SubastaDto) resultado
-            .contenido()
-            .get(0);
+    repositorioSubastas.guardar(subasta);
 
-    assertEquals(
-        "s-1",
-        dto.getId()
-    );
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "FINALIZADA");
+
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+
+    assertEquals(1, resultado.contenido().size());
+    assertInstanceOf(MiSubastaFinalizadaDto.class, resultado.contenido().get(0));
+  }
+
+  @Test
+  void obtenerSubastas_misFinalizadas_conOfertaAceptada_tieneOfertaGanadora() {
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1")
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of())
+        .build();
+    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
+
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(3))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi)
+        .ofertas(List.of(propuesta))
+        .build();
+
+    repositorioSubastas.guardar(subasta);
+
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "FINALIZADA");
+
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+
+    MiSubastaFinalizadaDto dto = (MiSubastaFinalizadaDto) resultado.contenido().get(0);
+    assertNotNull(dto.getOfertaGanadora());
+    assertEquals("o-1", dto.getOfertaGanadora().getId());
+  }
+
+  @Test
+  void obtenerSubastas_misFinalizadas_sinOfertaAceptada_ofertaGanadoraEsNull() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(3))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi)
+        .build();
+
+    repositorioSubastas.guardar(subasta);
+
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "FINALIZADA");
+
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+
+    MiSubastaFinalizadaDto dto = (MiSubastaFinalizadaDto) resultado.contenido().get(0);
+    assertNull(dto.getOfertaGanadora());
+  }
+
+  @Test
+  void obtenerSubastas_misActivas_noRetornaFinalizadas() {
+    Subasta activa = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .build();
+
+    Subasta finalizada = Subasta.builder()
+        .id("s-2")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(3))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
+        .figuritaSubastada(messi)
+        .build();
+
+    repositorioSubastas.guardar(activa);
+    repositorioSubastas.guardar(finalizada);
+
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "ACTIVA");
+
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+
+    assertEquals(1, resultado.contenido().size());
+    assertEquals("s-1", ((MiSubastaActivaDto) resultado.contenido().get(0)).getId());
   }
 
   @Test
   void obtenerSubastas_conParticipante_retornaSubastaParticipoDto() {
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1")
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of())
+        .build();
 
-    Propuesta propuesta =
-        Propuesta.builder()
-            .id("o-1")
-            .autor(lucas)
-            .destinatario(sofia)
-            .figuritaBuscada(messi)
-            .figuritasOfrecidas(List.of())
-            .build();
-
-    Subasta subasta =
-        Subasta.builder()
-            .id("s-1")
-            .autor(sofia)
-            .fechaInicio(
-                LocalDateTime.now().minusHours(1)
-            )
-            .fechaCierre(
-                LocalDateTime.now().plusDays(1)
-            )
-            .figuritaSubastada(messi)
-            .ofertas(List.of(propuesta))
-            .build();
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .ofertas(List.of(propuesta))
+        .build();
 
     repositorioSubastas.guardar(subasta);
 
-    SubastasFiltro filtros =
-        new SubastasFiltro(
-            1,
-            10,
-            null,
-            lucas.getId(),
-            null
-        );
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, null, lucas.getId(), "ACTIVA");
 
-    PaginaResultado<?> resultado =
-        service.obtenerSubastas(filtros);
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, lucas.getId());
 
-    assertEquals(
-        1,
-        resultado.contenido().size()
-    );
-
-    assertTrue(
-        resultado.contenido()
-            .get(0) instanceof SubastaParticipoDto
-    );
-
-    SubastaParticipoDto dto =
-        (SubastaParticipoDto)
-            resultado.contenido()
-                .get(0);
-
-    assertEquals(
-        "s-1",
-        dto.getId()
-    );
-
-    assertEquals(
-        "o-1",
-        dto.getTuOferta().getId()
-    );
+    assertEquals(1, resultado.contenido().size());
+    assertTrue(resultado.contenido().get(0) instanceof SubastaParticipoDto);
+    SubastaParticipoDto dto = (SubastaParticipoDto) resultado.contenido().get(0);
+    assertEquals("s-1", dto.getId());
+    assertEquals("o-1", dto.getTuOferta().getId());
   }
 
   @Test
-  void obtenerSubastas_conParticipante_sinOfertaNoRetornaResultados() {
+  void obtenerSubastas_conParticipante_ofertaCancelada_noRetornaSubasta() {
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1")
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of())
+        .build();
+    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
 
-    Subasta subasta =
-        Subasta.builder()
-            .id("s-1")
-            .autor(sofia)
-            .fechaInicio(
-                LocalDateTime.now().minusHours(1)
-            )
-            .fechaCierre(
-                LocalDateTime.now().plusDays(1)
-            )
-            .figuritaSubastada(messi)
-            .build();
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .ofertas(List.of(propuesta))
+        .build();
 
     repositorioSubastas.guardar(subasta);
 
-    SubastasFiltro filtros =
-        new SubastasFiltro(
-            1,
-            10,
-            null,
-            lucas.getId(),
-            null
-        );
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, null, lucas.getId(), "ACTIVA");
 
-    PaginaResultado<?> resultado =
-        service.obtenerSubastas(filtros);
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, lucas.getId());
 
-    assertTrue(
-        resultado.contenido().isEmpty()
-    );
+    assertTrue(resultado.contenido().isEmpty());
   }
 
+  @Test
+  void obtenerSubastas_conParticipante_sinOferta_noRetornaSubasta() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1")
+        .autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi)
+        .build();
+
+    repositorioSubastas.guardar(subasta);
+
+    SubastasFiltro filtros = new SubastasFiltro(1, 10, null, lucas.getId(), "ACTIVA");
+
+    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, lucas.getId());
+
+    assertTrue(resultado.contenido().isEmpty());
+  }
   private Propuesta buscarOfertaEn(Subasta subasta, String ofertaId) {
     return subasta.getOfertas().stream()
         .filter(o -> o.getId().equals(ofertaId))

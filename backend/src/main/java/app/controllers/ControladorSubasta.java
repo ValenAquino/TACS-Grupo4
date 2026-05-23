@@ -114,8 +114,9 @@ public class ControladorSubasta {
     public ResponseEntity<PaginaResultado<?>> obtenerSubastas(
         @CookieValue("token") String token,
         @ModelAttribute SubastasFiltro filtros
-        ) {
-        return ResponseEntity.ok(this.subastaService.obtenerSubastas(filtros));
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.subastaService.obtenerSubastas(filtros, perfilId));
     }
 
   @GetMapping("/{sub_id}")

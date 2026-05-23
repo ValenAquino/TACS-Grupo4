@@ -3,6 +3,8 @@ package app.servicios;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.EditarOfertaRequest;
+import app.dto.subasta.MiSubastaActivaDto;
+import app.dto.subasta.MiSubastaFinalizadaDto;
 import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.exceptions.BadRequestException;
@@ -195,30 +197,40 @@ import org.springframework.stereotype.Service;
       this.repoSubasta.guardar(subasta, camposSubasta);
     }
 
-    public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
+    public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros, String perfilId) {
       PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros, new CamposSubasta(true, true));
 
-      if(filtros.participanteId() != null ) {
-        return new PaginaResultado<>(
-            resultado.contenido().stream().map(s -> {
-                  boolean yaCalifico = this.repoCalificacion.yaCalifico(
-                      s.getAutor().getId(),
-                      filtros.participanteId(),
-                      s.getId(),
-                      MetodoIntercambio.SUBASTA
-                  );
-                  return new SubastaParticipoDto(s, obtenerOferta(s, filtros.participanteId()), yaCalifico);
-            }
-            ).toList(),
-            resultado.cantidadDeElementos(),
-            resultado.cantidadDePaginas(),
-            resultado.numero());
+      if (filtros.participanteId() != null) {
+        return resultado.mapearA(s -> {
+          boolean yaCalifico = this.repoCalificacion.yaCalifico(
+              s.getAutor().getId(),
+              perfilId,
+              s.getId(),
+              MetodoIntercambio.SUBASTA
+          );
+          return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
+        });
+
+      } else if ("ACTIVA".equals(filtros.estado())) {
+        return resultado.mapearA(MiSubastaActivaDto::new);
+
       } else {
-        return new PaginaResultado<>(
-            resultado.contenido().stream().map(SubastaDto::new).toList(),
-            resultado.cantidadDeElementos(),
-            resultado.cantidadDePaginas(),
-            resultado.numero());
+        return resultado.mapearA(s -> {
+          String ganadorId = s.getOfertas().stream()
+              .filter(o -> o.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO)
+              .findFirst()
+              .map(o -> o.getAutor().getId())
+              .orElse(null);
+
+          boolean yaCalifico = ganadorId != null && this.repoCalificacion.yaCalifico(
+              perfilId,
+              ganadorId,
+              s.getId(),
+              MetodoIntercambio.SUBASTA
+          );
+
+          return new MiSubastaFinalizadaDto(s, yaCalifico);
+        });
       }
     }
 

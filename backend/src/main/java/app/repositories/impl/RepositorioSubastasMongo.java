@@ -4,6 +4,7 @@ import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
+import app.model.entities.EstadoProceso;
 import app.model.entities.Perfil;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioSubastas;
@@ -90,7 +91,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     this.conCamposCargados(query, campos);
 
-    if(filtros.autorId() != null) {
+    if (filtros.autorId() != null) {
       query.addCriteria(
           Criteria.where("autor").is(filtros.autorId())
       );
@@ -98,7 +99,6 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     if ("ACTIVA".equals(filtros.estado())) {
       Date ahora = new Date();
-
       query.addCriteria(
           new Criteria().andOperator(
               Criteria.where("fechaInicio").lte(ahora),
@@ -109,7 +109,6 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     if ("FINALIZADA".equals(filtros.estado())) {
       Date ahora = new Date();
-
       query.addCriteria(
           Criteria.where("fechaCierre").lte(ahora)
       );
@@ -117,9 +116,15 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     if (filtros.participanteId() != null) {
       query.addCriteria(
-          Criteria.where("ofertas.autor").is(filtros.participanteId())
+          Criteria.where("ofertas").elemMatch(
+              new Criteria().andOperator(
+                  Criteria.where("autor").is(filtros.participanteId())
+                  //TODO where estadoActual != CANCELADO
+              )
+          )
       );
     }
+
 
     long count = mongoTemplate.count(query, Subasta.class);
 

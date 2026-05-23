@@ -17,7 +17,7 @@ public class SubastaParticipoDto {
   private FiguritaDto figuritaSubastada;
   private LocalDateTime fechaInicio;
   private LocalDateTime fechaCierre;
-  PropuestaDto tuOferta;
+  MiOfertaDto tuOferta;
   private boolean yaCalificado;
 
   public SubastaParticipoDto(Subasta subasta, Propuesta tuOferta, boolean yaCalificado) {
@@ -26,7 +26,7 @@ public class SubastaParticipoDto {
     this.figuritaSubastada = new FiguritaDto(subasta.getFiguritaSubastada());
     this.fechaInicio = subasta.getFechaInicio();
     this.fechaCierre = subasta.getFechaCierre();
-    this.tuOferta = new PropuestaDto(tuOferta);
+    this.tuOferta = new MiOfertaDto(tuOferta);
     this.yaCalificado = yaCalificado;
   }
 }

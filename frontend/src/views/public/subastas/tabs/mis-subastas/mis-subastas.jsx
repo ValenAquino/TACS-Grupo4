@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
-import { buscarMisSubastas } from "@/services/subastasService.js";
-import MiSubastaCard from "../../../../../components/ui/subasta-card/mi-subasta-card.jsx";
-import Button from "../../../../../components/ui/button/button.jsx";
-import { useNavigate } from "react-router";
-import {useError} from "@/contexts/errorContext.jsx";
-import {useAuth} from "@/contexts/userContext.jsx";
+import { useEffect, useState } from 'react'
+import { buscarMisSubastas } from '../../../../../services/subastasService.js'
+import MiSubasta from './components/mi-subasta/mi-subasta.jsx'
+import Button from '../../../../../components/ui/button/button.jsx'
+import { useNavigate } from 'react-router'
+import useUsuarioActual from '../../../../../hooks/useUsuarioActual.js'
 
 const MisSubastas = () => {
   const [data, setData] = useState({});
@@ -26,11 +25,11 @@ const MisSubastas = () => {
       } catch(error) {
         handleError(error, () => {});
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    cargar();
-  }, [refresh]);
+    }
+    cargar()
+  }, [refresh])
 
   return (
     <div className="container-fluid px-0 d-flex flex-column gap-4">

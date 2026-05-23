@@ -1,26 +1,25 @@
 package app.servicios;
 
-import app.dto.*;
-import app.dto.calificaciones.CalificacionesDto;
-import app.dto.paginacion.PaginaResultado;
+import app.dto.CalificacionDto;
+import app.dto.ContadorDto;
+import app.dto.FiguritaDto;
+import app.dto.NotificacionesDto;
+import app.dto.PerfilDto;
+import app.dto.SugerenciaDto;
 import app.dto.filtros.SugerenciasFiltro;
+import app.dto.paginacion.PaginaResultado;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
+import app.model.entities.Sugerencia;
 import app.repositories.RepositorioCalificacion;
-import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioNotificaciones;
-import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
+import app.repositories.impl.campos.CamposPerfil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +115,12 @@ public class ServicioPerfil {
     Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(true));
     if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + perfilId);
     return new PerfilDto(perfil);
+  }
+
+  public void editarPerfil(String perfilId, String nombre) {
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
+    perfil.setNombre(nombre);
+    this.repositorioPerfiles.guardar(perfil, new CamposPerfil(false));
   }
 
   public PaginaResultado<CalificacionDto> obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {

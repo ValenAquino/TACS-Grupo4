@@ -1,4 +1,4 @@
-.PHONY: up build down logs logs-back logs-front dev dev-back dev-front dev-down reload-back test
+.PHONY: up build down logs logs-back logs-front dev dev-back dev-front dev-down test
 
 # --- Prod ---
 

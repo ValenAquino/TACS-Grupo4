@@ -29,7 +29,7 @@ docker compose up frontend backend
 ```bash
 # Produccion
 docker build -t tacs-frontend .
-docker run -p 5173:5173 tacs-frontend
+docker run -p 5173:8080 tacs-frontend
 ```
 
 ### Con npm

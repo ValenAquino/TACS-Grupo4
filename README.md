@@ -65,14 +65,16 @@ El proyecto usa un `Makefile` para unificar todos los comandos.
 | `make dev-front` | Levanta o recarga solo el frontend                   |
 | `make test`      | Corre los tests del backend en un contenedor efímero |
 
-En modo desarrollo el frontend tiene **HMR automático** — al guardar cualquier archivo en `src/` Vite actualiza el browser sin recargar la página. El backend se recarga manualmente con `make reload-back` cuando se cambia código Java.
+En modo desarrollo el frontend tiene hot reaload. Al guardar cualquier archivo en `src/`
+Vite actualiza el browser sin recargar la página.
+El backend se recarga manualmente con `make dev-back` cuando se cambia código Java.
 
 ### Variables de entorno
 
 Para sobreescribir la configuración por defecto, crear un archivo `.env` en la raíz:
 
 ```bash
-CORS_ALLOWED_ORIGIN=http://tacs-dominio.com
+CORS_ORIGIN=http://tacs-dominio.com
 ```
 
 ---
@@ -280,27 +282,26 @@ builder       →  + npm run build
 production    →  Nginx con /dist (imagen final de prod)
 ```
 
-El `pom.xml` y el `package.json` se copian antes que el código fuente para que Docker cachee la descarga de dependencias. Si solo cambia el código, las dependencias no se re-descargan ([referencia](https://www.baeldung.com/ops/docker-cache-maven-dependencies)).
-
-Para el frontend, Nginx incluye una configuración con `try_files` para que React Router funcione al refrescar cualquier ruta ([referencia](https://dev.to/it-wibrc/guide-to-containerizing-a-modern-javascript-spa-vuevitereact-with-a-multi-stage-nginx-build-1lma)).
-
 ### Docker: entorno de desarrollo con Compose Watch
 
-El stack de desarrollo usa `docker-compose.dev.yml`, que buildea hasta el stage `dev` de cada Dockerfile — sin `mvn verify` ni `npm run build`.
+El stack de desarrollo usa `docker-compose.dev.yml`, que buildea hasta el stage `dev` de cada Dockerfile (sin `mvn verify` ni `npm run build`).
 
-Los cambios en el código fuente se sincronizan al contenedor usando [Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/), que transfiere archivos a través del socket Docker sin requerir volume mounts ni configuración especial del host. Para el frontend, Vite detecta el cambio y
-actualiza el browser automáticamente (HMR). Para el backend, el redespliegue es manual con `make deploy-back`.
+Los cambios en el código fuente se sincronizan al contenedor usando [Compose Watch](https://fsck.sh/en/blog/docker-compose-watch-modern-workflows/),
+que transfiere archivos a través del socket Docker sin requerir volume mounts ni configuración especial del host.
+Para el frontend, Vite detecta el cambio y actualiza el browser automáticamente (Hot Reload).
+Para el backend, el redespliegue es manual con `make dev-back`.
 
 ### Docker: health check y orden de inicio
 
-El backend expone `/ping` como endpoint de salud. Docker Compose espera que esté `healthy` antes de iniciar el frontend (`condition: service_healthy`), evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)). El
-`start_period` de 15s le da margen a Spring Boot para inicializar.
+El backend expone `/ping` como endpoint de salud. Docker Compose espera que esté `healthy` antes de iniciar el frontend (`condition: service_healthy`), 
+evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)). 
+El `start_period` de 15s le da margen a Spring Boot para inicializar.
 
 Ambos servicios tienen `restart: unless-stopped` para que Docker los recupere automáticamente ante una caída.
 
 ### CORS configurable
 
-El origin permitido se define en `application.properties` y puede sobreescribirse vía variable de entorno `CORS_ALLOWED_ORIGIN`. Esto permite usar `http://localhost:5173` en desarrollo y la URL real en producción sin recompilar.
+El origin permitido se define en `application.properties` y puede sobreescribirse vía variable de entorno `CORS_ORIGIN`. Esto permite usar `http://localhost:5173` en desarrollo y la URL real en producción sin recompilar.
 
 ### `MetodoIntercambio` como enum y no como entidad
 
@@ -311,36 +312,3 @@ intercambio, el cambio es deliberado y controlado.
 
 `Coleccion` es un agregado con identidad propia y lógica no trivial (deduplicación de faltantes, acumulación de repetidas). Separar su repositorio del de `Perfil` respeta el principio de responsabilidad única y facilita la futura migración a base de datos, donde serán tablas distintas. Además,
 permite que operaciones sobre la colección no requieran cargar el perfil completo.
-
----
-
-## Ejecutar tests
-
-```bash
-make test
-```
-
-Corre los tests dentro de un contenedor efímero sin levantar el stack completo. No requiere Java instalado localmente.
-
-## Validar el proyecto
-
-```bash
-docker compose -f docker-compose.dev.yml run --rm backend mvn verify
-```
-
-Ejecuta tests, análisis de SpotBugs y cobertura mínima con JaCoCo (80%). Este mismo comando corre automáticamente en cada `make build` (producción).
-
-## Configuración del IDE (IntelliJ)
-
-### SDK de Java 17
-
-En **File > Project Structure > Project**, seleccionar SDK 17 y language level 17.
-
-### Fin de línea Unix
-
-En **File > Settings > Editor > Code Style**, seleccionar `Unix and OS X (\n)` en **Line separator**.
-
-### Indentación con 2 espacios
-
-En **File > Settings > Editor > Code Style > Java > Tabs and Indents**, setear Tab size, Indent y Continuation indent en 2, 2 y 4.
-

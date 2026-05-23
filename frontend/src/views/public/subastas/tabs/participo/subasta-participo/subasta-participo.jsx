@@ -81,10 +81,10 @@ const SubastaParticipo = ({ subasta, finalizada }) => {
             )
           : tu_oferta?.figuritas_ofrecidas?.length > 0 && (
               <Button
-                label="Mejorar oferta"
+                label="Editar oferta"
                 variante="secundario_borde"
                 className="flex-fill"
-                onClick={() => navigate(`/subastas/${id}/ofertas/${tu_oferta.id}`)}
+                onClick={() => navigate(`/subastas/${id}/ofertas/${tu_oferta.id}/editar`)}
               />
             )}
       </div>

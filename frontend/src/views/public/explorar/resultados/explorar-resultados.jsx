@@ -19,7 +19,7 @@ const ExplorarResultados = ({
     <>
       <p className={styles.resultsCount}>{totalElements} figuritas encontradas</p>
 
-      <div className="row g-3">
+      <div className="row g-4">
         {loading
           ? [...Array(12)].map((_, i) => (
               <div key={i} className="col-12 col-md-6 col-lg-4">

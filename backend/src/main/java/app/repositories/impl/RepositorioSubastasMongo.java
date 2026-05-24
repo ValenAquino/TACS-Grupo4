@@ -1,5 +1,6 @@
 package app.repositories.impl;
 
+import com.mongodb.DBRef;
 import org.bson.types.ObjectId;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
@@ -115,9 +116,10 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
       );
     }
     if (filtros.participanteId() != null) {
+      DBRef autorRef = new DBRef("perfiles", filtros.participanteId());
       query.addCriteria(
           Criteria.where("ofertas").elemMatch(
-              Criteria.where("autor.$id").is(filtros.participanteId())
+              Criteria.where("autor").is(autorRef)
                   .and("estadoActual.valor").ne(EstadoProceso.CANCELADO)
           )
       );

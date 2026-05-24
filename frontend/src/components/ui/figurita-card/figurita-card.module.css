@@ -84,25 +84,6 @@
     transform: scale(1.06);
 }
 
-/* Placeholder para cuando no hay imagen */
-.heroPlaceholder {
-    width: 100%;
-    height: 100%;
-    background: #f3f4f6;
-}
-
-.cardIntercambio .heroPlaceholder {
-    background: linear-gradient(160deg, var(--color-secondary-acent), #e8fdf0);
-}
-
-.cardSubasta .heroPlaceholder {
-    background: linear-gradient(160deg, #fed7aa, #ffedd5);
-}
-
-.cardAmbos .heroPlaceholder {
-    background: linear-gradient(160deg, #f5e6c0, #fdf3dc);
-}
-
 /* nro y etiqueta sobre la foto */
 .heroOverlay {
     position: absolute;
@@ -164,37 +145,39 @@
     padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
     flex: 1;
 }
 
 .cardName {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #111827;
     margin: 0;
+    line-height: 1.2;
+}
+
+.metaRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
 }
 
 .cardSubtitle {
-    font-size: 0.75rem;
-    color: #6b7280;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     margin: 0;
 }
 
-.meta {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.disponibles {
     font-size: 0.75rem;
-    color: #374151;
-    flex-wrap: wrap;
-    margin-top: 2px;
-}
-
-.cardAvailable {
-    font-size: 0.73rem;
-    color: #16a34a;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--color-secondary);
+    flex-shrink: 0;
 }
 
 .cardExtra {
@@ -206,7 +189,7 @@
 .divider {
     border: none;
     border-top: 1px solid #f3f4f6;
-    margin: 4px 0 2px;
+    margin: 2px 0;
 }
 
 /* Botones de acción */
@@ -214,31 +197,32 @@
     display: block;
     width: 100%;
     padding: 9px 0;
-    border: none;
+    border: 2px solid var(--color-secondary);
     border-radius: 9px;
-    background: var(--color-secondary);
-    color: #fff;
+    background: transparent;
+    color: var(--color-secondary);
     font-size: 0.84rem;
     font-weight: 600;
     font-family: var(--font-family);
     cursor: pointer;
     text-align: center;
     text-decoration: none;
-    transition: filter 0.15s;
+    transition: background 0.18s, color 0.18s;
     margin-top: 2px;
 }
 
 .actionBtn:hover {
-    filter: brightness(1.15);
+    background: var(--color-secondary);
     color: #fff;
 }
 
 .actionBtnSubasta {
-    background: var(--color-terciary);
-    color: #fff;
+    border-color: var(--color-terciary);
+    background: transparent;
+    color: #8a5e0a;
 }
 
 .actionBtnSubasta:hover {
-    filter: brightness(1.1);
+    background: var(--color-terciary);
     color: #fff;
 }

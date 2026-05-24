@@ -47,18 +47,20 @@ const FiguritaCard = ({
 
       <div className={styles.body}>
         <p className={styles.cardName}>{jugador}</p>
-        <p className={styles.cardSubtitle}>{seleccion}</p>
-
-        <div className={styles.meta}>
-          {nombreUsuario && <UserChip nombre={nombreUsuario} reputacion={reputacion} />}
+        <div className={styles.metaRow}>
+          <p className={styles.cardSubtitle}>{seleccion}</p>
           {extra ? (
             <span className={styles.cardExtra}>{extra}</span>
           ) : (
             cantidadExistente !== undefined && (
-              <span className={styles.cardAvailable}>· {cantidadExistente} disp.</span>
+              <span className={styles.disponibles}>{cantidadExistente} disponibles</span>
             )
           )}
         </div>
+
+        <hr className={styles.divider} />
+
+        {nombreUsuario && <UserChip nombre={nombreUsuario} reputacion={reputacion} />}
 
         <hr className={styles.divider} />
 

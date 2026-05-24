@@ -42,7 +42,7 @@ class RepositorioPerfilesTest extends MongoTestBase {
             .mediosDeContacto(telegram("@lucas"))
             .build();
 
-        user = new Usuario("u-1001", Rol.USUARIO, "lucas", "fiscella");
+        user = new Usuario("u-1001", Rol.USUARIO, "juan", "fiscella");
         repositorioUsuarios.guardar(user);
         Perfil perfil2 = Perfil.builder()
             .id("u-2").usuario(user).nombre("Juan")
@@ -51,7 +51,7 @@ class RepositorioPerfilesTest extends MongoTestBase {
             .build();
 
 
-        user = new Usuario("u-1002", Rol.USUARIO, "lucas", "fiscella");
+        user = new Usuario("u-1002", Rol.USUARIO, "cristina", "fiscella");
         repositorioUsuarios.guardar(user);
 
         Perfil perfil3 = Perfil.builder()

@@ -131,10 +131,10 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-    subasta.getOfertas().stream()
-        .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
-        .findFirst()
-        .ifPresent(p -> p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE)));
+      subasta.getOfertas().stream()
+          .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
+          .findFirst()
+          .ifPresent(p -> p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE)));
 
     Propuesta propuesta = subasta.getOfertas().stream()
         .filter(p -> p.getId().equals(ofertaId))
@@ -184,25 +184,11 @@ public class ServicioSubasta {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
-    if (!subasta.estaActivo()) {
-      throw new BadRequestException("La subasta ya cerro");
-    }
-
-    Propuesta seleccionada = subasta.getOfertas().stream()
-        .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
-        .findFirst()
-        .orElseThrow(() -> new BadRequestException("No hay una oferta seleccionada"));
-
-    subasta.getOfertas().forEach(p -> {
-      EstadoProceso nuevoEstado = p.getId().equals(seleccionada.getId())
-          ? EstadoProceso.ACEPTADO
-          : EstadoProceso.RECHAZADO;
-      p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), nuevoEstado));
-    });
-
-    subasta.setFechaCierre(LocalDateTime.now());
+    subasta.cerrar(subastaId);
+    this.repoSubasta.guardar(subasta);
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
+
 
   public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
     PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros, new CamposSubasta(true, true));

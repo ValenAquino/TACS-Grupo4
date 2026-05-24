@@ -59,8 +59,8 @@ const HeaderUsuarioEstado = ({ destinatario, estado }) => {
                 </span>
 
                     <small className="text-muted">
-                        {renderStars(destinatario.calificacion)}
-                        {" " + destinatario.calificacion}
+                        {renderStars(destinatario.calificacion_media)}
+                        {" " + destinatario.calificacion_media}
                     </small>
 
                 </div>

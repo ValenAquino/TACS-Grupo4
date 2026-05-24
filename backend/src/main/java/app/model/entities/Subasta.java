@@ -63,5 +63,35 @@ public class Subasta {
         return fechaActual.isAfter(fechaInicio) && fechaActual.isBefore(fechaCierre);
     }
 
+    public void cerrar(String perfilId) {
+        if (!estaActivo()) {
+            throw new BadRequestException("La subasta ya cerro");
+        }
+
+        Propuesta seleccionada = obtenerSeleccionada();
+        if(seleccionada != null) {
+            seleccionada.aceptar(perfilId);
+        }
+
+        rechazarOfertas(perfilId);
+        finalizarSubasta();
+    }
+
+    private void rechazarOfertas(String perfilId) {
+        getOfertas().stream()
+            .filter(o -> o.getEstadoActual().equals(EstadoProceso.PENDIENTE))
+            .forEach(o -> o.rechazar(perfilId));
+    }
+
+    private void finalizarSubasta() {
+        this.setFechaCierre(LocalDateTime.now());
+    }
+
+    Propuesta obtenerSeleccionada() {
+        return getOfertas().stream()
+            .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
+            .findFirst()
+            .orElse(null);
+    }
 }
 

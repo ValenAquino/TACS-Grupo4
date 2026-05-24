@@ -124,7 +124,7 @@ const Repetidas = () => {
 
             <div className="d-flex justify-content-between align-items-center gap-3 flex-nowrap">
                 <p className="mb-0">
-                    {repetidas.resultados ?? 0} resultados encontrados
+                    {repetidas.cantidad_de_elementos ?? 0} resultados encontrados
                 </p>
 
                 <div className="flex-shrink-0">
@@ -156,8 +156,8 @@ const Repetidas = () => {
             ) : (
                 <>
                     <div className="row g-3 justify-content-center">
-                        {repetidas?.data?.length > 0 ? (
-                            repetidas.data.map((fig) => (
+                        {repetidas?.contenido?.length > 0 ? (
+                            repetidas.contenido.map((fig) => (
                                 <div
                                     key={fig.figurita_id}
                                     className="col-6 col-md-4 col-lg-3 d-flex justify-content-center"
@@ -179,7 +179,7 @@ const Repetidas = () => {
                         <Paginacion
                             page={pagina}
                             totalPages={
-                                repetidas.paginas_totales ?? 1
+                                repetidas.cantidad_de_paginas ?? 1
                             }
                             onChange={setPagina}
                         />

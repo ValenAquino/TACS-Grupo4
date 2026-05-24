@@ -36,9 +36,21 @@ import {useAuth} from "@/contexts/userContext.jsx";
      const cargarEnviadas = async () => {
          try {
              setLoading(true);
-             const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
-             setEnviadas(enviadasApi)
+
+             console.log("FILTROS:", filtros);
+
+             const enviadasApi = await buscarPropuestas({
+                 pagina: pagina,
+                 limite: 10,
+                 ...filtros
+             });
+
+             console.log("RESPUESTA:", enviadasApi);
+
+             setEnviadas(enviadasApi);
+
          } catch (error) {
+             console.error(error);
              handleError(error, () => {})
          } finally {
              setLoading(false);

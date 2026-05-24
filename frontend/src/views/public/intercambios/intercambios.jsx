@@ -17,7 +17,7 @@ const Intercambios = () => {
     const tabs = [
         {
             key: "recibidas",
-            label: `Recibidas (${data.pendientes.length})`,
+            label: `Recibidas`,
             component: RecibidasTab,
             props: { pendientes: data.pendientes },
         },

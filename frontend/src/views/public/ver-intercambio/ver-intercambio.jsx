@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { useNavigate } from "react-router";
+import { useParams, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
 import SectionCard from "../../../components/ui/section-card/section-card.jsx";
 import SectionTitle from "../../../components/ui/section-title/section-title.jsx";
@@ -30,17 +29,43 @@ const VerIntercambio = () => {
 
             setCargando(true);
 
-            const response = await buscarPropuestas({
-                pagina: 0,
-                limite: 100,
-                tipo: "RECIBIDAS"
-            });
+             const [recibidas, enviadas] = await Promise.all([
+                        buscarPropuestas({
+                            pagina: 0,
+                            limite: 100,
+                            tipo: "RECIBIDAS"
+                        }),
 
-            const encontrada = response.contenido.find(
+                        buscarPropuestas({
+                            pagina: 0,
+                            limite: 100,
+                            tipo: "ENVIADAS"
+                        })
+                    ]);
+
+             const todas = [...(recibidas?.contenido || []),...(enviadas?.contenido || [])];
+
+            const encontradaRecibida = (recibidas?.contenido || []).find(
                 (p) => p.id.toString() === intercambioId
             );
 
-            setPropuesta(encontrada);
+            const encontradaEnviada = (enviadas?.contenido || []).find(
+                (p) => p.id.toString() === intercambioId
+            );
+
+            if (encontradaRecibida) {
+                setPropuesta({
+                    ...encontradaRecibida,
+                    tipo: "RECIBIDA"
+                });
+            }
+
+            if (encontradaEnviada) {
+                setPropuesta({
+                    ...encontradaEnviada,
+                    tipo: "ENVIADA"
+                });
+            }
             //console.log(encontrada)
 
         } catch (e) {
@@ -52,13 +77,16 @@ const VerIntercambio = () => {
 
     useEffect(() => {
         cargarIntercambio();
-    }, []);
+    }, [intercambioId]);
 
     const handleAceptar = async () => {
-        //console.log("CLICK ACEPTAR");
         try {
             await aceptarPropuesta(propuesta.id);
-            navigate("/intercambios");
+
+            setPropuesta((prev) => ({
+                ...prev,
+                estado: "ACEPTADO"
+            }));
         } catch (e) {
             console.error(e);
         }
@@ -67,7 +95,11 @@ const VerIntercambio = () => {
     const handleRechazar = async () => {
         try {
             await rechazarPropuesta(propuesta.id);
-            navigate("/intercambios");
+
+            setPropuesta((prev) => ({
+                ...prev,
+                estado: "RECHAZADO"
+            }));
         } catch (e) {
             console.error(e);
         }
@@ -88,6 +120,15 @@ const VerIntercambio = () => {
             </div>
         );
     }
+
+    const esRecibida = propuesta.tipo === "RECIBIDA";
+    const esEnviada = propuesta.tipo === "ENVIADA";
+
+    console.log(propuesta?.estado);
+    console.log(propuesta);
+    //Para que no aparezcan los botones, si ya fue ceptada o rechazada.
+    const estadoActual = propuesta?.estado;
+    const estaPendiente = estadoActual === "PENDIENTE" && esRecibida;
 
     return (
         <div className="container py-4 px-3 px-md-4">
@@ -115,22 +156,27 @@ const VerIntercambio = () => {
                             </small>
 
                             <h4 className="mb-0">
-                                {propuesta.estado?.at(-1)?.valor ?? "PENDIENTE"}
+                                {propuesta.estado ?? "PENDIENTE"}
                             </h4>
                         </div>
 
-                        <div>
-                            <Button
-                                label={"Aceptar"}
-                                className={"me-2"}
-                                onClick={handleAceptar}
-                            />
+                        {/* Botones de cambio de estado */}
+                        {
+                            estaPendiente && (
+                                <div>
+                                    <Button
+                                        label={"Aceptar"}
+                                        className={"me-2"}
+                                        onClick={handleAceptar}
+                                    />
 
-                            <Button
-                                label={"Rechazar"}
-                                onClick={handleRechazar}
-                            />
-                        </div>
+                                    <Button
+                                        label={"Rechazar"}
+                                        onClick={handleRechazar}
+                                    />
+                                </div>
+                            )
+                        }
 
                     </div>
 
@@ -145,7 +191,7 @@ const VerIntercambio = () => {
                 </SectionTitle>
 
                 <SectionCard.Section>
-                    <PerfilSimple perfil={propuesta.autor} />
+                    <PerfilSimple perfil={ esRecibida ? propuesta.autor : propuesta.destinatario}/>
                 </SectionCard.Section>
 
             </SectionCard>
@@ -197,7 +243,7 @@ const VerIntercambio = () => {
 
                 <SectionCard.Section>
 
-                    <OfertaCard propuesta={propuesta} />
+                    <OfertaCard propuesta={propuesta} tipo={propuesta.tipo}/>
 
                 </SectionCard.Section>
 

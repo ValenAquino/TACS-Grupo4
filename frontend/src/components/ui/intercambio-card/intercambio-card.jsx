@@ -22,7 +22,10 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
     const [showCalificacion, setShowCalificacion] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null);
 
-    const izq = [intercambio.figurita_buscada] || [];
+    const izq = intercambio.figurita_buscada
+        ? [intercambio.figurita_buscada]
+        : [];
+
     const der = intercambio.figuritas_ofrecidas || [];
 
     const estado = intercambio.estado;
@@ -147,11 +150,16 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
                     <div className="row mt-2">
                         <div className="col">
                             <small className="text-uppercase text-muted fw-semibold">
-                                Vos pedís
+                                {esRecibida ? "Vos recibís" : "Vos pedís"}
                             </small>
 
-                            {izq.map((f) => (
-                                <ChipFigurita key={f.id} figurita={f} />
+                            {izq.map((f, index) => (
+                                f ? (
+                                    <ChipFigurita
+                                        key={f.id || index}
+                                        figurita={f}
+                                    />
+                                ) : null
                             ))}
                         </div>
 
@@ -161,11 +169,16 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
 
                         <div className="col">
                             <small className="text-uppercase text-muted fw-semibold">
-                                Vos ofrecés
+                                {esRecibida ? "Vos entregás" : "Vos ofrecés"}
                             </small>
 
-                            {der.map((f) => (
-                                <ChipFigurita key={f.id} figurita={f} />
+                            {der.map((f, index) => (
+                                f ? (
+                                    <ChipFigurita
+                                        key={f.id || index}
+                                        figurita={f}
+                                    />
+                                ) : null
                             ))}
                         </div>
                     </div>

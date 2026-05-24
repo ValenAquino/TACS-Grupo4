@@ -63,9 +63,24 @@ export const buscarContadores = async () => {
   }
 }
 
-export const editarPerfil = async ({ nombre }) => {
+export const editarPerfil = async ({ nombre, nombreUsuario, mediosDeContacto }) => {
   try {
-    await api.put(PERFIL_URL, { nombre })
+    await api.put(PERFIL_URL, {
+      nombre,
+      nombre_usuario: nombreUsuario,
+      medios_de_contacto: mediosDeContacto,
+    })
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}
+
+export const editarContrasenia = async ({ contraseniaActual, contraseniaNueva }) => {
+  try {
+    await api.put(`${PERFIL_URL}/contrasenia`, {
+      contrasenia_actual: contraseniaActual,
+      contrasenia_nueva: contraseniaNueva,
+    })
   } catch (error) {
     handleAxiosError(error)
   }

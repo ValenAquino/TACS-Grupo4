@@ -125,7 +125,7 @@
 /* borde degradado el ::before actúa como borde con gradiente */
 .badgeAmbos {
     background: #fff;
-    border: 1.5px solid transparent;
+    border: 1px solid transparent;
     background-clip: padding-box;
     position: relative;
     color: var(--color-secondary);
@@ -188,7 +188,7 @@
 
 .divider {
     border: none;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid #e5e7eb;
     margin: 2px 0;
 }
 
@@ -197,7 +197,7 @@
     display: block;
     width: 100%;
     padding: 9px 0;
-    border: 2px solid var(--color-secondary);
+    border: 1px solid var(--color-secondary);
     border-radius: 9px;
     background: transparent;
     color: var(--color-secondary);
@@ -217,7 +217,7 @@
 }
 
 .actionBtnSubasta {
-    border-color: var(--color-terciary);
+    border: 1px solid var(--color-terciary);
     background: transparent;
     color: #8a5e0a;
 }

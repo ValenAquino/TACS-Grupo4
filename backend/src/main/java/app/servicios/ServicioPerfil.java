@@ -23,6 +23,7 @@ import java.util.Objects;
 import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +32,6 @@ public class ServicioPerfil {
   private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioNotificaciones repositorioNotificaciones;
-
 
   public List<FiguritaDto> obtenerFaltantes(String userId) {
     CamposPerfil campos = new CamposPerfil(false);
@@ -43,6 +43,7 @@ public class ServicioPerfil {
   }
 
 
+  @Transactional
   public void agregarCalificacion(String autorId, String destinoId,
                                   Integer valor, String descripcion, String transaccionId,
                                   MetodoIntercambio tipoTransaccion) {

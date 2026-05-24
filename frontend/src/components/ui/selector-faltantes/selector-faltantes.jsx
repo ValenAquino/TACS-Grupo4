@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { buscarFaltantes } from '@/services/coleccionService.js'
-import ScrollFiguritas from '../selector-repetidas/scroll-figuritas/scroll-figuritas.jsx'
+import ScrollFiguritas from '@/components/ui/selector-repetidas/scroll-figuritas/scroll-figuritas.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
 import { useToast } from '@/contexts/toastContext.jsx'
 import styles from './selector-faltantes.module.css'

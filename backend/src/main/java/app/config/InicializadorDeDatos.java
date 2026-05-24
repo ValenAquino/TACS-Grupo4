@@ -1,4 +1,4 @@
-package app;
+package app.config;
 
 import app.model.entities.Calificacion;
 import app.model.entities.Coleccion;

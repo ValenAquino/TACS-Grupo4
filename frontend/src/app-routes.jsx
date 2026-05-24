@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/layouts/layout/layout'
 import MisFiguritas from './views/public/mis-figuritas/mis-figuritas.jsx'
 import NuevaFaltante from './views/public/nueva-faltante/nueva-faltante.jsx'
@@ -22,13 +22,13 @@ import ServidorCaido from '@/views/public/errores/servidor-caido/servidor-caido.
 import ErrorInterno from '@/views/public/errores/error-interno/error-interno.jsx'
 import CrearOferta from './views/public/crear-oferta/crear-oferta.jsx'
 import EditarOferta from './views/public/editar-oferta/editar-oferta.jsx'
-import Administrador from './views/public/administrador/administrador.jsx'
 import VerIntercambio from './views/public/ver-intercambio/ver-intercambio.jsx'
+
 
 const publics = [
   {
     path: '/',
-    element: <Explorar />,
+    element: <Navigate to="/explorar" replace />,
   },
   {
     path: '/explorar',

@@ -141,13 +141,19 @@
                       <minimum>0.80</minimum>
                     </limit>
                   </limits>
+                  <excludes>
+                    <exclude>app.dto</exclude>
+                    <exclude>app.dto.subasta</exclude>
+                    <exclude>app.dto.paginacion</exclude>
+                    <exclude>app.dto.request</exclude>
+                    <exclude>app.dto.filtros</exclude>
+                    <exclude>app.dto.response</exclude>
+                    <exclude>app.config</exclude>
+                    <exclude>app</exclude>
+                    <exclude>default</exclude>
+                  </excludes>
                 </rule>
               </rules>
-              <excludes>
-                <exclude>Main.class</exclude>
-                <exclude>app/dto/**</exclude>
-                <exclude>**/InicializadorDeDatos.class</exclude>
-              </excludes>
             </configuration>
           </execution>
         </executions>

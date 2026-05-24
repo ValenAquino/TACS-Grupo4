@@ -1,6 +1,6 @@
 import FiguritaCard from '@/components/ui/figurita-card/figurita-card'
 import FiguritaCardSkeleton from '@/components/ui/figurita-card/figurita-card-skeleton'
-import Pagination from '@/components/ui/pagination/pagination'
+import Paginacion from '@/components/ui/paginacion/paginacion'
 import styles from './explorar-resultados.module.css'
 
 const ExplorarResultados = ({
@@ -40,7 +40,7 @@ const ExplorarResultados = ({
         }
       </div>
 
-      <Pagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
+      <Paginacion page={page} totalPages={totalPages} onChange={onPageChange} />
     </>
   )
 }

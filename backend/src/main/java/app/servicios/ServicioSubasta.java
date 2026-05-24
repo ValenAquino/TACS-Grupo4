@@ -11,9 +11,11 @@ import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
 import app.repositories.RepositorioCalificacion;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
+import app.repositories.impl.campos.CamposColeccion;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,14 +32,14 @@ public class ServicioSubasta {
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repoFigurita;
   private final RepositorioCalificacion repoCalificacion;
+  private final RepositorioColecciones repositorioColecciones;
   private final ServicioNotificacion notificacionService;
 
   @Transactional
   public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
                            List<String> figuritasDeseadasIds, Integer calificacionMinima) {
-    CamposPerfil sinCamposPerfil = new CamposPerfil(false);
-
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId, sinCamposPerfil);
+    CamposPerfil conColeccion = new CamposPerfil(true);
+    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId, conColeccion);
     Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
     List<Figurita> figuritasDeseadas = figuritasDeseadasIds.stream()
@@ -54,7 +56,10 @@ public class ServicioSubasta {
         .calificacionMinimaSolicitada(calificacionMinima)
         .build();
 
+    nuevaSubasta.reservarFiguritaSubastada();
+
     this.repoSubasta.guardar(nuevaSubasta);
+    this.repositorioColecciones.guardar(perfil.getColeccion(), new CamposColeccion(true, false));
 
     CamposPerfil conMedio = new CamposPerfil(true);
     List<Perfil> interesados = this.repositorioPerfiles
@@ -65,11 +70,9 @@ public class ServicioSubasta {
   }
 
   @Transactional
-  public void ofertarEnSubasta(String autorId,
-                               String subastaId,
-                               List<String> rawFiguritasId
-  ) {
-    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, new CamposPerfil(false));
+  public void ofertarEnSubasta(String autorId, String subastaId, List<String> rawFiguritasId) {
+    CamposPerfil conColeccion = new CamposPerfil(true);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, conColeccion);
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
     Perfil destinatario = subasta.getAutor();
@@ -90,9 +93,12 @@ public class ServicioSubasta {
         .autor(autor)
         .destinatario(destinatario)
         .figuritaBuscada(subasta.getFiguritaSubastada())
-        .figuritasOfrecidas(figuritasOfrecidas).build();
+        .figuritasOfrecidas(figuritasOfrecidas)
+        .build();
 
     subasta.agregarOferta(nuevaPropuesta);
+
+    this.repositorioColecciones.guardar(autor.getColeccion(), new CamposColeccion(true, false));
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
@@ -100,14 +106,12 @@ public class ServicioSubasta {
   public void editarOfertaEnSubasta(String perfilId, String subastaId, String ofertaId, EditarOfertaRequest body){
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
-    Propuesta oferta = subasta.getOfertas().stream()
-        .filter(o -> o.getId().equals(ofertaId))
-        .findFirst().orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+    List<Figurita> nuevasFiguritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
 
-    List<Figurita> nuevas_figuritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
+    Propuesta oferta = subasta.modificarFiguritasDeOferta(ofertaId, perfilId, nuevasFiguritas);
 
-    oferta.setFiguritasOfrecidas(nuevas_figuritas);
-    oferta.resetearAPendiente(perfilId);
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
@@ -120,7 +124,10 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-    subasta.cancelarOferta(ofertaId, perfilId);
+    Propuesta oferta = subasta.cancelarOferta(ofertaId, perfilId);
+
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
 
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
@@ -148,7 +155,10 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-    subasta.rechazarOferta(ofertaId, perfilId);
+    Propuesta oferta = subasta.rechazarOferta(ofertaId, perfilId);
+
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
 
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
@@ -161,6 +171,14 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
     subasta.cancelar(perfilId);
+
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    subasta.getOfertas().stream()
+        .filter(o -> o.getEstadoActual().getValor() != EstadoProceso.CANCELADO)
+        .map(o -> o.getAutor().getColeccion())
+        .distinct()
+        .forEach(col -> this.repositorioColecciones.guardar(col, camposColeccion));
+
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
@@ -171,7 +189,28 @@ public class ServicioSubasta {
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
     }
+
+    Propuesta seleccionada = subasta.obtenerSeleccionada();
+
     subasta.cerrar(perfilId);
+
+    CamposColeccion soloRepetidas = new CamposColeccion(true, false);
+    CamposColeccion todo = new CamposColeccion(true, true);
+
+    // rechazados: solo repetidas
+    subasta.getOfertas().stream()
+        .filter(o -> seleccionada == null || !o.getId().equals(seleccionada.getId()))
+        .filter(o -> o.getEstadoActual().getValor() != EstadoProceso.CANCELADO)
+        .map(o -> o.getAutor().getColeccion())
+        .distinct()
+        .forEach(col -> this.repositorioColecciones.guardar(col, soloRepetidas));
+
+    // ganador y autor: repetidas y faltantes
+    if (seleccionada != null) {
+      this.repositorioColecciones.guardar(seleccionada.getAutor().getColeccion(), todo);
+      this.repositorioColecciones.guardar(subasta.getAutor().getColeccion(), todo);
+    }
+
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 

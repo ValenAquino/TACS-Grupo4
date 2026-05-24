@@ -4,6 +4,7 @@ import app.exceptions.BadRequestException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PropertyPermission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,7 +51,7 @@ public class Subasta {
         if(tieneCondicionesSolicitadas && (noOfertaLasSolicitadas || oferta.getAutor().getCalificacionMedia() < this.calificacionMinimaSolicitada)) {
             throw new BadRequestException("No se cumplieron las condiciones minimas");
         }
-
+        oferta.getAutor().getColeccion().reservarRepetidas(oferta.getFiguritasOfrecidas(), MetodoIntercambio.SUBASTA);
         this.ofertas.add(oferta);
     }
 
@@ -82,7 +83,9 @@ public class Subasta {
         rechazarOfertasPendientes(perfilId);
         finalizarSubasta();
     }
-
+    public void reservarFiguritaSubastada(){
+        this.autor.getColeccion().reservarRepetidas(List.of(this.figuritaSubastada), MetodoIntercambio.SUBASTA);
+    }
     public void seleccionarOferta(String ofertaId, String perfilId){
         Propuesta oferta = this.getOfertas().stream()
             .filter(p -> p.getId().equals(ofertaId))
@@ -97,22 +100,26 @@ public class Subasta {
         oferta.seleccionar(perfilId);
     }
 
-    public void cancelarOferta(String ofertaId, String perfilId){
+    public Propuesta cancelarOferta(String ofertaId, String perfilId){
         Propuesta oferta = getOfertas().stream()
             .filter(o -> o.getId().equals(ofertaId))
             .findFirst()
             .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
         oferta.cancelar(perfilId);
+
+        return oferta;
     }
 
-    public void rechazarOferta(String ofertaId, String perfilId){
+    public Propuesta rechazarOferta(String ofertaId, String perfilId){
         Propuesta oferta = this.getOfertas().stream()
             .filter(p -> p.getId().equals(ofertaId))
             .findFirst()
             .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
         oferta.rechazar(perfilId);
+
+        return oferta;
     }
 
     private void rechazarOfertasPendientes(String perfilId) {
@@ -121,11 +128,22 @@ public class Subasta {
             .forEach(o -> o.rechazar(perfilId));
     }
 
+    public Propuesta modificarFiguritasDeOferta(String ofertaId, String perfilId, List<Figurita> nuevasFiguritas) {
+        Propuesta oferta = getOfertas().stream()
+            .filter(o -> o.getId().equals(ofertaId))
+            .findFirst()
+            .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+
+        oferta.modificarFiguritas(perfilId, nuevasFiguritas, MetodoIntercambio.SUBASTA);
+
+        return oferta;
+    }
+
     private void finalizarSubasta() {
         this.setFechaCierre(LocalDateTime.now());
     }
 
-    Propuesta obtenerSeleccionada() {
+    public Propuesta obtenerSeleccionada() {
         return getOfertas().stream()
             .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
             .findFirst()

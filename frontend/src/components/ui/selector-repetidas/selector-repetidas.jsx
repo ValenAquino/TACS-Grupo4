@@ -24,6 +24,7 @@ const SelectorRepetidas = ({
     setLoading(true)
     try {
       const payload = await buscarRepetidas({ jugador: busqueda, pagina: 1, limite: LIMITE })
+      console.log(payload)
       setFiguritas(payload.contenido ?? [])
       setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {
@@ -65,6 +66,7 @@ const SelectorRepetidas = ({
     <div className="d-flex flex-column gap-3">
       <ScrollFiguritas
         figuritas={figuritas}
+        seleccionadasIniciales={seleccionadasIniciales}
         loading={loading}
         totalDisponibles={total}
         onBuscar={fetchRepetidas}

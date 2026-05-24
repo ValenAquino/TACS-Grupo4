@@ -95,6 +95,16 @@ public class Propuesta {
         setEstadoActual(actual);
     }
 
+    public void modificarFiguritas(String perfilId, List<Figurita> nuevasFiguritas,  MetodoIntercambio metodo) {
+        validarUsuarioAutor(perfilId);
+        ejecutarRechazo();
+        this.figuritasOfrecidas = nuevasFiguritas;
+        this.autor.getColeccion().reservarRepetidas(nuevasFiguritas, metodo);
+        EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
+        estado.add(actual);
+        setEstadoActual(actual);
+    }
+
     private void ejecutarIntercambio() {
         this.getFiguritasOfrecidas()
             .forEach(f -> this.destinatario.getColeccion().eliminarFaltante(f));
@@ -115,8 +125,11 @@ public class Propuesta {
      * modifica las figuritas ofrecidas y la oferta debe ser revisada nuevamente.
      */
     public void resetearAPendiente(String perfilId) {
-        this.validarUsuarioAutor(perfilId);
-        estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE));
+        validarUsuarioAutor(perfilId);
+        ejecutarRechazo();
+        EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
+        estado.add(actual);
+        setEstadoActual(actual);
     }
 
     /**

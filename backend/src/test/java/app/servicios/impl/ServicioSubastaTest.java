@@ -17,6 +17,7 @@ import app.dto.subasta.SubastaParticipoDto;
 
 import app.exceptions.BadRequestException;
 import app.model.entities.*;
+import app.repositories.impl.campos.CamposColeccion;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import app.repositories.impl.campos.CamposSubasta;
 import app.servicios.ServicioSubasta;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,7 +62,7 @@ public class ServicioSubastaTest extends MongoTestBase {
     repositorioPerfiles.guardar(lucas);
 
     Coleccion coleccionRepetidos = new Coleccion("c-2");
-    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
+    coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA)));
 
     user = new Usuario("u-2", Rol.USUARIO, "sofia", "ape");
     sofia = Perfil.builder()
@@ -588,5 +590,76 @@ public class ServicioSubastaTest extends MongoTestBase {
         .filter(o -> o.getId().equals(ofertaId))
         .findFirst()
         .orElseThrow();
+  }
+
+  @Nested
+  class ReservasColeccion {
+
+    private Coleccion coleccionLucas;
+
+    @BeforeEach
+    void setUpRepetidas() {
+      coleccionLucas = new Coleccion("c-1");
+      coleccionLucas.getRepetidas().add(
+          new FiguritaIntercambiable(messi, 2, 0, List.of(MetodoIntercambio.SUBASTA, MetodoIntercambio.INTERCAMBIO), lucas.getId())
+      );
+      repositorioColecciones.guardar(coleccionLucas);
+    }
+
+    @Test
+    void ofertarEnSubasta_reservaFiguritasDelAutor() {
+      Subasta subasta = Subasta.builder()
+          .id("s-1").autor(sofia)
+          .fechaInicio(LocalDateTime.now().minusHours(1))
+          .fechaCierre(LocalDateTime.now().plusDays(1))
+          .figuritaSubastada(messi).build();
+      repositorioSubastas.guardar(subasta);
+
+      service.ofertarEnSubasta(lucas.getId(), "s-1", List.of("ARG-10"));
+
+      Coleccion col = repositorioColecciones.buscarPorId("c-1", new CamposColeccion(true, false));
+      FiguritaIntercambiable repetida = col.getRepetidas().stream()
+          .filter(r -> r.getFigurita().getId().equals("ARG-10"))
+          .findFirst().orElseThrow();
+
+      assertEquals(1, repetida.getCantidadReservada());
+    }
+
+    @Test
+    void cancelarOferta_liberaReservaDelAutor() {
+      Propuesta propuesta = Propuesta.builder()
+          .id("o-1").autor(lucas).destinatario(sofia)
+          .figuritaBuscada(messi)
+          .figuritasOfrecidas(List.of(messi)).build();
+
+      Subasta subasta = Subasta.builder()
+          .id("s-1").autor(sofia)
+          .fechaInicio(LocalDateTime.now().minusHours(1))
+          .fechaCierre(LocalDateTime.now().plusDays(1))
+          .figuritaSubastada(messi)
+          .ofertas(List.of(propuesta)).build();
+      repositorioSubastas.guardar(subasta);
+
+      // simular reserva previa
+      coleccionLucas.getRepetidas().get(0).reservar(MetodoIntercambio.SUBASTA);
+      repositorioColecciones.guardar(coleccionLucas, new CamposColeccion(true, false));
+
+      service.cancelarOferta(lucas.getId(), "s-1", "o-1");
+
+      Coleccion col = repositorioColecciones.buscarPorId("c-1", new CamposColeccion(true, false));
+      assertEquals(0, col.getRepetidas().get(0).getCantidadReservada());
+    }
+
+    @Test
+    void crearSubasta_reservaFiguritaSubastada() {
+      service.crearSubasta("u-2", "ARG-10", 30, List.of(), 0);
+
+      Coleccion col = repositorioColecciones.buscarPorId("c-2", new CamposColeccion(true, false));
+      FiguritaIntercambiable repetida = col.getRepetidas().stream()
+          .filter(r -> r.getFigurita().getId().equals("ARG-10"))
+          .findFirst().orElseThrow();
+
+      assertEquals(1, repetida.getCantidadReservada());
+    }
   }
 }

@@ -134,6 +134,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
   private void cargarPerfiles(Figurita messi, Figurita diMaria, Figurita lautaro,
                               Figurita mbappe, Figurita griezmann, Figurita vinicius,
                               Figurita pedri, Figurita kroos, Figurita neymar) {
+
     // Juan
     // faltantes: Griezmann (subasta 8), Kroos
     // repetidas: Pedri, Kroos (para ofertar en subasta 8)
@@ -148,8 +149,10 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .nombre("Juan").coleccion(coleccionJuan)
         .mediosDeContacto(telegram("@juan")).build();
     perfiles.guardar(juan);
-    coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(pedri, 2, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId()));
-    coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(kroos, 2, List.of(MetodoIntercambio.SUBASTA),     juan.getId()));
+    coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(pedri,     2, 0, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId()));
+    coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(kroos,     2, 1, List.of(MetodoIntercambio.SUBASTA),     juan.getId()));
+    coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(griezmann, 2, 1, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId()));
+    coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(lautaro,   2, 1, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId()));
     colecciones.guardar(coleccionJuan);
 
     // Lucas
@@ -168,10 +171,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .nombre("lucas").coleccion(coleccionLucas)
         .mediosDeContacto(telegram("@lucas")).build();
     perfiles.guardar(lucas);
-    coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(diMaria,   2, 0, List.of(MetodoIntercambio.SUBASTA),     lucas.getId()));
-    coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(griezmann, 2, 0, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId()));
+    coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(diMaria,   2, 1, List.of(MetodoIntercambio.SUBASTA),     lucas.getId()));
+    coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(griezmann, 2, 1, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId()));
     coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(mbappe,    3, 0, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId()));
-    coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(kroos,     2, 0, List.of(MetodoIntercambio.SUBASTA),     lucas.getId()));
+    coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(kroos,     2, 2, List.of(MetodoIntercambio.SUBASTA),     lucas.getId()));
+    coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(messi,     2, 2, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId()));
+
     colecciones.guardar(coleccionLucas);
 
     // Sofía
@@ -190,10 +195,11 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .nombre("Sofía").coleccion(coleccionSofia)
         .mediosDeContacto(telegram("@sofia")).build();
     perfiles.guardar(sofia);
-    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId()));
-    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(neymar,    1, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId()));
-    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(pedri,     2, List.of(MetodoIntercambio.SUBASTA),     sofia.getId()));
-    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(vinicius,  1, List.of(MetodoIntercambio.SUBASTA),     sofia.getId()));
+    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(mbappe,    2, 0, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId()));
+    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(neymar,    1, 1, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId()));
+    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(pedri,     2, 1, List.of(MetodoIntercambio.SUBASTA),     sofia.getId()));
+    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(vinicius,  1, 1, List.of(MetodoIntercambio.SUBASTA),     sofia.getId()));
+    coleccionSofia.getRepetidas().add(new FiguritaIntercambiable(griezmann, 2, 1, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId()));
     colecciones.guardar(coleccionSofia);
 
     // Matías
@@ -211,9 +217,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .nombre("Matías").coleccion(coleccionMatias)
         .mediosDeContacto(telegram("@matias")).build();
     perfiles.guardar(matias);
-    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId()));
-    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(messi,    2, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId()));
-    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(lautaro,  2, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId()));
+    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(vinicius, 1, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId()));
+    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(messi,    2, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId()));
+    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(lautaro,  2, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId()));
+    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(pedri,    2, 1, List.of(MetodoIntercambio.SUBASTA),     matias.getId()));
+    coleccionMatias.getRepetidas().add(new FiguritaIntercambiable(kroos,    2, 1, List.of(MetodoIntercambio.SUBASTA),     matias.getId()));
+
     colecciones.guardar(coleccionMatias);
   }
 

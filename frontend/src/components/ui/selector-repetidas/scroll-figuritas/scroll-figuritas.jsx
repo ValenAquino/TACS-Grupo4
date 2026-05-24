@@ -17,6 +17,7 @@ const SinResultados = () => <div className={styles['scroll-sin-resultados']}>No 
 
 const ScrollFiguritas = ({
   figuritas = [],
+  seleccionadasIniciales = [],
   loading = false,
   totalDisponibles = null,
   onBuscar,
@@ -91,6 +92,7 @@ const ScrollFiguritas = ({
                 bloqueada={esBloqueada(fig)}
                 seleccionada={estaSeleccionada(fig)}
                 onToggle={onToggle}
+                eraInicial={seleccionadasIniciales.some((f) => getId(f) === getId(fig))}
               />
             ))
           )}

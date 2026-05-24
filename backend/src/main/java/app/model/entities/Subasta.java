@@ -65,6 +65,7 @@ public class Subasta {
     }
 
     public void cancelar(String perfilId){
+        this.autor.getColeccion().sacarReservasRepetidas(List.of(this.figuritaSubastada));
         Propuesta seleccionada = obtenerSeleccionada();
         if(seleccionada != null) {
             seleccionada.rechazar(perfilId);
@@ -78,6 +79,8 @@ public class Subasta {
         Propuesta seleccionada = obtenerSeleccionada();
         if(seleccionada != null) {
             seleccionada.aceptar(perfilId);
+        }else {
+            this.autor.getColeccion().sacarReservasRepetidas(List.of(this.figuritaSubastada));
         }
 
         rechazarOfertasPendientes(perfilId);

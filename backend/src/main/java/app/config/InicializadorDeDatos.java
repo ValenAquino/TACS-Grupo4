@@ -156,10 +156,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
     colecciones.guardar(coleccionJuan);
 
     // Lucas
-    // faltantes: Messi, Lautaro (subasta 3), Pedri (subasta 7), Vinicius
-    // repetidas: DiMaria (subasta 3), Griezmann (subasta 7), Mbappe, Kroos
+    // faltantes: Lautaro (subasta 3), Pedri (subasta 7), Vinicius
+    // repetidas: DiMaria (subasta 3), Griezmann (subasta 7), Mbappe, Kroos, Messi
     Coleccion coleccionLucas = new Coleccion();
-    coleccionLucas.getFaltantes().add(messi);
     coleccionLucas.getFaltantes().add(lautaro);
     coleccionLucas.getFaltantes().add(pedri);
     coleccionLucas.getFaltantes().add(vinicius);
@@ -283,21 +282,21 @@ public class InicializadorDeDatos implements CommandLineRunner {
     Propuesta ofertaSofia = Propuesta.builder()
         .id("o1").autor(sofia).destinatario(lucas)
         .figuritasOfrecidas(List.of(neymar, vinicius))
-        .figuritaBuscada(mbappe).build();
+        .figuritaBuscada(lautaro).build();
     Propuesta ofertaMatias = Propuesta.builder()
         .id("o2").autor(matias).destinatario(lucas)
         .figuritasOfrecidas(List.of(pedri, kroos))
-        .figuritaBuscada(mbappe).build();
+        .figuritaBuscada(lautaro).build();
     Propuesta ofertaJuan = Propuesta.builder()
         .id("o3").autor(juan).destinatario(lucas)
-        .figuritasOfrecidas(List.of(griezmann, lautaro))
-        .figuritaBuscada(mbappe).build();
+        .figuritasOfrecidas(List.of(griezmann))
+        .figuritaBuscada(lautaro).build();
     ofertaSofia.seleccionar(lucas.getId());
     subastas.guardar(Subasta.builder()
         .id("1").autor(lucas)
         .fechaInicio(LocalDateTime.now())
         .fechaCierre(LocalDateTime.now().plusMinutes(45))
-        .figuritaSubastada(mbappe)
+        .figuritaSubastada(lautaro)
         .ofertas(new ArrayList<>(List.of(ofertaSofia, ofertaMatias, ofertaJuan)))
         .build());
 

@@ -179,6 +179,7 @@ public class ServicioSubasta {
         .distinct()
         .forEach(col -> this.repositorioColecciones.guardar(col, camposColeccion));
 
+    this.repositorioColecciones.guardar(subasta.getAutor().getColeccion(), camposColeccion);
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 

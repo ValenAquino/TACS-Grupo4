@@ -54,7 +54,7 @@ const CrearPropuestaIntercambio = () => {
         <SectionCard.Section>
           <div className="d-flex flex-column gap-1">
             <p className={styles.crearPropuestaLabel}>Publicada por</p>
-            <p className={styles.crearPropuestaDuenio}>{figurita.nombreUsuario}</p>
+            <p className={styles.crearPropuestaDuenio}>{figurita.nombre_usuario}</p>
           </div>
         </SectionCard.Section>
       </SectionCard>
@@ -63,7 +63,7 @@ const CrearPropuestaIntercambio = () => {
         <p className={styles.crearPropuestaSeleccionTitulo}>
           Seleccioná las figurita que querés ofrecer
         </p>
-        <SelectorRepetidas modo="multiple" bloqueadas={[]} onChange={setSeleccionadas} />
+        <SelectorRepetidas modo="multiple" bloqueadas={[]} onChange={setSeleccionadas} metodoIntercambio = "INTERCAMBIO"/>
       </div>
 
       <Button label="Enviar propuesta ↗" disabled={seleccionadas.length === 0} onClick={onEnviar} />

@@ -32,7 +32,7 @@ const CALIFICACION_MIN_OPTS = [
 // ─── Paso 1: Figurita a subastar ──────────────────────────────────────────────
 
 const PasoFigurita = ({ onChange }) => (
-  <SelectorRepetidas modo="unica" bloqueadas={[]} onChange={onChange} />
+  <SelectorRepetidas modo="unica" bloqueadas={[]} onChange={onChange} metodoIntercambio="SUBASTA" />
 )
 
 // ─── Paso 2: Duración ─────────────────────────────────────────────────────────

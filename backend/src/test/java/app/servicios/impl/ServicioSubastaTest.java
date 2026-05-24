@@ -43,7 +43,7 @@ public class ServicioSubastaTest extends MongoTestBase {
   @BeforeEach
   void setUp() {
     messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
-    repositorioFiguritas.guardar( messi);
+    repositorioFiguritas.guardar(messi);
 
     Coleccion coleccionSinMessi = new Coleccion("c-1");
     coleccionSinMessi.getFaltantes().add(messi);
@@ -62,7 +62,7 @@ public class ServicioSubastaTest extends MongoTestBase {
     Coleccion coleccionRepetidos = new Coleccion("c-2");
     coleccionRepetidos.getRepetidas().add(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
 
-    user = new Usuario("u-2", Rol.USUARIO, "lucas", "fiscella");
+    user = new Usuario("u-2", Rol.USUARIO, "sofia", "ape");
     sofia = Perfil.builder()
         .id(new ObjectId().toString()).usuario(user).nombre("Sofía")
         .coleccion(coleccionRepetidos)
@@ -76,7 +76,6 @@ public class ServicioSubastaTest extends MongoTestBase {
 
   @Test
   void crearSubastaNotificaUsuarios() {
-
     service.crearSubasta("u-2", "ARG-10", 30, List.of(), 0);
     assertEquals(1, repositorioNotificaciones.buscarPorPerfil(lucas).size());
   }
@@ -84,7 +83,6 @@ public class ServicioSubastaTest extends MongoTestBase {
   @Test
   void crearSubastaNoNotificaUsuarios() {
     Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
-
     repositorioFiguritas.guardar(diMaria);
 
     service.crearSubasta("u-2", "ARG-11", 30, List.of(), 0);
@@ -119,13 +117,15 @@ public class ServicioSubastaTest extends MongoTestBase {
     repositorioSubastas.guardar(subastaActiva);
 
     assertThrows(BadRequestException.class,
-        () -> service.ofertarEnSubasta(sofia.getId(),"s-2", List.of("ARG-10", "ARG-10")));
+        () -> service.ofertarEnSubasta(sofia.getId(), "s-2", List.of("ARG-10", "ARG-10")));
   }
 
   @Test
   void seleccionarOferta_marcaComoSeleccionada() {
-    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+    Subasta subasta = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi).build();
 
     Propuesta propuesta = Propuesta.builder()
@@ -138,17 +138,19 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     repositorioSubastas.guardar(subasta);
 
-    service.seleccionarOferta("s-1", "o-1");
+    service.seleccionarOferta(sofia.getId(), "s-1", "o-1");
 
     subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
-    assertEquals(EstadoProceso.SELECCIONADO, buscarOfertaEn(subasta,propuesta.getId()).getEstadoActual().getValor());
+    assertEquals(EstadoProceso.SELECCIONADO, buscarOfertaEn(subasta, propuesta.getId()).getEstadoActual().getValor());
   }
 
   @Test
   void seleccionarOferta_desseleccionaAnterior() {
-    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
+    Subasta subasta = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi).build();
 
     Propuesta propuestaAnterior = Propuesta.builder()
@@ -156,346 +158,176 @@ public class ServicioSubastaTest extends MongoTestBase {
         .destinatario(sofia)
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
-        .build();;
-    propuestaAnterior.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.SELECCIONADO));
+        .build();
+    propuestaAnterior.seleccionar(sofia.getId());
 
     Propuesta propuestaNueva = Propuesta.builder()
         .id("o-2").autor(lucas)
         .destinatario(sofia)
         .figuritasOfrecidas(List.of())
         .figuritaBuscada(messi)
-        .build();;
+        .build();
+
     subasta.agregarOferta(propuestaAnterior);
     subasta.agregarOferta(propuestaNueva);
 
     repositorioSubastas.guardar(subasta);
 
-    service.seleccionarOferta("s-1", "o-2");
+    service.seleccionarOferta(sofia.getId(), "s-1", "o-2");
 
     subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
-    assertEquals(EstadoProceso.PENDIENTE, buscarOfertaEn(subasta,propuestaAnterior.getId()).getEstadoActual().getValor());
-    assertEquals(EstadoProceso.SELECCIONADO,  buscarOfertaEn(subasta,propuestaNueva.getId()).getEstadoActual().getValor());
+    assertEquals(EstadoProceso.PENDIENTE, buscarOfertaEn(subasta, propuestaAnterior.getId()).getEstadoActual().getValor());
+    assertEquals(EstadoProceso.SELECCIONADO, buscarOfertaEn(subasta, propuestaNueva.getId()).getEstadoActual().getValor());
   }
 
   @Test
   void seleccionarOferta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+    Subasta subastaCerrada = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(2))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
     repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
-        () -> service.seleccionarOferta("s-1", "o-1"));
+        () -> service.seleccionarOferta(sofia.getId(), "s-1", "o-1"));
   }
 
-//  @Test
-//  void rechazarOferta_marcaComoRechazada() {
-//    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-//            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
-//        .figuritaSubastada(messi).build();
-//
-//    Propuesta propuesta = Propuesta.builder()
-//        .id("o-1").autor(lucas)
-//        .destinatario(sofia)
-//        .figuritasOfrecidas(List.of())
-//        .figuritaBuscada(messi)
-//        .build();
-//    subasta.agregarOferta(propuesta);
-//
-//    repositorioSubastas.guardar(subasta);
-//
-//    service.rechazarOferta("s-1", "o-1");
-//
-//    subasta = repositorioSubastas.buscarPorId("s-1");
-//
-//    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta.getId()).getEstadoActual().getValor());
-//  }
+  @Test
+  void seleccionarOferta_ofertaInexistente_lanzaExcepcion() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
+
+    repositorioSubastas.guardar(subasta);
+
+    assertThrows(BadRequestException.class,
+        () -> service.seleccionarOferta(sofia.getId(), "s-1", "inexistente"));
+  }
 
   @Test
   void rechazarOferta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+    Subasta subastaCerrada = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(2))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
     repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
-        () -> service.rechazarOferta("s-1", "o-1"));
+        () -> service.rechazarOferta(sofia.getId(), "s-1", "o-1"));
   }
 
-//  @Test
-//  void cancelarSubasta_rechazaTodasLasOfertas() {
-//    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-//            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
-//        .figuritaSubastada(messi).build();
-//
-//
-//    Propuesta propuesta1 = Propuesta.builder()
-//        .id("o-1").autor(lucas)
-//        .destinatario(sofia)
-//        .figuritasOfrecidas(List.of())
-//        .figuritaBuscada(messi)
-//        .build();
-//    Propuesta propuesta2 = Propuesta.builder()
-//        .id("o-2").autor(lucas)
-//        .destinatario(sofia)
-//        .figuritasOfrecidas(List.of())
-//        .figuritaBuscada(messi)
-//        .build();
-//    subasta.agregarOferta(propuesta1);
-//    subasta.agregarOferta(propuesta2);
-//
-//    repositorioSubastas.guardar(subasta);
-//
-//    service.cancelarSubasta("s-1");
-//
-//    subasta = repositorioSubastas.buscarPorId("s-1");
-//
-//    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta1.getId()).getEstadoActual().getValor());
-//    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuesta2.getId()).getEstadoActual().getValor());
-//    assertTrue(subasta.getFechaCierre().isBefore(LocalDateTime.now().plusSeconds(1)));
-//  }
+  @Test
+  void rechazarOferta_ofertaInexistente_lanzaExcepcion() {
+    Subasta subasta = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
+        .figuritaSubastada(messi).build();
+
+    repositorioSubastas.guardar(subasta);
+
+    assertThrows(BadRequestException.class,
+        () -> service.rechazarOferta(sofia.getId(), "s-1", "inexistente"));
+  }
 
   @Test
   void cancelarSubasta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+    Subasta subastaCerrada = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(2))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
     repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
-        () -> service.cancelarSubasta("s-1"));
+        () -> service.cancelarSubasta(sofia.getId(), "s-1"));
   }
-
-//  @Test
-//  void cerrarSubasta_aceptaSeleccionadaYRechazaResto() {
-//    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-//            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
-//        .figuritaSubastada(messi).build();
-//
-//    Propuesta propuestaSeleccionada = Propuesta.builder()
-//        .id("o-1").autor(lucas)
-//        .destinatario(sofia)
-//        .figuritasOfrecidas(List.of())
-//        .figuritaBuscada(messi)
-//        .build();
-//
-//    propuestaSeleccionada.seleccionar(sofia.getId());
-//
-//    Propuesta propuestaPendiente = Propuesta.builder()
-//        .id("o-2").autor(lucas)
-//        .destinatario(sofia)
-//        .figuritasOfrecidas(List.of())
-//        .figuritaBuscada(messi)
-//        .build();
-//
-//    subasta.agregarOferta(propuestaSeleccionada);
-//    subasta.agregarOferta(propuestaPendiente);
-//
-//    repositorioSubastas.guardar(subasta);
-//
-//    service.cerrarSubasta("s-1");
-//
-//    subasta = repositorioSubastas.buscarPorId("s-1");
-//
-//    assertEquals(EstadoProceso.ACEPTADO, buscarOfertaEn(subasta, propuestaSeleccionada.getId()).getEstadoActual().getValor());
-//    assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(subasta, propuestaPendiente.getId()).getEstadoActual().getValor());
-//    assertTrue(subasta.getFechaCierre().isBefore(LocalDateTime.now().plusSeconds(1)));
-//  }
-
-//  @Test
-//  void cerrarSubasta_sinOfertaSeleccionada_lanzaExcepcion() {
-//    Subasta subasta = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-//            LocalDateTime.now().minusHours(1)).fechaCierre(LocalDateTime.now().plusDays(1))
-//        .figuritaSubastada(messi).build();
-//
-//    Propuesta propuesta = Propuesta.builder()
-//        .id("o-1").autor(lucas)
-//        .destinatario(sofia)
-//        .figuritasOfrecidas(List.of())
-//        .figuritaBuscada(messi)
-//        .build();
-//    subasta.agregarOferta(propuesta);
-//
-//    repositorioSubastas.guardar(subasta);
-//
-//    assertThrows(BadRequestException.class,
-//        () -> service.cerrarSubasta("s-1"));
-//  }
 
   @Test
   void cerrarSubasta_subastaInactiva_lanzaExcepcion() {
-    Subasta subastaCerrada = Subasta.builder().id("s-1").autor(sofia).fechaInicio(
-            LocalDateTime.now().minusDays(2)).fechaCierre(LocalDateTime.now().minusDays(1))
+    Subasta subastaCerrada = Subasta.builder()
+        .id("s-1").autor(sofia)
+        .fechaInicio(LocalDateTime.now().minusDays(2))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
         .figuritaSubastada(messi).build();
 
     repositorioSubastas.guardar(subastaCerrada);
 
     assertThrows(BadRequestException.class,
-        () -> service.cerrarSubasta("s-1"));
+        () -> service.cerrarSubasta(sofia.getId(), "s-1"));
   }
 
   @Test
   void ofertarEnSubasta_agregaOfertaCorrectamente() {
-
     Subasta subasta = Subasta.builder()
         .id("s-1")
         .autor(sofia)
-        .fechaInicio(
-            LocalDateTime.now().minusHours(1)
-        )
-        .fechaCierre(
-            LocalDateTime.now().plusDays(1)
-        )
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi)
         .build();
 
     repositorioSubastas.guardar(subasta);
 
-    service.ofertarEnSubasta(
-        lucas.getId(),
-        "s-1",
-        List.of("ARG-10")
-    );
+    service.ofertarEnSubasta(lucas.getId(), "s-1", List.of("ARG-10"));
 
-    subasta =
-        repositorioSubastas.buscarPorId(
-            "s-1", new CamposSubasta(true, true)
-        );
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
-    assertEquals(
-        1,
-        subasta.getOfertas().size()
-    );
-
-    assertEquals(
-        lucas.getId(),
-        subasta.getOfertas()
-            .get(0)
-            .getAutor()
-            .getId()
-    );
+    assertEquals(1, subasta.getOfertas().size());
+    assertEquals(lucas.getId(), subasta.getOfertas().get(0).getAutor().getId());
   }
 
   @Test
   void editarOferta_actualizaFiguritas() {
-
     Subasta subasta = Subasta.builder()
         .id("s-1")
         .autor(sofia)
-        .fechaInicio(
-            LocalDateTime.now().minusHours(1)
-        )
-        .fechaCierre(
-            LocalDateTime.now().plusDays(1)
-        )
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi)
         .build();
 
-    Propuesta propuesta =
-        Propuesta.builder()
-            .id("o-1")
-            .autor(lucas)
-            .destinatario(sofia)
-            .figuritaBuscada(messi)
-            .figuritasOfrecidas(List.of())
-            .build();
+    Propuesta propuesta = Propuesta.builder()
+        .id("o-1")
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of())
+        .build();
 
     subasta.agregarOferta(propuesta);
-
     repositorioSubastas.guardar(subasta);
 
-    service.editarOfertaEnSubasta(
-        lucas.getId(),
-        "s-1",
-        "o-1",
-        new EditarOfertaRequest(
-            List.of("ARG-10")
-        )
-    );
+    service.editarOfertaEnSubasta(lucas.getId(), "s-1", "o-1", new EditarOfertaRequest(List.of("ARG-10")));
 
-    subasta =
-        repositorioSubastas.buscarPorId(
-            "s-1", new CamposSubasta(true, true)
-        );
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
 
-    assertEquals(
-        1,
-        buscarOfertaEn(
-            subasta,
-            "o-1"
-        )
-            .getFiguritasOfrecidas()
-            .size()
-    );
+    assertEquals(1, buscarOfertaEn(subasta, "o-1").getFiguritasOfrecidas().size());
   }
 
   @Test
   void editarOferta_ofertaInexistente_lanzaExcepcion() {
-
     Subasta subasta = Subasta.builder()
         .id("s-1")
         .autor(sofia)
-        .fechaInicio(
-            LocalDateTime.now().minusHours(1)
-        )
-        .fechaCierre(
-            LocalDateTime.now().plusDays(1)
-        )
+        .fechaInicio(LocalDateTime.now().minusHours(1))
+        .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi)
         .build();
 
     repositorioSubastas.guardar(subasta);
 
-    assertThrows(
-        BadRequestException.class,
-        () -> service.editarOfertaEnSubasta(
-            lucas.getId(),
-            "s-1",
-            "inexistente",
-            new EditarOfertaRequest(
-                List.of("ARG-10")
-            )
-        )
-    );
+    assertThrows(BadRequestException.class,
+        () -> service.editarOfertaEnSubasta(lucas.getId(), "s-1", "inexistente", new EditarOfertaRequest(List.of("ARG-10"))));
   }
-
-//  @Test
-//  void editarOferta_resetearEstadoAPendiente() {
-//    Subasta subasta = Subasta.builder()
-//        .id("s-1")
-//        .autor(sofia)
-//        .fechaInicio(LocalDateTime.now().minusHours(1))
-//        .fechaCierre(LocalDateTime.now().plusDays(1))
-//        .figuritaSubastada(messi)
-//        .build();
-//
-//    Propuesta propuesta = Propuesta.builder()
-//        .id("o-1")
-//        .autor(lucas)
-//        .destinatario(sofia)
-//        .figuritaBuscada(messi)
-//        .figuritasOfrecidas(List.of())
-//        .build();
-//
-//    propuesta.seleccionar(sofia.getId());
-//    subasta.agregarOferta(propuesta);
-//    repositorioSubastas.guardar(subasta);
-//
-//    service.editarOfertaEnSubasta(
-//        lucas.getId(),
-//        "s-1",
-//        "o-1",
-//        new EditarOfertaRequest(List.of("ARG-10"))
-//    );
-//
-//    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(false, true));
-//
-//    assertEquals(EstadoProceso.PENDIENTE, buscarOfertaEn(subasta, "o-1").getEstadoActual().getValor());
-//  }
 
   @Test
   void cancelarOferta_marcaComoCancelada() {
@@ -524,6 +356,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     assertEquals(EstadoProceso.CANCELADO, buscarOfertaEn(subasta, "o-1").getEstadoActual().getValor());
   }
+
   @Test
   void cancelarOferta_ofertaInexistente_lanzaExcepcion() {
     Subasta subasta = Subasta.builder()
@@ -538,57 +371,6 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     assertThrows(BadRequestException.class,
         () -> service.cancelarOferta(lucas.getId(), "s-1", "inexistente"));
-  }
-  @Test
-  void seleccionarOferta_ofertaInexistente_lanzaExcepcion() {
-
-    Subasta subasta = Subasta.builder()
-        .id("s-1")
-        .autor(sofia)
-        .fechaInicio(
-            LocalDateTime.now().minusHours(1)
-        )
-        .fechaCierre(
-            LocalDateTime.now().plusDays(1)
-        )
-        .figuritaSubastada(messi)
-        .build();
-
-    repositorioSubastas.guardar(subasta);
-
-    assertThrows(
-        BadRequestException.class,
-        () -> service.seleccionarOferta(
-            "s-1",
-            "inexistente"
-        )
-    );
-  }
-
-  @Test
-  void rechazarOferta_ofertaInexistente_lanzaExcepcion() {
-
-    Subasta subasta = Subasta.builder()
-        .id("s-1")
-        .autor(sofia)
-        .fechaInicio(
-            LocalDateTime.now().minusHours(1)
-        )
-        .fechaCierre(
-            LocalDateTime.now().plusDays(1)
-        )
-        .figuritaSubastada(messi)
-        .build();
-
-    repositorioSubastas.guardar(subasta);
-
-    assertThrows(
-        BadRequestException.class,
-        () -> service.rechazarOferta(
-            "s-1",
-            "inexistente"
-        )
-    );
   }
 
   @Test
@@ -605,7 +387,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "ACTIVA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(sofia.getId(), filtros);
 
     assertEquals(1, resultado.contenido().size());
     assertInstanceOf(MiSubastaActivaDto.class, resultado.contenido().get(0));
@@ -626,7 +408,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "FINALIZADA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(sofia.getId(), filtros);
 
     assertEquals(1, resultado.contenido().size());
     assertInstanceOf(MiSubastaFinalizadaDto.class, resultado.contenido().get(0));
@@ -641,7 +423,7 @@ public class ServicioSubastaTest extends MongoTestBase {
         .figuritaBuscada(messi)
         .figuritasOfrecidas(List.of())
         .build();
-    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
+    propuesta.aceptar(sofia.getId());
 
     Subasta subasta = Subasta.builder()
         .id("s-1")
@@ -656,7 +438,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "FINALIZADA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(sofia.getId(), filtros);
 
     MiSubastaFinalizadaDto dto = (MiSubastaFinalizadaDto) resultado.contenido().get(0);
     assertNotNull(dto.getOfertaGanadora());
@@ -677,7 +459,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "FINALIZADA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(sofia.getId(), filtros);
 
     MiSubastaFinalizadaDto dto = (MiSubastaFinalizadaDto) resultado.contenido().get(0);
     assertNull(dto.getOfertaGanadora());
@@ -706,7 +488,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, sofia.getId(), null, "ACTIVA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, sofia.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(sofia.getId(), filtros);
 
     assertEquals(1, resultado.contenido().size());
     assertEquals("s-1", ((MiSubastaActivaDto) resultado.contenido().get(0)).getId());
@@ -735,10 +517,10 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, null, lucas.getId(), "ACTIVA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, lucas.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(lucas.getId(), filtros);
 
     assertEquals(1, resultado.contenido().size());
-    assertTrue(resultado.contenido().get(0) instanceof SubastaParticipoDto);
+    assertInstanceOf(SubastaParticipoDto.class, resultado.contenido().get(0));
     SubastaParticipoDto dto = (SubastaParticipoDto) resultado.contenido().get(0);
     assertEquals("s-1", dto.getId());
     assertEquals("o-1", dto.getTuOferta().getId());
@@ -753,7 +535,7 @@ public class ServicioSubastaTest extends MongoTestBase {
         .figuritaBuscada(messi)
         .figuritasOfrecidas(List.of())
         .build();
-    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO));
+    propuesta.cancelar(lucas.getId());
 
     Subasta subasta = Subasta.builder()
         .id("s-1")
@@ -768,7 +550,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, null, lucas.getId(), "ACTIVA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, lucas.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(lucas.getId(), filtros);
 
     assertTrue(resultado.contenido().isEmpty());
   }
@@ -787,10 +569,11 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     SubastasFiltro filtros = new SubastasFiltro(1, 10, null, lucas.getId(), "ACTIVA");
 
-    PaginaResultado<?> resultado = service.obtenerSubastas(filtros, lucas.getId());
+    PaginaResultado<?> resultado = service.obtenerSubastas(lucas.getId(), filtros);
 
     assertTrue(resultado.contenido().isEmpty());
   }
+
   private Propuesta buscarOfertaEn(Subasta subasta, String ofertaId) {
     return subasta.getOfertas().stream()
         .filter(o -> o.getId().equals(ofertaId))

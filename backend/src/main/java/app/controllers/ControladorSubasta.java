@@ -78,35 +78,43 @@ public class ControladorSubasta {
 
     @PostMapping("/{sub_id}/ofertas/{oferta_id}/seleccionar")
     public ResponseEntity<Void> seleccionarOferta(
+        @CookieValue("token") String token,
         @PathVariable String sub_id,
         @PathVariable String oferta_id
     ) {
-        this.subastaService.seleccionarOferta(sub_id, oferta_id);
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.subastaService.seleccionarOferta(perfilId, sub_id, oferta_id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{sub_id}/ofertas/{oferta_id}/rechazar")
     public ResponseEntity<Void> rechazarOferta(
+        @CookieValue("token") String token,
         @PathVariable String sub_id,
         @PathVariable String oferta_id
     ) {
-        this.subastaService.rechazarOferta(sub_id, oferta_id);
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.subastaService.rechazarOferta(perfilId, sub_id, oferta_id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{sub_id}/cancelar")
     public ResponseEntity<Void> cancelarSubasta(
+        @CookieValue("token") String token,
         @PathVariable String sub_id
     ) {
-        this.subastaService.cancelarSubasta(sub_id);
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.subastaService.cancelarSubasta(perfilId, sub_id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{sub_id}/cerrar")
     public ResponseEntity<Void> cerrarSubasta(
+        @CookieValue("token") String token,
         @PathVariable String sub_id
     ) {
-        this.subastaService.cerrarSubasta(sub_id);
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.subastaService.cerrarSubasta(perfilId, sub_id);
         return ResponseEntity.ok().build();
     }
 
@@ -116,7 +124,7 @@ public class ControladorSubasta {
         @ModelAttribute SubastasFiltro filtros
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
-        return ResponseEntity.ok(this.subastaService.obtenerSubastas(filtros, perfilId));
+        return ResponseEntity.ok(this.subastaService.obtenerSubastas(perfilId, filtros));
     }
 
   @GetMapping("/{sub_id}")

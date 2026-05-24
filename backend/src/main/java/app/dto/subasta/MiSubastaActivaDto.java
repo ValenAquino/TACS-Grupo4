@@ -24,7 +24,7 @@ public class MiSubastaActivaDto {
     //para que no me traiga las ofertas rechazadas o canceladas
     this.ofertas = subasta.getOfertas().stream()
         .filter(o -> !Set.of(EstadoProceso.CANCELADO, EstadoProceso.RECHAZADO)
-            .contains(o.obtenerEstadoActual().getValor()))
+            .contains(o.getEstadoActual().getValor()))
         .map(OfertaSubastaDto::new).toList();
   }
 }

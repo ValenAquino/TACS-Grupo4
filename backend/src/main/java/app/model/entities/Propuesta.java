@@ -89,7 +89,6 @@ public class Propuesta {
      */
     public void cancelar(String perfilId) {
         validarUsuarioAutor(perfilId);
-        validarPendiente();
         ejecutarRechazo();
         EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.CANCELADO);
         estado.add(actual);
@@ -118,6 +117,16 @@ public class Propuesta {
     public void resetearAPendiente(String perfilId) {
         this.validarUsuarioAutor(perfilId);
         estado.add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE));
+    }
+
+    /**
+     * Deselecciona la propuesta, volviendo a PENDIENTE. Lo ejecuta el dueño de la subasta.
+     */
+    public void deseleccionar(String perfilId) {
+        validarUsuarioDestino(perfilId);
+        EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
+        estado.add(actual);
+        setEstadoActual(actual);
     }
 
     private void validarPendiente() {

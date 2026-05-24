@@ -118,10 +118,11 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
       query.addCriteria(
           Criteria.where("ofertas").elemMatch(
               Criteria.where("autor.$id").is(filtros.participanteId())
+                  .and("estadoActual.valor").ne(EstadoProceso.CANCELADO)
           )
       );
     }
-    //TODO where estadoActual != CANCELADO
+
     long count = mongoTemplate.count(query, Subasta.class);
 
     query.skip((long) (filtros.pagina() - 1) * filtros.limite());

@@ -21,7 +21,7 @@ public class MiSubastaFinalizadaDto {
     this.fechaCierre = subasta.getFechaCierre();
     this.figuritaSubastada = new FiguritaDto(subasta.getFiguritaSubastada());
     this.ofertaGanadora = subasta.getOfertas().stream()
-        .filter(p -> p.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO)
+        .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.ACEPTADO)
         .findFirst()
         .map(OfertaSubastaDto::new)
         .orElse(null);

@@ -115,17 +115,18 @@ public class ServicioSubasta {
   public void cancelarOferta(String perfilId, String subastaId, String ofertaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
-    Propuesta oferta = subasta.getOfertas().stream()
-        .filter(o -> o.getId().equals(ofertaId))
-        .findFirst()
-        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
-    oferta.cancelar(perfilId);
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+
+    subasta.cancelarOferta(ofertaId, perfilId);
+
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
-  public void seleccionarOferta(String subastaId, String ofertaId) {
+  public void seleccionarOferta( String perfilId, String subastaId, String ofertaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
@@ -133,22 +134,13 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-      subasta.getOfertas().stream()
-          .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
-          .findFirst()
-          .ifPresent(p -> p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE)));
+    subasta.seleccionarOferta(ofertaId, perfilId);
 
-    Propuesta propuesta = subasta.getOfertas().stream()
-        .filter(p -> p.getId().equals(ofertaId))
-        .findFirst()
-        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
-
-    propuesta.seleccionar(subasta.getAutor().getId());
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
-  public void rechazarOferta(String subastaId, String ofertaId) {
+  public void rechazarOferta(String perfilId, String subastaId, String ofertaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
@@ -156,42 +148,34 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-    Propuesta propuesta = subasta.getOfertas().stream()
-        .filter(p -> p.getId().equals(ofertaId))
-        .findFirst()
-        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+    subasta.rechazarOferta(ofertaId, perfilId);
 
-    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
-  public void cancelarSubasta(String subastaId) {
+  public void cancelarSubasta(String perfilId, String subastaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
-
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
     }
-
-    subasta.getOfertas().forEach(p ->
-        p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO))
-    );
-    subasta.setFechaCierre(LocalDateTime.now());
+    subasta.cancelar(perfilId);
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
-  public void cerrarSubasta(String subastaId) {
+  public void cerrarSubasta(String perfilId, String subastaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
-
-    subasta.cerrar(subastaId);
-    this.repoSubasta.guardar(subasta);
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+    subasta.cerrar(perfilId);
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
-    public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros, String perfilId) {
+    public PaginaResultado<?> obtenerSubastas(String perfilId, SubastasFiltro filtros) {
       PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros, new CamposSubasta(true, true));
 
       if (filtros.participanteId() != null) {
@@ -202,7 +186,7 @@ public class ServicioSubasta {
               s.getId(),
               MetodoIntercambio.SUBASTA
           );
-          return new SubastaParticipoDto(s, obtenerOferta(s, perfilId), yaCalifico);
+          return new SubastaParticipoDto(s, obtenerOferta(perfilId, s), yaCalifico);
         });
 
       } else if ("ACTIVA".equals(filtros.estado())) {
@@ -211,7 +195,7 @@ public class ServicioSubasta {
       } else {
         return resultado.mapearA(s -> {
           String ganadorId = s.getOfertas().stream()
-              .filter(o -> o.obtenerEstadoActual().getValor() == EstadoProceso.ACEPTADO)
+              .filter(o -> o.getEstadoActual().getValor() == EstadoProceso.ACEPTADO)
               .findFirst()
               .map(o -> o.getAutor().getId())
               .orElse(null);
@@ -228,7 +212,7 @@ public class ServicioSubasta {
       }
     }
 
-  private Propuesta obtenerOferta(Subasta subasta, String perfilId) {
+  private Propuesta obtenerOferta(String perfilId, Subasta subasta) {
     return subasta.getOfertas().stream()
         .filter(p -> p.getAutor().getId().equals(perfilId))
         .findFirst()

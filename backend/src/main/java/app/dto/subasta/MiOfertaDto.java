@@ -16,7 +16,7 @@ public class MiOfertaDto {
     this.figuritasOfrecidas = propuesta.getFiguritasOfrecidas().stream()
         .map(FiguritaDto::new)
         .toList();
-    this.seleccionada = propuesta.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO;
+    this.seleccionada = propuesta.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO;
   }
 
 }

@@ -27,8 +27,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -44,14 +46,20 @@ public class InicializadorDeDatos implements CommandLineRunner {
     private final RepositorioColecciones colecciones;
     private final RepositorioUsuarios usuarios;
     private final RepositorioCalificacion calificaciones;
+  private final MongoTemplate mongoTemplate;
   private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+  @Value("${SEED_DATA:false}")
+  private boolean seedData;
 
     public InicializadorDeDatos(RepositorioPerfiles perfiles,
                                 RepositorioPropuestas propuestas,
                                 RepositorioSubastas subastas,
                                 RepositorioColecciones colecciones,
                                 RepositorioFiguritas figuritas,
-                                RepositorioUsuarios usuarios, RepositorioCalificacion calificaciones) {
+                                RepositorioUsuarios usuarios,
+                                RepositorioCalificacion calificaciones,
+                                MongoTemplate mongoTemplate) {
         this.perfiles = perfiles;
         this.propuestas = propuestas;
         this.subastas = subastas;
@@ -59,6 +67,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
         this.figuritas = figuritas;
         this.usuarios = usuarios;
       this.calificaciones = calificaciones;
+      this.mongoTemplate = mongoTemplate;
     }
 
     private List<MedioDeContacto> telegram(String numero) {
@@ -84,6 +93,18 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+      if (seedData) {
+        mongoTemplate.dropCollection(Usuario.class);
+        mongoTemplate.dropCollection(Perfil.class);
+        mongoTemplate.dropCollection(Coleccion.class);
+        mongoTemplate.dropCollection(Figurita.class);
+        mongoTemplate.dropCollection(Propuesta.class);
+        mongoTemplate.dropCollection(Subasta.class);
+        mongoTemplate.dropCollection(Calificacion.class);
+      } else if (perfiles.contar() > 0) {
+        return;
+      }
+
         Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
         Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, "Extremo");
         Figurita lautaro = new Figurita("ARG-9", 9, "Lautaro", Seleccion.ARGENTINA, "Delantero");

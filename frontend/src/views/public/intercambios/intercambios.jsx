@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
-import { buscarIntercambios } from "../../../services/intercambioService.js";
+import { useState } from "react";
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
 import RecibidasTab from "./tabs/RecibidasTab.jsx";
 import EnviadasTab from "./tabs/EnviadasTab.jsx";
-import HistorialTab from "./tabs/HistorialTab.jsx";
 
 const Intercambios = () => {
 
@@ -18,20 +16,12 @@ const Intercambios = () => {
             key: "recibidas",
             label: `Recibidas (${data.pendientes.length})`,
             component: RecibidasTab,
-            props: { pendientes: data.pendientes },
         },
         {
             key: "enviadas",
             label: "Enviadas",
-            component: EnviadasTab,
-            props: { esperando: data.enviadas },
-        },
-        {
-            key: "historial",
-            label: "Historial",
-            component: HistorialTab,
-            props: { intercambios: data.historial },
-        },
+            component: EnviadasTab
+        }
     ];
 
     return (

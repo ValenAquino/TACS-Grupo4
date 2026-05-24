@@ -36,7 +36,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
      const cargarEnviadas = async () => {
          try {
              setLoading(true);
-             const enviadasApi = await buscarPropuestas(user_id, {pagina: pagina, limite: 10, ...filtros})
+             const enviadasApi = await buscarPropuestas({pagina: pagina, limite: 10, ...filtros})
              setEnviadas(enviadasApi)
          } catch (error) {
              handleError(error, () => {})
@@ -45,9 +45,21 @@ import {useAuth} from "@/contexts/userContext.jsx";
          }
      }
 
-    useEffect(() => {
+     useEffect(() => {
         cargarEnviadas();
-    }, [pagina, filtros])
+     }, [pagina, filtros])
+
+     const textosEstado = {
+         "": "Todas las propuestas",
+         "PENDIENTE": "Esperando respuesta",
+         "ACEPTADO": "Propuestas aceptadas",
+         "RECHAZADO": "Propuestas rechazadas",
+         "CANCELADO": "Propuestas canceladas"
+     };
+
+     const textoResultados =
+         textosEstado[filtros.estado] ||
+         "Propuestas";
 
     return (
         <div>
@@ -100,14 +112,26 @@ import {useAuth} from "@/contexts/userContext.jsx";
                     }
                     onClick={() => cambiarFiltro("PENDIENTE")}
                 />
+
+                <FilterChip
+                    label="Canceladas"
+                    selected={
+                        filtros.estado === "CANCELADO"
+                    }
+                    onClick={() =>
+                        cambiarFiltro("CANCELADO")
+                    }
+                />
             </div>
 
             {loading ? <p>Cargando resultados...</p>
                 :
-                enviadas?.data?.length > 0 ?
+                enviadas?.contenido?.length > 0 ?
                 <>
-                    <p className={"mb-3"}>Esperando Respuesta {`(${enviadas.resultados})`}</p>
-                    {enviadas.data.map(i => (
+                    <p className={"mb-3"}>
+                        {textoResultados} ({enviadas.cantidad_de_elementos})
+                    </p>
+                    {enviadas.contenido.map(i => (
                         <IntercambioCard
                             key={i.id}
                             intercambio={i}
@@ -124,7 +148,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
 
             <Paginacion
                 page={pagina}
-                totalPages={enviadas.paginas_totales ?? 1}
+                totalPages={enviadas.cantidad_de_paginas ?? 1}
                 onChange={setPagina}
             />
 

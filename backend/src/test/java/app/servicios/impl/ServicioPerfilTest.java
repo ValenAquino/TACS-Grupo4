@@ -68,8 +68,9 @@ class ServicioPerfilTest extends MongoTestBase {
   }
 
   private Propuesta propuesta(String id, Perfil autor, Perfil destino, EstadoProceso estado) {
-    return new Propuesta(id, autor, destino, new ArrayList<>(), null,
-        new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), estado))));
+    return new Propuesta(
+        id, autor, destino, new ArrayList<>(), null,
+        new ArrayList<>(List.of(new EstadoPropuesta(LocalDateTime.now(), estado))),new EstadoPropuesta(LocalDateTime.now(), estado));
   }
 
 

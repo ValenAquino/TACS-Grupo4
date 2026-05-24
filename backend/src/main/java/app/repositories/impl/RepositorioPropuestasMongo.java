@@ -2,14 +2,10 @@ package app.repositories.impl;
 
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
-import app.dto.propuesta.PropuestasDto;
 import app.exceptions.NotFoundException;
-import app.model.entities.Calificacion;
 import app.model.entities.Propuesta;
 import app.repositories.RepositorioPropuestas;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -28,15 +24,30 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
     }
 
     @Override
-    public PaginaResultado<Propuesta> buscarPorAutorId(String perfilId, PropuestasFiltro filtros) {
+    public PaginaResultado<Propuesta> buscarTodos(String perfilId, PropuestasFiltro filtros) {
         Query query = new Query();
-        query.addCriteria(
-            Criteria.where("autor.id").is(perfilId)
-        );
+
+        if("RECIBIDAS".equals(filtros.tipo())) {
+            query.addCriteria(
+                Criteria.where("destinatario.id").is(perfilId)
+            );
+        }
+
+        if("ENVIADAS".equals(filtros.tipo())) {
+            query.addCriteria(
+                Criteria.where("autor.id").is(perfilId)
+            );
+        }
+
+        if (filtros.estado() != null) {
+            query.addCriteria(
+                Criteria.where("estadoActual.valor").is(filtros.estado())
+            );
+        }
 
         long count = mongoTemplate.count(query, Propuesta.class);
 
-        query.skip((long) filtros.pagina() * filtros.limite());
+        query.skip((long) filtros.pagina() - 1 * filtros.limite());
         query.limit(filtros.limite());
 
         List<Propuesta> contenido =
@@ -51,31 +62,8 @@ public class RepositorioPropuestasMongo implements RepositorioPropuestas {
     }
 
     @Override
-    public PaginaResultado<Propuesta> buscarPorDestinatarioId(String perfilId, PropuestasFiltro filtros) {
-        Query query = new Query();
-        query.addCriteria(
-            Criteria.where("destinatario.id").is(perfilId)
-        );
-
-        long count = mongoTemplate.count(query, Propuesta.class);
-
-        query.skip((long) filtros.pagina() * filtros.limite());
-        query.limit(filtros.limite());
-
-        List<Propuesta> contenido =
-            mongoTemplate.find(query, Propuesta.class);
-
-        return new PaginaResultado<>(
-            contenido,
-            count,
-            (int) Math.ceil((double) count / filtros.limite()),
-            filtros.pagina()
-        );
-    }
-
-    @Override
-    public List<Propuesta> buscarTodos() {
-        return this.mongoTemplate.findAll(Propuesta.class);
+    public List<Propuesta> buscarTodosEstadisticas() {
+        return mongoTemplate.findAll(Propuesta.class);
     }
 
     @Override

@@ -13,11 +13,11 @@ import app.model.entities.Subasta;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
-import app.repositories.RepositorioUsuarios;
 import app.repositories.impl.campos.CamposPerfil;
 import app.repositories.impl.campos.CamposSubasta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +32,7 @@ public class ServicioEstadisticas {
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
 
+    @Transactional
     public EstadisticasDto obtenerEstadisticas() {
         long totalUsuarios = repositorioPerfiles.contar();
 
@@ -64,8 +65,8 @@ public class ServicioEstadisticas {
     }
 
     private PropuestasPorEstadoDto calcularPropuestasPorEstado() {
-        Map<EstadoProceso, Long> porEstado = repositorioPropuestas.buscarTodos().stream()
-            .collect(Collectors.groupingBy(p -> p.obtenerEstadoActual().getValor(), Collectors.counting()));
+        Map<EstadoProceso, Long> porEstado = repositorioPropuestas.buscarTodosEstadisticas().stream()
+            .collect(Collectors.groupingBy(p -> p.getEstadoActual().getValor(), Collectors.counting()));
 
         return new PropuestasPorEstadoDto(
             porEstado.getOrDefault(EstadoProceso.PENDIENTE, 0L).intValue(),

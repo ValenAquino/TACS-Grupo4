@@ -7,8 +7,10 @@ import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
+import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
+import app.repositories.impl.campos.CamposPerfil;
 import app.servicios.ServicioPropuesta;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,38 +28,13 @@ class ServicioPropuestaTest extends MongoTestBase {
   private Figurita messi;
   private Figurita mbappe;
 
+  CamposPerfil sinCampos;
+
   @BeforeEach
   void setUp() {
-    Usuario user = new Usuario("u-1000", Rol.USUARIO, "lucas", "fiscella");
-    repositorioUsuarios.guardar(user);
 
-    Coleccion colec = new Coleccion("c-1000");
-
-    lucas = Perfil.builder()
-        .id("1000")
-        .usuario(user)
-        .nombre("Lucas")
-        .coleccion(colec)
-        .build();
-
-    repositorioColecciones.guardar(colec);
-    repositorioPerfiles.guardar(lucas);
-
-    user = new Usuario("u-1001", Rol.USUARIO, "sofia", "fiscella");
-    repositorioUsuarios.guardar(user);
-
-    colec = new Coleccion("c-1001");
-
-    sofia = Perfil.builder()
-        .id("1001")
-        .usuario(user)
-        .nombre("Sofía")
-        .coleccion(colec)
-        .build();
-
-    repositorioColecciones.guardar(colec);
-    repositorioPerfiles.guardar(sofia);
-
+    sinCampos = new CamposPerfil(false);
+    // Figuritas
     messi = new Figurita(
         "ARG-10",
         10,
@@ -74,8 +51,74 @@ class ServicioPropuestaTest extends MongoTestBase {
         null
     );
 
+    // Usuarios
+    Usuario user1 = new Usuario(
+        "u-1000",
+        Rol.USUARIO,
+        "lucas",
+        "fiscella"
+    );
+
+    Usuario user2 = new Usuario(
+        "u-1001",
+        Rol.USUARIO,
+        "sofia",
+        "fiscella"
+    );
+
+    // Colección Lucas
+    Coleccion colec1 = new Coleccion("c-1000");
+
+    colec1.agregarFaltante(messi);
+
+    colec1.agregarRepetida(
+        new FiguritaIntercambiable(
+            mbappe,
+            2,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        )
+    );
+
+    // Colección Sofía
+    Coleccion colec2 = new Coleccion("c-1001");
+
+    colec2.agregarFaltante(mbappe);
+
+    colec2.agregarRepetida(
+        new FiguritaIntercambiable(
+            messi,
+            2,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        )
+    );
+
+    // Perfiles
+    lucas = Perfil.builder()
+        .id("1000")
+        .usuario(user1)
+        .nombre("Lucas")
+        .coleccion(colec1)
+        .build();
+
+    sofia = Perfil.builder()
+        .id("1001")
+        .usuario(user2)
+        .nombre("Sofía")
+        .coleccion(colec2)
+        .build();
+
+    // Persistencia
+    repositorioUsuarios.guardar(user1);
+    repositorioUsuarios.guardar(user2);
+
     repositorioFiguritas.guardar(messi);
     repositorioFiguritas.guardar(mbappe);
+
+    repositorioColecciones.guardar(colec1);
+    repositorioColecciones.guardar(colec2);
+
+    repositorioPerfiles.guardar(lucas);
+    repositorioPerfiles.guardar(sofia);
   }
 
   @Test
@@ -190,6 +233,108 @@ class ServicioPropuestaTest extends MongoTestBase {
   }
 
   @Test
+  void crearPropuestaReservaFiguritasOfrecidas() {
+
+    CrearPropuestaRequest request =
+        new CrearPropuestaRequest(
+            "1001",
+            "ARG-10",
+            List.of("FRA-10")
+        );
+
+    propuestaService.crearPropuesta(
+        "1000",
+        request
+    );
+
+    Perfil autor =
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
+
+    FiguritaIntercambiable repetida =
+        autor.getColeccion()
+            .getRepetidas()
+            .stream()
+            .filter(r ->
+                r.getFigurita()
+                    .getId()
+                    .equals("FRA-10")
+            )
+            .findFirst()
+            .orElseThrow();
+
+    assertEquals(
+        1,
+        repetida.getCantidadReservada()
+    );
+  }
+
+  @Test
+  void crearPropuestaFiguritaBuscadaInexistenteLanzaException() {
+
+    CrearPropuestaRequest request =
+        new CrearPropuestaRequest(
+            "1001",
+            "NO_EXISTE",
+            List.of("FRA-10")
+        );
+
+    assertThrows(
+        NotFoundException.class,
+        () -> propuestaService.crearPropuesta(
+            "1000",
+            request
+        )
+    );
+  }
+
+  @Test
+  void crearPropuestaFiguritaOfrecidaInexistenteLanzaException() {
+
+    CrearPropuestaRequest request =
+        new CrearPropuestaRequest(
+            "1001",
+            "ARG-10",
+            List.of("NO_EXISTE")
+        );
+
+    assertThrows(
+        NotFoundException.class,
+        () -> propuestaService.crearPropuesta(
+            "1000",
+            request
+        )
+    );
+  }
+
+  @Test
+  void crearPropuestaGuardaEstadoPendiente() {
+
+    CrearPropuestaRequest request =
+        new CrearPropuestaRequest(
+            "1001",
+            "ARG-10",
+            List.of("FRA-10")
+        );
+
+    PropuestaDto dto =
+        propuestaService.crearPropuesta(
+            "1000",
+            request
+        );
+
+    Propuesta propuesta =
+        repositorioPropuestas
+            .buscarPorId(dto.getId());
+
+    assertEquals(
+        EstadoProceso.PENDIENTE,
+        propuesta
+            .getEstadoActual()
+            .getValor()
+    );
+  }
+
+  @Test
   void aceptarActualizaEstado() {
 
     Propuesta propuesta = Propuesta.builder()
@@ -213,41 +358,310 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     assertEquals(
         EstadoProceso.ACEPTADO,
-        actualizada.obtenerEstadoActual().getValor()
+        actualizada.getEstadoActual().getValor()
+    );
+  }
+
+  @Test
+  void aceptarReservaLaFiguritaBuscada() {
+
+    Propuesta propuesta = Propuesta.builder()
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of(mbappe))
+        .build();
+
+    repositorioPropuestas.guardar(propuesta);
+
+    propuestaService.aceptar(
+        propuesta.getId(),
+        "1001"
+    );
+
+    Perfil destinatario =
+        repositorioPerfiles.buscarPorId("1001", sinCampos);
+
+    FiguritaIntercambiable repetida =
+        destinatario.getColeccion()
+            .getRepetidas()
+            .stream()
+            .filter(r ->
+                r.getFigurita().getId()
+                    .equals("ARG-10")
+            )
+            .findFirst()
+            .orElseThrow();
+
+    // se reserva y luego cambioConcretado la elimina
+    assertEquals(
+        1,
+        repetida.getCantidadExistente()
+    );
+
+    assertEquals(
+        0,
+        repetida.getCantidadReservada()
+    );
+  }
+
+  @Test
+  void aceptarEliminaFaltanteDelAutor() {
+
+    Propuesta propuesta = Propuesta.builder()
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of(mbappe))
+        .build();
+
+    repositorioPropuestas.guardar(propuesta);
+
+    propuestaService.aceptar(
+        propuesta.getId(),
+        "1001"
+    );
+
+    Perfil autor =
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
+
+    assertFalse(
+        autor.getColeccion()
+            .tieneFaltante(messi)
+    );
+  }
+
+  @Test
+  void aceptarEliminaFaltanteDelDestinatario() {
+
+    Propuesta propuesta = Propuesta.builder()
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of(mbappe))
+        .build();
+
+    repositorioPropuestas.guardar(propuesta);
+
+    propuestaService.aceptar(
+        propuesta.getId(),
+        "1001"
+    );
+
+    Perfil destinatario =
+        repositorioPerfiles.buscarPorId("1001", sinCampos);
+
+    assertFalse(
+        destinatario.getColeccion()
+            .tieneFaltante(mbappe)
+    );
+  }
+
+  @Test
+  void aceptarReduceCantidadRepetidaDelAutor() {
+
+    Propuesta propuesta = Propuesta.builder()
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of(mbappe))
+        .build();
+
+    repositorioPropuestas.guardar(propuesta);
+
+    propuestaService.aceptar(
+        propuesta.getId(),
+        "1001"
+    );
+
+    Perfil autor =
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
+
+    FiguritaIntercambiable repetida =
+        autor.getColeccion()
+            .getRepetidas()
+            .stream()
+            .findFirst()
+            .orElseThrow();
+
+    assertEquals(
+        1,
+        repetida.getCantidadExistente()
+    );
+  }
+
+  @Test
+  void aceptarConPerfilIncorrectoLanzaExcepcion() {
+
+    Propuesta propuesta = Propuesta.builder()
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of(mbappe))
+        .build();
+
+    repositorioPropuestas.guardar(propuesta);
+
+    assertThrows(
+        BadRequestException.class,
+        () -> propuestaService.aceptar(
+            propuesta.getId(),
+            "1000"
+        )
+    );
+  }
+
+  @Test
+  void aceptarPropuestaInexistenteLanzaExcepcion() {
+
+    assertThrows(
+        NotFoundException.class,
+        () -> propuestaService.aceptar(
+            "id-inexistente",
+            "1001"
+        )
     );
   }
 
   @Test
   void rechazarActualizaEstado() {
 
-    Propuesta propuesta = Propuesta.builder()
-        .autor(lucas)
-        .destinatario(sofia)
-        .figuritaBuscada(messi)
-        .figuritasOfrecidas(List.of(mbappe))
-        .build();
-
-    repositorioPropuestas.guardar(propuesta);
+    PropuestaDto dto =
+        propuestaService.crearPropuesta(
+            "1000",
+            new CrearPropuestaRequest(
+                "1001",
+                "ARG-10",
+                List.of("FRA-10")
+            )
+        );
 
     propuestaService.rechazar(
-        propuesta.getId(),
+        dto.getId(),
         "1001"
     );
 
     Propuesta actualizada =
         repositorioPropuestas.buscarPorId(
-            propuesta.getId()
+            dto.getId()
         );
 
     assertEquals(
         EstadoProceso.RECHAZADO,
-        actualizada.obtenerEstadoActual().getValor()
+        actualizada.getEstadoActual().getValor()
     );
   }
 
   @Test
   void cancelarActualizaEstado() {
 
+    PropuestaDto dto =
+        propuestaService.crearPropuesta(
+            "1000",
+            new CrearPropuestaRequest(
+                "1001",
+                "ARG-10",
+                List.of("FRA-10")
+            )
+        );
+
+    propuestaService.cancelar(
+        dto.getId(),
+        "1000"
+    );
+
+    Propuesta actualizada =
+        repositorioPropuestas.buscarPorId(
+            dto.getId()
+        );
+
+    assertEquals(
+        EstadoProceso.CANCELADO,
+        actualizada.getEstadoActual().getValor()
+    );
+  }
+
+  @Test
+  void rechazarLiberaReservaDeFiguritasOfrecidas() {
+
+    PropuestaDto dto =
+        propuestaService.crearPropuesta(
+            "1000",
+            new CrearPropuestaRequest(
+                "1001",
+                "ARG-10",
+                List.of("FRA-10")
+            )
+        );
+
+    propuestaService.rechazar(
+        dto.getId(),
+        "1001"
+    );
+
+    Perfil autor =
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
+
+    FiguritaIntercambiable repetida =
+        autor.getColeccion()
+            .getRepetidas()
+            .stream()
+            .filter(r ->
+                r.getFigurita()
+                    .getId()
+                    .equals("FRA-10")
+            )
+            .findFirst()
+            .orElseThrow();
+
+    assertEquals(
+        0,
+        repetida.getCantidadReservada()
+    );
+  }
+
+  @Test
+  void cancelarLiberaReservaDeFiguritasOfrecidas() {
+
+    PropuestaDto dto =
+        propuestaService.crearPropuesta(
+            "1000",
+            new CrearPropuestaRequest(
+                "1001",
+                "ARG-10",
+                List.of("FRA-10")
+            )
+        );
+
+    propuestaService.cancelar(
+        dto.getId(),
+        "1000"
+    );
+
+    Perfil autor =
+        repositorioPerfiles.buscarPorId("1000", sinCampos);
+
+    FiguritaIntercambiable repetida =
+        autor.getColeccion()
+            .getRepetidas()
+            .stream()
+            .filter(r ->
+                r.getFigurita()
+                    .getId()
+                    .equals("FRA-10")
+            )
+            .findFirst()
+            .orElseThrow();
+
+    assertEquals(
+        0,
+        repetida.getCantidadReservada()
+    );
+  }
+
+  @Test
+  void rechazarConPerfilIncorrectoLanzaExcepcion() {
+
     Propuesta propuesta = Propuesta.builder()
         .autor(lucas)
         .destinatario(sofia)
@@ -257,19 +671,57 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     repositorioPropuestas.guardar(propuesta);
 
-    propuestaService.cancelar(
-        propuesta.getId(),
-        "1000"
+    assertThrows(
+        BadRequestException.class,
+        () -> propuestaService.rechazar(
+            propuesta.getId(),
+            "1000"
+        )
     );
+  }
 
-    Propuesta actualizada =
-        repositorioPropuestas.buscarPorId(
-            propuesta.getId()
-        );
+  @Test
+  void cancelarConPerfilIncorrectoLanzaExcepcion() {
 
-    assertEquals(
-        EstadoProceso.CANCELADO,
-        actualizada.obtenerEstadoActual().getValor()
+    Propuesta propuesta = Propuesta.builder()
+        .autor(lucas)
+        .destinatario(sofia)
+        .figuritaBuscada(messi)
+        .figuritasOfrecidas(List.of(mbappe))
+        .build();
+
+    repositorioPropuestas.guardar(propuesta);
+
+    assertThrows(
+        BadRequestException.class,
+        () -> propuestaService.cancelar(
+            propuesta.getId(),
+            "1001"
+        )
+    );
+  }
+
+  @Test
+  void rechazarPropuestaInexistenteLanzaExcepcion() {
+
+    assertThrows(
+        NotFoundException.class,
+        () -> propuestaService.rechazar(
+            "id-inexistente",
+            "1001"
+        )
+    );
+  }
+
+  @Test
+  void cancelarPropuestaInexistenteLanzaExcepcion() {
+
+    assertThrows(
+        NotFoundException.class,
+        () -> propuestaService.cancelar(
+            "id-inexistente",
+            "1000"
+        )
     );
   }
 
@@ -335,6 +787,138 @@ class ServicioPropuestaTest extends MongoTestBase {
     assertEquals(
         0,
         resultado.cantidadDeElementos()
+    );
+  }
+
+  @Test
+  void buscarPropuestasConvierteEntidadADto() {
+
+    propuestaService.crearPropuesta(
+        "1000",
+        new CrearPropuestaRequest(
+            "1001",
+            "ARG-10",
+            List.of("FRA-10")
+        )
+    );
+
+    PropuestasFiltro filtro =
+        new PropuestasFiltro(
+            "ENVIADAS",
+            0,
+            10,
+            null
+        );
+
+    PaginaResultado<PropuestaDto> resultado =
+        propuestaService.buscarPropuestas(
+            "1000",
+            filtro
+        );
+
+    assertEquals(
+        1,
+        resultado.contenido().size()
+    );
+
+    PropuestaDto dto =
+        resultado.contenido().get(0);
+
+    assertEquals(
+        "1000",
+        dto.getAutor().getId()
+    );
+
+    assertEquals(
+        "1001",
+        dto.getDestinatario().getId()
+    );
+
+    assertEquals(
+        "ARG-10",
+        dto.getFiguritaBuscada().getId()
+    );
+
+    assertEquals(
+        EstadoProceso.PENDIENTE,
+        dto.getEstado()
+    );
+  }
+
+  @Test
+  void buscarPropuestasFiltraPorEstadoActual() {
+
+    PropuestaDto propuesta =
+        propuestaService.crearPropuesta(
+            "1000",
+            new CrearPropuestaRequest(
+                "1001",
+                "ARG-10",
+                List.of("FRA-10")
+            )
+        );
+
+    propuestaService.rechazar(
+        propuesta.getId(),
+        "1001"
+    );
+
+    PropuestasFiltro filtro =
+        new PropuestasFiltro(
+            "RECIBIDAS",
+            0,
+            10,
+            EstadoProceso.RECHAZADO
+        );
+
+    PaginaResultado<PropuestaDto> resultado =
+        propuestaService.buscarPropuestas(
+            "1001",
+            filtro
+        );
+
+    assertEquals(
+        1,
+        resultado.contenido().size()
+    );
+
+    assertEquals(
+        EstadoProceso.RECHAZADO,
+        resultado.contenido()
+            .get(0)
+            .getEstado()
+    );
+  }
+
+  @Test
+  void buscarPropuestasSinResultadosDevuelvePaginaVacia() {
+
+    PropuestasFiltro filtro =
+        new PropuestasFiltro(
+            "RECIBIDAS",
+            0,
+            10,
+            EstadoProceso.ACEPTADO
+        );
+
+    PaginaResultado<PropuestaDto> resultado =
+        propuestaService.buscarPropuestas(
+            "1001",
+            filtro
+        );
+
+    assertTrue(
+        resultado.contenido().isEmpty()
+    );
+
+    assertEquals(
+        0,
+        resultado.cantidadDeElementos()
+    );
+
+    assertEquals(
+        0,
+        resultado.cantidadDePaginas()
     );
   }
 

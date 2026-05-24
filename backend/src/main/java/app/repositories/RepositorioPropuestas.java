@@ -7,10 +7,9 @@ import app.model.entities.Propuesta;
 import java.util.List;
 
 public interface RepositorioPropuestas {
-    List<Propuesta> buscarTodos();
+    List<Propuesta> buscarTodosEstadisticas();
     Propuesta buscarPorId(String id);
     int contar();
     void guardar(Propuesta propuesta);
-    public PaginaResultado<Propuesta> buscarPorAutorId(String perfilId, PropuestasFiltro filtros);
-    public PaginaResultado<Propuesta> buscarPorDestinatarioId(String perfilId, PropuestasFiltro filtros);
+    PaginaResultado<Propuesta> buscarTodos(String perfilId, PropuestasFiltro filtros);
 }

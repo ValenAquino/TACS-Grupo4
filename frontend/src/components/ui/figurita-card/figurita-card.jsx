@@ -34,11 +34,11 @@ const FiguritaCard = ({
   return (
     <div className={`${styles.card} ${CARD_CLASS[tipo] ?? ''}`}>
       <div className={styles.hero}>
-        {strCutout ? (
-          <img src={strCutout} alt={jugador} className={styles.heroImg} />
-        ) : (
-          <div className={styles.heroPlaceholder} />
-        )}
+        <img
+          src={strCutout || '/jugador-placeholder.png'}
+          alt={jugador}
+          className={styles.heroImg}
+        />
         <div className={styles.heroOverlay}>
           <span className={styles.heroNumber}>#{numero}</span>
           <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>

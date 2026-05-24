@@ -12,15 +12,15 @@ const useFiguritas = (q, jugador, seleccion, numero, tipo, page) => {
 
   useEffect(() => {
     setLoading(true)
+    setError(false)
     const cargar = async () => {
       try {
-        setError(false)
         const data = await explorarFiguritas({ q, jugador, seleccion, numero, tipo, page })
         setFiguritas(data.contenido)
         setTotalPages(data.totalPages)
         setTotalElements(data.totalElements)
       } catch (error) {
-        handleError(error, () => {})
+        handleError(error, () => setError(true))
       } finally {
         setLoading(false)
       }

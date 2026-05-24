@@ -132,15 +132,6 @@ public class ServicioPerfil {
     boolean cambiaNombreUsuario = body.getNombreUsuario() != null
         && !body.getNombreUsuario().equals(usuario.getNombre());
 
-    if (body.getNombre() != null) {
-      perfil.setNombre(body.getNombre());
-    }
-    if (actualizaMedios) {
-      perfil.setMediosDeContacto(body.getMediosDeContacto().stream()
-          .map(MedioDeContactoRequest::toEntity).toList());
-    }
-    this.repositorioPerfiles.guardar(perfil, new CamposPerfil(actualizaMedios));
-
     if (cambiaNombreUsuario) {
       try {
         this.repositorioUsuarios.guardar(
@@ -150,6 +141,15 @@ public class ServicioPerfil {
         throw new BadRequestException("El nombre de usuario ya está en uso");
       }
     }
+
+    if (body.getNombre() != null) {
+      perfil.setNombre(body.getNombre());
+    }
+    if (actualizaMedios) {
+      perfil.setMediosDeContacto(body.getMediosDeContacto().stream()
+          .map(MedioDeContactoRequest::toEntity).toList());
+    }
+    this.repositorioPerfiles.guardar(perfil, new CamposPerfil(actualizaMedios));
   }
 
   public void editarContrasenia(String perfilId, String contraseniaActual, String contraseniaNueva) {

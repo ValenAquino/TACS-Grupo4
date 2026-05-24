@@ -1,13 +1,12 @@
 import styles from './user-chip.module.css'
 
-const UserChip = ({ user }) => (
+const UserChip = ({ nombre, reputacion = 0 }) => (
   <div className={styles.chip}>
-    <span className={styles.avatar} style={{ background: user.color }}>
-      {user.initials}
-    </span>
-    <span className={styles.name}>{user.name}</span>
+    <span className={styles.avatar}>{nombre.slice(0, 2).toUpperCase()}</span>
+    <span className={styles.name}>{nombre}</span>
     <span className={styles.stars}>
-      {'★'.repeat(user.stars)}{'☆'.repeat(5 - user.stars)}
+      {'★'.repeat(reputacion)}
+      {'☆'.repeat(5 - reputacion)}
     </span>
   </div>
 )

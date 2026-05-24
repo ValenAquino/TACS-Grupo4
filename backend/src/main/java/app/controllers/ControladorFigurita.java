@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ControladorFigurita {
     private final ServicioFigurita figuritaService;
 
-    @GetMapping("/figuritas")
+    @GetMapping("/figuritas/intercambiables")
     public ResponseEntity<PaginaResultado<FiguritaIntercambiableDto>> obtenerFiguritas(
         @RequestParam(required = false) String q,
         @RequestParam(required = false) Integer numero,

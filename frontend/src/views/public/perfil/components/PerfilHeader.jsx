@@ -1,4 +1,3 @@
-import Button from '@/components/ui/button/button.jsx'
 import renderStars from '@/utils/renderStars.jsx'
 import styles from './PerfilHeader.module.css'
 
@@ -38,7 +37,11 @@ const PerfilHeader = ({
             Editar perfil
           </button>
 
-          {perfilId != null && <Button label={'Cerrar sesion'} onClick={onCerrarSesionClick} />}
+          {perfilId != null && (
+            <button className={`btn btn-outline-light ${styles['btn-editar']}`} onClick={onCerrarSesionClick}>
+              Cerrar sesion
+            </button>
+          )}
         </div>
       </div>
     </div>

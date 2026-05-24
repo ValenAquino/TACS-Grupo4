@@ -42,7 +42,6 @@ const EditarOferta = () => {
     const cargar = async () => {
       try {
         const res = await buscarSubasta({ subId })
-        console.log(res)
         setSubasta(res)
       } catch (e) {
         handleError(e, () => {})

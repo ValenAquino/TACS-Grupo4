@@ -67,6 +67,7 @@ public class ErrorHandler {
       Exception ex
   ) {
 
+    //ex.printStackTrace();
     ErrorResponse error = new ErrorResponse(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),
         "Ocurrió un error interno del servidor",

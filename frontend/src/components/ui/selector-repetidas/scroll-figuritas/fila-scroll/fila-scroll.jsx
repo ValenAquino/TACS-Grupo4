@@ -13,13 +13,6 @@ const FilaScroll = ({ fig, modo, bloqueada, seleccionada, onToggle, eraInicial =
   const bloqueadaSinStock = bloqueada && sinStock && !eraInicial
   const deshabilitado = bloqueada || (sinStock && !seleccionada)
 
-  console.log(fig.jugador, {
-    cantidad_existente: fig.cantidad_existente,
-    cantidad_reservada: fig.cantidad_reservada,
-    seleccionada,
-    eraInicial,
-  })
-
   const filaClass = [
     styles['scroll-fila'],
     bloqueadaSinStock

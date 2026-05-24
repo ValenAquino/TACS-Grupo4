@@ -199,7 +199,7 @@ const CrearSubasta = () => {
     try {
       setLoading(true)
       await crearSubasta({
-        figurita_id: figurita.figuritaId,
+        figurita_id: figurita.figurita_id,
         duracion_en_horas: duracion,
         figuritas_deseadas_ids: figuritasDeseadas.map((f) => f.id),
         calificacion_minima: calificacionMin,

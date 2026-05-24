@@ -36,10 +36,10 @@ public class ServicioSubasta {
   private final ServicioNotificacion notificacionService;
 
   @Transactional
-  public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
+  public void crearSubasta(String perfilId, String figuritaId, Integer duracionEnHoras,
                            List<String> figuritasDeseadasIds, Integer calificacionMinima) {
     CamposPerfil conColeccion = new CamposPerfil(true);
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId, conColeccion);
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, conColeccion);
     Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
     List<Figurita> figuritasDeseadas = figuritasDeseadasIds.stream()

@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router'
 
 const SubastaParticipo = ({ subasta, finalizada }) => {
   const { userId } = useUsuarioActual()
-  console.log(subasta)
   const { id, autor, figurita_subastada, fecha_cierre, tu_oferta, ya_calificado } = subasta
   const [mostrarCalificar, setMostrarCalificar] = useState(false)
   const navigate = useNavigate()

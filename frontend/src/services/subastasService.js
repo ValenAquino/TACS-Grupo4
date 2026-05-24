@@ -2,9 +2,9 @@ import { api, handleAxiosError } from './api.js'
 
 const SUBASTAS_URL = '/subastas'
 
-export const crearSubasta = async (userId, body) => {
+export const crearSubasta = async (body) => {
   try {
-    await api.post('/subastas', { ...body, user_id: userId })
+    await api.post('/subastas', body)
   } catch (error) {
     handleAxiosError(error)
   }

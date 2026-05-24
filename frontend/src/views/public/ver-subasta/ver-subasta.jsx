@@ -76,7 +76,6 @@ const VerSubasta = () => {
       setSubastaAbierta(new Date(payload.cierre) > new Date())
       setTiempo(payload.tiempo_restante)
     } catch (err) {
-      console.log(err)
     } finally {
       setCargando(false)
     }

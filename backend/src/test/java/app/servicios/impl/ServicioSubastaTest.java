@@ -521,15 +521,6 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     PaginaResultado<?> resultado = service.obtenerSubastas(lucas.getId(), filtros);
 
-    mongoTemplate.findAll(Subasta.class).forEach(s -> {
-      System.out.println("Subasta: " + s.getId());
-      s.getOfertas().forEach(o -> {
-        System.out.println("  Oferta: " + o.getId());
-        System.out.println("  Autor: " + o.getAutor());
-        System.out.println("  Autor id: " + o.getAutor().getId());
-        System.out.println("  EstadoActual: " + o.getEstadoActual());
-      });
-    });
     assertEquals(1, resultado.contenido().size());
     assertInstanceOf(SubastaParticipoDto.class, resultado.contenido().get(0));
     SubastaParticipoDto dto = (SubastaParticipoDto) resultado.contenido().get(0);

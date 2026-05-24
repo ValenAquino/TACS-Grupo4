@@ -110,10 +110,6 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   }
 
   public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
-    System.out.println("colId: " + colId);
-    System.out.println("count en colecciones: " + mongoTemplate.count(
-        Query.query(Criteria.where("_id").is(colId)), "colecciones"
-    ));
     int pagina = filtros.pagina();
     int limite = filtros.limite();
 

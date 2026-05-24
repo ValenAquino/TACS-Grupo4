@@ -66,6 +66,16 @@ public class ServicioPropuesta {
     return new PropuestaDto(propuesta);
   }
 
+   public PropuestaDto obtenerPorId(String propuestaId, String perfilId) {
+      Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
+      if (propuesta == null) throw new NotFoundException("Propuesta no encontrada");
+
+      String tipo = propuesta.getDestinatario().getId().equals(perfilId)
+            ? "RECIBIDA"
+            : "ENVIADA";
+      return new PropuestaDto(propuesta, tipo);
+  }
+
   @Transactional
   public void aceptar(String propuestaId, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);

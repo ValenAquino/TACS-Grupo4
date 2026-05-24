@@ -26,6 +26,15 @@ public class ControladorPropuesta {
         return ResponseEntity.status(201).body(propuestaService.crearPropuesta(autorId, request));
     }
 
+    @GetMapping("/{prop_id}")
+    public ResponseEntity<PropuestaDto> obtenerPropuesta(
+            @CookieValue String token,
+            @PathVariable String prop_id
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        return ResponseEntity.ok(this.propuestaService.obtenerPorId(prop_id, perfilId));
+    }
+
     @PatchMapping("/{prop_id}/aceptar")
     public ResponseEntity<?> aceptar(
         @CookieValue String token,

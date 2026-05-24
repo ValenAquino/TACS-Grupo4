@@ -37,7 +37,6 @@ import {useAuth} from "@/contexts/userContext.jsx";
          try {
              setLoading(true);
 
-             console.log("FILTROS:", filtros);
 
              const enviadasApi = await buscarPropuestas({
                  pagina: pagina,
@@ -45,7 +44,6 @@ import {useAuth} from "@/contexts/userContext.jsx";
                  ...filtros
              });
 
-             console.log("RESPUESTA:", enviadasApi);
 
              setEnviadas(enviadasApi);
 

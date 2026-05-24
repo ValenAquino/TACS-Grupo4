@@ -7,8 +7,8 @@ import PerfilSimple from "../../../components/ui/perfil-simple/perfil-simple.jsx
 import Button from "../../../components/ui/button/button.jsx";
 
 import {
+    obtenerPropuesta,
     aceptarPropuesta,
-    buscarPropuestas,
     rechazarPropuesta,
 } from "../../../services/propuestasService.js";
 
@@ -26,48 +26,9 @@ const VerIntercambio = () => {
 
     const cargarIntercambio = async () => {
         try {
-
             setCargando(true);
-
-             const [recibidas, enviadas] = await Promise.all([
-                        buscarPropuestas({
-                            pagina: 0,
-                            limite: 100,
-                            tipo: "RECIBIDAS"
-                        }),
-
-                        buscarPropuestas({
-                            pagina: 0,
-                            limite: 100,
-                            tipo: "ENVIADAS"
-                        })
-                    ]);
-
-             const todas = [...(recibidas?.contenido || []),...(enviadas?.contenido || [])];
-
-            const encontradaRecibida = (recibidas?.contenido || []).find(
-                (p) => p.id.toString() === intercambioId
-            );
-
-            const encontradaEnviada = (enviadas?.contenido || []).find(
-                (p) => p.id.toString() === intercambioId
-            );
-
-            if (encontradaRecibida) {
-                setPropuesta({
-                    ...encontradaRecibida,
-                    tipo: "RECIBIDA"
-                });
-            }
-
-            if (encontradaEnviada) {
-                setPropuesta({
-                    ...encontradaEnviada,
-                    tipo: "ENVIADA"
-                });
-            }
-            //console.log(encontrada)
-
+            const data = await obtenerPropuesta(intercambioId);
+            setPropuesta(data);
         } catch (e) {
             console.error(e);
         } finally {
@@ -124,8 +85,6 @@ const VerIntercambio = () => {
     const esRecibida = propuesta.tipo === "RECIBIDA";
     const esEnviada = propuesta.tipo === "ENVIADA";
 
-    console.log(propuesta?.estado);
-    console.log(propuesta);
     //Para que no aparezcan los botones, si ya fue ceptada o rechazada.
     const estadoActual = propuesta?.estado;
     const estaPendiente = estadoActual === "PENDIENTE" && esRecibida;

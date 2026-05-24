@@ -17,6 +17,15 @@ export const buscarPropuestas = async (filtros) => {
     }
 };
 
+export const obtenerPropuesta = async (prop_id) => {
+    try {
+        const { data } = await api.get(`${PROPUESTAS_URL}/${prop_id}`);
+        return data;
+    } catch (error) {
+        handleAxiosError(error);
+    }
+};
+
 export const cancelarPropuesta = async (prop_id) => {
     try {
         const {data} = await api.patch(PROPUESTAS_URL + `/${prop_id}/cancelar`);

@@ -23,7 +23,6 @@ const RecibidasTab = () => {
         try {
             setLoading(true);
             const enviadasApi = await buscarPropuestas({pagina: pagina, limite: 10, ...filtros})
-            //console.log(JSON.stringify(recibidas.contenido, null, 2))
             setRecibidas(enviadasApi)
         } catch (error) {
             handleError(error, () => {})

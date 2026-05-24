@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/layouts/layout/layout'
 import MisFiguritas from './views/public/mis-figuritas/mis-figuritas.jsx'
 import NuevaFaltante from './views/public/nueva-faltante/nueva-faltante.jsx'
@@ -28,7 +28,7 @@ import RutaPrivilegiada from '@/components/autenticacion/ruta-privilegiada.jsx'
 const publicas = [
   {
     path: '/',
-    element: <Explorar />,
+    element: <Navigate to="/explorar" replace />,
   },
   {
     path: '/explorar',

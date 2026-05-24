@@ -72,7 +72,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
       );
 
       return Propuesta.builder()
-          .id(id)
           .autor(autor)
           .destinatario(destino)
           .figuritasOfrecidas(figuritas)

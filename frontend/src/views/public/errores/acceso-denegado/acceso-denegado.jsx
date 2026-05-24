@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/userContext.jsx'
 
 const AccesoDenegado = () => {
     const navigate = useNavigate()
-    const user = useAuth()
+    const { user } = useAuth()
 
     return (
         <div className="container text-center mt-5">

@@ -12,7 +12,7 @@ export const crearUsuario = async ({nombre, contrasenia}) => {
 
 export const crearAdministrador = async ({nombre, contrasenia, rol}) => {
   try {
-    const { data } = await api.post("/administradores", {nombre, contrasenia, rol: rol ?? "USUARIO"})
+    const { data } = await api.post("/administradores", {nombre, contrasenia, rol})
 
     return data
   } catch (error) {

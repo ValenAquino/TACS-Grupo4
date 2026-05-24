@@ -289,40 +289,61 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .descripcion("Todo bien, lo recomiendo").transaccionId("2002")
           .tipoTransaccion(MetodoIntercambio.INTERCAMBIO).build());
 
-      calificaciones.guardar(Calificacion.builder()
-          .autor(lucas).destinatario(sofia).valor(4)
-          .descripcion("Buena experiencia").transaccionId("2000")
-          .tipoTransaccion(MetodoIntercambio.INTERCAMBIO).build());
+      // Lucas: 30 calificaciones para probar paginación
+      Perfil[] autores = { sofia, matias, juan };
+      String[] descripciones = {
+          "Excelente trato, muy puntual",
+          "Todo perfecto, lo recomiendo",
+          "Muy buena experiencia",
+          "Rápido y confiable",
+          "Sin problemas, volvería a intercambiar",
+          "Cumplió con todo lo acordado",
+          "Muy amable y responsable",
+          "Intercambio sin complicaciones",
+          "Respondió rápido y fue honesto",
+          "Genial, 100% recomendado"
+      };
+      int[] valores = { 5, 4, 5, 3, 4, 5, 2, 4, 5, 3 };
 
-      calificaciones.guardar(Calificacion.builder()
-          .autor(matias).destinatario(sofia).valor(3)
-          .descripcion("Normal, sin problemas").transaccionId("2001")
-          .tipoTransaccion(MetodoIntercambio.INTERCAMBIO).build());
+      for (int i = 0; i < 30; i++) {
+          Calificacion cal = new Calificacion(
+              "CAL-" + i,
+              autores[i % autores.length],
+              lucas,
+              valores[i % valores.length],
+              descripciones[i % descripciones.length],
+              "intercambio-" + i,
+              MetodoIntercambio.INTERCAMBIO
+          );
+          lucas.agregarNuevaCalificacion(cal);
+          calificaciones.guardar(cal);
+      }
+      perfiles.guardar(lucas);
 
-      calificaciones.guardar(Calificacion.builder()
-          .autor(juan).destinatario(sofia).valor(4)
-          .descripcion("Respondió rápido").transaccionId("3000")
-          .tipoTransaccion(MetodoIntercambio.SUBASTA).build());
+      // Sofía: recibe 4, 3 y 4 → promedio 3.67
+      List<Calificacion> calssofia = List.of(
+          new Calificacion("C-3", lucas, sofia,  4, "Buena experiencia",    "2000", MetodoIntercambio.INTERCAMBIO),
+          new Calificacion("C-4", matias, sofia, 3, "Normal, sin problemas","2001", MetodoIntercambio.INTERCAMBIO),
+          new Calificacion("C-5", juan,   sofia, 4, "Respondió rápido",     "3000", MetodoIntercambio.SUBASTA)
+      );
+      calssofia.forEach(c -> { sofia.agregarNuevaCalificacion(c); calificaciones.guardar(c); });
+      perfiles.guardar(sofia);
 
-      calificaciones.guardar(Calificacion.builder()
-          .autor(lucas).destinatario(matias).valor(2)
-          .descripcion("Tardó bastante en responder").transaccionId("2002")
-          .tipoTransaccion(MetodoIntercambio.INTERCAMBIO).build());
+      // Matías: recibe 2 y 3 → promedio 2.5
+      List<Calificacion> calsmatias = List.of(
+          new Calificacion("C-6", lucas, matias, 2, "Tardó bastante en responder", "2002", MetodoIntercambio.INTERCAMBIO),
+          new Calificacion("C-7", sofia, matias, 3, "Aceptable",                   "2001", MetodoIntercambio.INTERCAMBIO)
+      );
+      calsmatias.forEach(c -> { matias.agregarNuevaCalificacion(c); calificaciones.guardar(c); });
+      perfiles.guardar(matias);
 
-      calificaciones.guardar(Calificacion.builder()
-          .autor(sofia).destinatario(matias).valor(3)
-          .descripcion("Aceptable").transaccionId("2001")
-          .tipoTransaccion(MetodoIntercambio.INTERCAMBIO).build());
-
-      calificaciones.guardar(Calificacion.builder()
-          .autor(lucas).destinatario(juan).valor(1)
-          .descripcion("No cumplió con el intercambio").transaccionId("3001")
-          .tipoTransaccion(MetodoIntercambio.SUBASTA).build());
-
-      calificaciones.guardar(Calificacion.builder()
-          .autor(sofia).destinatario(juan).valor(2)
-          .descripcion("Mala comunicación").transaccionId("3000")
-          .tipoTransaccion(MetodoIntercambio.SUBASTA).build());
+      // Juan: recibe 1 y 2 → promedio 1.5
+      List<Calificacion> calsjuan = List.of(
+          new Calificacion("C-8", lucas, juan, 1, "No cumplió con el intercambio", "3001", MetodoIntercambio.SUBASTA),
+          new Calificacion("C-9", sofia, juan, 2, "Mala comunicación",             "3000", MetodoIntercambio.SUBASTA)
+      );
+      calsjuan.forEach(c -> { juan.agregarNuevaCalificacion(c); calificaciones.guardar(c); });
+      perfiles.guardar(juan);
     }
 
     private void cargarPropuestas(Figurita messi, Figurita diMaria,

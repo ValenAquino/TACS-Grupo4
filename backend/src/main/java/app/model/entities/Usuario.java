@@ -3,6 +3,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @NoArgsConstructor
@@ -13,6 +14,7 @@ public class Usuario {
   @Id
   private String id;
   private Rol rol;
+  @Indexed(unique = true)
   private String nombre;
   private String contrasenia;
 

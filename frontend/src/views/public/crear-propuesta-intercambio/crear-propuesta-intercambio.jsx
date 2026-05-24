@@ -24,7 +24,7 @@ const CrearPropuestaIntercambio = () => {
   const onEnviar = async () => {
     try {
       await crearPropuesta(
-        figurita.usuario_id,
+        figurita.perfil_id,
         figurita.figurita_id,
         seleccionadas.map((f) => f.figurita_id),
       )

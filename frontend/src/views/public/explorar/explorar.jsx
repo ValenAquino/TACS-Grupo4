@@ -35,7 +35,10 @@ const Explorar = () => {
 
   return (
     <main className={styles.page}>
-      <ExplorarSearch ref={heroInputRef} onQueryChange={(q) => handleAplicar({ ...FILTROS_INICIAL, q })} />
+      <ExplorarSearch
+        ref={heroInputRef}
+        onQueryChange={(q) => handleAplicar({ ...FILTROS_INICIAL, q })}
+      />
       <div className={styles.container}>
         <SugerenciasBanner />
         <ExplorarFiltros

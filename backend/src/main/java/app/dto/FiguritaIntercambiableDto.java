@@ -17,7 +17,7 @@ public class FiguritaIntercambiableDto {
   private Integer cantidadExistente;
   private Integer cantidadReservada;
   private List<MetodoIntercambio> metodos;
-  private String usuarioId;
+  private String perfilId;
   private String nombreUsuario;
   private Integer reputacion;
   private String posicion;
@@ -31,7 +31,7 @@ public class FiguritaIntercambiableDto {
     this.cantidadExistente = f.getCantidadExistente();
     this.cantidadReservada = f.getCantidadReservada();
     this.metodos = f.getMetodos();
-    this.usuarioId = f.getPerfilId();
+    this.perfilId = f.getPerfilId();
     this.nombreUsuario = perfil != null ? perfil.getNombre() : null;
     this.reputacion = perfil != null ? (int) Math.round(perfil.getCalificacionMedia()) : null;
   }

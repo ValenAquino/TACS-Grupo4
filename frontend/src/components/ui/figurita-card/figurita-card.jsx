@@ -9,6 +9,12 @@ const TYPE_LABELS = {
   ambos: { label: 'ambos', className: styles.badgeAmbos },
 }
 
+const CARD_CLASS = {
+  intercambio: styles.cardIntercambio,
+  subasta: styles.cardSubasta,
+  ambos: styles.cardAmbos,
+}
+
 const FiguritaCard = ({
   figuritaId,
   numero,
@@ -26,35 +32,35 @@ const FiguritaCard = ({
   const badge = TYPE_LABELS[tipo] ?? TYPE_LABELS.intercambio
 
   return (
-    <div className={`${styles.card} ${tipo === 'subasta' ? styles.cardSubasta : ''}`}>
-      <div className={styles.cardHeader}>
-        <span className={styles.cardNumber}>#{numero}</span>
-        <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
-      </div>
-
-      <div className={styles.cardEmoji}>
+    <div className={`${styles.card} ${CARD_CLASS[tipo] ?? ''}`}>
+      <div className={styles.hero}>
         {strCutout ? (
-          <img src={strCutout} alt={jugador} className={styles.cardImage} />
+          <img src={strCutout} alt={jugador} className={styles.heroImg} />
         ) : (
-          <span className={styles.cardImagePlaceholder} />
+          <div className={styles.heroPlaceholder} />
         )}
+        <div className={styles.heroOverlay}>
+          <span className={styles.heroNumber}>#{numero}</span>
+          <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
+        </div>
       </div>
 
-      <div className={styles.cardInfo}>
+      <div className={styles.body}>
         <p className={styles.cardName}>{jugador}</p>
         <p className={styles.cardSubtitle}>{seleccion}</p>
-      </div>
 
-      <div className={styles.cardFooter}>
-        {extra ? (
-          <span className={styles.cardExtra}>{extra}</span>
-        ) : (
-          cantidadExistente !== undefined && (
-            <span className={styles.cardAvailable}>Disponibles: {cantidadExistente}</span>
-          )
-        )}
+        <div className={styles.meta}>
+          {nombreUsuario && <UserChip nombre={nombreUsuario} reputacion={reputacion} />}
+          {extra ? (
+            <span className={styles.cardExtra}>{extra}</span>
+          ) : (
+            cantidadExistente !== undefined && (
+              <span className={styles.cardAvailable}>· {cantidadExistente} disp.</span>
+            )
+          )}
+        </div>
 
-        {nombreUsuario && <UserChip nombre={nombreUsuario} reputacion={reputacion} />}
+        <hr className={styles.divider} />
 
         {(tipo === 'intercambio' || tipo === 'ambos') && (
           <CardActionBtn

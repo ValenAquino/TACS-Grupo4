@@ -1,0 +1,32 @@
+.wrapper {
+  background-color: #0f3d1f;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+}
+
+.inner {
+  max-width: 60%;
+}
+
+.stat-item {
+  flex: 1;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.stat-item:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-valor {
+  font-weight: 700;
+  color: #ffc107;
+  font-size: 2rem;
+}
+
+.stat-nombre {
+  font-size: 1rem;
+  margin-top: 2px;
+}

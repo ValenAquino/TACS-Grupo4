@@ -22,6 +22,7 @@ const ExplorarSearch = forwardRef(({ onQueryChange }, ref) => (
           className={styles.searchInput}
           type="text"
           placeholder="Buscar por número, jugador o selección..."
+          onKeyDown={(e) => e.key === 'Enter' && onQueryChange(ref.current.value)}
         />
         <button className={styles.searchBtn} onClick={() => onQueryChange(ref.current.value)}>
           Buscar

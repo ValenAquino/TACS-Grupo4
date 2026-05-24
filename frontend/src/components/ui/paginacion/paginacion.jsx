@@ -1,33 +1,29 @@
-import Button from "../button/button.jsx";
-
 export const Paginacion = ({ page, totalPages, onChange }) => {
+    if (totalPages <= 1) return null
+
     return (
-        <div className="d-flex align-items-center justify-content-center gap-3 flex-wrap">
-
-            <Button
-                type="button"
-                className="btn btn-outline-secondary"
-                disabled={page <= 1}
+        <div className="d-flex align-items-center justify-content-center gap-3 pt-2">
+            <button
+                className="btn btn-outline-secondary btn-sm"
                 onClick={() => onChange(page - 1)}
+                disabled={page <= 1}
             >
-                Anterior
-            </Button>
+                ← Anterior
+            </button>
 
-            <span className="fw-semibold">
-                Página {page} de {totalPages}
+            <span className="text-muted small">
+                {page} / {totalPages}
             </span>
 
-            <Button
-                type="button"
-                className="btn btn-outline-secondary"
-                disabled={page >= totalPages}
+            <button
+                className="btn btn-outline-secondary btn-sm"
                 onClick={() => onChange(page + 1)}
+                disabled={page >= totalPages}
             >
-                Siguiente
-            </Button>
-
+                Siguiente →
+            </button>
         </div>
-    );
-};
+    )
+}
 
-export default Paginacion;
+export default Paginacion

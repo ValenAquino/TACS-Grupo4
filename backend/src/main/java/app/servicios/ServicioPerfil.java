@@ -32,6 +32,7 @@ public class ServicioPerfil {
   private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioNotificaciones repositorioNotificaciones;
+  private final ServicioNotificacion servicioNotificacion;
 
   public List<FiguritaDto> obtenerFaltantes(String userId) {
     CamposPerfil campos = new CamposPerfil(false);
@@ -105,12 +106,12 @@ public class ServicioPerfil {
     return contadores;
   }
 
-  public List<NotificacionesDto> obtenerNotificaciones(String userId) {
-    CamposPerfil sinCampos = new CamposPerfil(false);
-    Perfil perfil = repositorioPerfiles.buscarPorId(userId, sinCampos);
-
-    return this.repositorioNotificaciones.buscarPorPerfil(perfil).stream().map(NotificacionesDto::new).toList();
-  }
+    public List<NotificacionDto> obtenerNotificaciones(String perfilId) {
+        return this.servicioNotificacion.obtenerPorPerfil(perfilId)
+                .stream()
+                .map(NotificacionDto::new)
+                .toList();
+    }
 
   public PerfilDto obtenerPerfil(String perfilId) {
     Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(true));
@@ -126,5 +127,9 @@ public class ServicioPerfil {
         resultado.cantidadDeElementos(),
         resultado.cantidadDePaginas(),
         resultado.numero());
+  }
+
+  public void marcarTodasNotifsLeidas(String perfilId) {
+      servicioNotificacion.marcarTodasLeidas(perfilId);
   }
 }

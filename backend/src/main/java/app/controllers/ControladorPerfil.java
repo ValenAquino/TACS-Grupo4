@@ -74,11 +74,20 @@ public class ControladorPerfil {
     }
 
     @GetMapping("/notificaciones")
-    public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(
+    public ResponseEntity<List<NotificacionDto>> obtenerNotificaciones(
         @CookieValue String token
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(perfilId));
+    }
+
+    @PatchMapping("/notificaciones/leidas")
+    public ResponseEntity<Void> marcarTodasLeidas(
+            @CookieValue String token
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.perfilService.marcarTodasNotifsLeidas(perfilId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping

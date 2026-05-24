@@ -71,6 +71,11 @@ public class ServicioPropuesta {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
     propuesta.aceptar(perfilId);
     repositorioPropuestas.guardar(propuesta);
+
+    //Para Notificaciones
+    String link = "/intercambios/" + propuestaId;
+    String cuerpo = "Tu propuesta de intercambio fue aceptada";
+    notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 
   @Transactional
@@ -78,6 +83,11 @@ public class ServicioPropuesta {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.rechazar(perfilId);
     repositorioPropuestas.guardar(propuesta);
+
+    //Para Notificaciones
+    String link = "/intercambios/" + id;
+    String cuerpo = "Tu propuesta de intercambio fue rechazada";
+    notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 
   @Transactional

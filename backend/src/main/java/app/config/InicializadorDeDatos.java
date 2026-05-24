@@ -66,7 +66,14 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
     private Propuesta propuesta( Perfil autor, Perfil destino,
                                 List<Figurita> figuritas, Figurita buscada, EstadoProceso estado) {
-        return Propuesta.builder().autor(autor).destinatario(destino).figuritasOfrecidas(figuritas).figuritaBuscada(buscada).build();
+      List<EstadoPropuesta> estados = new ArrayList<>();
+      estados.add(new EstadoPropuesta(LocalDateTime.now(), estado));
+        return Propuesta.builder()
+            .autor(autor).destinatario(destino)
+            .figuritasOfrecidas(figuritas)
+            .estado(estados)
+            .figuritaBuscada(buscada)
+            .build();
     }
 
     @Override

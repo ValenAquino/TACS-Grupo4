@@ -20,6 +20,6 @@ public class OfertaSubastaDto {
         .map(f -> f.getJugador() + " #" + f.getNumero())
         .reduce((a, b) -> a + " + " + b)
         .orElse("");
-    this.seleccionada = propuesta.obtenerEstadoActual().getValor() == EstadoProceso.SELECCIONADO;
+    this.seleccionada = propuesta.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO;
   }
 }

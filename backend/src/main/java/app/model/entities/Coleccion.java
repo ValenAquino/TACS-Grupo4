@@ -44,19 +44,100 @@ public class Coleccion {
    * esa figurita, acumula la cantidad en lugar de crear una entrada duplicada.
    */
   public void agregarRepetida(FiguritaIntercambiable repetida) {
-    for (FiguritaIntercambiable f : repetidas) {
-      if (f.getFigurita().getId()
-          .equals(repetida.getFigurita().getId())) {
+    FiguritaIntercambiable existente =
+        obtenerRepetida(repetida.getFigurita());
 
-        f.setCantidadExistente(f.getCantidadExistente() + repetida.getCantidadExistente());
-        return;
-      }
+    if (existente != null) {
+      existente.setCantidadExistente(
+          existente.getCantidadExistente()
+              + repetida.getCantidadExistente()
+      );
+      return;
     }
 
-    repetidas.add(repetida);
+    this.repetidas.add(repetida);
   }
 
+  /**
+   * Remueve una faltante de la lista de figuritas faltantes.
+   */
+  public void eliminarFaltante(Figurita faltante) {
+    if (!tieneFaltante(faltante)) throw new BadRequestException("Faltante no existe: " + faltante.getJugador());
+    this.faltantes.removeIf(
+        f -> f.getId().equals(faltante.getId())
+    );
+  }
+
+  /**
+   * Remueve una figurita intercambiable de la lista de figuritas intercambiables.
+   */
+  public void eliminarRepetida(Figurita repetida) {
+    this.repetidas.removeIf(r -> r.getFigurita().getId().equals(repetida.getId()));
+  }
+
+  /**
+   * Descuenta una repetida de la lista de figuritas repetidas. Si queda con cantidad existente
+   * igual a cero la remueve de la lista.
+   */
+  public void descontarRepetida(Figurita repetida) {
+    if(!this.tieneRepetida(repetida)) throw new BadRequestException("Repetida no existe: " + repetida.getJugador());
+
+    FiguritaIntercambiable repetidaAmodificar = this.obtenerRepetida(repetida);
+
+    repetidaAmodificar.cambioConcretado();
+
+    if(repetidaAmodificar.getCantidadExistente() == 0) {
+      this.eliminarRepetida(repetida);
+    }
+  }
+
+  /**
+   * Valida que una figurita este en la lista de figuritas faltantes.
+   */
   public boolean tieneFaltante(Figurita figurita) {
-    return !this.faltantes.stream().filter(p -> p.getId().equals(figurita.getId())).toList().isEmpty();
+    return !this.faltantes.stream()
+        .filter(p -> p.getId().equals(figurita.getId()))
+        .toList()
+        .isEmpty();
+  }
+
+  /**
+   * Valida que una figurita este en la lista de figuritas intercambiables.
+   */
+  public boolean tieneRepetida(Figurita figurita) {
+    return !this.repetidas.stream()
+        .filter(i -> i.getFigurita().getId().equals(figurita.getId()))
+        .toList()
+        .isEmpty();
+  }
+
+  /**
+   * Reserva la lista de figuritas dadas.
+   */
+  public void reservarRepetidas(List<Figurita> repetidas, MetodoIntercambio metodo) {
+    repetidas.forEach(figurita -> {
+      if (tieneRepetida(figurita)) {
+        obtenerRepetida(figurita).reservar(metodo);
+      }
+    });
+  }
+
+  /**
+   * Elimina la reserva de la lista de figuritas dadas.
+   */
+  public void sacarReservasRepetidas(List<Figurita> repetidas) {
+    repetidas.forEach(figurita -> {
+      if (tieneRepetida(figurita)) {
+        FiguritaIntercambiable repetida = obtenerRepetida(figurita);
+        repetida.eliminarReserva();
+      }
+    });
+  }
+
+  private FiguritaIntercambiable obtenerRepetida(Figurita figurita) {
+    return this.repetidas.stream()
+        .filter(r -> r.getFigurita().getId().equals(figurita.getId()))
+        .findFirst()
+        .orElse(null);
   }
 }

@@ -114,23 +114,52 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     return new Repetidas<>(cantidadResultadosCrudo, cantidadResultadosDisponibles, data);
   }
 
-  public PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros){
+  public PaginaResultado<Figurita> buscarFaltantes(
+      String colId,
+      FaltantesFiltro filtros
+  ){
     int pagina = filtros.pagina();
     int limite = filtros.limite();
-    List<AggregationOperation> filtrado = new ArrayList<>();
 
-    int cantidadResultados = this.contarCampoEnColeccion(colId, "faltantes", filtrado);
+    List<AggregationOperation> ops = new ArrayList<>();
 
-    AggregationResults<Document> resultado = this.buscarCampoEnColeccion(colId, "faltantes", filtrado, pagina, limite);
+    ops.add(
+        Aggregation.lookup(
+            "figuritas",
+            "faltantes.$id",
+            "_id",
+            "faltantes"
+        )
+    );
+
+    ops.add(Aggregation.unwind("faltantes"));
+
+    int cantidadResultados =
+        this.contarCampoEnColeccion(colId,"faltantes",new ArrayList<>());
+
+    AggregationResults<Document> resultado =
+        this.buscarCampoEnColeccion(
+            colId,
+            "faltantes",
+            ops,
+            pagina,
+            limite
+        );
 
     MongoConverter converter = mongoTemplate.getConverter();
 
-    List<Figurita> figuritas = resultado.getMappedResults()
-        .stream()
-        .map(doc -> converter.read(Figurita.class, doc))
-        .toList();
+    List<Figurita> figuritas =
+        resultado.getMappedResults()
+            .stream()
+            .map(doc -> converter.read(Figurita.class, doc))
+            .toList();
 
-    return new PaginaResultado<>(figuritas, cantidadResultados, (int) Math.ceil( (double) cantidadResultados /limite), pagina);
+    return new PaginaResultado<>(
+        figuritas,
+        cantidadResultados,
+        (int)Math.ceil((double)cantidadResultados/limite),
+        pagina
+    );
   }
 
   @Override

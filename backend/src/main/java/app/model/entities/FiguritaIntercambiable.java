@@ -1,5 +1,6 @@
 package app.model.entities;
 
+import app.exceptions.BadRequestException;
 import jdk.jfr.Experimental;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class FiguritaIntercambiable {
     private Figurita figurita;
 
     private Integer cantidadExistente;
+
     @Builder.Default
     private Integer cantidadReservada = 0;
     private List<MetodoIntercambio> metodos;
@@ -41,37 +43,44 @@ public class FiguritaIntercambiable {
         return metodos.contains(tipo);
     }
 
-    public boolean hayCantidadDisponible(){
-      return this.cantidadExistente - this.cantidadReservada != 0;
-    }
-
     public int getCantidadDisponible() {
         return this.cantidadExistente - this.cantidadReservada;
     }
 
-    public void reservarFiguritaIntercambiable() {
-        if (cantidadExistente - cantidadReservada <= 0) {
-            throw new RuntimeException("No hay figuritas disponibles para reservar");
-        }
+    public void reservar(MetodoIntercambio metodo) {
+        this.validarMetodo(metodo);
+        this.validarCantidadDisponible();
         this.cantidadReservada += 1;
     }
 
     public void eliminarReserva() {
         if (cantidadReservada <= 0) {
-            throw new RuntimeException("No hay reservas para eliminar");
+            throw new BadRequestException("No hay reservas para eliminar");
         }
         this.cantidadReservada -= 1;
     }
 
     public void cambioConcretado() {
         if (cantidadExistente <= 0) {
-            throw new RuntimeException("No hay stock disponible");
+            throw new BadRequestException("No hay cantidad existente de esta figurita");
         }
 
         this.cantidadExistente -= 1;
 
         if (cantidadReservada > 0) {
             eliminarReserva();
+        }
+    }
+
+    private void validarMetodo(MetodoIntercambio metodo) {
+        if(!this.metodos.contains(metodo)) {
+            throw new BadRequestException("Esta figurita no soporta el metodo seleccionado");
+        }
+    }
+
+    private void validarCantidadDisponible() {
+        if (this.getCantidadDisponible() <= 0) {
+            throw new BadRequestException("No hay figuritas disponibles para reservar");
         }
     }
 }

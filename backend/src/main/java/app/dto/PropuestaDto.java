@@ -21,6 +21,6 @@ public class PropuestaDto {
     this.destinatario = new PerfilDto(propuesta.getDestinatario());
     this.figuritaBuscada = propuesta.getFiguritaBuscada();
     this.figuritasOfrecidas = propuesta.getFiguritasOfrecidas();
-    this.estado = propuesta.obtenerEstadoActual().getValor();
+    this.estado = propuesta.getEstadoActual().getValor();
   }
 }

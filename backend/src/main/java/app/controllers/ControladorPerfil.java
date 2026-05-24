@@ -8,6 +8,7 @@ import app.dto.SugerenciaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CalificacionRequest;
+import app.dto.request.ContraseniaRequest;
 import app.dto.request.PerfilRequest;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPerfil;
@@ -102,7 +103,17 @@ public class ControladorPerfil {
         @RequestBody PerfilRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
-        this.perfilService.editarPerfil(perfilId, body.getNombre());
+        this.perfilService.editarPerfil(perfilId, body);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/contrasenia")
+    public ResponseEntity<Void> editarContrasenia(
+        @CookieValue("token") String token,
+        @RequestBody ContraseniaRequest body
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.perfilService.editarContrasenia(perfilId, body.getContraseniaActual(), body.getContraseniaNueva());
         return ResponseEntity.ok().build();
     }
 

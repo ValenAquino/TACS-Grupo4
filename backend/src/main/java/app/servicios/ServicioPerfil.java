@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,17 +152,6 @@ public class ServicioPerfil {
     this.repositorioPerfiles.guardar(perfil, new CamposPerfil(actualizaMedios));
   }
 
-  public void editarContrasenia(String perfilId, String contraseniaActual, String contraseniaNueva) {
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
-    Usuario usuario = perfil.getUsuario();
-    if (!encoder.matches(contraseniaActual, usuario.getContrasenia())) {
-      throw new BadRequestException("La contraseña actual es incorrecta");
-    }
-    this.repositorioUsuarios.guardar(
-        new Usuario(usuario.getId(), usuario.getRol(), usuario.getNombre(), encoder.encode(contraseniaNueva))
-    );
-  }
 
   public PaginaResultado<CalificacionDto> obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
     PaginaResultado<Calificacion> resultado = this.repositorioCalificacion.buscarPorDestinatario(perfilId, pagina, limite);

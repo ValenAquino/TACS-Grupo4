@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -17,6 +18,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ControladorUsuarioTest {
   @Autowired
   MockMvc mockMvc;
+
+  @Test
+  void editarContraseniaDevuelve400SiBodyVacio() throws Exception {
+    mockMvc.perform(put("/usuarios/contrasenia")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{}"))
+        .andExpect(status().is(400));
+  }
 
   @Test
   void crearUsuarioNoFalla() throws Exception {

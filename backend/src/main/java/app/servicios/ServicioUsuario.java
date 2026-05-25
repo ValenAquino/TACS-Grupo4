@@ -10,6 +10,7 @@ import app.model.entities.Usuario;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +39,18 @@ public class ServicioUsuario {
     } else {
       throw new UnauthorizedException("Acceso denegado por rol invalido");
     }
+  }
+
+  public void editarContrasenia(String perfilId, String contraseniaActual, String contraseniaNueva) {
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
+    Usuario usuario = perfil.getUsuario();
+    if (!passwordEncoder.matches(contraseniaActual, usuario.getContrasenia())) {
+      throw new BadRequestException("La contraseña actual es incorrecta");
+    }
+    this.repositorioUsuarios.guardar(
+        new Usuario(usuario.getId(), usuario.getRol(), usuario.getNombre(), passwordEncoder.encode(contraseniaNueva))
+    );
   }
 
   private void registrar(UsuarioRequest request) {

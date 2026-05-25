@@ -1,5 +1,6 @@
 import styles from './explorar-filtros.module.css'
 import useExplorarFiltros, { TIPOS } from './useExplorarFiltros'
+import FiltrosActivos from './FiltrosActivos'
 
 const ExplorarFiltros = ({ onAplicar }) => {
   const {
@@ -60,19 +61,7 @@ const ExplorarFiltros = ({ onAplicar }) => {
         </button>
       </div>
 
-      {chipsActivos.length > 0 && (
-        <div className={styles.chipsActivos}>
-          {chipsActivos.map(({ campo, valor, label }) => (
-            <button
-              key={`${campo}-${valor}`}
-              className={styles.chipActivo}
-              onClick={() => quitarFiltro(campo, valor)}
-            >
-              {label} <span className={styles.chipX}>×</span>
-            </button>
-          ))}
-        </div>
-      )}
+      <FiltrosActivos chips={chipsActivos} onQuitar={quitarFiltro} />
     </div>
   )
 }

@@ -6,7 +6,7 @@ import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
 import {useToast} from "@/contexts/toastContext.jsx";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
-import {truncarADosDecimales} from "@/utils/estandarizar.jsx";
+import {truncarADosDecimales} from "@/utils/estandarizar.js";
 
 const renderStars = (score) => {
     const fullStars = Math.floor(score);

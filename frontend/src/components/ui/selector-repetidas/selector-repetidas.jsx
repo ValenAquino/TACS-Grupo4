@@ -30,7 +30,6 @@ const SelectorRepetidas = ({
         limite: LIMITE,
         metodoIntercambio: metodoIntercambio,
       })
-      console.log(payload)
       setFiguritas(payload.contenido ?? [])
       setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {

@@ -75,6 +75,7 @@ const Participo = () => {
                 subasta={sub}
                 finalizada={estado === 'FINALIZADA'}
                 onVerSubasta={() => navigate(`/subastas/${sub.id}`)}
+                onRefresh={() => setRefresh((r) => r + 1)}
               />
             ))}
           </div>

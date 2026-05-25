@@ -1,5 +1,4 @@
 import { derivarTiempo } from '../../../../../../utils/subastasTiempo.js'
-import useUsuarioActual from '../../../../../../hooks/useUsuarioActual.js'
 import { calificarPerfil } from '../../../../../../services/perfilService.js'
 import CalificarModal from '../../../../../../components/ui/calificar-modal/calificar-modal.jsx'
 import CabeceraFigurita from '../../../../../../components/ui/cabecera-figurita/cabecera-figurita.jsx'
@@ -10,8 +9,7 @@ import Button from '../../../../../../components/ui/button/button.jsx'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
-const SubastaParticipo = ({ subasta, finalizada }) => {
-  const { userId } = useUsuarioActual()
+const SubastaParticipo = ({ subasta, finalizada, onRefresh }) => {
   const { id, autor, figurita_subastada, fecha_cierre, tu_oferta, ya_calificado } = subasta
   const [mostrarCalificar, setMostrarCalificar] = useState(false)
   const navigate = useNavigate()
@@ -33,6 +31,7 @@ const SubastaParticipo = ({ subasta, finalizada }) => {
       tipoTransaccion: 'SUBASTA',
     })
     setMostrarCalificar(false)
+    onRefresh()
   }
 
   const puedoCalificar = finalizada && tu_oferta?.seleccionada && !ya_calificado
@@ -65,7 +64,7 @@ const SubastaParticipo = ({ subasta, finalizada }) => {
       <div className="px-3 py-2 d-flex gap-2 border-top">
         <Button
           label={finalizada ? 'Ver resumen' : 'Ver subasta'}
-          variante="secundario_borde"
+          variante="secundarioBorde"
           className="flex-fill"
           onClick={() => navigate(`/subastas/${id}`)}
         />
@@ -73,7 +72,7 @@ const SubastaParticipo = ({ subasta, finalizada }) => {
           ? puedoCalificar && (
               <Button
                 label="Calificar usuario"
-                variante="secundario_borde"
+                variante="secundarioBorde"
                 className="flex-fill"
                 onClick={() => setMostrarCalificar(true)}
               />
@@ -81,7 +80,7 @@ const SubastaParticipo = ({ subasta, finalizada }) => {
           : tu_oferta?.figuritas_ofrecidas?.length > 0 && (
               <Button
                 label="Editar oferta"
-                variante="secundario_borde"
+                variante="secundarioBorde"
                 className="flex-fill"
                 onClick={() => navigate(`/subastas/${id}/ofertas/${tu_oferta.id}/editar`)}
               />

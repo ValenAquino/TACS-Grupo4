@@ -205,7 +205,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
     Usuario userJuan = new Usuario("juan_jose", passwordEncoder.encode("una contrasenia"), Rol.USUARIO);
     usuarios.guardar(userJuan);
 
-<<<<<<< HEAD
     Perfil juan = Perfil.builder()
         .id(juanId)
         .usuario(userJuan)
@@ -214,41 +213,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .mediosDeContacto(telegram("@juan"))
         .build();
     perfiles.guardar(juan);
-=======
-      // Juan
-      Coleccion coleccionJuan = new Coleccion();
-      FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
-      FiguritaIntercambiable interKroosJuan = new FiguritaIntercambiable(kroos, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1003");
-      coleccionJuan.getRepetidas().add(interPedri);
-      coleccionJuan.getRepetidas().add(interKroosJuan);
-      coleccionJuan.getFaltantes().add(pedri);
-      coleccionJuan.getFaltantes().add(kroos);
-      coleccionJuan.getFaltantes().add(griezmann);
-      colecciones.guardar(coleccionJuan);
-      Usuario user = new Usuario("u-1003", Rol.USUARIO, "juan_jose", passwordEncoder.encode("una contrasenia"));
-      usuarios.guardar(user);
-      Perfil juan = Perfil.builder()
-          .id("1003").usuario(user)
-          .nombre("Juan").coleccion(coleccionJuan)
-          .mediosDeContacto(telegram("@juan")).build();
-      perfiles.guardar(juan);
-        // Lucas
-      Coleccion coleccionLucas = new Coleccion();
-      FiguritaIntercambiable interMessi   = new FiguritaIntercambiable(messi,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-      FiguritaIntercambiable interLautaro   = new FiguritaIntercambiable(lautaro,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-      FiguritaIntercambiable interGriezmann1   = new FiguritaIntercambiable(griezmann,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-      FiguritaIntercambiable interMbappe   = new FiguritaIntercambiable(mbappe,   3, 1,List.of(MetodoIntercambio.INTERCAMBIO), "1000");
-      FiguritaIntercambiable interDiMaria = new FiguritaIntercambiable(diMaria, 2, 2,List.of(MetodoIntercambio.SUBASTA),     "1000");
-      coleccionLucas.getRepetidas().add(interMessi);
-      coleccionLucas.getRepetidas().add(interDiMaria);
-      coleccionLucas.getRepetidas().add(interLautaro);
-      coleccionLucas.getRepetidas().add(interGriezmann1);
-      coleccionLucas.getRepetidas().add(interMbappe);
-      coleccionLucas.getFaltantes().add(mbappe);
-      coleccionLucas.getFaltantes().add(vinicius);
-      coleccionLucas.getFaltantes().add(diMaria);
-      colecciones.guardar(coleccionLucas);
->>>>>>> 0c75467 (refactorizar InicializadorDeDatos y ajustar tests para manejar estados de propuestas y colecciones faltantes)
 
     coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(pedri,     2, 0, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId()));
     coleccionJuan.getRepetidas().add(new FiguritaIntercambiable(kroos,     2, 1, List.of(MetodoIntercambio.SUBASTA),     juan.getId()));
@@ -266,7 +230,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
     Usuario userLucas = new Usuario("lucas_fis", passwordEncoder.encode("gordo123"), Rol.USUARIO);
     usuarios.guardar(userLucas);
 
-<<<<<<< HEAD
     Perfil lucas = Perfil.builder()
         .id(lucasId)
         .usuario(userLucas)
@@ -275,22 +238,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .mediosDeContacto(telegram("@lucas"))
         .build();
     perfiles.guardar(lucas);
-=======
-      // Sofía
-      Coleccion coleccionSofia = new Coleccion();
-      FiguritaIntercambiable interMbappe2    = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
-      FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     "1001");
-      FiguritaIntercambiable interNeymar = new FiguritaIntercambiable(neymar, 1, List.of(MetodoIntercambio.INTERCAMBIO), "1001");
-      coleccionSofia.getRepetidas().add(interMbappe2);
-      coleccionSofia.getRepetidas().add(interGriezmann);
-      coleccionSofia.getRepetidas().add(interNeymar);
-      coleccionSofia.getFaltantes().add(messi);
-      coleccionSofia.getFaltantes().add(lautaro);
-      coleccionSofia.getFaltantes().add(griezmann);
-      colecciones.guardar(coleccionSofia);
-      user = new Usuario("u-1001", Rol.USUARIO, "sofia_ape", passwordEncoder.encode("password"));
-      usuarios.guardar(user);
->>>>>>> 0c75467 (refactorizar InicializadorDeDatos y ajustar tests para manejar estados de propuestas y colecciones faltantes)
 
     coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(diMaria,   2, 1, List.of(MetodoIntercambio.SUBASTA),     lucas.getId()));
     coleccionLucas.getRepetidas().add(new FiguritaIntercambiable(griezmann, 2, 1, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId()));
@@ -552,7 +499,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .figuritaSubastada(messi)
         .ofertas(new ArrayList<>(List.of(ofertaLucas5))).build());
 
-<<<<<<< HEAD
     // id=8 | Finalizada hace 5 días, ganador: juan, lucas no ganó
     Propuesta ofertaLucas8 = Propuesta.builder()
         .id("o9").autor(lucas).destinatario(sofia)
@@ -587,115 +533,3 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .figuritaSubastada(neymar).build());
   }
 }
-=======
-      // id=3 | Finalizada hace 2 días, ganador: matias, sin calificar
-      EstadoPropuesta aceptado3 = new EstadoPropuesta(LocalDateTime.now().minusDays(2), EstadoProceso.ACEPTADO);
-      Propuesta ofertaGanadora3 = Propuesta.builder()
-          .id("o4").autor(matias)
-          .destinatario(lucas)
-          .figuritasOfrecidas(List.of(messi, lautaro))
-          .figuritaBuscada(diMaria)
-          .estado(new ArrayList<>(List.of(aceptado3)))
-          .estadoActual(aceptado3)
-          .build();
-      Subasta subasta3 = Subasta.builder()
-          .id("3").autor(lucas)
-          .fechaInicio(LocalDateTime.now().minusDays(2))
-          .fechaCierre(LocalDateTime.now())
-          .figuritaSubastada(diMaria)
-          .ofertas(new ArrayList<>(List.of(ofertaGanadora3)))
-          .build();
-      subastas.guardar(subasta3);
-
-      // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
-      Propuesta ofertaGanadora7 = Propuesta.builder()
-          .id("o5").autor(sofia)
-          .destinatario(lucas)
-          .figuritasOfrecidas(List.of(pedri))
-          .figuritaBuscada(griezmann)
-          .build();
-      Subasta subasta7 = Subasta.builder()
-          .id("7").autor(lucas)
-          .fechaInicio(LocalDateTime.now().minusDays(5))
-          .fechaCierre(LocalDateTime.now())
-          .figuritaSubastada(griezmann)
-          .ofertas(new ArrayList<>(List.of(ofertaGanadora7)))
-          .build();
-      subastas.guardar(subasta7);
-
-      // ─── SUBASTAS DONDE LUCAS PARTICIPÓ (autor = otro perfil) ────────────────
-
-      // id=4 | Activa, cierra en 2h, oferta de lucas SELECCIONADA
-      Propuesta ofertaLucas4 = Propuesta.builder()
-          .id("o6").autor(lucas)
-          .destinatario(sofia)
-          .figuritasOfrecidas(List.of(griezmann, kroos))
-          .figuritaBuscada(vinicius)
-          .build();
-      Subasta subasta4 = Subasta.builder()
-          .id("4").autor(sofia)
-          .fechaInicio(LocalDateTime.now())
-          .fechaCierre(LocalDateTime.now().plusHours(2))
-          .figuritaSubastada(vinicius)
-          .ofertas(new ArrayList<>(List.of(ofertaLucas4)))
-          .build();
-      ofertaLucas4.seleccionar(sofia.getId());
-      subastas.guardar(subasta4);
-
-      // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
-      Propuesta ofertaLucas5 = Propuesta.builder()
-          .id("o7").autor(lucas)
-          .destinatario(matias)
-          .figuritasOfrecidas(List.of(diMaria, messi))
-          .figuritaBuscada(messi)
-          .build();
-      Subasta subasta5 = Subasta.builder()
-          .id("5").autor(matias)
-          .fechaInicio(LocalDateTime.now())
-          .fechaCierre(LocalDateTime.now().plusDays(1))
-          .figuritaSubastada(messi)
-          .ofertas(new ArrayList<>(List.of(ofertaLucas5)))
-          .build();
-
-      subastas.guardar(subasta5);
-
-      // id=8 | Finalizada hace 5 días, oferta de lucas ACEPTADA, ya calificada
-      Propuesta ofertaLucas8 = Propuesta.builder()
-          .id("o9").autor(lucas)
-          .destinatario(sofia)
-          .figuritasOfrecidas(List.of(kroos))
-          .figuritaBuscada(griezmann)
-          .build();
-      EstadoPropuesta aceptado8 = new EstadoPropuesta(LocalDateTime.now().minusDays(5), EstadoProceso.ACEPTADO);
-      Propuesta ofertaJuan1 = Propuesta.builder()
-          .id("o10").autor(juan)
-          .destinatario(sofia)
-          .figuritasOfrecidas(List.of(kroos))
-          .figuritaBuscada(griezmann)
-          .estado(new ArrayList<>(List.of(aceptado8)))
-          .estadoActual(aceptado8)
-          .build();
-      Subasta subasta8 = Subasta.builder().id("8").autor(sofia)
-          .fechaInicio(LocalDateTime.now().minusDays(5))
-          .fechaCierre(LocalDateTime.now())
-          .figuritaSubastada(griezmann)
-          .ofertas(new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)))
-          .build();
-      Calificacion calificacion = new Calificacion("202914", lucas, sofia,  2, "asda", "8",MetodoIntercambio.SUBASTA);
-      sofia.agregarNuevaCalificacion(calificacion);
-      subastas.guardar(subasta8);
-      calificaciones.guardar(calificacion);
-      perfiles.guardar(sofia);
-
-      // ─── SUBASTAS DONDE LUCAS NO PARTICIPÓ ────────────────
-
-      // id=6 | Finalizada hace 5 días, oferta de lucas ACEPTADA, sin calificar
-      Subasta subasta6 = Subasta.builder().id("6").autor(juan)
-          .fechaInicio(LocalDateTime.now().minusDays(5))
-          .fechaCierre(LocalDateTime.now())
-          .figuritaSubastada(neymar)
-          .build();
-      subastas.guardar(subasta6);
-    }
-}
->>>>>>> 0c75467 (refactorizar InicializadorDeDatos y ajustar tests para manejar estados de propuestas y colecciones faltantes)

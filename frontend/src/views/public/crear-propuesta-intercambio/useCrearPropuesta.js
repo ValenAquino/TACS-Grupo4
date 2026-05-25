@@ -6,11 +6,14 @@ import { useToast } from '@/contexts/toastContext.jsx'
 
 const useCrearPropuesta = (figurita) => {
   const [seleccionadas, setSeleccionadas] = useState([])
+  const [enviando, setEnviando] = useState(false)
   const navigate = useNavigate()
   const { handleError } = useError()
   const { showToast } = useToast()
 
   const enviar = async () => {
+    if (enviando) return
+    setEnviando(true)
     try {
       await crearPropuesta(
         figurita.perfil_id,
@@ -20,10 +23,12 @@ const useCrearPropuesta = (figurita) => {
       navigate('/intercambios')
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))
+    } finally {
+      setEnviando(false)
     }
   }
 
-  return { seleccionadas, setSeleccionadas, enviar }
+  return { seleccionadas, setSeleccionadas, enviar, enviando }
 }
 
 export default useCrearPropuesta

@@ -1,8 +1,7 @@
 package app.repositories;
 
-import app.model.entities.Figurita;
 import app.dto.filtros.FiguritasFiltro;
-
+import app.model.entities.Figurita;
 import java.util.List;
 
 public interface RepositorioFiguritas {
@@ -12,6 +11,7 @@ public interface RepositorioFiguritas {
 
 
   List<Figurita> buscarPorIds(List<String> ids);
+
   /**
    * Retorna las figuritas que cumplan los filtros provistos.
    * Los parámetros nulos se ignoran. {@code jugador} usa contains case-insensitive.
@@ -21,4 +21,6 @@ public interface RepositorioFiguritas {
   List<Figurita> buscarConFiltros(FiguritasFiltro filtros);
 
   void guardar(Figurita figurita);
+
+  List<Figurita> buscarTodas();
 }

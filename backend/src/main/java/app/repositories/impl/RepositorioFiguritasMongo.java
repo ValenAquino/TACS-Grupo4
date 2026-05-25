@@ -59,6 +59,11 @@ public class RepositorioFiguritasMongo implements RepositorioFiguritas {
   }
 
   @Override
+  public List<Figurita> buscarTodas() {
+    return this.mongoTemplate.findAll(Figurita.class);
+  }
+
+  @Override
   public void guardar(Figurita figurita) {
     this.mongoTemplate.save(figurita);
   }

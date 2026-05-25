@@ -15,6 +15,62 @@ const CARD_CLASS = {
   ambos: styles.cardAmbos,
 }
 
+const CardHero = ({ strCutout, jugador, numero, tipo }) => {
+  const badge = TYPE_LABELS[tipo] ?? TYPE_LABELS.intercambio
+  return (
+    <div className={styles.hero}>
+      <img src={strCutout || '/jugador-placeholder.png'} alt={jugador} className={styles.heroImg} />
+      <div className={styles.heroOverlay}>
+        <span className={styles.heroNumber}>#{numero}</span>
+        <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
+      </div>
+    </div>
+  )
+}
+
+const CardBody = ({
+  jugador,
+  seleccion,
+  cantidadExistente,
+  nombreUsuario,
+  reputacion,
+  extra,
+  tipo,
+  figuritaId,
+  figurita,
+}) => (
+  <div className={styles.body}>
+    <p className={styles.cardName}>{jugador}</p>
+    <div className={styles.metaRow}>
+      <p className={styles.cardSubtitle}>{seleccion}</p>
+      {extra ? (
+        <span className={styles.cardExtra}>{extra}</span>
+      ) : (
+        cantidadExistente !== undefined && (
+          <span className={styles.disponibles}>{cantidadExistente} disponibles</span>
+        )
+      )}
+    </div>
+
+    <hr className={styles.divider} />
+
+    {nombreUsuario && <UserChip nombre={nombreUsuario} reputacion={reputacion} />}
+
+    <hr className={styles.divider} />
+
+    {(tipo === 'intercambio' || tipo === 'ambos') && (
+      <CardActionBtn to="/intercambios/crear" label="Proponer intercambio ↗" state={{ figurita }} />
+    )}
+    {(tipo === 'subasta' || tipo === 'ambos') && (
+      <CardActionBtn
+        to={`/subastas?figurita=${figuritaId}`}
+        label="Ver subasta ↗"
+        variant="subasta"
+      />
+    )}
+  </div>
+)
+
 const FiguritaCard = ({
   figuritaId,
   numero,
@@ -29,56 +85,21 @@ const FiguritaCard = ({
   figurita,
 }) => {
   const tipo = resolverTipo(metodos)
-  const badge = TYPE_LABELS[tipo] ?? TYPE_LABELS.intercambio
 
   return (
     <div className={`${styles.card} ${CARD_CLASS[tipo] ?? ''}`}>
-      <div className={styles.hero}>
-        <img
-          src={strCutout || '/jugador-placeholder.png'}
-          alt={jugador}
-          className={styles.heroImg}
-        />
-        <div className={styles.heroOverlay}>
-          <span className={styles.heroNumber}>#{numero}</span>
-          <span className={`${styles.badge} ${badge.className}`}>{badge.label}</span>
-        </div>
-      </div>
-
-      <div className={styles.body}>
-        <p className={styles.cardName}>{jugador}</p>
-        <div className={styles.metaRow}>
-          <p className={styles.cardSubtitle}>{seleccion}</p>
-          {extra ? (
-            <span className={styles.cardExtra}>{extra}</span>
-          ) : (
-            cantidadExistente !== undefined && (
-              <span className={styles.disponibles}>{cantidadExistente} disponibles</span>
-            )
-          )}
-        </div>
-
-        <hr className={styles.divider} />
-
-        {nombreUsuario && <UserChip nombre={nombreUsuario} reputacion={reputacion} />}
-
-        <hr className={styles.divider} />
-
-        {(tipo === 'intercambio' || tipo === 'ambos') && (
-          <CardActionBtn
-            to="/intercambios/crear"
-            label="Proponer intercambio ↗"
-            state={{ figurita }}
-          />
-        )}
-        {(tipo === 'subasta' || tipo === 'ambos') && (
-          <CardActionBtn
-            to={`/subastas?figurita=${figuritaId}`}
-            label="Ver subasta ↗"
-            variant="subasta"
-          />
-        )}
-      </div>
+      <CardHero strCutout={strCutout} jugador={jugador} numero={numero} tipo={tipo} />
+      <CardBody
+        jugador={jugador}
+        seleccion={seleccion}
+        cantidadExistente={cantidadExistente}
+        nombreUsuario={nombreUsuario}
+        reputacion={reputacion}
+        extra={extra}
+        tipo={tipo}
+        figuritaId={figuritaId}
+        figurita={figurita}
+      />
     </div>
   )
 }

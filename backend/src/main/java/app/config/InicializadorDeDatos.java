@@ -118,7 +118,11 @@ public class InicializadorDeDatos implements CommandLineRunner {
         figuritas.guardar(messi);
         figuritas.guardar(diMaria);
         figuritas.guardar(lautaro);
+        figuritas.guardar(mbappe);
+        figuritas.guardar(griezmann);
         figuritas.guardar(vinicius);
+        figuritas.guardar(pedri);
+        figuritas.guardar(kroos);
         figuritas.guardar(neymar);
 
         String idJuan   = new ObjectId().toHexString();
@@ -193,9 +197,12 @@ public class InicializadorDeDatos implements CommandLineRunner {
       perfiles.guardar(juan);
 
       FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId());
+      FiguritaIntercambiable interKroosJuan = new FiguritaIntercambiable(kroos, 1, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId());
       coleccionJuan.getRepetidas().add(interPedri);
+      coleccionJuan.getRepetidas().add(interKroosJuan);
       coleccionJuan.getFaltantes().add(pedri);
       coleccionJuan.getFaltantes().add(kroos);
+      coleccionJuan.getFaltantes().add(griezmann);
       colecciones.guardar(coleccionJuan);
 
 
@@ -268,9 +275,14 @@ public class InicializadorDeDatos implements CommandLineRunner {
       perfiles.guardar(matias);
 
       FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId());
+      FiguritaIntercambiable interMessiMatias = new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId());
+      FiguritaIntercambiable interLautaroMatias = new FiguritaIntercambiable(lautaro, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId());
       coleccionMatias.getRepetidas().add(interVinicius);
+      coleccionMatias.getRepetidas().add(interMessiMatias);
+      coleccionMatias.getRepetidas().add(interLautaroMatias);
       coleccionMatias.getFaltantes().add(pedri);
       coleccionMatias.getFaltantes().add(kroos);
+      coleccionMatias.getFaltantes().add(diMaria);
       colecciones.guardar(coleccionMatias);
 
 
@@ -430,11 +442,14 @@ public class InicializadorDeDatos implements CommandLineRunner {
       subastas.guardar(subasta2);
 
       // id=3 | Finalizada hace 2 días, ganador: matias, sin calificar
+      EstadoPropuesta aceptado3 = new EstadoPropuesta(LocalDateTime.now().minusDays(2), EstadoProceso.ACEPTADO);
       Propuesta ofertaGanadora3 = Propuesta.builder()
           .id(new ObjectId().toHexString()).autor(matias)
           .destinatario(lucas)
           .figuritasOfrecidas(List.of(messi, lautaro))
           .figuritaBuscada(diMaria)
+          .estado(new ArrayList<>(List.of(aceptado3)))
+          .estadoActual(aceptado3)
           .build();
       Subasta subasta3 = Subasta.builder()
           .autor(lucas)
@@ -443,8 +458,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .figuritaSubastada(diMaria)
           .ofertas(new ArrayList<>(List.of(ofertaGanadora3)))
           .build();
-
-      ofertaGanadora3.aceptar(lucas.getId());
       subastas.guardar(subasta3);
 
       // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
@@ -506,11 +519,14 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .figuritasOfrecidas(List.of(kroos))
           .figuritaBuscada(griezmann)
           .build();
+      EstadoPropuesta aceptado8 = new EstadoPropuesta(LocalDateTime.now().minusDays(5), EstadoProceso.ACEPTADO);
       Propuesta ofertaJuan1 = Propuesta.builder()
           .id(new ObjectId().toHexString()).autor(juan)
           .destinatario(sofia)
           .figuritasOfrecidas(List.of(kroos))
           .figuritaBuscada(griezmann)
+          .estado(new ArrayList<>(List.of(aceptado8)))
+          .estadoActual(aceptado8)
           .build();
       Subasta subasta8 = Subasta.builder()
           .autor(sofia)
@@ -519,8 +535,6 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .figuritaSubastada(griezmann)
           .ofertas(new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)))
           .build();
-
-      ofertaJuan1.aceptar(sofia.getId());
       Calificacion calificacion = new Calificacion(new ObjectId().toHexString(), lucas, sofia,  2, "asda", "8",MetodoIntercambio.SUBASTA);
       sofia.agregarNuevaCalificacion(calificacion);
       subastas.guardar(subasta8);

@@ -29,8 +29,20 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
   void setUp() {
     coleccion = new Coleccion("c-1");
     Coleccion coleccionDos = new Coleccion("c-2");
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
-    Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, "Delantero");
+    Figurita messi = Figurita.builder()
+        .id("ARG-10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .posicion("Delantero")
+        .build();
+    Figurita mbappe = Figurita.builder()
+        .id("FRA-10")
+        .numero(10)
+        .jugador("Mbappé")
+        .seleccion(Seleccion.FRANCIA)
+        .posicion("Delantero")
+        .build();
     repositorioFiguritas.guardar(messi);
     repositorioFiguritas.guardar(mbappe);
 
@@ -69,7 +81,13 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarConFiltros_porNumero_retornaCoincidencia() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, "Extremo");
+    Figurita diMaria = Figurita.builder()
+        .id("ARG-11")
+        .numero(11)
+        .jugador("Di María")
+        .seleccion(Seleccion.ARGENTINA)
+        .posicion("Extremo")
+        .build();
     repositorioFiguritas.guardar(diMaria);
     coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 1, List.of(MetodoIntercambio.INTERCAMBIO), "perfil-1"));
     repositorioColecciones.guardar(coleccion);
@@ -121,7 +139,13 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarConFiltros_conPaginacion_retornaPaginaCorrecta() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, "Extremo");
+    Figurita diMaria = Figurita.builder()
+        .id("ARG-11")
+        .numero(11)
+        .jugador("Di María")
+        .seleccion(Seleccion.ARGENTINA)
+        .posicion("Extremo")
+        .build();
     repositorioFiguritas.guardar(diMaria);
     coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 1, List.of(MetodoIntercambio.INTERCAMBIO), "perfil-1"));
     repositorioColecciones.guardar(coleccion);

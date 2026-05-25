@@ -29,8 +29,20 @@ class ServicioFiguritaTest extends MongoTestBase {
 
   @BeforeEach
   void setUp() {
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
-    mbappe = new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, "Delantero");
+    messi = Figurita.builder()
+        .id("ARG-10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .posicion("Delantero")
+        .build();
+    mbappe = Figurita.builder()
+        .id("FRA-7")
+        .numero(7)
+        .jugador("Mbappé")
+        .seleccion(Seleccion.FRANCIA)
+        .posicion("Delantero")
+        .build();
 
     repositorioFiguritas.guardar(messi);
     repositorioFiguritas.guardar(mbappe);
@@ -72,7 +84,12 @@ class ServicioFiguritaTest extends MongoTestBase {
 
   @Test
   void buscarFiguritas_paginacion_retornaSoloPaginaSolicitada() {
-    Figurita f1 = new Figurita("F-1", 1, "Jugador1", Seleccion.ARGENTINA, null);
+    Figurita f1 = Figurita.builder()
+        .id("F-1")
+        .numero(1)
+        .jugador("Jugador1")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
 
     repositorioFiguritas.guardar(f1);
 

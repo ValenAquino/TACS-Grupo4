@@ -59,23 +59,19 @@ class PropuestaTest {
         )
         .build();
 
-    messi =
-        new Figurita(
-            "ARG10",
-            10,
-            "Messi",
-            Seleccion.ARGENTINA,
-            null
-        );
+    messi = Figurita.builder()
+        .id("ARG10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
 
-    diMaria =
-        new Figurita(
-            "ARG11",
-            11,
-            "Di María",
-            Seleccion.ARGENTINA,
-            null
-        );
+    diMaria = Figurita.builder()
+        .id("ARG11")
+        .numero(11)
+        .jugador("Di María")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
 
     origen.getColeccion()
         .agregarFaltante(messi);

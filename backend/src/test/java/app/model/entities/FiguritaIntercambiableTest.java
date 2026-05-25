@@ -13,13 +13,12 @@ class FiguritaIntercambiableTest {
 
   @BeforeEach
   void setUp() {
-    Figurita messi = new Figurita(
-        "ARG-10",
-        10,
-        "Messi",
-        Seleccion.ARGENTINA,
-        null
-    );
+    Figurita messi = Figurita.builder()
+        .id("ARG-10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
 
     fi = new FiguritaIntercambiable(
         messi,

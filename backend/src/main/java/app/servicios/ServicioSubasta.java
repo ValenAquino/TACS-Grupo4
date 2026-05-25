@@ -3,15 +3,19 @@ package app.servicios;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.EditarOfertaRequest;
+import app.dto.subasta.MiSubastaActivaDto;
+import app.dto.subasta.MiSubastaFinalizadaDto;
 import app.dto.subasta.SubastaDto;
 import app.dto.subasta.SubastaParticipoDto;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
 import app.repositories.RepositorioCalificacion;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
+import app.repositories.impl.campos.CamposColeccion;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,14 +32,14 @@ public class ServicioSubasta {
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repoFigurita;
   private final RepositorioCalificacion repoCalificacion;
+  private final RepositorioColecciones repositorioColecciones;
   private final ServicioNotificacion notificacionService;
 
   @Transactional
-  public void crearSubasta(String userId, String figuritaId, Integer duracionEnHoras,
+  public void crearSubasta(String perfilId, String figuritaId, Integer duracionEnHoras,
                            List<String> figuritasDeseadasIds, Integer calificacionMinima) {
-    CamposPerfil sinCamposPerfil = new CamposPerfil(false);
-
-    Perfil perfil = this.repositorioPerfiles.buscarPorUsuarioId(userId, sinCamposPerfil);
+    CamposPerfil conColeccion = new CamposPerfil(true);
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, conColeccion);
     Figurita figuritaSubastada = this.repoFigurita.buscarPorId(figuritaId);
 
     List<Figurita> figuritasDeseadas = figuritasDeseadasIds.stream()
@@ -52,7 +56,10 @@ public class ServicioSubasta {
         .calificacionMinimaSolicitada(calificacionMinima)
         .build();
 
+    nuevaSubasta.reservarFiguritaSubastada();
+
     this.repoSubasta.guardar(nuevaSubasta);
+    this.repositorioColecciones.guardar(perfil.getColeccion(), new CamposColeccion(true, false));
 
     CamposPerfil conMedio = new CamposPerfil(true);
     List<Perfil> interesados = this.repositorioPerfiles
@@ -63,11 +70,9 @@ public class ServicioSubasta {
   }
 
   @Transactional
-  public void ofertarEnSubasta(String autorId,
-                               String subastaId,
-                               List<String> rawFiguritasId
-  ) {
-    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, new CamposPerfil(false));
+  public void ofertarEnSubasta(String autorId, String subastaId, List<String> rawFiguritasId) {
+    CamposPerfil conColeccion = new CamposPerfil(true);
+    Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, conColeccion);
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
     Perfil destinatario = subasta.getAutor();
@@ -88,9 +93,12 @@ public class ServicioSubasta {
         .autor(autor)
         .destinatario(destinatario)
         .figuritaBuscada(subasta.getFiguritaSubastada())
-        .figuritasOfrecidas(figuritasOfrecidas).build();
+        .figuritasOfrecidas(figuritasOfrecidas)
+        .build();
 
     subasta.agregarOferta(nuevaPropuesta);
+
+    this.repositorioColecciones.guardar(autor.getColeccion(), new CamposColeccion(true, false));
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
@@ -98,14 +106,12 @@ public class ServicioSubasta {
   public void editarOfertaEnSubasta(String perfilId, String subastaId, String ofertaId, EditarOfertaRequest body){
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
-    Propuesta oferta = subasta.getOfertas().stream()
-        .filter(o -> o.getId().equals(ofertaId))
-        .findFirst().orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+    List<Figurita> nuevasFiguritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
 
-    List<Figurita> nuevas_figuritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
+    Propuesta oferta = subasta.modificarFiguritasDeOferta(ofertaId, perfilId, nuevasFiguritas);
 
-    oferta.setFiguritasOfrecidas(nuevas_figuritas);
-    oferta.resetearAPendiente(perfilId);
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
@@ -113,17 +119,21 @@ public class ServicioSubasta {
   public void cancelarOferta(String perfilId, String subastaId, String ofertaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
-    Propuesta oferta = subasta.getOfertas().stream()
-        .filter(o -> o.getId().equals(ofertaId))
-        .findFirst()
-        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
 
-    oferta.cancelar(perfilId);
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+
+    Propuesta oferta = subasta.cancelarOferta(ofertaId, perfilId);
+
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
+
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
-  public void seleccionarOferta(String subastaId, String ofertaId) {
+  public void seleccionarOferta( String perfilId, String subastaId, String ofertaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
@@ -131,22 +141,13 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-      subasta.getOfertas().stream()
-          .filter(p -> p.getEstadoActual().getValor() == EstadoProceso.SELECCIONADO)
-          .findFirst()
-          .ifPresent(p -> p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE)));
+    subasta.seleccionarOferta(ofertaId, perfilId);
 
-    Propuesta propuesta = subasta.getOfertas().stream()
-        .filter(p -> p.getId().equals(ofertaId))
-        .findFirst()
-        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
-
-    propuesta.seleccionar(subasta.getAutor().getId());
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
-  public void rechazarOferta(String subastaId, String ofertaId) {
+  public void rechazarOferta(String perfilId, String subastaId, String ofertaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
@@ -154,70 +155,104 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-    Propuesta propuesta = subasta.getOfertas().stream()
-        .filter(p -> p.getId().equals(ofertaId))
-        .findFirst()
-        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+    Propuesta oferta = subasta.rechazarOferta(ofertaId, perfilId);
 
-    propuesta.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO));
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
+
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
-  public void cancelarSubasta(String subastaId) {
+  public void cancelarSubasta(String perfilId, String subastaId) {
     CamposSubasta camposSubasta = new CamposSubasta(false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
+    if (!subasta.estaActivo()) {
+      throw new BadRequestException("La subasta ya cerro");
+    }
+    subasta.cancelar(perfilId);
 
+    CamposColeccion camposColeccion = new CamposColeccion(true, false);
+    subasta.getOfertas().stream()
+        .filter(o -> o.getEstadoActual().getValor() != EstadoProceso.CANCELADO)
+        .map(o -> o.getAutor().getColeccion())
+        .distinct()
+        .forEach(col -> this.repositorioColecciones.guardar(col, camposColeccion));
+
+    this.repositorioColecciones.guardar(subasta.getAutor().getColeccion(), camposColeccion);
+    this.repoSubasta.guardar(subasta, camposSubasta);
+  }
+
+  @Transactional
+  public void cerrarSubasta(String perfilId, String subastaId) {
+    CamposSubasta camposSubasta = new CamposSubasta(false, true);
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
     }
 
-    subasta.getOfertas().forEach(p ->
-        p.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO))
-    );
-    subasta.setFechaCierre(LocalDateTime.now());
-    this.repoSubasta.guardar(subasta, camposSubasta);
-  }
+    Propuesta seleccionada = subasta.obtenerSeleccionada();
 
-  @Transactional
-  public void cerrarSubasta(String subastaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
-    Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
+    subasta.cerrar(perfilId);
 
-    subasta.cerrar(subastaId);
-    this.repoSubasta.guardar(subasta);
-    this.repoSubasta.guardar(subasta, camposSubasta);
-  }
+    CamposColeccion soloRepetidas = new CamposColeccion(true, false);
+    CamposColeccion todo = new CamposColeccion(true, true);
 
+    // rechazados: solo repetidas
+    subasta.getOfertas().stream()
+        .filter(o -> seleccionada == null || !o.getId().equals(seleccionada.getId()))
+        .filter(o -> o.getEstadoActual().getValor() != EstadoProceso.CANCELADO)
+        .map(o -> o.getAutor().getColeccion())
+        .distinct()
+        .forEach(col -> this.repositorioColecciones.guardar(col, soloRepetidas));
 
-  public PaginaResultado<?> obtenerSubastas(SubastasFiltro filtros) {
-    PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros, new CamposSubasta(true, true));
-
-    if(filtros.participanteId() != null ) {
-      return new PaginaResultado<>(
-          resultado.contenido().stream().map(s -> {
-                boolean yaCalifico = this.repoCalificacion.yaCalifico(
-                    s.getAutor().getId(),
-                    filtros.participanteId(),
-                    s.getId(),
-                    MetodoIntercambio.SUBASTA
-                );
-                return new SubastaParticipoDto(s, obtenerOferta(s, filtros.participanteId()), yaCalifico);
-          }
-          ).toList(),
-          resultado.cantidadDeElementos(),
-          resultado.cantidadDePaginas(),
-          resultado.numero());
-    } else {
-      return new PaginaResultado<>(
-          resultado.contenido().stream().map(SubastaDto::new).toList(),
-          resultado.cantidadDeElementos(),
-          resultado.cantidadDePaginas(),
-          resultado.numero());
+    // ganador y autor: repetidas y faltantes
+    if (seleccionada != null) {
+      this.repositorioColecciones.guardar(seleccionada.getAutor().getColeccion(), todo);
+      this.repositorioColecciones.guardar(subasta.getAutor().getColeccion(), todo);
     }
+
+    this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
-  private Propuesta obtenerOferta(Subasta subasta, String perfilId) {
+    public PaginaResultado<?> obtenerSubastas(String perfilId, SubastasFiltro filtros) {
+      PaginaResultado<Subasta> resultado = this.repoSubasta.buscarTodos(filtros, new CamposSubasta(true, true));
+
+      if (filtros.participanteId() != null) {
+        return resultado.mapearA(s -> {
+          boolean yaCalifico = this.repoCalificacion.yaCalifico(
+              s.getAutor().getId(),
+              perfilId,
+              s.getId(),
+              MetodoIntercambio.SUBASTA
+          );
+          return new SubastaParticipoDto(s, obtenerOferta(perfilId, s), yaCalifico);
+        });
+
+      } else if ("ACTIVA".equals(filtros.estado())) {
+        return resultado.mapearA(MiSubastaActivaDto::new);
+
+      } else {
+        return resultado.mapearA(s -> {
+          String ganadorId = s.getOfertas().stream()
+              .filter(o -> o.getEstadoActual().getValor() == EstadoProceso.ACEPTADO)
+              .findFirst()
+              .map(o -> o.getAutor().getId())
+              .orElse(null);
+
+          boolean yaCalifico = ganadorId != null && this.repoCalificacion.yaCalifico(
+              ganadorId,
+              perfilId,
+              s.getId(),
+              MetodoIntercambio.SUBASTA
+          );
+
+          return new MiSubastaFinalizadaDto(s, yaCalifico);
+        });
+      }
+    }
+
+  private Propuesta obtenerOferta(String perfilId, Subasta subasta) {
     return subasta.getOfertas().stream()
         .filter(p -> p.getAutor().getId().equals(perfilId))
         .findFirst()

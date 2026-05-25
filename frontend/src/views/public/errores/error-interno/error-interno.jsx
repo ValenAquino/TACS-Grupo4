@@ -6,9 +6,9 @@ const ErrorInterno = () => {
 
     return (
         <div className="container text-center mt-5">
-            <h1>Error interno del servidor</h1>
+            <h1 className="text-dark">Error interno del servidor</h1>
 
-            <p>
+            <p className="text-dark mt-3">
                 Ocurrió un problema inesperado y no pudimos procesar tu solicitud.
                 Intentá nuevamente en unos momentos.
             </p>

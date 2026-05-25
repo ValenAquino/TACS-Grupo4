@@ -1,44 +1,25 @@
-import { useState } from "react";
-import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
-import RecibidasTab from "./tabs/RecibidasTab.jsx";
-import EnviadasTab from "./tabs/EnviadasTab.jsx";
-import HistorialTab from "./tabs/HistorialTab.jsx";
-import "./intercambios.css";
+import TabsContainer from '../../../components/ui/tabs-container/tabs-container.jsx'
+import PropuestasTab from './tabs/propuestas-tab.jsx'
+import SectionTitle from '../../../components/ui/section-title/section-title.jsx'
 
-const Intercambios = () => {
+const tabs = [
+  {
+    key: 'recibidas',
+    label: 'Recibidas',
+    component: PropuestasTab,
+    props: { tipo: 'RECIBIDAS', estadoInicial: 'PENDIENTE' },
+  },
+  { key: 'enviadas', label: 'Enviadas', component: PropuestasTab, props: { tipo: 'ENVIADAS', estadoInicial: 'PENDIENTE'} },
+]
+const Intercambios = () => (
+  <main className="container py-4 px-3 px-md-4">
+    <div className="mx-auto" style={{ maxWidth: '900px' }}>
+      <div className="d-flex flex-column gap-4">
+        <SectionTitle>Intercambios</SectionTitle>
+        <TabsContainer tabs={tabs} />
+      </div>
+    </div>
+  </main>
+)
 
-    const [data, setData] = useState({
-        pendientes: [],
-        enviadas: [],
-        historial: []
-    });
-
-    const tabs = [
-        {
-            key: "recibidas",
-            label: `Recibidas`,
-            component: RecibidasTab,
-        },
-        {
-            key: "enviadas",
-            label: "Enviadas",
-            component: EnviadasTab
-        }
-    ];
-
-    return (
-        <div className="container py-3 intercambios-container">
-
-            <h2 className="fw-bold text-center mb-4 intercambios-title">
-                Intercambios
-            </h2>
-
-            <div className="tabs-fullwidth">
-                <TabsContainer tabs={tabs} />
-            </div>
-
-        </div>
-    );
-};
-
-export default Intercambios;
+export default Intercambios

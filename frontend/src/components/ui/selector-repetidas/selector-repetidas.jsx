@@ -12,6 +12,7 @@ const SelectorRepetidas = ({
   bloqueadas = [],
   onChange,
   seleccionadasIniciales = [],
+  metodoIntercambio = null,
 }) => {
   const [figuritas, setFiguritas] = useState([])
   const [loading, setLoading] = useState(false)
@@ -23,7 +24,12 @@ const SelectorRepetidas = ({
   const fetchRepetidas = useCallback(async (busqueda = '') => {
     setLoading(true)
     try {
-      const payload = await buscarRepetidas({ jugador: busqueda, pagina: 1, limite: LIMITE })
+      const payload = await buscarRepetidas({
+        jugador: busqueda,
+        pagina: 1,
+        limite: LIMITE,
+        metodoIntercambio: metodoIntercambio,
+      })
       setFiguritas(payload.contenido ?? [])
       setTotal(payload.cantidad_de_elementos ?? null)
     } catch (e) {
@@ -65,6 +71,7 @@ const SelectorRepetidas = ({
     <div className="d-flex flex-column gap-3">
       <ScrollFiguritas
         figuritas={figuritas}
+        seleccionadasIniciales={seleccionadasIniciales}
         loading={loading}
         totalDisponibles={total}
         onBuscar={fetchRepetidas}

@@ -32,7 +32,7 @@ const CALIFICACION_MIN_OPTS = [
 // ─── Paso 1: Figurita a subastar ──────────────────────────────────────────────
 
 const PasoFigurita = ({ onChange }) => (
-  <SelectorRepetidas modo="unica" bloqueadas={[]} onChange={onChange} />
+  <SelectorRepetidas modo="unica" bloqueadas={[]} onChange={onChange} metodoIntercambio="SUBASTA" />
 )
 
 // ─── Paso 2: Duración ─────────────────────────────────────────────────────────
@@ -199,7 +199,7 @@ const CrearSubasta = () => {
     try {
       setLoading(true)
       await crearSubasta({
-        figurita_id: figurita.figuritaId,
+        figurita_id: figurita.figurita_id,
         duracion_en_horas: duracion,
         figuritas_deseadas_ids: figuritasDeseadas.map((f) => f.id),
         calificacion_minima: calificacionMin,

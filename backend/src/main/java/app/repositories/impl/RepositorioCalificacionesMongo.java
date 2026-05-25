@@ -2,22 +2,15 @@ package app.repositories.impl;
 
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.Calificacion;
-import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.repositories.RepositorioCalificacion;
-import org.bson.Document;
+import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
@@ -26,6 +19,10 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
 
   public void guardar(Calificacion calificacion) {
     mongoTemplate.save(calificacion);
+  }
+
+  private static Object toId(String id) {
+    return ObjectId.isValid(id) ? new ObjectId(id) : id;
   }
 
   public PaginaResultado<Calificacion> buscarPorDestinatario(
@@ -37,7 +34,7 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("destinatario.$id").is(new ObjectId(destinatarioId))
+        Criteria.where("destinatario.$id").is(toId(destinatarioId))
     );
 
     long count = mongoTemplate.count(query, Calificacion.class);
@@ -66,11 +63,11 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("destinatario.$id").is(perfilDestinoId)
+        Criteria.where("destinatario.$id").is(toId(perfilDestinoId))
     );
 
     query.addCriteria(
-        Criteria.where("autor.$id").is(perfilAutorId)
+        Criteria.where("autor.$id").is(toId(perfilAutorId))
     );
 
     query.addCriteria(

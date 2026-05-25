@@ -82,7 +82,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarConFiltros_porSeleccion_retornaCoincidencia() {
-    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, Seleccion.ARGENTINA, null, null), 1, 10);
+    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, "ARGENTINA", null, null), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals(Seleccion.ARGENTINA, resultado.contenido().get(0).getFigurita().getSeleccion());
@@ -97,7 +97,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarConFiltros_porTipoIntercambio_retornaCoincidencia() {
-    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, MetodoIntercambio.INTERCAMBIO), 1, 10);
+    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, List.of(MetodoIntercambio.INTERCAMBIO)), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.INTERCAMBIO));
@@ -105,7 +105,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarConFiltros_porTipoSubasta_retornaCoincidencia() {
-    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, MetodoIntercambio.SUBASTA), 1, 10);
+    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, List.of(MetodoIntercambio.SUBASTA)), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.SUBASTA));
@@ -168,7 +168,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarPorQuery_conFiltroTipo_aplicaAnd() {
-    var resultado = repositorioColecciones.buscarIntercambiablesPorQuery("10", MetodoIntercambio.INTERCAMBIO, 1, 10);
+    var resultado = repositorioColecciones.buscarIntercambiablesPorQuery("10", List.of(MetodoIntercambio.INTERCAMBIO), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.INTERCAMBIO));

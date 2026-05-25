@@ -1,120 +1,104 @@
-import { useEffect, useState } from "react";
-import { buscarSubastasParticipo } from "../../../../../services/subastasService.js";
-import SubastaCard from "../../../../../components/ui/subasta-card/subasta-card.jsx";
-import { useNavigate } from "react-router";
-import useUsuarioActual from "../../../../../hooks/useUsuarioActual.js";
-import {useError} from "@/contexts/errorContext.jsx";
+import { useEffect, useState } from 'react'
+import { buscarSubastas } from '../../../../../services/subastasService.js'
+import SubastaParticipo from './subasta-participo/subasta-participo.jsx'
+import FilterChip from '../../../../../components/ui/filter-chip/filter-chip.jsx'
+import Paginacion from '../../../../../components/ui/paginacion/paginacion.jsx'
+import { useNavigate } from 'react-router'
+import { useAuth } from '@/contexts/userContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
 
 const Participo = () => {
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const {handleError} = useError();
-  const {userId} = useUsuarioActual()
+  const [data, setData] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [estado, setEstado] = useState('ACTIVA')
+  const [pagina, setPagina] = useState(1)
+
+  const navigate = useNavigate()
+  const { handleError } = useError()
+  const { user } = useAuth()
 
   useEffect(() => {
     const cargar = async () => {
       try {
-        setLoading(true);
-        const res = await buscarSubastasParticipo(userId);
-        setData(res);
-      } catch(error) {
-        handleError(error, () => {});
+        setLoading(true)
+        const res = await buscarSubastas({
+          participanteId: user.perfil_id,
+          estado,
+          pagina,
+          limite: 5,
+        })
+        setData(res)
+      } catch (error) {
+        handleError(error, () => {})
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    cargar();
-  }, []);
+    }
+    cargar()
+  }, [estado, pagina])
 
-  const activasCount = data.activas?.length ?? 0;
-  const seleccionadasCount =
-    data.activas?.filter((s) => s.tuOferta?.estado === "SELECCIONADO").length ?? 0;
-  const hayResultados = activasCount > 0 || (data.finalizadas?.length ?? 0) > 0;
+  const cambiarEstado = (nuevoEstado) => {
+    if (estado === nuevoEstado) return
+    setEstado(nuevoEstado)
+    setPagina(1)
+  }
 
   return (
     <div className="container-fluid px-0 d-flex flex-column gap-4">
-      {/* Stats */}
-      <div className="row g-3 justify-content-center">
-        <div className="col-6 col-md-4">
-          <div
-            className="border rounded-4 p-4 text-center shadow-sm h-100"
-            style={{ backgroundColor: "var(--color-primary)" }}
-          >
-            <p className="mb-1 fw-bold fs-2">{activasCount}</p>
-            <p className="mb-0 text-muted">Ofertas activas</p>
-          </div>
-        </div>
-        <div className="col-6 col-md-4">
-          <div
-            className="border rounded-4 p-4 text-center shadow-sm h-100"
-            style={{ backgroundColor: "var(--color-primary)" }}
-          >
-            <p className="mb-1 fw-bold fs-2">{seleccionadasCount}</p>
-            <p className="mb-0 text-muted">Mejor oferta</p>
-          </div>
-        </div>
+      <div className="d-flex gap-2">
+        <FilterChip
+          label="Activas"
+          selected={estado === 'ACTIVA'}
+          onClick={() => cambiarEstado('ACTIVA')}
+        />
+        <FilterChip
+          label="Finalizadas"
+          selected={estado === 'FINALIZADA'}
+          onClick={() => cambiarEstado('FINALIZADA')}
+        />
       </div>
 
       {loading ? (
         <div className="d-flex flex-column gap-3">
           {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="rounded-3 placeholder-glow border"
-              style={{ height: "140px" }}
-            >
+            <div key={i} className="rounded-3 placeholder-glow border" style={{ height: '140px' }}>
               <div className="placeholder w-100 h-100 rounded-3" />
             </div>
           ))}
         </div>
-      ) : !hayResultados ? (
+      ) : data.contenido?.length > 0 ? (
+        <>
+          <div className="d-flex flex-column gap-3">
+            {data.contenido.map((sub) => (
+              <SubastaParticipo
+                key={sub.id}
+                subasta={sub}
+                finalizada={estado === 'FINALIZADA'}
+                onVerSubasta={() => navigate(`/subastas/${sub.id}`)}
+                onRefresh={() => setRefresh((r) => r + 1)}
+              />
+            ))}
+          </div>
+          <div className="pt-3 d-flex justify-content-center">
+            <Paginacion
+              page={pagina}
+              totalPages={data.cantidad_de_paginas ?? 1}
+              onChange={setPagina}
+            />
+          </div>
+        </>
+      ) : (
         <div className="text-center text-muted py-5">
           <div className="fs-1">📭</div>
-          <p className="mb-0">No participás en ninguna subasta todavía</p>
+          <p className="mb-0">
+            {estado === 'ACTIVA'
+              ? 'No participás en ninguna subasta activa'
+              : 'No tenés subastas finalizadas'}
+          </p>
         </div>
-      ) : (
-        <>
-          {data.activas?.length > 0 && (
-            <div className="d-flex flex-column gap-3">
-              <p
-                className="mb-0 fw-bold text-uppercase text-muted"
-                style={{ fontSize: "0.8rem" }}
-              >
-                Activas ({data.activas.length})
-              </p>
-              {data.activas.map((sub) => (
-                <SubastaCard
-                  key={sub.id}
-                  subasta={sub}
-                />
-              ))}
-            </div>
-          )}
-
-          {data.finalizadas?.length > 0 && (
-            <div className="d-flex flex-column gap-3">
-              <p
-                className="mb-0 fw-bold text-uppercase text-muted"
-                style={{ fontSize: "0.8rem" }}
-              >
-                Finalizadas ({data.finalizadas.length})
-              </p>
-              {data.finalizadas.map((sub) => (
-                <SubastaCard
-                  key={sub.id}
-                  subasta={sub}
-                  onVerSubasta={() => navigate(`/subastas/${sub.id}`)}
-                  onMejorarOferta={() => navigate(`/subastas/${sub.id}/oferta`)}
-                  onVerResumen={() => navigate(`/subastas/${sub.id}/resumen`)}
-                />
-              ))}
-            </div>
-          )}
-        </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Participo;
+export default Participo

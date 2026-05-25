@@ -1,6 +1,7 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { editarOferta, cancelarOferta } from '@/services/subastasService.js'
+import { buscarSubasta } from '@/services/subastasService.js'
 import SectionTitle from '@/components/ui/section-title/section-title.jsx'
 import SectionCard from '@/components/ui/section-card/section-card.jsx'
 import SelectorRepetidas from '@/components/ui/selector-repetidas/selector-repetidas.jsx'
@@ -26,19 +27,36 @@ const mismasFiguritas = (anteriores, actuales) => {
 
 const EditarOferta = () => {
   const navigate = useNavigate()
-  const { state } = useLocation()
+  const { subId, ofertaId } = useParams()
   const { handleError } = useError()
   const { showToast } = useToast()
 
-  const subasta = state?.subasta
-  const oferta = state?.oferta
-
+  const [subasta, setSubasta] = useState(null)
+  const [cargando, setCargando] = useState(true)
   const [figuritasExtra, setFiguritasExtra] = useState([])
   const [loadingEnviar, setLoadingEnviar] = useState(false)
   const [loadingEliminar, setLoadingEliminar] = useState(false)
   const [showEliminar, setShowEliminar] = useState(false)
 
-  if (!subasta || !oferta) return <h2>No se pudo cargar la oferta.</h2>
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const res = await buscarSubasta({ subId })
+        setSubasta(res)
+      } catch (e) {
+        handleError(e, () => {})
+      } finally {
+        setCargando(false)
+      }
+    }
+    cargar()
+  }, [])
+
+  if (cargando) return <h2>Cargando...</h2>
+  if (!subasta) return <h2>No se pudo cargar la subasta.</h2>
+
+  const oferta = subasta.ofertas.find((o) => o.id === ofertaId)
+  if (!oferta) return <h2>No se encontró la oferta.</h2>
 
   const ofrecidasAnteriores = oferta.figuritas_ofrecidas.map((f) => ({
     ...f,
@@ -46,9 +64,11 @@ const EditarOferta = () => {
   }))
 
   const calMinima = subasta.calificacion_minima_solicitada ?? 0
-  const bloqueadas = obtenerBloqueadas(ofrecidasAnteriores, subasta.figuritas_solicitadas)
+  const figuritas_solicitadas = subasta.figuritas_solicitadas ?? []
+  const bloqueadas = obtenerBloqueadas(ofrecidasAnteriores, figuritas_solicitadas)
   const todasSeleccionadas = [...bloqueadas, ...figuritasExtra]
   const sinCambios = mismasFiguritas(ofrecidasAnteriores, todasSeleccionadas)
+  const figurita = subasta.figurita_subastada ?? subasta.figurita
 
   const onEnviar = async () => {
     if (sinCambios) {
@@ -89,26 +109,24 @@ const EditarOferta = () => {
   return (
     <div className="container py-4 px-3 px-md-4">
       <div className="d-flex flex-column gap-3">
-        {/* Preview */}
         <div
           className={`${styles.figuritaSubastada} p-2 d-flex flex-column justify-content-center align-items-center gap-2 w-100 rounded-2 mb-3`}
         >
           <div className={`${styles.figuritaImagen} bg-white rounded-3`} />
-          <h4>{subasta.figurita.jugador}</h4>
-          <h6>{subasta.figurita.seleccion}</h6>
+          <h4>{figurita?.jugador}</h4>
+          <h6>{figurita?.seleccion}</h6>
         </div>
 
-        {/* Condiciones */}
         <SectionCard>
           <SectionTitle>CONDICIONES PARA OFERTAR</SectionTitle>
           <SectionCard.Section>
             <div className="d-flex flex-column gap-3">
               <div className="d-flex flex-column gap-2">
                 <p className={styles.label}>Figuritas requeridas</p>
-                {subasta.figuritas_solicitadas.length > 0 ? (
+                {figuritas_solicitadas.length > 0 ? (
                   <>
                     <div className="d-flex flex-column gap-2">
-                      {subasta.figuritas_solicitadas.map((fig, i) => (
+                      {figuritas_solicitadas.map((fig, i) => (
                         <div key={i} className={styles.figRequerida}>
                           <div className={styles.figNumero}>{fig.numero}</div>
                           <div>
@@ -151,7 +169,6 @@ const EditarOferta = () => {
           </SectionCard.Section>
         </SectionCard>
 
-        {/* Selección */}
         <div className="d-flex flex-column gap-3">
           <div>
             <p className={styles.seleccionTitulo}>Editá las figuritas que querés ofrecer</p>
@@ -169,13 +186,13 @@ const EditarOferta = () => {
             seleccionadasIniciales={ofrecidasAnteriores.filter(
               (f) => !bloqueadas.some((b) => b.figurita_id === f.figurita_id),
             )}
+            metodoIntercambio = "SUBASTA"
           />
         </div>
 
-        {/* Acciones */}
         <div className="d-flex flex-column gap-2">
           <div className="d-flex gap-2 justify-content-between">
-            <Button label="Cancelar" variant="secondary" onClick={() => navigate(-1)} />
+            <Button label="Cancelar" variante="secundarioBorde" onClick={() => navigate(-1)} />
             <Button
               label={loadingEnviar ? 'Guardando...' : 'Guardar cambios ↗'}
               disabled={loadingEnviar}
@@ -184,7 +201,7 @@ const EditarOferta = () => {
           </div>
           <Button
             label={loadingEliminar ? 'Eliminando...' : 'Eliminar oferta'}
-            variant="danger"
+            variante="peligroBorde"
             onClick={() => setShowEliminar(true)}
           />
         </div>

@@ -1,20 +1,28 @@
 package app.controllers;
 
-import app.dto.*;
+import app.dto.CalificacionDto;
+import app.dto.ContadorDto;
+import app.dto.NotificacionesDto;
+import app.dto.PerfilDto;
+import app.dto.SugerenciaDto;
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CalificacionRequest;
-import java.util.List;
+import app.dto.request.PerfilRequest;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPerfil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/perfil")
@@ -30,7 +38,6 @@ public class ControladorPerfil {
         @RequestBody CalificacionRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
-
         this.perfilService.agregarCalificacion(
             perfilId,
             body.getDestinatarioId(),
@@ -97,6 +104,17 @@ public class ControladorPerfil {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.ok(this.perfilService.obtenerPerfil(perfilId));
     }
+
+    @PutMapping
+    public ResponseEntity<Void> editarPerfil(
+        @CookieValue("token") String token,
+        @RequestBody PerfilRequest body
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.perfilService.editarPerfil(perfilId, body);
+        return ResponseEntity.ok().build();
+    }
+
 
     private String obtenerPerfilIdDeCookie(String token) {
         return this.servicioJwt.getPerfilId(token);

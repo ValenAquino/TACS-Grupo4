@@ -1,40 +1,44 @@
 import { useEffect, useRef, useState } from 'react'
 import useFiguritas from '@/hooks/useFiguritas'
+import usePaginacion from '@/hooks/usePaginacion'
 import ExplorarSearch from './search/explorar-search'
 import SugerenciasBanner from './sugerencias-banner/sugerencias-banner'
 import ExplorarFiltros from './filtros/explorar-filtros'
 import ExplorarResultados from './resultados/explorar-resultados'
 import styles from './explorar.module.css'
 
-const FILTROS_INICIAL = { q: '', tipo: 'todos', jugador: '', seleccion: '', numero: '' }
+const FILTROS_INICIAL = { q: '', tipos: [], jugador: '', seleccion: '', numero: '' }
 
 const Explorar = () => {
   const resultadosRef = useRef(null)
   const heroInputRef = useRef(null)
   const [filtros, setFiltros] = useState(FILTROS_INICIAL)
-  const [page, setPage] = useState(1)
+  const { pagina, setPagina, resetPagina } = usePaginacion()
 
   const { figuritas, totalPages, totalElements, loading, error } = useFiguritas(
     filtros.q,
     filtros.jugador,
     filtros.seleccion,
     filtros.numero,
-    filtros.tipo,
-    page,
+    filtros.tipos,
+    pagina,
   )
 
   const handleAplicar = (nuevosFiltros) => {
     setFiltros(nuevosFiltros)
-    setPage(1)
+    resetPagina()
   }
 
   useEffect(() => {
     resultadosRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [page])
+  }, [pagina])
 
   return (
     <main className={styles.page}>
-      <ExplorarSearch ref={heroInputRef} onQueryChange={(q) => handleAplicar({ ...FILTROS_INICIAL, q })} />
+      <ExplorarSearch
+        ref={heroInputRef}
+        onQueryChange={(q) => handleAplicar({ ...FILTROS_INICIAL, q })}
+      />
       <div className={styles.container}>
         <SugerenciasBanner />
         <ExplorarFiltros
@@ -48,8 +52,8 @@ const Explorar = () => {
           figuritas={figuritas}
           totalElements={totalElements}
           totalPages={totalPages}
-          page={page}
-          onPageChange={setPage}
+          page={pagina}
+          onPageChange={setPagina}
           loading={loading}
           error={error}
         />

@@ -2,9 +2,9 @@ import { api, handleAxiosError } from './api.js'
 
 const SUBASTAS_URL = '/subastas'
 
-export const crearSubasta = async (userId, body) => {
+export const crearSubasta = async (body) => {
   try {
-    await api.post('/subastas', { ...body, user_id: userId })
+    await api.post('/subastas', body)
   } catch (error) {
     handleAxiosError(error)
   }
@@ -19,25 +19,10 @@ export const buscarSubasta = async ({ subId }) => {
   }
 }
 
-export const buscarMisSubastas = async (filtros) => {
+export const buscarSubastas = async (filtros) => {
   try {
-    const { data } = await api.get(`${SUBASTAS_URL}/mis-subastas`, {
-      params: {
-        ...filtros,
-      },
-    })
-    return data
-  } catch (error) {
-    handleAxiosError(error)
-  }
-}
-
-export const buscarSubastasParticipo = async (filtros = {}) => {
-  try {
-    const { data } = await api.get(`${SUBASTAS_URL}/participo`, {
-      params: {
-        ...filtros,
-      },
+    const { data } = await api.get(SUBASTAS_URL, {
+      params: { ...filtros },
     })
     return data
   } catch (error) {

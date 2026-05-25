@@ -64,7 +64,7 @@ class ServicioFiguritaTest extends MongoTestBase {
   void buscarFiguritas_filtroTipoIntercambio_excluyeSoloSubasta() {
 
     PaginaResultado<FiguritaIntercambiableDto> resultado =
-        figuritaService.buscarFiguritas(null, null, null, MetodoIntercambio.INTERCAMBIO, 1, 12);
+        figuritaService.buscarFiguritas(null, null, null, List.of(MetodoIntercambio.INTERCAMBIO), 1, 12);
 
     assertEquals(1, resultado.cantidadDeElementos());
     assertEquals("ARG-10", resultado.contenido().get(0).getFiguritaId());

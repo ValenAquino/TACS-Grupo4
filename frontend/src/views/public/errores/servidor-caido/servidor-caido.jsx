@@ -19,7 +19,7 @@ const ServidorCaido = () => {
 
     return (
         <div className="container text-center mt-5">
-            <h1>El servidor está caído...</h1>
+            <h1 className="text-dark">El servidor está caído...</h1>
 
             <div className="d-flex justify-content-center align-items-center gap-3 mt-3">
                 <Button

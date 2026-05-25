@@ -1,0 +1,34 @@
+.seccion-titulo {
+  color: #175a2d;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.seccion-subtitulo {
+  color: #6c757d;
+  font-size: 0.83rem;
+  margin-bottom: 20px;
+}
+
+.hr {
+  margin: 0 0 32px;
+}
+
+.btn-agregar {
+  background-color: #175a2d;
+  color: white;
+  white-space: nowrap;
+}
+
+.hint {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.sin-medios {
+  font-size: 0.85rem;
+}
+
+.select-tipo {
+  min-width: 140px;
+}

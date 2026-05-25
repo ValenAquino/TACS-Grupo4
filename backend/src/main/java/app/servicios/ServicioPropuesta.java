@@ -1,5 +1,6 @@
 package app.servicios;
 
+import app.dto.IntercambioDto;
 import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
@@ -8,6 +9,7 @@ import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Propuesta;
+import app.repositories.RepositorioCalificacion;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
@@ -17,6 +19,7 @@ import app.exceptions.NotFoundException;
 import java.util.List;
 
 import app.repositories.impl.campos.CamposPerfil;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +32,13 @@ public class ServicioPropuesta {
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
+  private final RepositorioCalificacion repositorioCalificacion;
   private final ServicioNotificacion notificacionService;
 
   /**
    * Crea una propuesta de intercambio. Valida que el usuario origen,
    * destino y figuritas existan. El estado inicial es PENDIENTE.
    */
-  //TODO: Agregar transaccion para crear propuesta.
   @Transactional
   public PropuestaDto crearPropuesta(String autorId, CrearPropuestaRequest request) {
     CamposPerfil sinCampos = new CamposPerfil(false);
@@ -136,13 +139,24 @@ public class ServicioPropuesta {
     this.repositorioPropuestas.guardar(propuesta);
   }
 
-  public PaginaResultado<PropuestaDto> buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
+  public PaginaResultado<IntercambioDto> buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
     PaginaResultado<Propuesta> resultado = this.repositorioPropuestas.buscarTodos(perfilId, filtros);
 
-    return new PaginaResultado<>(
-        resultado.contenido().stream().map(PropuestaDto::new).toList(),
-        resultado.cantidadDeElementos(),
-        resultado.cantidadDePaginas(),
-        resultado.numero());
+    return resultado.mapearA(p -> {
+      boolean esEnviada = Objects.equals(filtros.tipo(), "ENVIADAS");
+
+      String perfilCalificado = esEnviada
+          ? p.getDestinatario().getId()
+          : p.getAutor().getId();
+
+      boolean yaCalificado = this.repositorioCalificacion.yaCalifico(
+          perfilCalificado,
+          perfilId,
+          p.getId(),
+          MetodoIntercambio.INTERCAMBIO
+      );
+
+      return new IntercambioDto(p, yaCalificado);
+    });
   }
 }

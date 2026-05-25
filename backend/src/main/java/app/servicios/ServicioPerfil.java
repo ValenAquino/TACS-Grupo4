@@ -1,27 +1,31 @@
 package app.servicios;
 
-import app.dto.*;
-import app.dto.calificaciones.CalificacionesDto;
-import app.dto.paginacion.PaginaResultado;
+import app.dto.CalificacionDto;
+import app.dto.ContadorDto;
+import app.dto.FiguritaDto;
+import app.dto.NotificacionesDto;
+import app.dto.PerfilDto;
+import app.dto.SugerenciaDto;
 import app.dto.filtros.SugerenciasFiltro;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.request.MedioDeContactoRequest;
+import app.dto.request.PerfilRequest;
 import app.exceptions.BadRequestException;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Sugerencia;
 import app.model.entities.Perfil;
+import app.model.entities.Sugerencia;
+import app.model.entities.Usuario;
 import app.repositories.RepositorioCalificacion;
-import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioNotificaciones;
-import app.repositories.RepositorioPropuestas;
-import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioPerfiles;
+import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposPerfil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +37,8 @@ public class ServicioPerfil {
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioNotificaciones repositorioNotificaciones;
   private final ServicioNotificacion servicioNotificacion;
+  private final RepositorioUsuarios repositorioUsuarios;
+
 
   public List<FiguritaDto> obtenerFaltantes(String userId) {
     CamposPerfil campos = new CamposPerfil(false);
@@ -118,6 +124,36 @@ public class ServicioPerfil {
     if (perfil == null) throw new NotFoundException("Perfil no encontrado para el usuario: " + perfilId);
     return new PerfilDto(perfil);
   }
+
+  @Transactional
+  public void editarPerfil(String perfilId, PerfilRequest body) {
+    boolean actualizaMedios = body.getMediosDeContacto() != null;
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(actualizaMedios));
+    Usuario usuario = perfil.getUsuario();
+
+    boolean cambiaNombreUsuario = body.getNombreUsuario() != null
+        && !body.getNombreUsuario().equals(usuario.getNombre());
+
+    if (cambiaNombreUsuario) {
+      try {
+        this.repositorioUsuarios.guardar(
+            new Usuario(usuario.getId(), usuario.getRol(), body.getNombreUsuario(), usuario.getContrasenia())
+        );
+      } catch (DuplicateKeyException e) {
+        throw new BadRequestException("El nombre de usuario ya está en uso");
+      }
+    }
+
+    if (body.getNombre() != null) {
+      perfil.setNombre(body.getNombre());
+    }
+    if (actualizaMedios) {
+      perfil.setMediosDeContacto(body.getMediosDeContacto().stream()
+          .map(MedioDeContactoRequest::toEntity).toList());
+    }
+    this.repositorioPerfiles.guardar(perfil, new CamposPerfil(actualizaMedios));
+  }
+
 
   public PaginaResultado<CalificacionDto> obtenerCalificaciones(String perfilId, Integer pagina, Integer limite) {
     PaginaResultado<Calificacion> resultado = this.repositorioCalificacion.buscarPorDestinatario(perfilId, pagina, limite);

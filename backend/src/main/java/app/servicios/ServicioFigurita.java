@@ -6,7 +6,6 @@ import app.exceptions.NotFoundException;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
-import app.model.entities.Seleccion;
 import app.dto.filtros.FiguritasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
@@ -24,10 +23,10 @@ public class ServicioFigurita {
   private final RepositorioPerfiles repositorioPerfiles;
 
   public PaginaResultado<FiguritaIntercambiableDto> buscarFiguritas(
-      Integer numero, Seleccion seleccion, String jugador,
-      MetodoIntercambio tipo, int pagina, int tamanioPagina) {
+      Integer numero, String seleccion, String jugador,
+      List<MetodoIntercambio> tipos, int pagina, int tamanioPagina) {
 
-    FiguritasFiltro filtros = new FiguritasFiltro(null, numero, seleccion, jugador, tipo);
+    FiguritasFiltro filtros = new FiguritasFiltro(null, numero, seleccion, jugador, tipos);
     PaginaResultado<FiguritaIntercambiable> paginaRepo =
         repositorioColecciones.buscarIntercambiablesConFiltros(filtros, pagina, tamanioPagina);
 
@@ -40,10 +39,10 @@ public class ServicioFigurita {
   }
 
   public PaginaResultado<FiguritaIntercambiableDto> buscarPorQuery(
-      String q, MetodoIntercambio tipo, int pagina, int tamanioPagina) {
+      String q, List<MetodoIntercambio> tipos, int pagina, int tamanioPagina) {
 
     PaginaResultado<FiguritaIntercambiable> paginaRepo =
-        repositorioColecciones.buscarIntercambiablesPorQuery(q, tipo, pagina, tamanioPagina);
+        repositorioColecciones.buscarIntercambiablesPorQuery(q, tipos, pagina, tamanioPagina);
 
     List<FiguritaIntercambiableDto> contenido = paginaRepo.contenido().stream()
         .map(fi -> new FiguritaIntercambiableDto(fi, buscarPerfil(fi.getPerfilId())))

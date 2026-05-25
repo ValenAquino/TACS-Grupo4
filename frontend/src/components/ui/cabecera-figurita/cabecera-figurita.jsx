@@ -9,7 +9,7 @@ const CabeceraFigurita = ({ figurita, badge }) => (
       <div>
         <p className="titulo mb-0 fw-semibold">{figurita.jugador}</p>
         <p className="subtitulo mb-0 text-muted">
-          {figurita.seleccion?.nombre} · #{figurita.numero}
+          {figurita.seleccion} · #{figurita.numero}
         </p>
       </div>
     </div>

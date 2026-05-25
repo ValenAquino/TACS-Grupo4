@@ -243,6 +243,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     coleccionLucas.getFaltantes().add(lautaro);
     coleccionLucas.getFaltantes().add(pedri);
     coleccionLucas.getFaltantes().add(vinicius);
+    coleccionLucas.getFaltantes().add(neymar);
 
     colecciones.guardar(coleccionLucas);
 

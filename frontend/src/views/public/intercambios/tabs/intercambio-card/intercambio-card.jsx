@@ -39,9 +39,9 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
 
   const izq = esRecibida ? intercambio.figuritas_ofrecidas || [] : [intercambio.figurita_buscada]
   const der = esRecibida ? [intercambio.figurita_buscada] : intercambio.figuritas_ofrecidas || []
- 
+
   const estado = intercambio.estado
-   console.log({ esRecibida, esEnviada, estado, puedeAceptar: esRecibida && estado === 'PENDIENTE' })
+  console.log({ esRecibida, esEnviada, estado, puedeAceptar: esRecibida && estado === 'PENDIENTE' })
   const usuarioRelacionado = esRecibida ? intercambio.autor : intercambio.destinatario
   const autorCalificacion = esRecibida ? intercambio.destinatario.id : intercambio.autor.id
   const perfilCalificado = esRecibida ? intercambio.autor.id : intercambio.destinatario.id
@@ -50,7 +50,6 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
   const puedeRechazar = esRecibida && estado === 'PENDIENTE'
   const puedeAceptar = esRecibida && estado === 'PENDIENTE'
   const puedeCalificar = estado === 'ACEPTADO'
-  const puedeVerDetalle = !(puedeAceptar || puedeRechazar)
 
   const ejecutarCancelar = async () => {
     try {
@@ -148,14 +147,12 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
 
         <SectionCard.Section>
           <div className="d-flex gap-2 mt-3">
-            {puedeVerDetalle && (
-              <Button
-                className="flex-fill"
-                label="Ver detalle"
-                variante="secundarioBorde"
-                onClick={() => navigate(`/intercambios/${intercambio.id}`)}
-              />
-            )}
+            <Button
+              className="flex-fill"
+              label="Ver detalle"
+              variante="secundarioBorde"
+              onClick={() => navigate(`/intercambios/${intercambio.id}`)}
+            />
             {puedeCancelar && (
               <Button
                 className="flex-fill"

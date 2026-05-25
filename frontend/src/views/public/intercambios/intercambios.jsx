@@ -1,5 +1,5 @@
 import TabsContainer from '../../../components/ui/tabs-container/tabs-container.jsx'
-import PropuestasTab from './tabs/PropuestasTab.jsx'
+import PropuestasTab from './tabs/propuestas-tab.jsx'
 import SectionTitle from '../../../components/ui/section-title/section-title.jsx'
 
 const tabs = [

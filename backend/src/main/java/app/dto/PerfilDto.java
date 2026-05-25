@@ -1,24 +1,28 @@
 package app.dto;
 
+import app.model.entities.MedioDeContacto;
 import app.model.entities.Perfil;
-import lombok.Getter;
-
 import java.util.List;
+import lombok.Getter;
 
 @Getter
 public class PerfilDto {
   private String id;
   private String usuarioId;
   private String nombre;
+  private String nombreUsuario;
   private String iniciales;
   private Number calificacionMedia;
+  private List<MedioDeContacto> mediosDeContacto;
 
   public PerfilDto(Perfil perfil) {
     this.usuarioId = perfil.getUsuario().getId();
     this.id = perfil.getId();
     this.nombre = perfil.getNombre();
+    this.nombreUsuario = perfil.getUsuario().getNombre();
     this.iniciales = calcularIniciales(nombre);
     this.calificacionMedia = perfil.getCalificacionMedia();
+    this.mediosDeContacto = perfil.getMediosDeContacto();
   }
 
   private String calcularIniciales(String nombre) {

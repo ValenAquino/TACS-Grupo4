@@ -22,15 +22,13 @@ export const buscarSugerencias = async ({ tipo, pagina, limite }) => {
   }
 }
 
-export const calificarPerfil = async ({
-  destinatarioId,
-  valor,
-  descripcion,
-  transactionId,
-  tipoTransaccion,
-}) => {
+export const calificarPerfil = async (
+  autorId,
+  perfilId,
+  { valor, descripcion, transactionId, tipoTransaccion },
+) => {
   await api.post(`/perfil/calificaciones`, {
-    destinatario_id: destinatarioId,
+    destinatario_id: perfilId,
     valor,
     descripcion,
     transaction_id: transactionId,
@@ -60,6 +58,18 @@ export const buscarContadores = async () => {
   try {
     const { data } = await api.get(`${PERFIL_URL}/contadores`)
     return data
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}
+
+export const editarPerfil = async ({ nombre, nombreUsuario, mediosDeContacto }) => {
+  try {
+    await api.put(PERFIL_URL, {
+      nombre,
+      nombre_usuario: nombreUsuario,
+      medios_de_contacto: mediosDeContacto,
+    })
   } catch (error) {
     handleAxiosError(error)
   }

@@ -1,0 +1,44 @@
+.icono {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icono-telegram {
+  background-color: #0088cc;
+}
+
+.icono-mail {
+  background-color: #ffc107;
+}
+
+.medio-valor {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.badge {
+  background-color: #175a2d;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+}
+
+.btn-accion {
+  padding: 6px 12px;
+}
+
+.select-editar {
+  width: 120px;
+}
+
+.input-editar {
+  flex: 1;
+}
+
+.medio-info {
+  flex: 1;
+}

@@ -14,7 +14,7 @@
     border-radius: 8px;
     font-weight: 500;
     background-color: var(--color-primary-acent);
-    color: var(--color-secondary);
+    color: var(--color-text);
     animation: slideIn 0.3s ease forwards;
 }
 

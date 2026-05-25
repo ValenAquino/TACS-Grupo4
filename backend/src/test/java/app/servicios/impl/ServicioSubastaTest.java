@@ -52,7 +52,9 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     lucas = Perfil.builder()
-        .id(new ObjectId().toString()).usuario(user).nombre("Lucas")
+        .id("1")
+        .usuario(user)
+        .nombre("Lucas")
         .coleccion(coleccionSinMessi)
         .mediosDeContacto(telegram("@lucas"))
         .build();
@@ -66,7 +68,9 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     user = new Usuario("u-2", Rol.USUARIO, "sofia", "ape");
     sofia = Perfil.builder()
-        .id(new ObjectId().toString()).usuario(user).nombre("Sofía")
+        .id("2")
+        .usuario(user)
+        .nombre("Sofía")
         .coleccion(coleccionRepetidos)
         .mediosDeContacto(telegram("@sofia"))
         .build();
@@ -78,7 +82,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
   @Test
   void crearSubastaNotificaUsuarios() {
-    service.crearSubasta("u-2", "ARG-10", 30, List.of(), 0);
+    service.crearSubasta("2", "ARG-10", 30, List.of(), 0);
     assertEquals(1, repositorioNotificaciones.buscarPorPerfil(lucas).size());
   }
 
@@ -87,7 +91,7 @@ public class ServicioSubastaTest extends MongoTestBase {
     Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
     repositorioFiguritas.guardar(diMaria);
 
-    service.crearSubasta("u-2", "ARG-11", 30, List.of(), 0);
+    service.crearSubasta("2", "ARG-11", 30, List.of(), 0);
     assertEquals(0, repositorioNotificaciones.buscarPorPerfil(lucas).size());
   }
 
@@ -643,7 +647,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     @Test
     void crearSubasta_reservaFiguritaSubastada() {
-      service.crearSubasta("u-2", "ARG-10", 30, List.of(), 0);
+      service.crearSubasta("2", "ARG-10", 30, List.of(), 0);
 
       Coleccion col = repositorioColecciones.buscarPorId("c-2", new CamposColeccion(true, false));
       FiguritaIntercambiable repetida = col.getRepetidas().stream()

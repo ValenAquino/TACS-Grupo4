@@ -1,8 +1,7 @@
 .wrapper {
-  width: 100vw;
+  width: calc(100% + 4rem);
   position: relative;
-  left: 50%;
-  margin-left: -50vw;
+  left: -2rem;
   background-color: #175a2d;
   margin-top: -32px;
 }

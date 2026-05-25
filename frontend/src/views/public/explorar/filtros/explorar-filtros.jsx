@@ -1,29 +1,20 @@
-import { useRef, useState } from 'react'
 import styles from './explorar-filtros.module.css'
-
-const TIPOS = [
-  { key: 'intercambio', label: 'Intercambio' },
-  { key: 'subasta', label: 'Subasta' },
-]
+import useExplorarFiltros, { TIPOS } from './useExplorarFiltros'
 
 const ExplorarFiltros = ({ onAplicar }) => {
-  const [tipos, setTipos] = useState([])
-  const jugadorRef = useRef(null)
-  const seleccionRef = useRef(null)
-  const numeroRef = useRef(null)
-
-  const toggleTipo = (key) => {
-    setTipos((prev) => (prev.includes(key) ? prev.filter((t) => t !== key) : [...prev, key]))
-  }
-
-  const handleAplicar = () => {
-    onAplicar({
-      tipos,
-      jugador: jugadorRef.current.value,
-      seleccion: seleccionRef.current.value,
-      numero: numeroRef.current.value,
-    })
-  }
+  const {
+    tipos,
+    jugador,
+    seleccion,
+    numero,
+    chipsActivos,
+    toggleTipo,
+    setJugador,
+    setSeleccion,
+    setNumero,
+    aplicar,
+    quitarFiltro,
+  } = useExplorarFiltros(onAplicar)
 
   return (
     <div className={styles.filtrosCard}>
@@ -43,23 +34,45 @@ const ExplorarFiltros = ({ onAplicar }) => {
       </div>
 
       <div className={styles.filtrosInputRow}>
-        <input ref={jugadorRef} className={styles.filtroInput} type="text" placeholder="Jugador" />
         <input
-          ref={seleccionRef}
+          className={styles.filtroInput}
+          type="text"
+          placeholder="Jugador"
+          value={jugador}
+          onChange={(e) => setJugador(e.target.value)}
+        />
+        <input
           className={styles.filtroInput}
           type="text"
           placeholder="Selección"
+          value={seleccion}
+          onChange={(e) => setSeleccion(e.target.value)}
         />
         <input
-          ref={numeroRef}
           className={`${styles.filtroInput} ${styles.filtroInputSmall}`}
           type="number"
           placeholder="Nº figurita"
+          value={numero}
+          onChange={(e) => setNumero(e.target.value)}
         />
-        <button className={`btn ${styles.chipActive}`} onClick={handleAplicar}>
+        <button className={`btn ${styles.chipActive}`} onClick={aplicar}>
           Aplicar
         </button>
       </div>
+
+      {chipsActivos.length > 0 && (
+        <div className={styles.chipsActivos}>
+          {chipsActivos.map(({ campo, valor, label }) => (
+            <button
+              key={`${campo}-${valor}`}
+              className={styles.chipActivo}
+              onClick={() => quitarFiltro(campo, valor)}
+            >
+              {label} <span className={styles.chipX}>×</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

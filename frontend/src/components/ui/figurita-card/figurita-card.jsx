@@ -52,11 +52,13 @@ const CardBody = ({
       )}
     </div>
 
-    <hr className={styles.divider} />
-
-    {nombreUsuario && <UserChip nombre={nombreUsuario} reputacion={reputacion} />}
-
-    <hr className={styles.divider} />
+    {nombreUsuario && (
+      <>
+        <hr className={styles.divider} />
+        <UserChip nombre={nombreUsuario} reputacion={reputacion} />
+        <hr className={styles.divider} />
+      </>
+    )}
 
     {(tipo === 'intercambio' || tipo === 'ambos') && (
       <CardActionBtn to="/intercambios/crear" label="Proponer intercambio ↗" state={{ figurita }} />

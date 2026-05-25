@@ -5,6 +5,7 @@ import app.model.entities.Calificacion;
 import app.model.entities.MetodoIntercambio;
 import app.repositories.RepositorioCalificacion;
 import java.util.List;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -20,6 +21,10 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     mongoTemplate.save(calificacion);
   }
 
+  private static Object toId(String id) {
+    return ObjectId.isValid(id) ? new ObjectId(id) : id;
+  }
+
   public PaginaResultado<Calificacion> buscarPorDestinatario(
       String destinatarioId,
       Integer pagina,
@@ -29,7 +34,7 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("destinatario.$id").is(destinatarioId)
+        Criteria.where("destinatario.$id").is(toId(destinatarioId))
     );
 
     long count = mongoTemplate.count(query, Calificacion.class);
@@ -58,11 +63,11 @@ public class RepositorioCalificacionesMongo implements RepositorioCalificacion {
     Query query = new Query();
 
     query.addCriteria(
-        Criteria.where("destinatario.$id").is(perfilDestinoId)
+        Criteria.where("destinatario.$id").is(toId(perfilDestinoId))
     );
 
     query.addCriteria(
-        Criteria.where("autor.$id").is(perfilAutorId)
+        Criteria.where("autor.$id").is(toId(perfilAutorId))
     );
 
     query.addCriteria(

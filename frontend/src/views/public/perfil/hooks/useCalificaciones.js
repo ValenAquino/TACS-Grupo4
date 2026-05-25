@@ -4,7 +4,7 @@ import { useError } from '@/contexts/errorContext.jsx'
 import usePaginacion from '@/hooks/usePaginacion.js'
 
 export const useCalificaciones = () => {
-  const [reviews, setReviews] = useState([])
+  const [reviews, setReviews] = useState({})
   const [loading, setLoading] = useState(false)
   const [filtros] = useState({})
   const { pagina, setPagina } = usePaginacion()
@@ -24,7 +24,7 @@ export const useCalificaciones = () => {
       }
     }
     cargar()
-  }, [filtros, pagina])
+  }, [filtros, handleError, pagina])
 
   return { reviews, loading, pagina, setPagina }
 }

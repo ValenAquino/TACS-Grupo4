@@ -124,6 +124,7 @@ public class ServicioPerfil {
     return new PerfilDto(perfil);
   }
 
+  @Transactional
   public void editarPerfil(String perfilId, PerfilRequest body) {
     boolean actualizaMedios = body.getMediosDeContacto() != null;
     Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(actualizaMedios));

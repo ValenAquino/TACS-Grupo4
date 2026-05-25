@@ -7,7 +7,7 @@ import Button from "@/components/ui/button/button.jsx";
 import { obtenerNotificaciones, marcarTodasLeidas } from "@/services/notificacionesService.js";
 
 const Navbar = () => {
-    const { tieneSesion } = useAuth();
+    const { user, tieneSesion } = useAuth();
     const [abierto, setAbierto] = useState(false);
     const [notificaciones, setNotificaciones] = useState([]);
     const wrapperRef = useRef(null);
@@ -17,6 +17,8 @@ const Navbar = () => {
         { to: "/mis-figuritas", label: "Mis figuritas" },
         { to: "/intercambios", label: "Intercambios" },
         { to: "/subastas", label: "Subastas" },
+        { to: "/estadisticas", label: "Estadisticas", privilege: "ADMINISTRADOR"},
+      { to: "/registrar", label: "Nuevo Admin", privilege: "ADMINISTRADOR"}
     ];
 
     const noLeidas = notificaciones.filter((n) => !n.leida).length;
@@ -170,18 +172,22 @@ const Navbar = () => {
                 {/* MENÚ CENTRAL */}
                 <div className="collapse navbar-collapse" id="navbarContent">
                     <ul className="navbar-nav mx-auto gap-2">
-                        {NAV_LINKS.map(({ to, label }) => (
-                            <li className="nav-item" key={to}>
-                                <NavLink
-                                    to={to}
-                                    className={({ isActive }) =>
-                                        `nav-link navbar-link ${isActive ? "navbar-link--active" : ""}`
-                                    }
-                                >
-                                    {label}
-                                </NavLink>
-                            </li>
-                        ))}
+                      {NAV_LINKS.map(({ to, label, privilege }) => {
+                        if (privilege && user?.rol !== privilege) return null;
+
+                        return (
+                          <li className="nav-item" key={to}>
+                            <NavLink
+                              to={to}
+                              className={({ isActive }) =>
+                                `nav-link navbar-link ${isActive ? "navbar-link--active" : ""}`
+                              }
+                            >
+                              {label}
+                            </NavLink>
+                          </li>
+                        );
+                      })}
                     </ul>
                 </div>
 

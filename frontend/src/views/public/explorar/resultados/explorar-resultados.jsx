@@ -19,8 +19,8 @@ const ExplorarResultados = ({
               <FiguritaCardSkeleton />
             </div>
           ))
-          : figuritas.map(fig => (
-            <div key={fig.id} className="col-12 col-md-6 col-lg-4">
+          : figuritas.map((fig,index) => (
+            <div key={index} className="col-12 col-md-6 col-lg-4">
               <FiguritaCard
                 id={fig.id}
                 number={fig.number}

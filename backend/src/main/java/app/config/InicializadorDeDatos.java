@@ -139,109 +139,329 @@ public class InicializadorDeDatos implements CommandLineRunner {
                               Figurita mbappe, Figurita griezmann, Figurita vinicius,
                               Figurita pedri, Figurita kroos, Figurita neymar,
                               String juanId, String lucasId, String sofiaId, String matiasId) {
+
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    Usuario user = new Usuario("admin", passwordEncoder.encode("admin"), Rol.ADMINISTRADOR);
-    usuarios.guardar(user);
+
+    Usuario admin = new Usuario("admin", passwordEncoder.encode("admin"), Rol.ADMINISTRADOR);
+    usuarios.guardar(admin);
+
     Coleccion coleccionAdmin = new Coleccion();
     Perfil perfilAdmin = Perfil.builder()
-        .usuario(user).nombre(user.getNombre())
+        .usuario(admin)
+        .nombre(admin.getNombre())
         .coleccion(coleccionAdmin)
         .build();
+
     colecciones.guardar(coleccionAdmin);
     perfiles.guardar(perfilAdmin);
 
-    // Juan
+    // JUAN
     Coleccion coleccionJuan = new Coleccion();
+
+    coleccionJuan.getFaltantes().add(griezmann);
+    coleccionJuan.getFaltantes().add(kroos);
+
     colecciones.guardar(coleccionJuan);
-    user = new Usuario("juan_jose", passwordEncoder.encode("una contrasenia"), Rol.USUARIO);
-    usuarios.guardar(user);
+
+    Usuario userJuan = new Usuario(
+        "juan_jose",
+        passwordEncoder.encode("una contrasenia"),
+        Rol.USUARIO
+    );
+
+    usuarios.guardar(userJuan);
+
     Perfil juan = Perfil.builder()
         .id(juanId)
-        .usuario(user)
-        .nombre("Juan").coleccion(coleccionJuan)
-        .mediosDeContacto(telegram("@juan")).build();
+        .usuario(userJuan)
+        .nombre("Juan")
+        .coleccion(coleccionJuan)
+        .mediosDeContacto(telegram("@juan"))
+        .build();
+
     perfiles.guardar(juan);
 
-    FiguritaIntercambiable interPedri = new FiguritaIntercambiable(pedri, 1, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId());
-    coleccionJuan.getRepetidas().add(interPedri);
-    coleccionJuan.getFaltantes().add(pedri);
-    coleccionJuan.getFaltantes().add(kroos);
+    coleccionJuan.getRepetidas().add(
+        new FiguritaIntercambiable(
+            pedri,
+            2,
+            0,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            juan.getId()
+        )
+    );
+
+    coleccionJuan.getRepetidas().add(
+        new FiguritaIntercambiable(
+            kroos,
+            2,
+            1,
+            List.of(MetodoIntercambio.SUBASTA),
+            juan.getId()
+        )
+    );
+
+    coleccionJuan.getRepetidas().add(
+        new FiguritaIntercambiable(
+            griezmann,
+            2,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            juan.getId()
+        )
+    );
+
+    coleccionJuan.getRepetidas().add(
+        new FiguritaIntercambiable(
+            lautaro,
+            2,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            juan.getId()
+        )
+    );
+
     colecciones.guardar(coleccionJuan);
 
-    // Lucas
+    // LUCAS
     Coleccion coleccionLucas = new Coleccion();
+
+    coleccionLucas.getFaltantes().add(lautaro);
+    coleccionLucas.getFaltantes().add(pedri);
+    coleccionLucas.getFaltantes().add(vinicius);
+
     colecciones.guardar(coleccionLucas);
-    user = new Usuario("lucas_fis", passwordEncoder.encode("gordo123"), Rol.USUARIO);
-    usuarios.guardar(user);
+
+    Usuario userLucas = new Usuario(
+        "lucas_fis",
+        passwordEncoder.encode("gordo123"),
+        Rol.USUARIO
+    );
+
+    usuarios.guardar(userLucas);
+
     Perfil lucas = Perfil.builder()
         .id(lucasId)
-        .usuario(user)
-        .nombre("lucas").coleccion(coleccionLucas)
-        .mediosDeContacto(telegram("@lucas")).build();
-
-    Calificacion calificacion = Calificacion.builder()
-        .autor(juan).destinatario(lucas).valor(4)
-        .descripcion("dasda").transaccionId("1123")
-        .tipoTransaccion(MetodoIntercambio.INTERCAMBIO)
+        .usuario(userLucas)
+        .nombre("lucas")
+        .coleccion(coleccionLucas)
+        .mediosDeContacto(telegram("@lucas"))
         .build();
-    this.calificaciones.guardar(calificacion);
+
     perfiles.guardar(lucas);
 
-    FiguritaIntercambiable interMessi      = new FiguritaIntercambiable(messi,     3, 1, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId());
-    FiguritaIntercambiable interLautaro    = new FiguritaIntercambiable(lautaro,   3, 1, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId());
-    FiguritaIntercambiable interGriezmann1 = new FiguritaIntercambiable(griezmann, 3, 1, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId());
-    FiguritaIntercambiable interMbappe     = new FiguritaIntercambiable(mbappe,    3, 1, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId());
-    FiguritaIntercambiable interDiMaria    = new FiguritaIntercambiable(diMaria,   2, 2, List.of(MetodoIntercambio.SUBASTA),     lucas.getId());
-    coleccionLucas.getRepetidas().add(interMessi);
-    coleccionLucas.getRepetidas().add(interDiMaria);
-    coleccionLucas.getRepetidas().add(interLautaro);
-    coleccionLucas.getRepetidas().add(interGriezmann1);
-    coleccionLucas.getRepetidas().add(interMbappe);
-    coleccionLucas.getFaltantes().add(mbappe);
-    coleccionLucas.getFaltantes().add(vinicius);
+    coleccionLucas.getRepetidas().add(
+        new FiguritaIntercambiable(
+            diMaria,
+            2,
+            1,
+            List.of(MetodoIntercambio.SUBASTA),
+            lucas.getId()
+        )
+    );
+
+    coleccionLucas.getRepetidas().add(
+        new FiguritaIntercambiable(
+            griezmann,
+            2,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            lucas.getId()
+        )
+    );
+
+    coleccionLucas.getRepetidas().add(
+        new FiguritaIntercambiable(
+            mbappe,
+            3,
+            0,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            lucas.getId()
+        )
+    );
+
+    coleccionLucas.getRepetidas().add(
+        new FiguritaIntercambiable(
+            kroos,
+            2,
+            2,
+            List.of(MetodoIntercambio.SUBASTA),
+            lucas.getId()
+        )
+    );
+
+    coleccionLucas.getRepetidas().add(
+        new FiguritaIntercambiable(
+            messi,
+            2,
+            2,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            lucas.getId()
+        )
+    );
+
     colecciones.guardar(coleccionLucas);
 
-    // Sofía
+    // SOFIA
     Coleccion coleccionSofia = new Coleccion();
-    colecciones.guardar(coleccionSofia);
-    user = new Usuario("sofia_ape", passwordEncoder.encode("password"), Rol.USUARIO);
-    usuarios.guardar(user);
-    Perfil sofia = Perfil.builder()
-        .id(sofiaId)
-        .usuario(user)
-        .nombre("Sofía").coleccion(coleccionSofia)
-        .mediosDeContacto(telegram("@sofia")).build();
-    perfiles.guardar(sofia);
 
-    FiguritaIntercambiable interMbappe2   = new FiguritaIntercambiable(mbappe,    2, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId());
-    FiguritaIntercambiable interGriezmann = new FiguritaIntercambiable(griezmann, 1, List.of(MetodoIntercambio.SUBASTA),     sofia.getId());
-    FiguritaIntercambiable interNeymar    = new FiguritaIntercambiable(neymar,    1, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId());
-    coleccionSofia.getRepetidas().add(interMbappe2);
-    coleccionSofia.getRepetidas().add(interGriezmann);
-    coleccionSofia.getRepetidas().add(interNeymar);
     coleccionSofia.getFaltantes().add(messi);
     coleccionSofia.getFaltantes().add(lautaro);
+    coleccionSofia.getFaltantes().add(griezmann);
+    coleccionSofia.getFaltantes().add(kroos);
+
     colecciones.guardar(coleccionSofia);
 
-    // Matías
-    Coleccion coleccionMatias = new Coleccion();
-    colecciones.guardar(coleccionMatias);
-    user = new Usuario("mati_crim", passwordEncoder.encode("wordpass"), Rol.USUARIO);
-    usuarios.guardar(user);
-    Perfil matias = Perfil.builder()
-        .id(matiasId)
-        .usuario(user)
-        .nombre("Matías").coleccion(coleccionMatias)
-        .mediosDeContacto(telegram("@matias")).build();
-    perfiles.guardar(matias);
+    Usuario userSofia = new Usuario(
+        "sofia_ape",
+        passwordEncoder.encode("password"),
+        Rol.USUARIO
+    );
 
-    FiguritaIntercambiable interVinicius = new FiguritaIntercambiable(vinicius, 1, List.of(MetodoIntercambio.INTERCAMBIO), matias.getId());
-    coleccionMatias.getRepetidas().add(interVinicius);
+    usuarios.guardar(userSofia);
+
+    Perfil sofia = Perfil.builder()
+        .id(sofiaId)
+        .usuario(userSofia)
+        .nombre("Sofía")
+        .coleccion(coleccionSofia)
+        .mediosDeContacto(telegram("@sofia"))
+        .build();
+
+    perfiles.guardar(sofia);
+
+    coleccionSofia.getRepetidas().add(
+        new FiguritaIntercambiable(
+            mbappe,
+            2,
+            0,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            sofia.getId()
+        )
+    );
+
+    coleccionSofia.getRepetidas().add(
+        new FiguritaIntercambiable(
+            neymar,
+            1,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            sofia.getId()
+        )
+    );
+
+    coleccionSofia.getRepetidas().add(
+        new FiguritaIntercambiable(
+            pedri,
+            2,
+            1,
+            List.of(MetodoIntercambio.SUBASTA),
+            sofia.getId()
+        )
+    );
+
+    coleccionSofia.getRepetidas().add(
+        new FiguritaIntercambiable(
+            vinicius,
+            1,
+            1,
+            List.of(MetodoIntercambio.SUBASTA),
+            sofia.getId()
+        )
+    );
+
+    coleccionSofia.getRepetidas().add(
+        new FiguritaIntercambiable(
+            griezmann,
+            2,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            sofia.getId()
+        )
+    );
+
+    colecciones.guardar(coleccionSofia);
+
+    // MATIAS
+    Coleccion coleccionMatias = new Coleccion();
+
+    coleccionMatias.getFaltantes().add(diMaria);
     coleccionMatias.getFaltantes().add(pedri);
     coleccionMatias.getFaltantes().add(kroos);
+
     colecciones.guardar(coleccionMatias);
 
-    this.cargarCalificaciones(lucas, sofia, matias, juan);
+    Usuario userMatias = new Usuario(
+        "mati_crim",
+        passwordEncoder.encode("wordpass"),
+        Rol.USUARIO
+    );
+
+    usuarios.guardar(userMatias);
+
+    Perfil matias = Perfil.builder()
+        .id(matiasId)
+        .usuario(userMatias)
+        .nombre("Matías")
+        .coleccion(coleccionMatias)
+        .mediosDeContacto(telegram("@matias"))
+        .build();
+
+    perfiles.guardar(matias);
+
+    coleccionMatias.getRepetidas().add(
+        new FiguritaIntercambiable(
+            vinicius,
+            1,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            matias.getId()
+        )
+    );
+
+    coleccionMatias.getRepetidas().add(
+        new FiguritaIntercambiable(
+            messi,
+            2,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            matias.getId()
+        )
+    );
+
+    coleccionMatias.getRepetidas().add(
+        new FiguritaIntercambiable(
+            lautaro,
+            2,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO),
+            matias.getId()
+        )
+    );
+
+    coleccionMatias.getRepetidas().add(
+        new FiguritaIntercambiable(
+            pedri,
+            2,
+            1,
+            List.of(MetodoIntercambio.SUBASTA),
+            matias.getId()
+        )
+    );
+
+    coleccionMatias.getRepetidas().add(
+        new FiguritaIntercambiable(
+            kroos,
+            2,
+            1,
+            List.of(MetodoIntercambio.SUBASTA),
+            matias.getId()
+        )
+    );
+
+    colecciones.guardar(coleccionMatias);
+
+    cargarCalificaciones(lucas, sofia, matias, juan);
   }
 
   private void cargarCalificaciones(Perfil lucas, Perfil sofia, Perfil matias, Perfil juan) {
@@ -318,127 +538,127 @@ public class InicializadorDeDatos implements CommandLineRunner {
     if (matias == null) throw new RuntimeException("Matías es null");
     if (juan   == null) throw new RuntimeException("Juan es null");
 
+    // ─── MIS SUBASTAS (autor = Lucas) ────────────────────────────────────────
+
     // id=1 | Activa, cierra en ~45 min, 3 ofertas
     Propuesta ofertaSofia = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(sofia)
-        .destinatario(lucas)
+        .id("o1").autor(sofia).destinatario(lucas)
         .figuritasOfrecidas(List.of(neymar, vinicius))
-        .figuritaBuscada(mbappe).build();
-    Propuesta ofertaPedro = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(matias)
-        .destinatario(lucas)
+        .figuritaBuscada(lautaro).build();
+    Propuesta ofertaMatias = Propuesta.builder()
+        .id("o2").autor(matias).destinatario(lucas)
         .figuritasOfrecidas(List.of(pedri, kroos))
-        .figuritaBuscada(mbappe).build();
-    Propuesta ofertaLu = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(juan)
-        .destinatario(lucas)
-        .figuritasOfrecidas(List.of(griezmann, lautaro))
-        .figuritaBuscada(mbappe).build();
+        .figuritaBuscada(lautaro).build();
+    Propuesta ofertaJuan = Propuesta.builder()
+        .id("o3").autor(juan).destinatario(lucas)
+        .figuritasOfrecidas(List.of(griezmann))
+        .figuritaBuscada(lautaro).build();
     ofertaSofia.seleccionar(lucas.getId());
-    Subasta subasta1 = Subasta.builder()
-        .autor(lucas)
+    subastas.guardar(Subasta.builder()
+        .id("1").autor(lucas)
         .fechaInicio(LocalDateTime.now())
         .fechaCierre(LocalDateTime.now().plusMinutes(45))
-        .figuritaSubastada(mbappe)
-        .ofertas(new ArrayList<>(List.of(ofertaSofia, ofertaPedro, ofertaLu))).build();
-    subastas.guardar(subasta1);
+        .figuritaSubastada(lautaro)
+        .ofertas(new ArrayList<>(List.of(ofertaSofia, ofertaMatias, ofertaJuan)))
+        .build());
 
     // id=2 | Activa, cierra en 2 días, sin ofertas
-    Subasta subasta2 = Subasta.builder()
-        .autor(lucas)
+    subastas.guardar(Subasta.builder()
+        .id("2").autor(lucas)
         .fechaInicio(LocalDateTime.now())
         .fechaCierre(LocalDateTime.now().plusDays(2))
-        .figuritaSubastada(pedri).build();
-    subastas.guardar(subasta2);
+        .figuritaSubastada(pedri).build());
 
-    // id=3 | Finalizada, ganador: matias, sin calificar
+    // id=3 | Finalizada hace 2 días, ganador: matias, sin calificar
+    EstadoPropuesta aceptado3 = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO);
     Propuesta ofertaGanadora3 = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(matias)
-        .destinatario(lucas)
+        .id("o4").autor(matias).destinatario(lucas)
         .figuritasOfrecidas(List.of(messi, lautaro))
-        .figuritaBuscada(diMaria).build();
-    Subasta subasta3 = Subasta.builder()
-        .autor(lucas)
+        .figuritaBuscada(diMaria)
+        .estado(new ArrayList<>(List.of(aceptado3)))
+        .estadoActual(aceptado3)
+        .build();
+    subastas.guardar(Subasta.builder()
+        .id("3").autor(lucas)
         .fechaInicio(LocalDateTime.now().minusDays(2))
-        .fechaCierre(LocalDateTime.now())
+        .fechaCierre(LocalDateTime.now().minusMinutes(1))
         .figuritaSubastada(diMaria)
-        .ofertas(new ArrayList<>(List.of(ofertaGanadora3))).build();
-    ofertaGanadora3.aceptar(lucas.getId());
-    subastas.guardar(subasta3);
+        .ofertas(new ArrayList<>(List.of(ofertaGanadora3))).build());
 
-    // id=7 | Finalizada, ganador: sofia, ya calificada
+    // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
+    EstadoPropuesta aceptado7 = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO);
     Propuesta ofertaGanadora7 = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(sofia)
-        .destinatario(lucas)
+        .id("o5").autor(sofia).destinatario(lucas)
         .figuritasOfrecidas(List.of(pedri))
-        .figuritaBuscada(griezmann).build();
-    Subasta subasta7 = Subasta.builder()
-        .autor(lucas)
+        .figuritaBuscada(griezmann)
+        .estado(new ArrayList<>(List.of(aceptado7)))
+        .estadoActual(aceptado7)
+        .build();
+    subastas.guardar(Subasta.builder()
+        .id("7").autor(lucas)
         .fechaInicio(LocalDateTime.now().minusDays(5))
-        .fechaCierre(LocalDateTime.now())
+        .fechaCierre(LocalDateTime.now().minusMinutes(1))
         .figuritaSubastada(griezmann)
-        .ofertas(new ArrayList<>(List.of(ofertaGanadora7))).build();
-    subastas.guardar(subasta7);
+        .ofertas(new ArrayList<>(List.of(ofertaGanadora7))).build());
+
+    // ─── SUBASTAS DONDE LUCAS PARTICIPÓ (autor = otro perfil) ────────────────
 
     // id=4 | Activa, cierra en 2h, oferta de lucas SELECCIONADA
     Propuesta ofertaLucas4 = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(lucas)
-        .destinatario(sofia)
+        .id("o6").autor(lucas).destinatario(sofia)
         .figuritasOfrecidas(List.of(griezmann, kroos))
         .figuritaBuscada(vinicius).build();
-    Subasta subasta4 = Subasta.builder()
-        .autor(sofia)
+    ofertaLucas4.seleccionar(sofia.getId());
+    subastas.guardar(Subasta.builder()
+        .id("4").autor(sofia)
         .fechaInicio(LocalDateTime.now())
         .fechaCierre(LocalDateTime.now().plusHours(2))
         .figuritaSubastada(vinicius)
-        .ofertas(new ArrayList<>(List.of(ofertaLucas4))).build();
-    ofertaLucas4.seleccionar(sofia.getId());
-    subastas.guardar(subasta4);
+        .ofertas(new ArrayList<>(List.of(ofertaLucas4))).build());
 
-    // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
+    // id=5 | Activa, cierra en 1 día, oferta de lucas PENDIENTE
     Propuesta ofertaLucas5 = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(lucas)
-        .destinatario(matias)
+        .id("o7").autor(lucas).destinatario(matias)
         .figuritasOfrecidas(List.of(diMaria, messi))
         .figuritaBuscada(messi).build();
-    Subasta subasta5 = Subasta.builder()
-        .autor(matias)
+    subastas.guardar(Subasta.builder()
+        .id("5").autor(matias)
         .fechaInicio(LocalDateTime.now())
         .fechaCierre(LocalDateTime.now().plusDays(1))
         .figuritaSubastada(messi)
-        .ofertas(new ArrayList<>(List.of(ofertaLucas5))).build();
-    subastas.guardar(subasta5);
+        .ofertas(new ArrayList<>(List.of(ofertaLucas5))).build());
 
-    // id=8 | Finalizada, oferta de lucas ACEPTADA, ya calificada
+    // id=8 | Finalizada hace 5 días, ganador: juan, lucas no ganó
     Propuesta ofertaLucas8 = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(lucas)
-        .destinatario(sofia)
+        .id("o9").autor(lucas).destinatario(sofia)
         .figuritasOfrecidas(List.of(kroos))
         .figuritaBuscada(griezmann).build();
+    EstadoPropuesta aceptado8 = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO);
     Propuesta ofertaJuan1 = Propuesta.builder()
-        .id(new ObjectId().toHexString()).autor(juan)
-        .destinatario(sofia)
+        .id("o10").autor(juan).destinatario(sofia)
         .figuritasOfrecidas(List.of(kroos))
-        .figuritaBuscada(griezmann).build();
-    Subasta subasta8 = Subasta.builder()
-        .autor(sofia)
-        .fechaInicio(LocalDateTime.now().minusDays(5))
-        .fechaCierre(LocalDateTime.now())
-        .figuritaSubastada(griezmann)
-        .ofertas(new ArrayList<>(List.of(ofertaLucas8, ofertaJuan1))).build();
-    ofertaJuan1.aceptar(sofia.getId());
-    Calificacion calificacion = new Calificacion(new ObjectId().toHexString(), lucas, sofia, 2, "asda", "8", MetodoIntercambio.SUBASTA);
-    sofia.agregarNuevaCalificacion(calificacion);
-    subastas.guardar(subasta8);
+        .figuritaBuscada(griezmann)
+        .estado(new ArrayList<>(List.of(aceptado8)))
+        .estadoActual(aceptado8)
+        .build();
+    Calificacion calificacion = new Calificacion("202914", lucas, sofia, 2, "asda", "8", MetodoIntercambio.SUBASTA);
     calificaciones.guardar(calificacion);
+    sofia.agregarNuevaCalificacion(calificacion);
     perfiles.guardar(sofia);
-
-    // id=6 | Finalizada, lucas no participó
-    Subasta subasta6 = Subasta.builder()
-        .autor(juan)
+    subastas.guardar(Subasta.builder()
+        .id("8").autor(sofia)
         .fechaInicio(LocalDateTime.now().minusDays(5))
-        .fechaCierre(LocalDateTime.now())
-        .figuritaSubastada(neymar).build();
-    subastas.guardar(subasta6);
+        .fechaCierre(LocalDateTime.now().minusMinutes(1))
+        .figuritaSubastada(griezmann)
+        .ofertas(new ArrayList<>(List.of(ofertaLucas8, ofertaJuan1))).build());
+
+    // ─── SUBASTAS DONDE LUCAS NO PARTICIPÓ ────────────────────────────────────
+
+    // id=6 | Finalizada hace 5 días, sin ofertas
+    subastas.guardar(Subasta.builder()
+        .id("6").autor(juan)
+        .fechaInicio(LocalDateTime.now().minusDays(5))
+        .fechaCierre(LocalDateTime.now().minusMinutes(1))
+        .figuritaSubastada(neymar).build());
   }
 }

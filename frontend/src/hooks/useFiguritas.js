@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { explorarFiguritas } from '@/services/explorarService'
 import { useError } from '@/contexts/errorContext.jsx'
 
-const useFiguritas = (q, jugador, seleccion, numero, tipo, page) => {
+const useFiguritas = (q, jugador, seleccion, numero, tipos, page) => {
   const [figuritas, setFiguritas] = useState([])
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
@@ -15,7 +15,7 @@ const useFiguritas = (q, jugador, seleccion, numero, tipo, page) => {
     setError(false)
     const cargar = async () => {
       try {
-        const data = await explorarFiguritas({ q, jugador, seleccion, numero, tipo, page })
+        const data = await explorarFiguritas({ q, jugador, seleccion, numero, tipos, page })
         setFiguritas(data.contenido)
         setTotalPages(data.totalPages)
         setTotalElements(data.totalElements)
@@ -27,7 +27,7 @@ const useFiguritas = (q, jugador, seleccion, numero, tipo, page) => {
     }
 
     cargar()
-  }, [q, jugador, seleccion, numero, tipo, page])
+  }, [q, jugador, seleccion, numero, tipos, page])
 
   return { figuritas, totalPages, totalElements, loading, error }
 }

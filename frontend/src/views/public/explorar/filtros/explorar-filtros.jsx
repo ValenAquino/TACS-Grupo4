@@ -2,20 +2,23 @@ import { useRef, useState } from 'react'
 import styles from './explorar-filtros.module.css'
 
 const TIPOS = [
-  { key: 'todos', label: 'Todos' },
   { key: 'intercambio', label: 'Intercambio' },
   { key: 'subasta', label: 'Subasta' },
 ]
 
 const ExplorarFiltros = ({ onAplicar }) => {
-  const [tipo, setTipo] = useState('todos')
+  const [tipos, setTipos] = useState([])
   const jugadorRef = useRef(null)
   const seleccionRef = useRef(null)
   const numeroRef = useRef(null)
 
+  const toggleTipo = (key) => {
+    setTipos((prev) => (prev.includes(key) ? prev.filter((t) => t !== key) : [...prev, key]))
+  }
+
   const handleAplicar = () => {
     onAplicar({
-      tipo,
+      tipos,
       jugador: jugadorRef.current.value,
       seleccion: seleccionRef.current.value,
       numero: numeroRef.current.value,
@@ -24,16 +27,14 @@ const ExplorarFiltros = ({ onAplicar }) => {
 
   return (
     <div className={styles.filtrosCard}>
-
-      {/* Chips de tipo */}
       <div className={styles.filtrosRow}>
         <div className={styles.filtrosLeft}>
           <span className={styles.filtrosLabel}>Filtros:</span>
           {TIPOS.map(({ key, label }) => (
             <button
               key={key}
-              className={`${styles.chip} ${tipo === key ? styles.chipActive : ''}`}
-              onClick={() => setTipo(key)}
+              className={`${styles.chip} ${tipos.includes(key) ? styles.chipActive : ''}`}
+              onClick={() => toggleTipo(key)}
             >
               {label}
             </button>
@@ -41,14 +42,8 @@ const ExplorarFiltros = ({ onAplicar }) => {
         </div>
       </div>
 
-      {/* Inputs de búsqueda */}
       <div className={styles.filtrosInputRow}>
-        <input
-          ref={jugadorRef}
-          className={styles.filtroInput}
-          type="text"
-          placeholder="Jugador"
-        />
+        <input ref={jugadorRef} className={styles.filtroInput} type="text" placeholder="Jugador" />
         <input
           ref={seleccionRef}
           className={styles.filtroInput}
@@ -65,7 +60,6 @@ const ExplorarFiltros = ({ onAplicar }) => {
           Aplicar
         </button>
       </div>
-
     </div>
   )
 }

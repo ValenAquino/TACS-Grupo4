@@ -44,7 +44,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
   const puedeCancelar = esEnviada && estado === 'PENDIENTE'
   const puedeRechazar = esRecibida && estado === 'PENDIENTE'
   const puedeAceptar = esRecibida && estado === 'PENDIENTE'
-  const puedeCalificar = estado === 'ACEPTADO'
+  const puedeCalificar = estado === 'ACEPTADO' && !intercambio.ya_calificado
 
   const ejecutarCancelar = async () => {
     try {
@@ -111,6 +111,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
       })
       setShowCalificacion(false)
       showToast('Calificación realizada correctamente.')
+      onActualizado?.()
     } catch (error) {
       handleError(error, (err) => showToast(err.mensaje, 'error'))
     }

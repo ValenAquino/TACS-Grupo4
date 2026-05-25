@@ -755,6 +755,13 @@ class ServicioPropuestaTest extends MongoTestBase {
     assertEquals(1,
         resultado.cantidadDeElementos());
 
+    assertEquals(
+        "1000",
+        resultado.contenido()
+            .get(0)
+            .getAutor()
+            .getId()
+    );
   }
 
   @Test
@@ -817,6 +824,11 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     IntercambioDto dto =
         resultado.contenido().get(0);
+
+    assertEquals(
+        "1000",
+        dto.getAutor().getId()
+    );
 
     assertEquals(
         "1001",

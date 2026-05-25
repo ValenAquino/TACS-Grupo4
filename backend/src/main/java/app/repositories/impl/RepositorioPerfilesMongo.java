@@ -62,6 +62,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     query.addCriteria(
         Criteria.where("_id").is(id)
     );
+
     this.conCamposCargados(query, campos);
     Perfil perfil = mongoTemplate.findOne(query, Perfil.class);
 

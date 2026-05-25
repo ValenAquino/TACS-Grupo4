@@ -1,21 +1,22 @@
 import styles from './ver-subasta.module.css'
 import { useParams } from 'react-router'
 import { useEffect, useState } from 'react'
-import { buscarSubasta } from '../../../services/subastasService.js'
-import Breadcrumb from '../../../components/ui/breadcrumb/breadcrumb.jsx'
-import SectionCard from '../../../components/ui/section-card/section-card.jsx'
-import SectionTitle from '../../../components/ui/section-title/section-title.jsx'
-import PerfilSimple from '../../../components/ui/perfil-simple/perfil-simple.jsx'
+import { buscarSubasta } from '@/services/subastasService.js'
+import Breadcrumb from '@/components/ui/breadcrumb/breadcrumb.jsx'
+import SectionCard from '@/components/ui/section-card/section-card.jsx'
+import SectionTitle from '@/components/ui/section-title/section-title.jsx'
+import PerfilSimple from '@/components/ui/perfil-simple/perfil-simple.jsx'
 import OfertaCard from './oferta-card.jsx'
 import TuOfertaCard from './tu-oferta-card.jsx'
-import Button from '../../../components/ui/button/button.jsx'
-import useUsuarioActual from '../../../hooks/useUsuarioActual.js'
+import Button from '@/components/ui/button/button.jsx'
+import useUsuarioActual from '@/hooks/useUsuarioActual.js'
 import { useNavigate } from 'react-router-dom'
 
 const VerSubasta = () => {
   const { subId } = useParams()
   const { userId } = useUsuarioActual()
   const [cargando, setCargando] = useState(true)
+  const [error, setError] = useState(false)
   const [subasta, setSubasta] = useState(undefined)
   const [tiempo, setTiempo] = useState(0)
   const [subastaAbierta, setSubastaAbierta] = useState(false)
@@ -75,7 +76,9 @@ const VerSubasta = () => {
       setSubasta(payload)
       setSubastaAbierta(new Date(payload.cierre) > new Date())
       setTiempo(payload.tiempo_restante)
+      // eslint-disable-next-line no-unused-vars
     } catch (err) {
+      setError(true)
     } finally {
       setCargando(false)
     }
@@ -294,7 +297,13 @@ const VerSubasta = () => {
           { name: `#${subId}`, to: `/subastas/${subId}` },
         ]}
       />
-      {cargando ? <h2>Cargando subasta...</h2> : mostrarSubasta()}
+      {cargando ? (
+        <h2>Cargando subasta...</h2>
+      ) : error ? (
+        <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
+      ) : (
+        mostrarSubasta()
+      )}
     </div>
   )
 }

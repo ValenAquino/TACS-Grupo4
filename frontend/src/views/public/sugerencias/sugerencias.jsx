@@ -1,16 +1,17 @@
-import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
-import ContadorCard from "../../../components/ui/contador-card/contador-card.jsx";
+import Breadcrumb from "@/components/ui/breadcrumb/breadcrumb.jsx";
+import ContadorCard from "@/components/ui/contador-card/contador-card.jsx";
 import styles from './sugerencias.module.css';
-import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
+import TabsContainer from "@/components/ui/tabs-container/tabs-container.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarContadoresSugerencias} from "@/services/perfilService.js";
-import ExtraInfo from "../../../components/ui/extra-info/extra-info.jsx";
+import ExtraInfo from "@/components/ui/extra-info/extra-info.jsx";
 import MostradorSugerencias from "./tabs/mostrador-sugerencias.jsx";
-import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 
 const Sugerencias = () => {
 
     const [cargando, setCargando] = useState(true)
+    const [error, setError] = useState(false)
     const [contadores, setContadores] = useState([])
     const {userId} = useUsuarioActual()
 
@@ -27,8 +28,9 @@ const Sugerencias = () => {
             const payload = await buscarContadoresSugerencias()
             setContadores(payload)
 
+          // eslint-disable-next-line no-unused-vars
         } catch (error) {
-            console.log(error)
+            setError(true)
         } finally {
             setCargando(false)
         }
@@ -66,7 +68,7 @@ const Sugerencias = () => {
                 <div
                     className={styles.statGrid + " d-grid gap-3"}
                 >
-                    {cargando ? <h2>Cargando estadisticas...</h2> : mostrarContadores()}
+                    {cargando ? <h2>Cargando estadisticas...</h2> : error ? <p className="text-center text-secondary">No se pudo cargar la información</p> : mostrarContadores()}
                 </div>
                 <ExtraInfo>
                     <h6 className="m-0"><strong>¿Cómo funciona?</strong></h6>

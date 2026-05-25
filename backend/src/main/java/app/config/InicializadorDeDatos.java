@@ -398,7 +398,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .ofertas(new ArrayList<>(List.of(ofertaGanadora3)))
           .build();
 
-      ofertaGanadora3.aceptar(lucas.getId());
+      ofertaGanadora3.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
       subastas.guardar(subasta3);
 
       // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
@@ -474,7 +474,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           .ofertas(new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)))
           .build();
 
-      ofertaJuan1.aceptar(sofia.getId());
+      ofertaJuan1.getEstado().add(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO));
       Calificacion calificacion = new Calificacion(new ObjectId().toHexString(), lucas, sofia,  2, "asda", "8",MetodoIntercambio.SUBASTA);
       sofia.agregarNuevaCalificacion(calificacion);
       subastas.guardar(subasta8);

@@ -27,7 +27,7 @@ const useFiguritas = (q, jugador, seleccion, numero, tipos, page) => {
     }
 
     cargar()
-  }, [q, jugador, seleccion, numero, tipos, page])
+  }, [q, jugador, seleccion, numero, tipos, page, handleError])
 
   return { figuritas, totalPages, totalElements, loading, error }
 }

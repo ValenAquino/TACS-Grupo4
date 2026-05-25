@@ -22,6 +22,7 @@ import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
+import app.servicios.impl.ServicioDeAgregacionDeDatos;
 import app.repositories.impl.campos.CamposPerfil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
   private final RepositorioUsuarios usuarios;
   private final RepositorioCalificacion calificaciones;
   private final MongoTemplate mongoTemplate;
+  private final ServicioDeAgregacionDeDatos enriquecimientoService;
   private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
   @Value("${SEED_DATA:false}")
@@ -58,7 +60,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
                               RepositorioFiguritas figuritas,
                               RepositorioUsuarios usuarios,
                               RepositorioCalificacion calificaciones,
-                              MongoTemplate mongoTemplate) {
+                              MongoTemplate mongoTemplate,
+                              ServicioDeAgregacionDeDatos enriquecimientoService) {
     this.perfiles = perfiles;
     this.propuestas = propuestas;
     this.subastas = subastas;
@@ -67,6 +70,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     this.usuarios = usuarios;
     this.calificaciones = calificaciones;
     this.mongoTemplate = mongoTemplate;
+    this.enriquecimientoService = enriquecimientoService;
   }
 
   private List<MedioDeContacto> telegram(String numero) {
@@ -97,6 +101,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       mongoTemplate.dropCollection(Subasta.class);
       mongoTemplate.dropCollection(Calificacion.class);
     } else if (perfiles.contar() > 0) {
+      enriquecimientoService.agregarDatos(figuritas.buscarTodas());
       return;
     }
 
@@ -138,6 +143,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     cargarSubastas(griezmann, vinicius, pedri, kroos, neymar, mbappe, diMaria, messi, lautaro,
         idJuan, idLucas, idSofia, idMatias);
     cargarFiguritasExtra(lucas, sofia, matias, juan);
+    enriquecimientoService.agregarDatos(figuritas.buscarTodas());
   }
 
   private void cargarFiguritasExtra(Perfil lucas, Perfil sofia, Perfil matias, Perfil juan) {

@@ -586,6 +586,90 @@ public class ServicioSubastaTest extends MongoTestBase {
         .findFirst()
         .orElseThrow();
   }
+  @Nested
+  class CerrarYCancelarSubasta {
+
+    @BeforeEach
+    void setUpColecciones() {
+      Coleccion coleccionSofia = repositorioColecciones.buscarPorId("c-2", new CamposColeccion(true, false));
+      coleccionSofia.getRepetidas().stream()
+          .filter(r -> r.getFigurita().getId().equals(messi.getId()))
+          .findFirst()
+          .ifPresent(r -> r.setCantidadReservada(1));
+      repositorioColecciones.guardar(coleccionSofia, new CamposColeccion(true, false));
+    }
+
+    @Test
+    void cancelarSubasta_conOfertas_rechazaOfertasPendientes() {
+      Propuesta propuesta = Propuesta.builder()
+          .id("o-1").autor(lucas).destinatario(sofia)
+          .figuritaBuscada(messi)
+          .figuritasOfrecidas(List.of())
+          .build();
+
+      Subasta subasta = Subasta.builder()
+          .id("s-1").autor(sofia)
+          .fechaInicio(LocalDateTime.now().minusHours(1))
+          .fechaCierre(LocalDateTime.now().plusDays(1))
+          .figuritaSubastada(messi)
+          .ofertas(List.of(propuesta))
+          .build();
+
+      repositorioSubastas.guardar(subasta);
+
+      service.cancelarSubasta(sofia.getId(), "s-1");
+
+      Subasta cancelada = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
+      assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(cancelada, "o-1").getEstadoActual().getValor());
+    }
+    @Test
+    void cerrarSubasta_sinOfertaSeleccionada_rechazaOfertasPendientes() {
+      Propuesta propuesta = Propuesta.builder()
+          .id("o-1").autor(lucas).destinatario(sofia)
+          .figuritaBuscada(messi)
+          .figuritasOfrecidas(List.of())
+          .build();
+
+      Subasta subasta = Subasta.builder()
+          .id("s-1").autor(sofia)
+          .fechaInicio(LocalDateTime.now().minusHours(1))
+          .fechaCierre(LocalDateTime.now().plusDays(1))
+          .figuritaSubastada(messi)
+          .ofertas(List.of(propuesta))
+          .build();
+
+      repositorioSubastas.guardar(subasta);
+
+      service.cerrarSubasta(sofia.getId(), "s-1");
+
+      Subasta cerrada = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
+      assertEquals(EstadoProceso.RECHAZADO, buscarOfertaEn(cerrada, "o-1").getEstadoActual().getValor());
+    }
+    @Test
+    void cerrarSubasta_conOfertaSeleccionada_aceptaGanador() {
+      Propuesta propuesta = Propuesta.builder()
+          .id("o-1").autor(lucas).destinatario(sofia)
+          .figuritaBuscada(messi)
+          .figuritasOfrecidas(List.of())
+          .build();
+      propuesta.seleccionar(sofia.getId());
+
+      Subasta subasta = Subasta.builder()
+          .id("s-1").autor(sofia)
+          .fechaInicio(LocalDateTime.now().minusHours(1))
+          .fechaCierre(LocalDateTime.now().plusDays(1))
+          .figuritaSubastada(messi)
+          .ofertas(List.of(propuesta))
+          .build();
+
+      repositorioSubastas.guardar(subasta);
+
+      service.cerrarSubasta(sofia.getId(), "s-1");
+
+      Subasta cerrada = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, true));
+      assertEquals(EstadoProceso.ACEPTADO, buscarOfertaEn(cerrada, "o-1").getEstadoActual().getValor());
+    }
+  }
 
   @Nested
   class ReservasColeccion {

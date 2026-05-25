@@ -49,7 +49,7 @@ const Faltantes = () => {
                         style={{ backgroundColor: "var(--color-primary)" }}
                     >
                         <p className="mb-1 fw-bold fs-2">
-                            {faltantes.resultados ?? 0}
+                            {faltantes.cantidad_de_elementos ?? 0}
                         </p>
                         <p className="mb-0 text-muted">Me Faltan</p>
                     </div>
@@ -58,7 +58,7 @@ const Faltantes = () => {
 
             <div className="d-flex justify-content-between align-items-center gap-3 flex-nowrap">
                 <p className="mb-0">
-                    {faltantes.resultados ?? 0} resultados encontrados
+                    {faltantes.cantidad_de_elementos ?? 0} resultados encontrados
                 </p>
 
                 <div className="flex-shrink-0">
@@ -87,8 +87,8 @@ const Faltantes = () => {
             ) : (
                 <>
                     <div className="row g-3 justify-content-center">
-                        {faltantes?.data?.length > 0 ? (
-                            faltantes.data.map((fig) => (
+                        {faltantes?.contenido?.length > 0 ? (
+                            faltantes.contenido.map((fig) => (
                                 <div
                                     key={fig.id}
                                     className="col-6 col-md-4 col-lg-3 d-flex justify-content-center"
@@ -107,7 +107,7 @@ const Faltantes = () => {
                     <div className="pt-3 d-flex justify-content-center">
                         <Paginacion
                             page={pagina}
-                            totalPages={faltantes.paginas_totales ?? 1}
+                            totalPages={faltantes.cantidad_de_paginas ?? 1}
                             onChange={setPagina}
                         />
                     </div>

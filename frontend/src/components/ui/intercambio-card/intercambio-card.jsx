@@ -7,6 +7,8 @@ import {calificarPerfil} from "@/services/perfilService.js";
 import CalificarModal from "@/components/ui/calificar-modal/calificar-modal.jsx";
 import {useState} from "react";
 import ConfirmModal from "@/components/ui/confirm-modal/confirm-modal.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
+import {useToast} from "@/contexts/toastContext.jsx";
 
 const ChipFigurita = ({ figurita }) => (
     <div className="border rounded p-2 mb-1 d-flex align-items-center gap-2">
@@ -22,11 +24,29 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
     const [showCalificacion, setShowCalificacion] = useState(false);
     const [confirmAction, setConfirmAction] = useState(null);
 
-    const izq = intercambio.figurita_buscada
-        ? [intercambio.figurita_buscada]
-        : [];
+    const {handleError, errorTemplate} = useError();
+    const {showToast} = useToast()
 
-    const der = intercambio.figuritas_ofrecidas || [];
+    const [errorState, setErrorState] = useState(errorTemplate({nombre:undefined, contrasenia: undefined}));
+
+
+    const izq = tipo === "RECIBIDA"
+        ? intercambio.figuritas_ofrecidas || []
+        : [intercambio.figurita_buscada];
+
+    const der = tipo === "RECIBIDA"
+        ? [intercambio.figurita_buscada]
+        : intercambio.figuritas_ofrecidas || [];
+
+    const tituloIzq =
+        tipo === "RECIBIDA"
+            ? "Vos recibís"
+            : "Vos pedís";
+
+    const tituloDer =
+        tipo === "RECIBIDA"
+            ? "Vos entregás"
+            : "Vos ofrecés";
 
     const estado = intercambio.estado;
 
@@ -68,9 +88,10 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
         try {
             await cancelarPropuesta(intercambio.id);
             setConfirmAction(null);
+            showToast("Propuesta cancelada correctamente.")
             onActualizado?.()
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            showToast(handleError(error, setErrorState), "error")
         }
     };
 
@@ -78,9 +99,10 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
         try {
             await aceptarPropuesta(intercambio.id);
             setConfirmAction(null);
+            showToast("Propuesta aceptada correctamente.")
             onActualizado?.()
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            showToast(handleError(error, setErrorState), "error")
         }
     };
 
@@ -88,9 +110,10 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
         try {
             await rechazarPropuesta(intercambio.id);
             setConfirmAction(null);
+            showToast("Propuesta rechazada correctamente.")
             onActualizado?.()
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            showToast(handleError(error, setErrorState), "error")
         }
     };
 
@@ -130,9 +153,9 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
                 }
             );
             setShowCalificacion(false);
-
-        } catch (e) {
-            console.error(e);
+            showToast("Calificacion realizada correctamente.")
+        } catch (error) {
+            showToast(handleError(error, setErrorState), "error")
         }
     };
 
@@ -150,7 +173,7 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
                     <div className="row mt-2">
                         <div className="col">
                             <small className="text-uppercase text-muted fw-semibold">
-                                {esRecibida ? "Vos recibís" : "Vos pedís"}
+                                {tituloIzq}
                             </small>
 
                             {izq.map((f, index) => (
@@ -169,7 +192,7 @@ const IntercambioCard = ({ intercambio, tipo = "RECIBIDA", onActualizado}) => {
 
                         <div className="col">
                             <small className="text-uppercase text-muted fw-semibold">
-                                {esRecibida ? "Vos entregás" : "Vos ofrecés"}
+                                {tituloDer}
                             </small>
 
                             {der.map((f, index) => (

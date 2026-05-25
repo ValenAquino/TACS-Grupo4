@@ -36,17 +36,8 @@ import {useAuth} from "@/contexts/userContext.jsx";
      const cargarEnviadas = async () => {
          try {
              setLoading(true);
-
-
-             const enviadasApi = await buscarPropuestas({
-                 pagina: pagina,
-                 limite: 10,
-                 ...filtros
-             });
-
-
-             setEnviadas(enviadasApi);
-
+             const enviadasApi = await buscarPropuestas({pagina: pagina, limite: 10, ...filtros})
+             setEnviadas(enviadasApi)
          } catch (error) {
              console.error(error);
              handleError(error, () => {})
@@ -55,9 +46,21 @@ import {useAuth} from "@/contexts/userContext.jsx";
          }
      }
 
-    useEffect(() => {
+     useEffect(() => {
         cargarEnviadas();
-    }, [pagina, filtros])
+     }, [pagina, filtros])
+
+     const textosEstado = {
+         "": "Todas las propuestas",
+         "PENDIENTE": "Esperando respuesta",
+         "ACEPTADO": "Propuestas aceptadas",
+         "RECHAZADO": "Propuestas rechazadas",
+         "CANCELADO": "Propuestas canceladas"
+     };
+
+     const textoResultados =
+         textosEstado[filtros.estado] ||
+         "Propuestas";
 
     return (
         <div>
@@ -110,13 +113,25 @@ import {useAuth} from "@/contexts/userContext.jsx";
                     }
                     onClick={() => cambiarFiltro("PENDIENTE")}
                 />
+
+                <FilterChip
+                    label="Canceladas"
+                    selected={
+                        filtros.estado === "CANCELADO"
+                    }
+                    onClick={() =>
+                        cambiarFiltro("CANCELADO")
+                    }
+                />
             </div>
 
             {loading ? <p>Cargando resultados...</p>
                 :
                 enviadas?.contenido?.length > 0 ?
                 <>
-                    <p className={"mb-3"}>Esperando Respuesta {`(${enviadas.cantidad_de_elementos})`}</p>
+                    <p className={"mb-3"}>
+                        {textoResultados} ({enviadas.cantidad_de_elementos})
+                    </p>
                     {enviadas.contenido.map(i => (
                         <IntercambioCard
                             key={i.id}

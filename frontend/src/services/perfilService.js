@@ -33,13 +33,13 @@ export const calificarPerfil = async (
   { valor, descripcion, transactionId, tipoTransaccion },
 ) => {
   await api.post(
-    `/perfil/${perfilId}/calificaciones`,
+    `/perfil/calificaciones`,
     {
-        user_id: autorId,
-      valor,
-      descripcion,
-      transaction_id: transactionId,
-      tipo_transaccion: tipoTransaccion,
+        destinatario_id: perfilId,
+        valor,
+        descripcion,
+        transaction_id: transactionId,
+        tipo_transaccion: tipoTransaccion,
     }
   );
 };

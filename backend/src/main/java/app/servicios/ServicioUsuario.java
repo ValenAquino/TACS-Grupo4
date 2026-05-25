@@ -1,6 +1,8 @@
 package app.servicios;
 
 import app.dto.request.UsuarioRequest;
+import app.exceptions.BadRequestException;
+import app.exceptions.UnauthorizedException;
 import app.model.entities.Coleccion;
 import app.model.entities.Perfil;
 import app.model.entities.Rol;
@@ -23,8 +25,22 @@ public class ServicioUsuario {
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioColecciones repositorioColecciones;
 
-  public void registrar(UsuarioRequest request) {
+  public void registrarUsuario(UsuarioRequest request) {
+    request.setRol(Rol.USUARIO);
 
+    this.registrar(request);
+  }
+
+  public void registrarAdministrador(UsuarioRequest request, Rol rol) {
+
+    if(rol == Rol.ADMINISTRADOR) {
+      this.registrar(request);
+    } else {
+      throw new UnauthorizedException("Acceso denegado por rol invalido");
+    }
+  }
+
+  private void registrar(UsuarioRequest request) {
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     Usuario usuarioNuevo;
@@ -37,20 +53,18 @@ public class ServicioUsuario {
 
     this.repositorioUsuarios.guardar(usuarioNuevo);
 
-    if (Rol.ADMINISTRADOR.equals(request.getRol())) {
-      return;
-    }
-
     Coleccion coleccion = new Coleccion();
 
     this.repositorioColecciones.guardar(coleccion);
 
-    Perfil perfil = new Perfil(usuarioNuevo, usuarioNuevo.getNombre(), coleccion, new ArrayList<>());
+    Perfil perfil = Perfil.builder()
+        .usuario(usuarioNuevo)
+        .nombre(usuarioNuevo.getNombre())
+        .coleccion(coleccion)
+        .build();
 
     this.repositorioPerfiles.guardar(perfil);
   }
-
-
 }
 
 

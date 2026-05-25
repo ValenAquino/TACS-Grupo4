@@ -40,16 +40,6 @@ public class Perfil {
     @Builder.Default
     private int cantidadCalificaciones = 0;
 
-    public Perfil(Usuario usuario,
-                  String nombre,
-                  Coleccion coleccion,
-                  List<MedioDeContacto> mediosDeContacto) {
-        this.usuario = usuario;
-        this.nombre = nombre;
-        this.coleccion = coleccion;
-        this.mediosDeContacto = mediosDeContacto;
-    }
-
     /**
      * Calcula el promedio de las calificaciones recibidas.
      */

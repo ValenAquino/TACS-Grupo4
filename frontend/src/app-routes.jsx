@@ -22,8 +22,10 @@ import ServidorCaido from '@/views/public/errores/servidor-caido/servidor-caido.
 import ErrorInterno from '@/views/public/errores/error-interno/error-interno.jsx'
 import CrearOferta from './views/public/crear-oferta/crear-oferta.jsx'
 import EditarOferta from './views/public/editar-oferta/editar-oferta.jsx'
+import Administrador from './views/public/administrador/administrador.jsx'
+import RutaPrivilegiada from '@/components/autenticacion/ruta-privilegiada.jsx'
 
-const publics = [
+const publicas = [
   {
     path: '/',
     element: <Navigate to="/explorar" replace />,
@@ -54,7 +56,7 @@ const publics = [
   },
 ]
 
-const privates = [
+const privadas = [
   {
     path: '/mis-figuritas',
     element: <MisFiguritas />,
@@ -105,6 +107,13 @@ const privates = [
   }
 ]
 
+const privilegiadas = [
+  {
+    path: '/estadisticas',
+    element: <Administrador />,
+  }
+]
+
 const AppRoutes = () => {
   return (
     <ErrorProvider>
@@ -112,17 +121,23 @@ const AppRoutes = () => {
         <AuthProvider>
           <Routes>
             <Route element={<Layout />}>
-              {publics.map((route) => (
+              {publicas.map((route) => (
                 <Route key={route.path} path={route.path} element={route.element} />
               ))}
 
               <Route element={<RutaProtegida />}>
-                {privates.map((route) => (
+                {privadas.map((route) => (
+                  <Route key={route.path} path={route.path} element={route.element} />
+                ))}
+              </Route>
+
+              <Route element={<RutaPrivilegiada />}>
+                {privilegiadas.map((route) => (
                   <Route key={route.path} path={route.path} element={route.element} />
                 ))}
               </Route>
             </Route>
-            {/* <Route path="*" element={<NotFound />} /> */}
+
           </Routes>
         </AuthProvider>
       </ToastProvider>

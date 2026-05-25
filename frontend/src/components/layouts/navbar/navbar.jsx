@@ -4,13 +4,15 @@ import { useAuth } from "@/contexts/userContext.jsx";
 import Button from "@/components/ui/button/button.jsx";
 
 const Navbar = () => {
-    const { tieneSesion } = useAuth();
+    const { user, tieneSesion } = useAuth();
 
     const NAV_LINKS = [
         { to: "/explorar", label: "Explorar" },
         { to: "/mis-figuritas", label: "Mis figuritas" },
         { to: "/intercambios", label: "Intercambios" },
         { to: "/subastas", label: "Subastas" },
+        { to: "/estadisticas", label: "Estadisticas", privilege: "ADMINISTRADOR"},
+      { to: "/registrar", label: "Nuevo Admin", privilege: "ADMINISTRADOR"}
     ];
 
     const SesionActiva = () => (
@@ -77,20 +79,22 @@ const Navbar = () => {
                 {/* MENÚ CENTRAL */}
                 <div className="collapse navbar-collapse" id="navbarContent">
                     <ul className="navbar-nav mx-auto gap-2">
-                        {NAV_LINKS.map(({ to, label }) => (
-                            <li className="nav-item" key={to}>
-                                <NavLink
-                                    to={to}
-                                    className={({ isActive }) =>
-                                        `nav-link navbar-link ${
-                                            isActive ? "navbar-link--active" : ""
-                                        }`
-                                    }
-                                >
-                                    {label}
-                                </NavLink>
-                            </li>
-                        ))}
+                      {NAV_LINKS.map(({ to, label, privilege }) => {
+                        if (privilege && user?.rol !== privilege) return null;
+
+                        return (
+                          <li className="nav-item" key={to}>
+                            <NavLink
+                              to={to}
+                              className={({ isActive }) =>
+                                `nav-link navbar-link ${isActive ? "navbar-link--active" : ""}`
+                              }
+                            >
+                              {label}
+                            </NavLink>
+                          </li>
+                        );
+                      })}
                     </ul>
                 </div>
 

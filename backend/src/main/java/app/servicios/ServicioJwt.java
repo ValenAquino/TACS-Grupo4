@@ -105,6 +105,10 @@ public class ServicioJwt {
         .get("usuarioId", String.class);
   }
 
+  public String getRol(String token) {
+    return obtenerAtributos(token)
+        .get("rol", String.class);
+  }
 
   public String getPerfilId(String token) {
     return obtenerAtributos(token)

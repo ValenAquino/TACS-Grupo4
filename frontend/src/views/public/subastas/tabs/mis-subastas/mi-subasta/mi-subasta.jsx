@@ -13,7 +13,6 @@ import {
 } from '../../../../../../services/subastasService.js'
 import { calificarPerfil } from '../../../../../../services/perfilService.js'
 import { derivarTiempo } from '../../../../../../utils/subastasTiempo.js'
-import useUsuarioActual from '../../../../../../hooks/useUsuarioActual.js'
 import { useNavigate } from 'react-router'
 import './mi-subasta.css'
 
@@ -59,7 +58,6 @@ const MiSubasta = ({ subasta, finalizada, onRefresh }) => {
   } = subasta
 
   const { tiempoRestante, finalizadaHace, finalizaPronto } = derivarTiempo({ fecha_cierre })
-  const { userId } = useUsuarioActual()
   const navigate = useNavigate()
   const [modal, setModal] = useState(null)
   const [loadingModal, setLoadingModal] = useState(false)

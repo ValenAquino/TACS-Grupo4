@@ -3,6 +3,7 @@ package app.servicios.impl;
 import static org.junit.jupiter.api.Assertions.*;
 
 import app.MongoTestBase;
+import app.dto.IntercambioDto;
 import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
@@ -745,7 +746,7 @@ class ServicioPropuestaTest extends MongoTestBase {
             null
         );
 
-    PaginaResultado<PropuestaDto> resultado =
+    PaginaResultado<IntercambioDto> resultado =
         propuestaService.buscarPropuestas(
             "1001",
             filtro
@@ -754,13 +755,6 @@ class ServicioPropuestaTest extends MongoTestBase {
     assertEquals(1,
         resultado.cantidadDeElementos());
 
-    assertEquals(
-        "1000",
-        resultado.contenido()
-            .get(0)
-            .getAutor()
-            .getId()
-    );
   }
 
   @Test
@@ -774,7 +768,7 @@ class ServicioPropuestaTest extends MongoTestBase {
             null
         );
 
-    PaginaResultado<PropuestaDto> resultado =
+    PaginaResultado<IntercambioDto> resultado =
         propuestaService.buscarPropuestas(
             "1000",
             filtro
@@ -810,7 +804,7 @@ class ServicioPropuestaTest extends MongoTestBase {
             null
         );
 
-    PaginaResultado<PropuestaDto> resultado =
+    PaginaResultado<IntercambioDto> resultado =
         propuestaService.buscarPropuestas(
             "1000",
             filtro
@@ -821,13 +815,8 @@ class ServicioPropuestaTest extends MongoTestBase {
         resultado.contenido().size()
     );
 
-    PropuestaDto dto =
+    IntercambioDto dto =
         resultado.contenido().get(0);
-
-    assertEquals(
-        "1000",
-        dto.getAutor().getId()
-    );
 
     assertEquals(
         "1001",
@@ -871,7 +860,7 @@ class ServicioPropuestaTest extends MongoTestBase {
             EstadoProceso.RECHAZADO
         );
 
-    PaginaResultado<PropuestaDto> resultado =
+    PaginaResultado<IntercambioDto> resultado =
         propuestaService.buscarPropuestas(
             "1001",
             filtro
@@ -901,7 +890,7 @@ class ServicioPropuestaTest extends MongoTestBase {
             EstadoProceso.ACEPTADO
         );
 
-    PaginaResultado<PropuestaDto> resultado =
+    PaginaResultado<IntercambioDto> resultado =
         propuestaService.buscarPropuestas(
             "1001",
             filtro

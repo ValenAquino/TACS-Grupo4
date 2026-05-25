@@ -16,7 +16,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
         tipo: "ENVIADAS"
     });
     const [loading, setLoading] = useState(true);
-    const [pagina, setPagina] = useState(0);
+    const [pagina, setPagina] = useState(1);
 
     const {handleError} = useError()
 

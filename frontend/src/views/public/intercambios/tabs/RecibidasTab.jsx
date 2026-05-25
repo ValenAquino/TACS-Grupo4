@@ -10,7 +10,7 @@ import FilterChip from "@/components/ui/filter-chip/filter-chip.jsx";
 const RecibidasTab = () => {
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [pagina, setPagina] = useState(0);
+    const [pagina, setPagina] = useState(1);
     const [recibidas, setRecibidas] = useState([]);
     const [filtros, setFiltros] = useState({
         estado: "",

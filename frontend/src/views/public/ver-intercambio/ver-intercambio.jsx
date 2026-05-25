@@ -1,215 +1,215 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
-import SectionCard from "../../../components/ui/section-card/section-card.jsx";
-import SectionTitle from "../../../components/ui/section-title/section-title.jsx";
-import PerfilSimple from "../../../components/ui/perfil-simple/perfil-simple.jsx";
-import Button from "../../../components/ui/button/button.jsx";
+    import { useEffect, useState } from "react";
+    import { useParams, useNavigate } from "react-router-dom";
+    import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
+    import SectionCard from "../../../components/ui/section-card/section-card.jsx";
+    import SectionTitle from "../../../components/ui/section-title/section-title.jsx";
+    import PerfilSimple from "../../../components/ui/perfil-simple/perfil-simple.jsx";
+    import Button from "../../../components/ui/button/button.jsx";
 
-import {
-    obtenerPropuesta,
-    aceptarPropuesta,
-    rechazarPropuesta,
-} from "../../../services/propuestasService.js";
+    import {
+        obtenerPropuesta,
+        aceptarPropuesta,
+        rechazarPropuesta,
+    } from "../../../services/propuestasService.js";
 
-import FiguritaCard from "./figurita-card.jsx";
-import OfertaCard from "./oferta-card.jsx";
+    import FiguritaCard from "./figurita-card.jsx";
+    import OfertaCard from "./oferta-card.jsx";
 
-import styles from "./ver-intercambio.module.css";
+    import styles from "./ver-intercambio.module.css";
 
-const VerIntercambio = () => {
+    const VerIntercambio = () => {
 
-    const { intercambioId } = useParams();
-    const navigate = useNavigate();
-    const [cargando, setCargando] = useState(true);
-    const [propuesta, setPropuesta] = useState(null);
+        const { intercambioId } = useParams();
+        const navigate = useNavigate();
+        const [cargando, setCargando] = useState(true);
+        const [propuesta, setPropuesta] = useState(null);
 
-    const cargarIntercambio = async () => {
-        try {
-            setCargando(true);
-            const data = await obtenerPropuesta(intercambioId);
-            setPropuesta(data);
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setCargando(false);
+        const cargarIntercambio = async () => {
+            try {
+                setCargando(true);
+                const data = await obtenerPropuesta(intercambioId);
+                setPropuesta(data);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setCargando(false);
+            }
+        };
+
+        useEffect(() => {
+            cargarIntercambio();
+        }, [intercambioId]);
+
+        const handleAceptar = async () => {
+            try {
+                await aceptarPropuesta(propuesta.id);
+
+                setPropuesta((prev) => ({
+                    ...prev,
+                    estado: "ACEPTADO"
+                }));
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        const handleRechazar = async () => {
+            try {
+                await rechazarPropuesta(propuesta.id);
+
+                setPropuesta((prev) => ({
+                    ...prev,
+                    estado: "RECHAZADO"
+                }));
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        if (cargando) {
+            return (
+                <div className="container py-4">
+                    <h3>Cargando intercambio...</h3>
+                </div>
+            );
         }
-    };
 
-    useEffect(() => {
-        cargarIntercambio();
-    }, [intercambioId]);
-
-    const handleAceptar = async () => {
-        try {
-            await aceptarPropuesta(propuesta.id);
-
-            setPropuesta((prev) => ({
-                ...prev,
-                estado: "ACEPTADO"
-            }));
-        } catch (e) {
-            console.error(e);
+        if (!propuesta) {
+            return (
+                <div className="container py-4">
+                    <h3>No se encontró el intercambio</h3>
+                </div>
+            );
         }
-    };
 
-    const handleRechazar = async () => {
-        try {
-            await rechazarPropuesta(propuesta.id);
+        const esRecibida = propuesta.tipo === "RECIBIDA";
+        const esEnviada = propuesta.tipo === "ENVIADA";
 
-            setPropuesta((prev) => ({
-                ...prev,
-                estado: "RECHAZADO"
-            }));
-        } catch (e) {
-            console.error(e);
-        }
-    };
+        //Para que no aparezcan los botones, si ya fue ceptada o rechazada.
+        const estadoActual = propuesta?.estado;
+        const estaPendiente = estadoActual === "PENDIENTE" && esRecibida;
 
-    if (cargando) {
         return (
-            <div className="container py-4">
-                <h3>Cargando intercambio...</h3>
-            </div>
-        );
-    }
+            <div className="container py-4 px-3 px-md-4">
 
-    if (!propuesta) {
-        return (
-            <div className="container py-4">
-                <h3>No se encontró el intercambio</h3>
-            </div>
-        );
-    }
+                <Breadcrumb
+                    crumbs={[
+                        { name: "Intercambios", to: "/intercambios" },
+                        { name: `#${propuesta.id}`, to: `/intercambios/${propuesta.id}` },
+                    ]}
+                />
 
-    const esRecibida = propuesta.tipo === "RECIBIDA";
-    const esEnviada = propuesta.tipo === "ENVIADA";
+                <SectionCard>
 
-    //Para que no aparezcan los botones, si ya fue ceptada o rechazada.
-    const estadoActual = propuesta?.estado;
-    const estaPendiente = estadoActual === "PENDIENTE" && esRecibida;
+                    <SectionTitle>
+                        ESTADO DEL INTERCAMBIO
+                    </SectionTitle>
 
-    return (
-        <div className="container py-4 px-3 px-md-4">
+                    <SectionCard.Section>
 
-            <Breadcrumb
-                crumbs={[
-                    { name: "Intercambios", to: "/intercambios" },
-                    { name: `#${propuesta.id}`, to: `/intercambios/${propuesta.id}` },
-                ]}
-            />
+                        <div className="d-flex justify-content-between align-items-center">
 
-            <SectionCard>
+                            <div>
+                                <small className="text-muted">
+                                    Estado actual
+                                </small>
 
-                <SectionTitle>
-                    ESTADO DEL INTERCAMBIO
-                </SectionTitle>
+                                <h4 className="mb-0">
+                                    {propuesta.estado ?? "PENDIENTE"}
+                                </h4>
+                            </div>
 
-                <SectionCard.Section>
+                            {/* Botones de cambio de estado */}
+                            {
+                                estaPendiente && (
+                                    <div>
+                                        <Button
+                                            label={"Aceptar"}
+                                            className={"me-2"}
+                                            onClick={handleAceptar}
+                                        />
 
-                    <div className="d-flex justify-content-between align-items-center">
+                                        <Button
+                                            label={"Rechazar"}
+                                            onClick={handleRechazar}
+                                        />
+                                    </div>
+                                )
+                            }
 
-                        <div>
-                            <small className="text-muted">
-                                Estado actual
-                            </small>
-
-                            <h4 className="mb-0">
-                                {propuesta.estado ?? "PENDIENTE"}
-                            </h4>
                         </div>
 
-                        {/* Botones de cambio de estado */}
-                        {
-                            estaPendiente && (
-                                <div>
-                                    <Button
-                                        label={"Aceptar"}
-                                        className={"me-2"}
-                                        onClick={handleAceptar}
-                                    />
+                    </SectionCard.Section>
 
-                                    <Button
-                                        label={"Rechazar"}
-                                        onClick={handleRechazar}
-                                    />
-                                </div>
-                            )
-                        }
+                </SectionCard>
 
-                    </div>
+                <SectionCard>
 
-                </SectionCard.Section>
+                    <SectionTitle>
+                        USUARIO
+                    </SectionTitle>
 
-            </SectionCard>
+                    <SectionCard.Section>
+                        <PerfilSimple perfil={ esRecibida ? propuesta.autor : propuesta.destinatario}/>
+                    </SectionCard.Section>
 
-            <SectionCard>
+                </SectionCard>
 
-                <SectionTitle>
-                    USUARIO
-                </SectionTitle>
+                <SectionCard>
 
-                <SectionCard.Section>
-                    <PerfilSimple perfil={ esRecibida ? propuesta.autor : propuesta.destinatario}/>
-                </SectionCard.Section>
+                    <SectionTitle>
+                        FIGURITA SOLICITADA
+                    </SectionTitle>
 
-            </SectionCard>
+                    <SectionCard.Section>
 
-            <SectionCard>
+                        <FiguritaCard
+                            figurita={propuesta.figurita_buscada}
+                        />
 
-                <SectionTitle>
-                    FIGURITA SOLICITADA
-                </SectionTitle>
+                    </SectionCard.Section>
 
-                <SectionCard.Section>
+                </SectionCard>
 
-                    <FiguritaCard
-                        figurita={propuesta.figurita_buscada}
-                    />
+                <SectionCard>
 
-                </SectionCard.Section>
+                    <SectionTitle>
+                        FIGURITAS OFRECIDAS ({propuesta.figuritas_ofrecidas.length})
+                    </SectionTitle>
 
-            </SectionCard>
+                    <SectionCard.Section>
 
-            <SectionCard>
+                        <div className="d-flex flex-column gap-3">
 
-                <SectionTitle>
-                    FIGURITAS OFRECIDAS ({propuesta.figuritas_ofrecidas.length})
-                </SectionTitle>
+                            {propuesta.figuritas_ofrecidas.map((fig) => (
+                                <FiguritaCard
+                                    key={fig.id}
+                                    figurita={fig}
+                                />
+                            ))}
 
-                <SectionCard.Section>
+                        </div>
 
-                    <div className="d-flex flex-column gap-3">
+                    </SectionCard.Section>
 
-                        {propuesta.figuritas_ofrecidas.map((fig) => (
-                            <FiguritaCard
-                                key={fig.id}
-                                figurita={fig}
-                            />
-                        ))}
+                </SectionCard>
 
-                    </div>
+                <SectionCard>
 
-                </SectionCard.Section>
+                    <SectionTitle>
+                        RESUMEN DE LA PROPUESTA
+                    </SectionTitle>
 
-            </SectionCard>
+                    <SectionCard.Section>
 
-            <SectionCard>
+                        <OfertaCard propuesta={propuesta} tipo={propuesta.tipo}/>
 
-                <SectionTitle>
-                    RESUMEN DE LA PROPUESTA
-                </SectionTitle>
+                    </SectionCard.Section>
 
-                <SectionCard.Section>
+                </SectionCard>
 
-                    <OfertaCard propuesta={propuesta} tipo={propuesta.tipo}/>
+            </div>
+        );
+    };
 
-                </SectionCard.Section>
-
-            </SectionCard>
-
-        </div>
-    );
-};
-
-export default VerIntercambio;
+    export default VerIntercambio;

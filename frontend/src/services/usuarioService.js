@@ -19,3 +19,14 @@ export const crearAdministrador = async ({nombre, contrasenia, rol}) => {
     handleAxiosError(error)
   }
 }
+
+export const editarContrasenia = async ({ contraseniaActual, contraseniaNueva }) => {
+  try {
+    await api.put("/usuarios/contrasenia", {
+      contrasenia_actual: contraseniaActual,
+      contrasenia_nueva: contraseniaNueva,
+    })
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}

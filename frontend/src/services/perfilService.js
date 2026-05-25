@@ -74,14 +74,3 @@ export const editarPerfil = async ({ nombre, nombreUsuario, mediosDeContacto }) 
     handleAxiosError(error)
   }
 }
-
-export const editarContrasenia = async ({ contraseniaActual, contraseniaNueva }) => {
-  try {
-    await api.put(`${PERFIL_URL}/contrasenia`, {
-      contrasenia_actual: contraseniaActual,
-      contrasenia_nueva: contraseniaNueva,
-    })
-  } catch (error) {
-    handleAxiosError(error)
-  }
-}

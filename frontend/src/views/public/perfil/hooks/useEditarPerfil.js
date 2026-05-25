@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { editarContrasenia, editarPerfil } from '@/services/perfilService.js'
+import { editarPerfil } from '@/services/perfilService.js'
+import { editarContrasenia } from '@/services/usuarioService.js'
 import { useToast } from '@/contexts/toastContext.jsx'
 
 export const useEditarPerfil = (perfil) => {

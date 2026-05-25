@@ -3,7 +3,7 @@ import { buscarContadores, buscarPerfil } from '@/services/perfilService.js'
 import { useAuth } from '@/contexts/userContext.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
 import { useToast } from '@/contexts/toastContext.jsx'
-import { truncarADosDecimales } from '@/utils/estandarizar.jsx'
+import { truncarADosDecimales } from '@/utils/estandarizar.js'
 
 export const usePerfil = () => {
   const [perfil, setPerfil] = useState({})

@@ -106,7 +106,21 @@ public class InicializadorDeDatos implements CommandLineRunner {
     String idMatias = new ObjectId().toHexString();
 
     cargarPerfiles(messi, diMaria, lautaro, mbappe, griezmann, vinicius, pedri, kroos, neymar, idJuan, idLucas, idSofia, idMatias);
-    cargarPropuestas(messi, diMaria, griezmann, mbappe, vinicius, idLucas, idSofia, idMatias, idJuan);
+    cargarPropuestas(
+        messi,
+        diMaria,
+        lautaro,
+        griezmann,
+        mbappe,
+        vinicius,
+        pedri,
+        kroos,
+        neymar,
+        idLucas,
+        idSofia,
+        idMatias,
+        idJuan
+    );
     cargarSubastas(griezmann, vinicius, pedri, kroos, neymar, mbappe, diMaria, messi, lautaro, idJuan, idLucas, idSofia, idMatias);
     cargarFiguritasExtra();
   }
@@ -503,25 +517,122 @@ public class InicializadorDeDatos implements CommandLineRunner {
         .tipoTransaccion(MetodoIntercambio.SUBASTA).build());
   }
 
-  private void cargarPropuestas(Figurita messi, Figurita diMaria,
-                                Figurita griezmann, Figurita mbappe, Figurita vinicius,
-                                String lucasId, String sofiaId, String matiasId, String juanId) {
+  private void cargarPropuestas(Figurita messi,
+                                Figurita diMaria,
+                                Figurita lautaro,
+                                Figurita griezmann,
+                                Figurita mbappe,
+                                Figurita vinicius,
+                                Figurita pedri,
+                                Figurita kroos,
+                                Figurita neymar,
+                                String lucasId,
+                                String sofiaId,
+                                String matiasId,
+                                String juanId) {
+
     CamposPerfil sinCampos = new CamposPerfil(false);
+
     Perfil lucas  = perfiles.buscarPorId(lucasId, sinCampos);
     Perfil sofia  = perfiles.buscarPorId(sofiaId, sinCampos);
     Perfil matias = perfiles.buscarPorId(matiasId, sinCampos);
+    Perfil juan   = perfiles.buscarPorId(juanId, sinCampos);
 
-    List<Figurita> figs = new ArrayList<>();
-    figs.add(messi);
-    propuestas.guardar(propuesta(lucas, sofia, figs, mbappe, EstadoProceso.PENDIENTE));
+    // PROPUESTAS BASE
 
-    figs = new ArrayList<>();
-    figs.add(griezmann);
-    propuestas.guardar(propuesta(sofia, matias, figs, vinicius, EstadoProceso.ACEPTADO));
+    propuestas.guardar(
+        propuesta(
+            lucas,
+            sofia,
+            List.of(messi),
+            mbappe,
+            EstadoProceso.PENDIENTE
+        )
+    );
 
-    figs = new ArrayList<>();
-    figs.add(vinicius);
-    propuestas.guardar(propuesta(matias, lucas, figs, diMaria, EstadoProceso.RECHAZADO));
+    propuestas.guardar(
+        propuesta(
+            sofia,
+            matias,
+            List.of(griezmann),
+            vinicius,
+            EstadoProceso.ACEPTADO
+        )
+    );
+
+    propuestas.guardar(
+        propuesta(
+            matias,
+            lucas,
+            List.of(vinicius),
+            diMaria,
+            EstadoProceso.RECHAZADO
+        )
+    );
+
+    // PROPUESTAS RECIBIDAS POR LUCAS
+
+    propuestas.guardar(
+        propuesta(
+            sofia,
+            lucas,
+            List.of(neymar),
+            lautaro,
+            EstadoProceso.PENDIENTE
+        )
+    );
+
+    propuestas.guardar(
+        propuesta(
+            juan,
+            lucas,
+            List.of(kroos),
+            pedri,
+            EstadoProceso.PENDIENTE
+        )
+    );
+
+    propuestas.guardar(
+        propuesta(
+            matias,
+            lucas,
+            List.of(messi),
+            vinicius,
+            EstadoProceso.RECHAZADO
+        )
+    );
+
+    propuestas.guardar(
+        propuesta(
+            sofia,
+            lucas,
+            List.of(griezmann),
+            mbappe,
+            EstadoProceso.ACEPTADO
+        )
+    );
+
+    // PROPUESTAS EXTRA
+
+    propuestas.guardar(
+        propuesta(
+            juan,
+            sofia,
+            List.of(pedri),
+            messi,
+            EstadoProceso.CANCELADO
+        )
+    );
+
+    propuestas.guardar(
+        propuesta(
+            lucas,
+            matias,
+            List.of(griezmann, mbappe),
+            kroos,
+            EstadoProceso.SELECCIONADO
+        )
+    );
   }
 
   private void cargarSubastas(Figurita messi, Figurita diMaria, Figurita lautaro,

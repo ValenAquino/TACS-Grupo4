@@ -20,7 +20,7 @@ dev-back:
 	docker compose -f docker-compose.dev.yml up --build backend
 
 dev-front:
-	docker compose -f docker-compose.dev.yml up --build frontend --watch
+	docker compose -f docker-compose.dev.yml up --build --watch frontend
 
 dev-down:
 	docker compose -f docker-compose.dev.yml down

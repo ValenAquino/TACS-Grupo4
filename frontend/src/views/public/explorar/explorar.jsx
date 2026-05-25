@@ -7,7 +7,7 @@ import ExplorarFiltros from './filtros/explorar-filtros'
 import ExplorarResultados from './resultados/explorar-resultados'
 import styles from './explorar.module.css'
 
-const FILTROS_INICIAL = { q: '', tipo: 'todos', jugador: '', seleccion: '', numero: '' }
+const FILTROS_INICIAL = { q: '', tipos: [], jugador: '', seleccion: '', numero: '' }
 
 const Explorar = () => {
   const resultadosRef = useRef(null)
@@ -20,7 +20,7 @@ const Explorar = () => {
     filtros.jugador,
     filtros.seleccion,
     filtros.numero,
-    filtros.tipo,
+    filtros.tipos,
     pagina,
   )
 
@@ -35,7 +35,10 @@ const Explorar = () => {
 
   return (
     <main className={styles.page}>
-      <ExplorarSearch ref={heroInputRef} onQueryChange={(q) => handleAplicar({ ...FILTROS_INICIAL, q })} />
+      <ExplorarSearch
+        ref={heroInputRef}
+        onQueryChange={(q) => handleAplicar({ ...FILTROS_INICIAL, q })}
+      />
       <div className={styles.container}>
         <SugerenciasBanner />
         <ExplorarFiltros

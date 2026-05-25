@@ -8,7 +8,8 @@ const api = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
-    withCredentials: true
+    withCredentials: true,
+    paramsSerializer: { indexes: null },
 });
 
 export const ping = async () => {

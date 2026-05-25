@@ -1,12 +1,12 @@
 package app.dto.filtros;
 
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Seleccion;
+import java.util.List;
 
 public record FiguritasFiltro(
     String id,
     Integer numero,
-    Seleccion seleccion,
+    String seleccion,
     String jugador,
-    MetodoIntercambio tipo
+    List<MetodoIntercambio> tipos
 ) {}

@@ -1,152 +1,228 @@
-/* FiguritaCard.module.css */
-
+/* Card base */
 .card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 14px 16px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  height: 100%;
-  transition: box-shadow 0.18s ease, transform 0.18s ease;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    cursor: pointer;
 }
 
-.card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.09);
-  transform: translateY(-2px);
+/* glow al hover segun tipo de intercambio */
+.cardIntercambio:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(23, 90, 45, 0.28);
 }
 
-.cardSubasta {
-  background: #ffffff;
+.cardSubasta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(212, 154, 44, 0.35);
 }
 
-/* ── Header ─────────────────────────────────── */
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.cardAmbos:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(212, 154, 44, 0.35);
 }
 
-.cardNumber {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #6b7280;
+/* imagen */
+.hero {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
+/* outline superior de la card */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    z-index: 2;
+}
+
+.cardIntercambio .hero::before {
+    background: var(--color-secondary);
+}
+
+.cardSubasta .hero::before {
+    background: var(--color-terciary);
+}
+
+.cardAmbos .hero::before {
+    background: var(--color-terciary);
+}
+
+/* degradado en la foto */
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+    pointer-events: none;
+    z-index: 1;
+}
+
+.heroImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .heroImg {
+    transform: scale(1.06);
+}
+
+/* nro y etiqueta sobre la foto */
+.heroOverlay {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 2;
+}
+
+.heroNumber {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Etiquetas de tipo */
 .badge {
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 999px;
-  text-transform: lowercase;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    text-transform: lowercase;
+    white-space: nowrap;
 }
 
 .badgeIntercambio {
-  color: #16a34a;
-  background: #dcfce7;
+    background: var(--color-secondary-acent);
+    color: var(--color-secondary);
 }
 
 .badgeSubasta {
-  color: #ea580c;
-  background: #ffedd5;
+    background: #ffedd5;
+    color: #c2410c;
 }
 
+/* borde degradado el ::before actúa como borde con gradiente */
 .badgeAmbos {
-  color: #7c3aed;
-  background: #ede9fe;
+    background: #fff;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    color: var(--color-secondary);
 }
 
-/* ── Emoji / imagen ──────────────────────────── */
-.cardEmoji {
-  font-size: 2.8rem;
-  text-align: center;
-  line-height: 1;
-  padding: 14px 0;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80px;
+.badgeAmbos::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: 999px;
+    z-index: -1;
+    background: linear-gradient(to right, var(--color-secondary), var(--color-terciary));
 }
 
-.cardImage {
-  height: 120px;
-  width: auto;
-  object-fit: contain;
-}
-
-/* ── Info ────────────────────────────────────── */
-.cardInfo {
-  text-align: center;
+/* Cuerpo de la card */
+.body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
 }
 
 .cardName {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.metaRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
 }
 
 .cardSubtitle {
-  font-size: 0.78rem;
-  color: #6b7280;
-  margin: 2px 0 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0;
 }
 
-/* ── Footer ──────────────────────────────────── */
-.cardFooter {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 4px;
-}
-
-.cardAvailable {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #16a34a;
+.disponibles {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    flex-shrink: 0;
 }
 
 .cardExtra {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #ea580c;
+    font-size: 0.73rem;
+    color: #ea580c;
+    font-weight: 600;
 }
 
-/* ── Action button ───────────────────────────── */
+.divider {
+    border: none;
+    border-top: 1px solid #d1d5db;
+    margin: 2px 0;
+}
+
+/* Botones de acción */
 .actionBtn {
-  display: block;
-  width: 100%;
-  padding: 8px 0;
-  border: 1.5px solid #d1d5db;
-  border-radius: 8px;
-  background: transparent;
-  color: #374151;
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-family: var(--font-family);
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+    display: block;
+    width: 100%;
+    padding: 9px 0;
+    border: 1px solid var(--color-secondary);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--color-secondary);
+    font-size: 0.84rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.18s, color 0.18s;
+    margin-top: 2px;
 }
 
 .actionBtn:hover {
-  background: #f3f4f6;
-  border-color: #9ca3af;
+    background: var(--color-secondary);
+    color: #fff;
 }
 
 .actionBtnSubasta {
-  background: var(--color-terciary);
-  border-color: var(--color-terciary);
-  color: #ffffff;
-  font-weight: 600;
+    border: 1px solid var(--color-terciary);
+    background: transparent;
+    color: #8a5e0a;
 }
 
 .actionBtnSubasta:hover {
-  background: #b8851e;
-  border-color: #b8851e;
-  color: #ffffff;
+    background: var(--color-terciary);
+    color: #fff;
 }

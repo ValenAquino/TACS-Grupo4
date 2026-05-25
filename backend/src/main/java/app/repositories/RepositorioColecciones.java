@@ -33,10 +33,10 @@ public interface RepositorioColecciones {
   /**
    * Busca por texto libre: cada término (separado por espacios) debe matchear
    * jugador, selección o número en OR. Entre términos se aplica AND.
-   * El filtro {@code tipo} se aplica en AND sobre el resultado.
+   * El filtro {@code tipos} se aplica en AND sobre el resultado.
    */
   PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesPorQuery(
-      String q, MetodoIntercambio tipo, int pagina, int tamanioPagina);
+      String q, List<MetodoIntercambio> tipos, int pagina, int tamanioPagina);
 
   List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds);
   List<FiguritaIntercambiable> buscarIntercambiablesPorPerfilId(String usuarioId);

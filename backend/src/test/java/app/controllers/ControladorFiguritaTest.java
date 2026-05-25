@@ -43,10 +43,9 @@ class ControladorFiguritaTest {
     PaginaResultado<FiguritaIntercambiableDto> pagina =
         new PaginaResultado<>(List.of(dto), 1, 1, 0);
 
-    when(figuritaService.buscarFiguritas(10, Seleccion.ARGENTINA, "Messi",
-        MetodoIntercambio.INTERCAMBIO, 0, 12)).thenReturn(pagina);
+    when(figuritaService.buscarFiguritas(10, "ARGENTINA", "Messi", List.of(MetodoIntercambio.INTERCAMBIO), 0, 12)).thenReturn(pagina);
 
-    mockMvc.perform(get("/figuritas")
+    mockMvc.perform(get("/figuritas/intercambiables")
             .param("numero", "10")
             .param("seleccion", "ARGENTINA")
             .param("jugador", "Messi")
@@ -65,7 +64,7 @@ class ControladorFiguritaTest {
         null, null, null, null, 0, 12
     )).thenReturn(paginaVacia);
 
-    mockMvc.perform(get("/figuritas").contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(get("/figuritas/intercambiables").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.cantidad_de_elementos").value(0))
         .andExpect(jsonPath("$.contenido").isEmpty());
@@ -76,7 +75,7 @@ class ControladorFiguritaTest {
     when(figuritaService.buscarFiguritas(null, null, null, null, 0, 40))
         .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
 
-    mockMvc.perform(get("/figuritas")
+    mockMvc.perform(get("/figuritas/intercambiables")
             .param("tamanioPagina", "100")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
@@ -86,7 +85,7 @@ class ControladorFiguritaTest {
 
   @Test
   void obtenerFiguritas_tipoInvalido_devuelve400() throws Exception {
-    mockMvc.perform(get("/figuritas")
+    mockMvc.perform(get("/figuritas/intercambiables")
             .param("tipo", "INVALIDO")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest());
@@ -99,7 +98,7 @@ class ControladorFiguritaTest {
 
     when(figuritaService.buscarPorQuery("messi argentina", null, 0, 12)).thenReturn(pagina);
 
-    mockMvc.perform(get("/figuritas")
+    mockMvc.perform(get("/figuritas/intercambiables")
             .param("q", "messi argentina")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -110,15 +109,15 @@ class ControladorFiguritaTest {
 
   @Test
   void obtenerFiguritas_conQYTipo_combinaAmbos() throws Exception {
-    when(figuritaService.buscarPorQuery("messi", MetodoIntercambio.SUBASTA, 0, 12))
+    when(figuritaService.buscarPorQuery("messi", List.of(MetodoIntercambio.SUBASTA), 0, 12))
         .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
 
-    mockMvc.perform(get("/figuritas")
+    mockMvc.perform(get("/figuritas/intercambiables")
             .param("q", "messi")
             .param("tipo", "SUBASTA")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
-    verify(figuritaService).buscarPorQuery("messi", MetodoIntercambio.SUBASTA, 0, 12);
+    verify(figuritaService).buscarPorQuery("messi", List.of(MetodoIntercambio.SUBASTA), 0, 12);
   }
 }

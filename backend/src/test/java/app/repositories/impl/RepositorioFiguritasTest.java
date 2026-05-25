@@ -51,7 +51,7 @@ public class RepositorioFiguritasTest extends MongoTestBase {
     repositorioFiguritas.guardar(new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null));
     repositorioFiguritas.guardar(new Figurita("FRA-7", 7, "Mbappé", Seleccion.FRANCIA, null));
 
-    var resultado = repositorioFiguritas.buscarConFiltros(new FiguritasFiltro(null, null, Seleccion.ARGENTINA, null, null));
+    var resultado = repositorioFiguritas.buscarConFiltros(new FiguritasFiltro(null, null, "ARGENTINA", null, null));
 
     assertEquals(1, resultado.size());
     assertEquals("ARG-10", resultado.get(0).getId());

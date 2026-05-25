@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import useFiguritas from '@/hooks/useFiguritas'
+import usePaginacion from '@/hooks/usePaginacion'
 import ExplorarSearch from './search/explorar-search'
 import SugerenciasBanner from './sugerencias-banner/sugerencias-banner'
 import ExplorarFiltros from './filtros/explorar-filtros'
@@ -12,7 +13,7 @@ const Explorar = () => {
   const resultadosRef = useRef(null)
   const heroInputRef = useRef(null)
   const [filtros, setFiltros] = useState(FILTROS_INICIAL)
-  const [page, setPage] = useState(1)
+  const { pagina, setPagina, resetPagina } = usePaginacion()
 
   const { figuritas, totalPages, totalElements, loading, error } = useFiguritas(
     filtros.q,
@@ -20,17 +21,17 @@ const Explorar = () => {
     filtros.seleccion,
     filtros.numero,
     filtros.tipo,
-    page,
+    pagina,
   )
 
   const handleAplicar = (nuevosFiltros) => {
     setFiltros(nuevosFiltros)
-    setPage(1)
+    resetPagina()
   }
 
   useEffect(() => {
     resultadosRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [page])
+  }, [pagina])
 
   return (
     <main className={styles.page}>
@@ -48,8 +49,8 @@ const Explorar = () => {
           figuritas={figuritas}
           totalElements={totalElements}
           totalPages={totalPages}
-          page={page}
-          onPageChange={setPage}
+          page={pagina}
+          onPageChange={setPagina}
           loading={loading}
           error={error}
         />

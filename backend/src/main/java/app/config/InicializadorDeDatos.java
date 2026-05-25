@@ -21,14 +21,16 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
+import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposPerfil;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import app.repositories.RepositorioUsuarios;
-import app.repositories.impl.campos.CamposPerfil;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -146,6 +148,227 @@ public class InicializadorDeDatos implements CommandLineRunner {
         figuritas.guardar(fig);
         contador++;
       }
+      perfiles.guardar(lucas);
+
+      // Sofía: recibe 4, 3 y 4 → promedio 3.67
+      List<Calificacion> calssofia = List.of(
+          new Calificacion("C-3", lucas, sofia,  4, "Buena experiencia",    "2000", MetodoIntercambio.INTERCAMBIO),
+          new Calificacion("C-4", matias, sofia, 3, "Normal, sin problemas","2001", MetodoIntercambio.INTERCAMBIO),
+          new Calificacion("C-5", juan,   sofia, 4, "Respondió rápido",     "3000", MetodoIntercambio.SUBASTA)
+      );
+      calssofia.forEach(c -> { sofia.agregarNuevaCalificacion(c); calificaciones.guardar(c); });
+      perfiles.guardar(sofia);
+
+      // Matías: recibe 2 y 3 → promedio 2.5
+      List<Calificacion> calsmatias = List.of(
+          new Calificacion("C-6", lucas, matias, 2, "Tardó bastante en responder", "2002", MetodoIntercambio.INTERCAMBIO),
+          new Calificacion("C-7", sofia, matias, 3, "Aceptable",                   "2001", MetodoIntercambio.INTERCAMBIO)
+      );
+      calsmatias.forEach(c -> { matias.agregarNuevaCalificacion(c); calificaciones.guardar(c); });
+      perfiles.guardar(matias);
+
+      // Juan: recibe 1 y 2 → promedio 1.5
+      List<Calificacion> calsjuan = List.of(
+          new Calificacion("C-8", lucas, juan, 1, "No cumplió con el intercambio", "3001", MetodoIntercambio.SUBASTA),
+          new Calificacion("C-9", sofia, juan, 2, "Mala comunicación",             "3000", MetodoIntercambio.SUBASTA)
+      );
+      calsjuan.forEach(c -> { juan.agregarNuevaCalificacion(c); calificaciones.guardar(c); });
+      perfiles.guardar(juan);
+    }
+
+    private void cargarPropuestas(Figurita messi, Figurita diMaria,
+                                  Figurita griezmann, Figurita mbappe, Figurita vinicius,
+                                  String lucasId, String sofiaId, String matiasId, String juanId) {
+      CamposPerfil sinCampos = new CamposPerfil(false);
+      Perfil lucas  = perfiles.buscarPorId(lucasId, sinCampos);
+      Perfil sofia  = perfiles.buscarPorId(sofiaId, sinCampos);
+      Perfil matias = perfiles.buscarPorId(matiasId, sinCampos);
+
+      List<Figurita> figuritas = new ArrayList<>();
+      figuritas.add(messi);
+
+      propuestas.guardar(propuesta(lucas, sofia, figuritas, mbappe, EstadoProceso.PENDIENTE));
+
+      figuritas = new ArrayList<>();
+      figuritas.add(griezmann);
+      propuestas.guardar(propuesta(sofia, matias, figuritas, vinicius, EstadoProceso.ACEPTADO));
+
+      figuritas = new ArrayList<>();
+      figuritas.add(vinicius);
+      propuestas.guardar(propuesta(matias, lucas, figuritas, diMaria, EstadoProceso.RECHAZADO));
+    }
+
+    private void cargarSubastas(Figurita messi, Figurita diMaria, Figurita lautaro,
+                                Figurita mbappe, Figurita griezmann, Figurita vinicius,
+                                Figurita pedri, Figurita kroos, Figurita neymar,
+                                String juanId, String lucasId, String sofiaId, String matiasId) {
+
+      CamposPerfil sinCampos = new CamposPerfil(false);
+      Perfil lucas  = perfiles.buscarPorId(lucasId, sinCampos);
+      Perfil sofia  = perfiles.buscarPorId(sofiaId, sinCampos);
+      Perfil matias = perfiles.buscarPorId(matiasId, sinCampos);
+      Perfil juan   = perfiles.buscarPorId(juanId, sinCampos);
+      if (lucas == null) throw new RuntimeException("Lucas es null");
+      if (sofia == null) throw new RuntimeException("Sofía es null");
+      if (matias == null) throw new RuntimeException("Matías es null");
+      if (juan == null) throw new RuntimeException("Juan es null");
+
+        // ─── MIS SUBASTAS (autor = Lucas) ────────────────────────────────────────
+
+        // id=1 | Activa, cierra en ~45 min, 3 ofertas
+      Propuesta ofertaSofia = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(sofia)
+          .destinatario(lucas)
+          .figuritasOfrecidas(List.of(neymar, vinicius))
+          .figuritaBuscada(mbappe)
+          .build();
+
+      Propuesta ofertaPedro = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(matias)
+          .destinatario(lucas)
+          .figuritasOfrecidas(List.of(pedri, kroos))
+          .figuritaBuscada(mbappe)
+          .build();
+
+      Propuesta ofertaLu = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(juan)
+          .destinatario(lucas)
+          .figuritasOfrecidas(List.of(griezmann, lautaro))
+          .figuritaBuscada(mbappe)
+          .build();
+
+      ofertaSofia.seleccionar(lucas.getId());
+
+      Subasta subasta1 = Subasta.builder()
+          .autor(lucas)
+          .fechaInicio(LocalDateTime.now())
+          .fechaCierre(LocalDateTime.now().plusMinutes(45))
+          .figuritaSubastada(mbappe)
+          .ofertas(new ArrayList<>(List.of(ofertaSofia, ofertaPedro, ofertaLu)))
+          .build();
+
+      subastas.guardar(subasta1);
+
+      // id=2 | Activa, cierra en 2 días, sin ofertas
+      Subasta subasta2 = Subasta.builder()
+          .autor(lucas)
+          .fechaInicio(LocalDateTime.now())
+          .fechaCierre(LocalDateTime.now().plusDays(2))
+          .figuritaSubastada(pedri)
+          .build();
+
+      subastas.guardar(subasta2);
+
+      // id=3 | Finalizada hace 2 días, ganador: matias, sin calificar
+      EstadoPropuesta aceptado3 = new EstadoPropuesta(LocalDateTime.now().minusDays(2), EstadoProceso.ACEPTADO);
+      Propuesta ofertaGanadora3 = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(matias)
+          .destinatario(lucas)
+          .figuritasOfrecidas(List.of(messi, lautaro))
+          .figuritaBuscada(diMaria)
+          .estado(new ArrayList<>(List.of(aceptado3)))
+          .estadoActual(aceptado3)
+          .build();
+      Subasta subasta3 = Subasta.builder()
+          .autor(lucas)
+          .fechaInicio(LocalDateTime.now().minusDays(2))
+          .fechaCierre(LocalDateTime.now())
+          .figuritaSubastada(diMaria)
+          .ofertas(new ArrayList<>(List.of(ofertaGanadora3)))
+          .build();
+      subastas.guardar(subasta3);
+
+      // id=7 | Finalizada hace 5 días, ganador: sofia, ya calificada
+      Propuesta ofertaGanadora7 = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(sofia)
+          .destinatario(lucas)
+          .figuritasOfrecidas(List.of(pedri))
+          .figuritaBuscada(griezmann)
+          .build();
+      Subasta subasta7 = Subasta.builder()
+          .autor(lucas)
+          .fechaInicio(LocalDateTime.now().minusDays(5))
+          .fechaCierre(LocalDateTime.now())
+          .figuritaSubastada(griezmann)
+          .ofertas(new ArrayList<>(List.of(ofertaGanadora7)))
+          .build();
+      subastas.guardar(subasta7);
+
+      // ─── SUBASTAS DONDE LUCAS PARTICIPÓ (autor = otro perfil) ────────────────
+
+      // id=4 | Activa, cierra en 2h, oferta de lucas SELECCIONADA
+      Propuesta ofertaLucas4 = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(lucas)
+          .destinatario(sofia)
+          .figuritasOfrecidas(List.of(griezmann, kroos))
+          .figuritaBuscada(vinicius)
+          .build();
+      Subasta subasta4 = Subasta.builder()
+          .autor(sofia)
+          .fechaInicio(LocalDateTime.now())
+          .fechaCierre(LocalDateTime.now().plusHours(2))
+          .figuritaSubastada(vinicius)
+          .ofertas(new ArrayList<>(List.of(ofertaLucas4)))
+          .build();
+      ofertaLucas4.seleccionar(sofia.getId());
+      subastas.guardar(subasta4);
+
+      // id=5 | Activa, cierra en 1 día, oferta de lucas RECHAZADA
+      Propuesta ofertaLucas5 = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(lucas)
+          .destinatario(matias)
+          .figuritasOfrecidas(List.of(diMaria, messi))
+          .figuritaBuscada(messi)
+          .build();
+      Subasta subasta5 = Subasta.builder()
+          .autor(matias)
+          .fechaInicio(LocalDateTime.now())
+          .fechaCierre(LocalDateTime.now().plusDays(1))
+          .figuritaSubastada(messi)
+          .ofertas(new ArrayList<>(List.of(ofertaLucas5)))
+          .build();
+
+      subastas.guardar(subasta5);
+
+      // id=8 | Finalizada hace 5 días, oferta de lucas ACEPTADA, ya calificada
+      Propuesta ofertaLucas8 = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(lucas)
+          .destinatario(sofia)
+          .figuritasOfrecidas(List.of(kroos))
+          .figuritaBuscada(griezmann)
+          .build();
+      EstadoPropuesta aceptado8 = new EstadoPropuesta(LocalDateTime.now().minusDays(5), EstadoProceso.ACEPTADO);
+      Propuesta ofertaJuan1 = Propuesta.builder()
+          .id(new ObjectId().toHexString()).autor(juan)
+          .destinatario(sofia)
+          .figuritasOfrecidas(List.of(kroos))
+          .figuritaBuscada(griezmann)
+          .estado(new ArrayList<>(List.of(aceptado8)))
+          .estadoActual(aceptado8)
+          .build();
+      Subasta subasta8 = Subasta.builder()
+          .autor(sofia)
+          .fechaInicio(LocalDateTime.now().minusDays(5))
+          .fechaCierre(LocalDateTime.now())
+          .figuritaSubastada(griezmann)
+          .ofertas(new ArrayList<>(List.of(ofertaLucas8,ofertaJuan1)))
+          .build();
+      Calificacion calificacion = new Calificacion(new ObjectId().toHexString(), lucas, sofia,  2, "asda", "8",MetodoIntercambio.SUBASTA);
+      sofia.agregarNuevaCalificacion(calificacion);
+      subastas.guardar(subasta8);
+      calificaciones.guardar(calificacion);
+      perfiles.guardar(sofia);
+
+      // ─── SUBASTAS DONDE LUCAS NO PARTICIPÓ ────────────────
+
+      // id=6 | Finalizada hace 5 días, oferta de lucas ACEPTADA, sin calificar
+      Subasta subasta6 = Subasta.builder()
+          .autor(juan)
+          .fechaInicio(LocalDateTime.now().minusDays(5))
+          .fechaCierre(LocalDateTime.now())
+          .figuritaSubastada(neymar)
+          .build();
+      subastas.guardar(subasta6);
     }
   }
 

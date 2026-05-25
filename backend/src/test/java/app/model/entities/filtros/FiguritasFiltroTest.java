@@ -14,14 +14,14 @@ class FiguritasFiltroTest {
     FiguritasFiltro filtro = new FiguritasFiltro(
         "abc123",
         10,
-        Seleccion.ARGENTINA,
+        "ARGENTINA",
         "Messi",
         null
     );
 
     assertEquals("abc123", filtro.id());
     assertEquals(10, filtro.numero());
-    assertEquals(Seleccion.ARGENTINA, filtro.seleccion());
+    assertEquals("ARGENTINA", filtro.seleccion());
     assertEquals("Messi", filtro.jugador());
   }
 
@@ -37,8 +37,8 @@ class FiguritasFiltroTest {
 
   @Test
   void deberiaSerIgualSiLosValoresSonIguales() {
-    FiguritasFiltro a = new FiguritasFiltro("1", 10, Seleccion.ARGENTINA, "Messi", null);
-    FiguritasFiltro b = new FiguritasFiltro("1", 10, Seleccion.ARGENTINA, "Messi", null);
+    FiguritasFiltro a = new FiguritasFiltro("1", 10, "ARGENTINA", "Messi", null);
+    FiguritasFiltro b = new FiguritasFiltro("1", 10, "ARGENTINA", "Messi", null);
 
     assertEquals(a, b);
   }

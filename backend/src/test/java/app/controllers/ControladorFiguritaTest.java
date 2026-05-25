@@ -43,8 +43,7 @@ class ControladorFiguritaTest {
     PaginaResultado<FiguritaIntercambiableDto> pagina =
         new PaginaResultado<>(List.of(dto), 1, 1, 0);
 
-    when(figuritaService.buscarFiguritas(10, Seleccion.ARGENTINA, "Messi",
-        MetodoIntercambio.INTERCAMBIO, 0, 12)).thenReturn(pagina);
+    when(figuritaService.buscarFiguritas(10, "ARGENTINA", "Messi", List.of(MetodoIntercambio.INTERCAMBIO), 0, 12)).thenReturn(pagina);
 
     mockMvc.perform(get("/figuritas")
             .param("numero", "10")
@@ -110,7 +109,7 @@ class ControladorFiguritaTest {
 
   @Test
   void obtenerFiguritas_conQYTipo_combinaAmbos() throws Exception {
-    when(figuritaService.buscarPorQuery("messi", MetodoIntercambio.SUBASTA, 0, 12))
+    when(figuritaService.buscarPorQuery("messi", List.of(MetodoIntercambio.SUBASTA), 0, 12))
         .thenReturn(new PaginaResultado<>(List.of(), 0, 0, 0));
 
     mockMvc.perform(get("/figuritas")
@@ -119,6 +118,6 @@ class ControladorFiguritaTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
-    verify(figuritaService).buscarPorQuery("messi", MetodoIntercambio.SUBASTA, 0, 12);
+    verify(figuritaService).buscarPorQuery("messi", List.of(MetodoIntercambio.SUBASTA), 0, 12);
   }
 }

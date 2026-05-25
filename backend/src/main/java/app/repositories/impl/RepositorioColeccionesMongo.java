@@ -194,9 +194,9 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     ops.add(Aggregation.lookup("figuritas", "repetidas.figurita.$id", "_id", "repetidas.figurita"));
     ops.add(Aggregation.unwind("repetidas.figurita"));
 
-    if (filtros.tipo() != null) {
+    if (filtros.tipos() != null && !filtros.tipos().isEmpty()) {
       ops.add(Aggregation.match(
-          Criteria.where("repetidas.metodos").is(filtros.tipo())
+          Criteria.where("repetidas.metodos").all(filtros.tipos())
       ));
     }
 
@@ -217,7 +217,7 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     }
     if (filtros.seleccion() != null) {
       ops.add(Aggregation.match(
-          Criteria.where("repetidas.figurita.seleccion").regex(filtros.seleccion().name(), "i")
+          Criteria.where("repetidas.figurita.seleccion").regex(filtros.seleccion(), "i")
       ));
     }
 
@@ -232,15 +232,15 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
 
   @Override
   public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesPorQuery(
-      String q, MetodoIntercambio tipo, int pagina, int limite) {
+      String q, List<MetodoIntercambio> tipos, int pagina, int limite) {
 
     String[] terminos = q.trim().toLowerCase().split("\\s+");
 
     List<AggregationOperation> ops = new ArrayList<>();
 
-    if (tipo != null) {
+    if (tipos != null && !tipos.isEmpty()) {
       ops.add(Aggregation.match(
-          Criteria.where("repetidas.metodos").is(tipo)
+          Criteria.where("repetidas.metodos").all(tipos)
       ));
     }
 

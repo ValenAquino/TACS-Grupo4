@@ -52,7 +52,7 @@ public class RepositorioFiguritasMongo implements RepositorioFiguritas {
 
     }
     if (filtros.seleccion() != null) {
-      query.addCriteria(Criteria.where("seleccion").regex(filtros.seleccion().name(), "i"));
+      query.addCriteria(Criteria.where("seleccion").regex(filtros.seleccion(), "i"));
     }
 
     return this.mongoTemplate.find(query, Figurita.class);

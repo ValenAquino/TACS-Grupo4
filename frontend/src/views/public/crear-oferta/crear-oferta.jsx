@@ -179,7 +179,7 @@ const CrearOferta = () => {
             )}
           </div>
 
-          <SelectorRepetidas modo="multiple" bloqueadas={bloqueadas} onChange={setFiguritasExtra} />
+          <SelectorRepetidas modo="multiple" bloqueadas={bloqueadas} onChange={setFiguritasExtra} metodoIntercambio = "SUBASTA"/>
 
           <Button
             label="Enviar oferta ↗"

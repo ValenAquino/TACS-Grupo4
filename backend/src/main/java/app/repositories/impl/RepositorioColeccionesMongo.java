@@ -36,9 +36,34 @@ import java.util.List;
 public class RepositorioColeccionesMongo implements RepositorioColecciones {
   @Autowired
   private MongoTemplate mongoTemplate;
-
+  @Override
   public void guardar(Coleccion coleccion) {
     mongoTemplate.save(coleccion);
+  }
+
+  public void guardar(Coleccion coleccion, CamposColeccion campos) {
+    Update update = new Update();
+
+    Document doc = new Document();
+    mongoTemplate.getConverter().write(coleccion, doc);
+    doc.remove("_id");
+    doc.remove("repetidas");
+    doc.remove("faltantes");
+
+    doc.forEach(update::set);
+
+    if (campos.getConRepetidas()) {
+      update.set("repetidas", coleccion.getRepetidas());
+    }
+    if (campos.getConFaltantes()) {
+      update.set("faltantes", coleccion.getFaltantes());
+    }
+
+    mongoTemplate.updateFirst(
+        Query.query(Criteria.where("_id").is(coleccion.getId())),
+        update,
+        Coleccion.class
+    );
   }
 
   public void agregarFaltante(String colId, Figurita figurita) {
@@ -85,7 +110,6 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   }
 
   public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
-
     int pagina = filtros.pagina();
     int limite = filtros.limite();
 

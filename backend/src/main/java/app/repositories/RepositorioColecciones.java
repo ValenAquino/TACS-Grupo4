@@ -18,6 +18,7 @@ public interface RepositorioColecciones {
   Coleccion buscarPorId(String colId, CamposColeccion campos);
 
   void guardar(Coleccion coleccion);
+  void guardar(Coleccion coleccion, CamposColeccion campos);
 
   void agregarFaltante(String colId, Figurita figId);
   void agregarRepetida(String colId, FiguritaIntercambiable figId);

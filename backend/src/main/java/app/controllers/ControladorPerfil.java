@@ -30,7 +30,6 @@ public class ControladorPerfil {
         @RequestBody CalificacionRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
-
         this.perfilService.agregarCalificacion(
             perfilId,
             body.getDestinatarioId(),

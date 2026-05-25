@@ -1,0 +1,19 @@
+.icono {
+  width: 40px;
+  height: 40px;
+  font-size: 1.1rem;
+  background-color: #f0f9f4;
+}
+
+.titulo {
+  font-size: 0.95rem;
+}
+
+.subtitulo {
+  font-size: 0.75rem;
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+}

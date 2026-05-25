@@ -60,7 +60,7 @@ const RepetidaCard = ({ figurita }) => {
 
             <div className="card-footer bg-white d-flex gap-2 justify-content: space-between align-items-center px-3 py-2">
                 <span className="text-muted" style={{ fontSize: '0.75rem' }}>
-                  Disponibles: <strong className="text-dark">{cantidad_existente}</strong>
+                  Existentes: <strong className="text-dark">{cantidad_existente}</strong>
                 </span>
                         <span className="text-secondary" style={{ fontSize: '0.7rem' }}>
                   Reservadas: {cantidad_reservada}

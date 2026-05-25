@@ -145,58 +145,51 @@ class ControladorSubastaTest {
 
     @Test
     void seleccionarOferta_retorna200() throws Exception {
-
         mockMvc.perform(
                 post("/subastas/s-1/ofertas/o-1/seleccionar")
+                    .cookie(cookie)
             )
             .andExpect(status().isOk());
 
         verify(subastaService)
-            .seleccionarOferta(
-                "s-1",
-                "o-1"
-            );
+            .seleccionarOferta("1000", "s-1", "o-1");
     }
 
     @Test
     void rechazarOferta_retorna200() throws Exception {
-
         mockMvc.perform(
                 post("/subastas/s-1/ofertas/o-1/rechazar")
+                    .cookie(cookie)
             )
             .andExpect(status().isOk());
 
         verify(subastaService)
-            .rechazarOferta(
-                "s-1",
-                "o-1"
-            );
+            .rechazarOferta("1000", "s-1", "o-1");
     }
 
     @Test
     void cancelarSubasta_retorna200() throws Exception {
-
         mockMvc.perform(
                 post("/subastas/s-1/cancelar")
+                    .cookie(cookie)
             )
             .andExpect(status().isOk());
 
         verify(subastaService)
-            .cancelarSubasta("s-1");
+            .cancelarSubasta("1000", "s-1");
     }
 
     @Test
     void cerrarSubasta_retorna200() throws Exception {
-
         mockMvc.perform(
                 post("/subastas/s-1/cerrar")
+                    .cookie(cookie)
             )
             .andExpect(status().isOk());
 
         verify(subastaService)
-            .cerrarSubasta("s-1");
+            .cerrarSubasta("1000", "s-1");
     }
-
 
 
     @Test

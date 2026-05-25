@@ -1,9 +1,12 @@
 package app.repositories.impl;
 
+import com.mongodb.DBRef;
+import org.bson.types.ObjectId;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Calificacion;
+import app.model.entities.EstadoProceso;
 import app.model.entities.Perfil;
 import app.model.entities.Subasta;
 import app.repositories.RepositorioSubastas;
@@ -90,7 +93,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     this.conCamposCargados(query, campos);
 
-    if(filtros.autorId() != null) {
+    if (filtros.autorId() != null) {
       query.addCriteria(
           Criteria.where("autor").is(filtros.autorId())
       );
@@ -98,7 +101,6 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     if ("ACTIVA".equals(filtros.estado())) {
       Date ahora = new Date();
-
       query.addCriteria(
           new Criteria().andOperator(
               Criteria.where("fechaInicio").lte(ahora),
@@ -109,15 +111,17 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     if ("FINALIZADA".equals(filtros.estado())) {
       Date ahora = new Date();
-
       query.addCriteria(
           Criteria.where("fechaCierre").lte(ahora)
       );
     }
-
     if (filtros.participanteId() != null) {
+      DBRef autorRef = new DBRef("perfiles", filtros.participanteId());
       query.addCriteria(
-          Criteria.where("ofertas.autor").is(filtros.participanteId())
+          Criteria.where("ofertas").elemMatch(
+              Criteria.where("autor").is(autorRef)
+                  .and("estadoActual.valor").ne(EstadoProceso.CANCELADO)
+          )
       );
     }
 
@@ -144,6 +148,7 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   @Override
   public Subasta buscarPorId(String id, CamposSubasta campos) {
     Query query = new Query();
+    query.addCriteria(Criteria.where("_id").is(id));
     this.conCamposCargados(query, campos);
     Subasta subasta = this.mongoTemplate.findOne(query, Subasta.class);
 

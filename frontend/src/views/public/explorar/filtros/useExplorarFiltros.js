@@ -1,59 +1,57 @@
 import { useState } from 'react'
 
-const TIPOS = [
+export const TIPOS = [
   { key: 'intercambio', label: 'Intercambio' },
   { key: 'subasta', label: 'Subasta' },
 ]
 
+const ESTADO_INICIAL = { tipos: [], jugador: '', seleccion: '', numero: '' }
+
+const labelDeTipo = (key) => TIPOS.find((t) => t.key === key)?.label ?? key
+
+const buildChipsActivos = ({ tipos, jugador, seleccion, numero }) => {
+  const chips = []
+  tipos.forEach((t) => chips.push({ campo: 'tipos', valor: t, label: labelDeTipo(t) }))
+  if (jugador) chips.push({ campo: 'jugador', valor: jugador, label: jugador })
+  if (seleccion) chips.push({ campo: 'seleccion', valor: seleccion, label: seleccion })
+  if (numero) chips.push({ campo: 'numero', valor: numero, label: `#${numero}` })
+  return chips
+}
+
 const useExplorarFiltros = (onAplicar) => {
-  const [tipos, setTipos] = useState([])
-  const [jugador, setJugador] = useState('')
-  const [seleccion, setSeleccion] = useState('')
-  const [numero, setNumero] = useState('')
+  const [filtros, setFiltros] = useState(ESTADO_INICIAL)
+
+  const actualizar = (cambios) => setFiltros((prev) => ({ ...prev, ...cambios }))
 
   const toggleTipo = (key) => {
-    setTipos((prev) => (prev.includes(key) ? prev.filter((t) => t !== key) : [...prev, key]))
+    const yaSeleccionado = filtros.tipos.includes(key)
+    const nuevosTipos = yaSeleccionado
+      ? filtros.tipos.filter((t) => t !== key)
+      : [...filtros.tipos, key]
+    actualizar({ tipos: nuevosTipos })
   }
 
-  const aplicar = () => {
-    onAplicar({ tipos, jugador, seleccion, numero })
-  }
+  const aplicar = () => onAplicar(filtros)
 
   const quitarFiltro = (campo, valor) => {
-    const nuevosTipos = campo === 'tipo' ? tipos.filter((t) => t !== valor) : tipos
-    const nuevoJugador = campo === 'jugador' ? '' : jugador
-    const nuevaSeleccion = campo === 'seleccion' ? '' : seleccion
-    const nuevoNumero = campo === 'numero' ? '' : numero
-
-    setTipos(nuevosTipos)
-    if (campo === 'jugador') setJugador('')
-    if (campo === 'seleccion') setSeleccion('')
-    if (campo === 'numero') setNumero('')
-
-    onAplicar({ tipos: nuevosTipos, jugador: nuevoJugador, seleccion: nuevaSeleccion, numero: nuevoNumero })
+    const nuevos =
+      campo === 'tipos'
+        ? { ...filtros, tipos: filtros.tipos.filter((t) => t !== valor) }
+        : { ...filtros, [campo]: '' }
+    setFiltros(nuevos)
+    onAplicar(nuevos)
   }
 
-  const chipsActivos = [
-    ...tipos.map((t) => ({ campo: 'tipo', valor: t, label: TIPOS.find((x) => x.key === t)?.label ?? t })),
-    ...(jugador ? [{ campo: 'jugador', valor: jugador, label: jugador }] : []),
-    ...(seleccion ? [{ campo: 'seleccion', valor: seleccion, label: seleccion }] : []),
-    ...(numero ? [{ campo: 'numero', valor: numero, label: `#${numero}` }] : []),
-  ]
-
   return {
-    tipos,
-    jugador,
-    seleccion,
-    numero,
-    chipsActivos,
+    ...filtros,
+    chipsActivos: buildChipsActivos(filtros),
     toggleTipo,
-    setJugador,
-    setSeleccion,
-    setNumero,
+    setJugador: (v) => actualizar({ jugador: v }),
+    setSeleccion: (v) => actualizar({ seleccion: v }),
+    setNumero: (v) => actualizar({ numero: v }),
     aplicar,
     quitarFiltro,
   }
 }
 
-export { TIPOS }
 export default useExplorarFiltros

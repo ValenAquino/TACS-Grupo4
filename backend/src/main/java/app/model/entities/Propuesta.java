@@ -169,7 +169,7 @@ public class Propuesta {
 
     private void validarUsuarioAutor(String perfilId) {
         if (!this.autor.getId().equals(perfilId)) {
-            throw new BadRequestException("Solo el destinatario puede responder la propuesta");
+            throw new BadRequestException("Solo el autor puede responder la propuesta");
         }
     }
 

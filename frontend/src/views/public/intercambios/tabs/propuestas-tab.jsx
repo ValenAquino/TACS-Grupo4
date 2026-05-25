@@ -36,6 +36,10 @@ const PropuestasTab = ({ tipo, estadoInicial = '' }) => {
     cargarPropuestas()
   }, [pagina, filtros])
 
+  useEffect(() => {
+    setFiltros({ estado: estadoInicial, tipo })
+  }, [tipo])
+
   const cambiarFiltro = (nuevoEstado) => {
     setFiltros((prev) => (prev.estado === nuevoEstado ? prev : { ...prev, estado: nuevoEstado }))
     setPagina(1)
@@ -85,19 +89,14 @@ const PropuestasTab = ({ tipo, estadoInicial = '' }) => {
             {TEXTOS_ESTADO[filtros.estado]} ({propuestas.cantidad_de_elementos})
           </p>
           <div className="d-flex flex-column gap-3">
-            {propuestas.contenido.map(
-              (i) => (
-                console.log(i.estado, tipo),
-                (
-                  <IntercambioCard
-                    key={i.id}
-                    intercambio={i}
-                    tipo={tipo}
-                    onActualizado={cargarPropuestas}
-                  />
-                )
-              ),
-            )}
+            {propuestas.contenido.map((i) => (
+              <IntercambioCard
+                key={i.id}
+                intercambio={i}
+                tipo={tipo}
+                onActualizado={cargarPropuestas}
+              />
+            ))}
           </div>
           <div className="pt-3 d-flex justify-content-center">
             <Paginacion

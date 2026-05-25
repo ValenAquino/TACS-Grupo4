@@ -26,11 +26,8 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
   const [showCalificacion, setShowCalificacion] = useState(false)
   const [confirmAction, setConfirmAction] = useState(null)
 
-  const { handleError, errorTemplate } = useError()
+  const { handleError } = useError()
   const { showToast } = useToast()
-  const [errorState, setErrorState] = useState(
-    errorTemplate({ nombre: undefined, contrasenia: undefined }),
-  )
 
   const navigate = useNavigate()
 
@@ -41,9 +38,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
   const der = esRecibida ? [intercambio.figurita_buscada] : intercambio.figuritas_ofrecidas || []
 
   const estado = intercambio.estado
-  console.log({ esRecibida, esEnviada, estado, puedeAceptar: esRecibida && estado === 'PENDIENTE' })
   const usuarioRelacionado = esRecibida ? intercambio.autor : intercambio.destinatario
-  const autorCalificacion = esRecibida ? intercambio.destinatario.id : intercambio.autor.id
   const perfilCalificado = esRecibida ? intercambio.autor.id : intercambio.destinatario.id
 
   const puedeCancelar = esEnviada && estado === 'PENDIENTE'
@@ -58,7 +53,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
       showToast('Propuesta cancelada correctamente.')
       onActualizado?.()
     } catch (error) {
-      showToast(handleError(error, setErrorState), 'error')
+      handleError(error, (err) => showToast(err.mensaje, 'error'))
     }
   }
 
@@ -69,7 +64,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
       showToast('Propuesta aceptada correctamente.')
       onActualizado?.()
     } catch (error) {
-      showToast(handleError(error, setErrorState), 'error')
+      handleError(error, (err) => showToast(err.mensaje, 'error'))
     }
   }
 
@@ -80,7 +75,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
       showToast('Propuesta rechazada correctamente.')
       onActualizado?.()
     } catch (error) {
-      showToast(handleError(error, setErrorState), 'error')
+      handleError(error, (err) => showToast(err.mensaje, 'error'))
     }
   }
 
@@ -107,7 +102,8 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
 
   const handleCalificar = async ({ valor, descripcion }) => {
     try {
-      await calificarPerfil(autorCalificacion, perfilCalificado, {
+      await calificarPerfil({
+        destinatarioId: perfilCalificado,
         valor,
         descripcion,
         transactionId: intercambio.id,
@@ -116,7 +112,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
       setShowCalificacion(false)
       showToast('Calificación realizada correctamente.')
     } catch (error) {
-      showToast(handleError(error, setErrorState), 'error')
+      handleError(error, (err) => showToast(err.mensaje, 'error'))
     }
   }
 

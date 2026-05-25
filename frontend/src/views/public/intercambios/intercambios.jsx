@@ -9,7 +9,7 @@ const tabs = [
     component: PropuestasTab,
     props: { tipo: 'RECIBIDAS', estadoInicial: 'PENDIENTE' },
   },
-  { key: 'enviadas', label: 'Enviadas', component: PropuestasTab, props: { tipo: 'ENVIADAS' } },
+  { key: 'enviadas', label: 'Enviadas', component: PropuestasTab, props: { tipo: 'ENVIADAS', estadoInicial: 'PENDIENTE'} },
 ]
 const Intercambios = () => (
   <main className="container py-4 px-3 px-md-4">

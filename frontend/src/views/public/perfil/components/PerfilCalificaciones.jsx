@@ -27,7 +27,7 @@ const PerfilCalificaciones = ({ reviews, loadingNotificaciones, pagina, onPagina
                   <div>
                     {renderStars(r.valor)} {r.valor}/5
                   </div>
-                  <p className={`mb-0 text-muted ${styles.descripcion}`}>{r.descripcion}"</p>
+                  <p className={`mb-0 text-muted ${styles.descripcion}`}>{r.descripcion}</p>
                 </div>
               </div>
             ))

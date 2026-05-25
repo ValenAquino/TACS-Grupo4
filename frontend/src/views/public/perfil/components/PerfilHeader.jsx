@@ -16,7 +16,11 @@ const PerfilHeader = ({
         className={`mx-auto d-flex justify-content-between align-items-center px-4 py-4 ${styles.inner}`}
       >
         <div className="d-flex align-items-center gap-3 text-white">
-          <div className={styles.avatar}>MG</div>
+          <div className={styles.avatar}>
+            {!loading && perfil?.nombre
+              ? perfil.nombre.trim().split(/\s+/).map(p => p[0].toUpperCase()).join('').slice(0, 2)
+              : '?'}
+          </div>
 
           <div>
             {loading ? (

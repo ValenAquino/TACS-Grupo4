@@ -221,8 +221,8 @@ public class ServicioSubasta {
       if (filtros.participanteId() != null) {
         return resultado.mapearA(s -> {
           boolean yaCalifico = this.repoCalificacion.yaCalifico(
-              perfilId,
               s.getAutor().getId(),
+              perfilId,
               s.getId(),
               MetodoIntercambio.SUBASTA
           );

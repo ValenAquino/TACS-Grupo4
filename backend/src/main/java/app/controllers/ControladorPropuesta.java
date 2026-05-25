@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.dto.IntercambioDto;
 import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
@@ -57,7 +58,7 @@ public class ControladorPropuesta {
     }
 
     @GetMapping()
-    public ResponseEntity<PaginaResultado<PropuestaDto>> obtenerPropuestas(
+    public ResponseEntity<PaginaResultado<IntercambioDto>> obtenerPropuestas(
         @CookieValue String token,
         @ModelAttribute PropuestasFiltro filtros
     ) {

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
@@ -17,6 +18,7 @@ public class CrearSubastaRequest {
   private String figuritaId;
 
   @Positive
+  @NotNull
   private Integer duracionEnHoras;
 
   @NotEmpty
@@ -24,5 +26,6 @@ public class CrearSubastaRequest {
 
   @Min(0)
   @Max(5)
+  @NotNull
   private Integer calificacionMinima = 0;
 }

@@ -3,6 +3,8 @@ package app.controllers;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
+import app.exceptions.ForbiddenException;
+import app.exceptions.UnauthorizedException;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPropuesta;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -150,6 +152,23 @@ class ControladorPropuestaTest {
 
         verify(propuestaService)
             .rechazar("p-1","1000");
+    }
+
+    @Test
+    void cancelarPropuesta_devuelve403_siNoEsElDuenio()
+        throws Exception {
+
+        doThrow(new ForbiddenException(
+            "No sos el dueño de la propuesta"
+        ))
+            .when(propuestaService)
+            .cancelar("p-1", "1000");
+
+        mockMvc.perform(
+                patch("/propuestas/p-1/cancelar")
+                    .cookie(cookie)
+            )
+            .andExpect(status().isForbidden());
     }
 
     @Test

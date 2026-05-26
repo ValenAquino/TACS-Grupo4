@@ -23,12 +23,13 @@ public class PerfilDto {
     this.iniciales = calcularIniciales(nombre);
     this.calificacionMedia = perfil.getCalificacionMedia();
     this.mediosDeContacto = perfil.getMediosDeContacto();
+
+    if (perfil.getUsuario() != null) {
+        this.usuarioId = perfil.getUsuario().getId();
+        this.nombreUsuario = perfil.getUsuario().getNombre();
+    }
   }
 
-  if (perfil.getUsuario() != null) {
-      this.usuarioId = perfil.getUsuario().getId();
-      this.nombreUsuario = perfil.getUsuario().getNombre();
-  }
 
   private String calcularIniciales(String nombre) {
     String[] partes = nombre.trim().split("\\s+");

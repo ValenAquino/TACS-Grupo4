@@ -5,6 +5,7 @@ import app.model.entities.Perfil;
 import app.model.notificador.Notificacion;
 import app.repositories.RepositorioNotificaciones;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -40,7 +41,7 @@ public class RepositorioNotificacionesMongo implements RepositorioNotificaciones
         Criteria.where("perfil").is(perfilId)
     );
 
-    query.getSortObject();
+    query.with(Sort.by(Sort.Direction.DESC, "mensaje.fecha"));
 
     return this.mongoTemplate.find(query, Notificacion.class);
   }

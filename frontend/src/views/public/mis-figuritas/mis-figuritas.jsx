@@ -4,7 +4,6 @@ import Faltantes from "./tabs/faltantes/faltantes";
 import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
 
 const MisFiguritas = () => {
-    const colId = "2";
 
     const TABS = [
         {

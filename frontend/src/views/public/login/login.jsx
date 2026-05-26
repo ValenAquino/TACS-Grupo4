@@ -40,7 +40,7 @@ function Login() {
             setOnSubmit(true);
             await iniciarSesion({nombre: e.target.nombre.value, contrasenia: e.target.contrasenia.value})
             await buscarUsuario(asignarUsuario)
-            showToast(`Sesion iniciada correctamente`)
+            showToast(`Sesion iniciada correctamente`, "success")
             navigate("/")
         } catch (error) {
             showToast(handleError(error, setErrorState), "error")

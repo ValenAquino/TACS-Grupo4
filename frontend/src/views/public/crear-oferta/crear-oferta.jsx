@@ -74,6 +74,7 @@ const CrearOferta = () => {
     try {
       const ids = [...bloqueadas, ...figuritasExtra].map((f) => f.figurita_id ?? f.id)
       await crearOferta(subId, ids)
+      showToast('Oferta creada correctamente', 'success')
       navigate('/subastas')
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))

@@ -5,6 +5,7 @@ import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import { useNavigate } from "react-router";
 import Button from "../../../../../components/ui/button/button.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
+import { useToast } from '@/contexts/toastContext.jsx'
 
 const Faltantes = () => {
 
@@ -14,6 +15,8 @@ const Faltantes = () => {
     const [filtros, setFiltros] = useState({});
     const [loading, setLoading] = useState(true);
     const [pagina, setPagina] = useState(1);
+
+    const {showToast} = useToast()
 
     const navigate = useNavigate();
 
@@ -30,7 +33,7 @@ const Faltantes = () => {
 
                 setFaltantes(faltantesApi);
             } catch (err) {
-                handleError(err, () => {});
+                showToast(handleError(err, (m) => {}),'error')
             } finally {
                 setLoading(false);
             }

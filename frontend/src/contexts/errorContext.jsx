@@ -34,7 +34,7 @@ export const ErrorProvider = ({ children }) => {
 
             case "INTERNAL_SERVER_ERROR":
                 navigate("/error-interno");
-                break;
+                return "Error interno del servidor"
 
 
             default: {

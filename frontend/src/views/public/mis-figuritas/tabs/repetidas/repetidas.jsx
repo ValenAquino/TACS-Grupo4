@@ -6,6 +6,7 @@ import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import {useError} from "@/contexts/errorContext.jsx";
+import { useToast } from '@/contexts/toastContext.jsx'
 
 const Repetidas = () => {
     const [repetidas, setRepetidas] = useState({});
@@ -18,6 +19,7 @@ const Repetidas = () => {
     const [pagina, setPagina] = useState(1);
 
     const {handleError} = useError()
+    const {showToast} = useToast()
 
     const navigate = useNavigate();
 
@@ -34,7 +36,7 @@ const Repetidas = () => {
 
                 setRepetidas(repetidasApi);
             } catch (err) {
-                handleError(err, () => {});
+              showToast(handleError(err, setError),'error')
             } finally {
                 setLoading(false);
             }

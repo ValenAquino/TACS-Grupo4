@@ -11,12 +11,17 @@ import TuOfertaCard from './tu-oferta-card.jsx'
 import Button from '@/components/ui/button/button.jsx'
 import {useAuth} from "@/contexts/userContext.jsx";
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
 
 const VerSubasta = () => {
   const { subId } = useParams()
-  const { user } = useAuth() 
+  const { user } = useAuth()
+  const { showToast } = useToast()
+  const {handleError, errorTemplate} = useError()
+
   const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(errorTemplate())
   const [subasta, setSubasta] = useState(undefined)
   const [tiempo, setTiempo] = useState(0)
   const [subastaAbierta, setSubastaAbierta] = useState(false)
@@ -76,9 +81,8 @@ const VerSubasta = () => {
       setSubasta(payload)
       setSubastaAbierta(new Date(payload.cierre) > new Date())
       setTiempo(payload.tiempo_restante)
-      // eslint-disable-next-line no-unused-vars
     } catch (err) {
-      setError(true)
+      showToast(handleError(err, setError),'error')
     } finally {
       setCargando(false)
     }
@@ -299,7 +303,7 @@ const VerSubasta = () => {
       />
       {cargando ? (
         <h2>Cargando subasta...</h2>
-      ) : error ? (
+      ) : error.codigo ? (
         <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
       ) : (
         mostrarSubasta()

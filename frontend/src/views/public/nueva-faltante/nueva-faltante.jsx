@@ -33,7 +33,6 @@ const NuevaFaltante = () => {
 
     const ejecutarFormulario = async (e) => {
         e.preventDefault();
-
         try {
             await agregarFaltante(figurita)
             setNumero('')

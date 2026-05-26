@@ -28,13 +28,13 @@ public class ServicioNotificacion {
         });
     }
 
-  public List<Notificacion> obtenerPorPerfil(String perfilId) {
-      return repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
-  }
+    public List<Notificacion> obtenerPorPerfil(String perfilId) {
+        return repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
+    }
 
-  public void marcarTodasLeidas(String perfilId) {
-      List<Notificacion> notis = repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
-      notis.forEach(Notificacion::marcarLeida);
-      repositorioNotificaciones.saveAll(notis);
-  }
+    public void marcarTodasLeidas(String perfilId) {
+        List<Notificacion> notis = repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
+        notis.forEach(Notificacion::marcarLeida);
+        repositorioNotificaciones.saveAll(notis);
+    }
 }

@@ -21,10 +21,9 @@ export const buscarRepetidas = async (filtros) => {
   }
 }
 
-export const agregarFaltante = async (colId, faltante) => {
+export const agregarFaltante = async (faltante) => {
   try {
     const { data } = await api.post(`${COLECCIONES_URL}/faltantes`, { fig_id: faltante.id })
-
     return data
   } catch (error) {
     handleAxiosError(error)

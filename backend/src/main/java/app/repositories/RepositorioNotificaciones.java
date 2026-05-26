@@ -18,7 +18,3 @@ public interface RepositorioNotificaciones extends MongoRepository<Notificacion,
     }
 }
 
-/*public interface RepositorioNotificaciones {
-  void guardar(Notificacion notificacion);
-  List<Notificacion> buscarPorPerfil(Perfil perfil);
-}*/

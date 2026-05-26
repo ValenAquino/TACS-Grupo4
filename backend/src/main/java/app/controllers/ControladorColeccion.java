@@ -32,7 +32,7 @@ public class ControladorColeccion {
         @CookieValue("token") String token,
         @Valid @RequestBody FaltanteRequest request
     ) {
-        String colId = this.obtenerColeccionIdDeCookie(token);
+        String colId = this.servicioJwt.getColeccionId(token);
         coleccionService.agregarFaltante(colId, request.getFigId());
 
         return ResponseEntity.status(201).build();
@@ -43,7 +43,7 @@ public class ControladorColeccion {
         @CookieValue("token") String token,
         @Valid @RequestBody RepetidaRequest request
     ) {
-        String colId = this.obtenerColeccionIdDeCookie(token);
+        String colId = this.servicioJwt.getColeccionId(token);
         coleccionService.agregarRepetida(colId,
             request.figId(), request.cantidadExistente(), request.modosIntercambio());
 
@@ -55,7 +55,7 @@ public class ControladorColeccion {
         @CookieValue("token") String token,
         @ModelAttribute FaltantesFiltro filtros
     ) {
-        String colId = this.obtenerColeccionIdDeCookie(token);
+        String colId = this.servicioJwt.getColeccionId(token);
         return ResponseEntity.ok(this.coleccionService.buscarFaltantes(colId, filtros));
     }
 
@@ -64,11 +64,7 @@ public class ControladorColeccion {
         @CookieValue("token") String token,
         @ModelAttribute RepetidasFiltro filtros
     ) {
-        String colId = this.obtenerColeccionIdDeCookie(token);
+        String colId = this.servicioJwt.getColeccionId(token);
         return ResponseEntity.ok(this.coleccionService.buscarRepetidas(colId, filtros));
-    }
-
-    private String obtenerColeccionIdDeCookie(String token) {
-        return this.servicioJwt.getColeccionId(token);
     }
 }

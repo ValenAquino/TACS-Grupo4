@@ -32,7 +32,7 @@ public class ControladorSubasta {
         @CookieValue String token,
         @Valid @RequestBody CrearSubastaRequest body
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.crearSubasta(
             perfilId,
             body.getFiguritaId(),
@@ -49,7 +49,7 @@ public class ControladorSubasta {
         @PathVariable String sub_id,
         @Valid @RequestBody OfertarEnSubastaRequest body
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.ofertarEnSubasta(perfilId, sub_id, body.getFiguritasOfrecidasId());
         return ResponseEntity.ok().build();
     }
@@ -61,7 +61,7 @@ public class ControladorSubasta {
         @PathVariable String oferta_id,
         @Valid @RequestBody EditarOfertaRequest body
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.editarOfertaEnSubasta(perfilId, sub_id, oferta_id, body);
         return ResponseEntity.ok().build();
     }
@@ -72,7 +72,7 @@ public class ControladorSubasta {
         @PathVariable String sub_id,
         @PathVariable String oferta_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.cancelarOferta(perfilId, sub_id, oferta_id);
         return ResponseEntity.ok().build();
     }
@@ -83,7 +83,7 @@ public class ControladorSubasta {
         @PathVariable String sub_id,
         @PathVariable String oferta_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.seleccionarOferta(perfilId, sub_id, oferta_id);
         return ResponseEntity.ok().build();
     }
@@ -94,7 +94,7 @@ public class ControladorSubasta {
         @PathVariable String sub_id,
         @PathVariable String oferta_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.rechazarOferta(perfilId, sub_id, oferta_id);
         return ResponseEntity.ok().build();
     }
@@ -104,7 +104,7 @@ public class ControladorSubasta {
         @CookieValue("token") String token,
         @PathVariable String sub_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.cancelarSubasta(perfilId, sub_id);
         return ResponseEntity.ok().build();
     }
@@ -114,7 +114,7 @@ public class ControladorSubasta {
         @CookieValue("token") String token,
         @PathVariable String sub_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.subastaService.cerrarSubasta(perfilId, sub_id);
         return ResponseEntity.ok().build();
     }
@@ -124,7 +124,7 @@ public class ControladorSubasta {
         @CookieValue("token") String token,
         @ModelAttribute SubastasFiltro filtros
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.ok(this.subastaService.obtenerSubastas(perfilId, filtros));
     }
 
@@ -135,9 +135,5 @@ public class ControladorSubasta {
     SubastaDto subasta = this.subastaService.obtenerSubasta(sub_id);
 
     return ResponseEntity.ok().body(subasta);
-  }
-
-  private String obtenerPerfilIdDeCookie(String token) {
-    return this.servicioJwt.getPerfilId(token);
   }
 }

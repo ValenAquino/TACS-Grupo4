@@ -41,13 +41,6 @@ const OfertaCard = ({
     // =========================
     const esRecibida = tipo === "RECIBIDA";
 
-    // Para RECIBIDA:
-    //   izquierda = autor (quien manda la propuesta), da sus figuritas_ofrecidas
-    //   derecha = yo (destinatario), doy la figurita_buscada
-    // Para ENVIADA:
-    //   izquierda = yo (autor), doy mis figuritas_ofrecidas
-    //   derecha = destinatario, da la figurita_buscada
-
     const usuarioIzquierda = esRecibida ? propuesta.autor : propuesta.autor;
     const usuarioDerecha = esRecibida ? propuesta.destinatario : propuesta.destinatario;
 

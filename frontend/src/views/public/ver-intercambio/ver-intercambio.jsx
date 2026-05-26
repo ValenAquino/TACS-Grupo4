@@ -15,7 +15,8 @@
     import FiguritaCard from "./figurita-card.jsx";
     import OfertaCard from "./oferta-card.jsx";
 
-    import styles from "./ver-intercambio.module.css";
+    import { useError } from '@/contexts/errorContext.jsx'
+    import { useToast } from '@/contexts/toastContext.jsx'
 
     const VerIntercambio = () => {
 
@@ -24,13 +25,16 @@
         const [cargando, setCargando] = useState(true);
         const [propuesta, setPropuesta] = useState(null);
 
+        const {handleError} = useError()
+        const { showToast } = useToast()
+
         const cargarIntercambio = async () => {
             try {
                 setCargando(true);
                 const data = await obtenerPropuesta(intercambioId);
                 setPropuesta(data);
-            } catch (e) {
-                console.error(e);
+            } catch (error) {
+                handleError(error, () => {});
             } finally {
                 setCargando(false);
             }
@@ -40,7 +44,7 @@
             cargarIntercambio();
         }, [intercambioId]);
 
-        const handleAceptar = async () => {
+        const ejecutarAceptar = async () => {
             try {
                 await aceptarPropuesta(propuesta.id);
 
@@ -48,12 +52,13 @@
                     ...prev,
                     estado: "ACEPTADO"
                 }));
-            } catch (e) {
-                console.error(e);
+              showToast('Propuesta aceptada correctamente.')
+            } catch (error) {
+              handleError(error, (err) => showToast(err.mensaje, 'error'))
             }
         };
 
-        const handleRechazar = async () => {
+        const ejecutarRechazar = async () => {
             try {
                 await rechazarPropuesta(propuesta.id);
 
@@ -61,8 +66,9 @@
                     ...prev,
                     estado: "RECHAZADO"
                 }));
-            } catch (e) {
-                console.error(e);
+                showToast('Propuesta rechazada correctamente.')
+            } catch (error) {
+                handleError(error, (err) => showToast(err.mensaje, 'error'))
             }
         };
 
@@ -126,12 +132,12 @@
                                         <Button
                                             label={"Aceptar"}
                                             className={"me-2"}
-                                            onClick={handleAceptar}
+                                            onClick={ejecutarAceptar}
                                         />
 
                                         <Button
                                             label={"Rechazar"}
-                                            onClick={handleRechazar}
+                                            onClick={ejecutarRechazar}
                                         />
                                     </div>
                                 )

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { editarPerfil } from '@/services/perfilService.js'
 import { editarContrasenia } from '@/services/usuarioService.js'
 import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
 
 export const useEditarPerfil = (perfil) => {
   const [nombreEditando, setNombreEditando] = useState(perfil.nombre ?? '')
@@ -12,6 +13,7 @@ export const useEditarPerfil = (perfil) => {
   const [guardado, setGuardado] = useState(null)
 
   const { showToast } = useToast()
+  const {handleError} = useError()
 
   const guardarCambios = async () => {
     try {
@@ -30,7 +32,7 @@ export const useEditarPerfil = (perfil) => {
       })
       showToast('Perfil actualizado correctamente', 'success')
     } catch (error) {
-      showToast('Error al guardar los cambios', 'error')
+      showToast(handleError(error, (m) => {}), 'error')
     }
   }
 

@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class FiguritasPorModalidadDto {
-  private int soloIntercambio;
-  private int soloSubasta;
-  private int ambos;
+  private long soloIntercambio;
+  private long soloSubasta;
+  private long ambos;
 }

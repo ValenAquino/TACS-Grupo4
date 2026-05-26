@@ -9,11 +9,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ColeccionTest {
 
-  Figurita messi = new Figurita(
-      "ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+  Figurita messi = Figurita.builder()
+      .id("ARG-10")
+      .numero(10)
+      .jugador("Messi")
+      .seleccion(Seleccion.ARGENTINA)
+      .build();
 
-  Figurita diMaria = new Figurita(
-      "ARG-11", 11, "Di María", Seleccion.ARGENTINA);
+  Figurita diMaria = Figurita.builder()
+      .id("ARG-11")
+      .numero(11)
+      .jugador("Di María")
+      .seleccion(Seleccion.ARGENTINA)
+      .build();
 
   @Test
   void agregarNuevaFaltante() {

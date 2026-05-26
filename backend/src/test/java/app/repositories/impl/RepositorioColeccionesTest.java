@@ -1,19 +1,24 @@
 package app.repositories.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import app.MongoTestBase;
+import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.FiguritasFiltro;
+import app.dto.filtros.RepetidasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
-import app.model.entities.*;
-import app.dto.filtros.FaltantesFiltro;
-import app.dto.filtros.RepetidasFiltro;
+import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
+import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
+import app.model.entities.Seleccion;
 import app.repositories.impl.campos.CamposColeccion;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class RepositorioColeccionesTest extends MongoTestBase {
 
@@ -23,9 +28,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
   @BeforeEach
   void setUp() {
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA );
-    diMaria = new Figurita("ARG-11", 11, "Di maria", Seleccion.ARGENTINA );
-    dybala = new Figurita("ARG-21", 21, "Dybala", Seleccion.ARGENTINA);
+    messi = Figurita.builder().id("ARG-10").numero(10).jugador("Messi").seleccion(Seleccion.ARGENTINA).build();
+    diMaria = Figurita.builder().id("ARG-11").numero(11).jugador("Di maria").seleccion(Seleccion.ARGENTINA).build();
+    dybala = Figurita.builder().id("ARG-21").numero(21).jugador("Dybala").seleccion(Seleccion.ARGENTINA).build();
 
     repositorioFiguritas.guardar(messi);
     repositorioFiguritas.guardar(diMaria);

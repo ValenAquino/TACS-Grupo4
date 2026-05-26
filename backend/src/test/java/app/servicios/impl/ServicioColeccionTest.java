@@ -30,7 +30,12 @@ class ServicioColeccionTest extends MongoTestBase {
     service = new ServicioColeccion(repositorioFiguritas, repositorioColecciones,
         repositorioPerfiles, notificacionService);
 
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    messi = Figurita.builder()
+        .id("ARG-10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
 
     repositorioFiguritas.guardar(messi);
 

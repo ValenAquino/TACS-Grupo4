@@ -5,6 +5,7 @@ import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
+import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
@@ -91,20 +92,19 @@ public class ServicioPropuesta {
     Perfil autor = propuesta.getAutor();
     Perfil destinatario = propuesta.getDestinatario();
 
-    destinatario.getColeccion()
-        .reservarRepetidas(
-            List.of(propuesta.getFiguritaBuscada()),
-            MetodoIntercambio.INTERCAMBIO
-        );
+    Coleccion coleccionDestinatario = destinatario.getColeccion();
+
+    coleccionDestinatario.reservarRepetidas(
+        List.of(propuesta.getFiguritaBuscada()),
+        MetodoIntercambio.INTERCAMBIO
+    );
 
     propuesta.aceptar(perfilId);
 
     repositorioColecciones.guardar(autor.getColeccion());
-    repositorioColecciones.guardar(destinatario.getColeccion());
-
+    repositorioColecciones.guardar(coleccionDestinatario);
     repositorioPropuestas.guardar(propuesta);
 
-    //Para Notificaciones
     String link = "/intercambios/" + propuestaId;
     String cuerpo = "Tu propuesta de intercambio fue aceptada";
     notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);

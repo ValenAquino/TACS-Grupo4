@@ -147,7 +147,7 @@ class ControladorSubastaTest {
     @Test
     void seleccionarOferta_retorna200() throws Exception {
         mockMvc.perform(
-                post("/subastas/s-1/ofertas/o-1/seleccionar")
+                patch("/subastas/s-1/ofertas/o-1/seleccionar")
                     .cookie(cookie)
             )
             .andExpect(status().isOk());
@@ -159,7 +159,7 @@ class ControladorSubastaTest {
     @Test
     void rechazarOferta_retorna200() throws Exception {
         mockMvc.perform(
-                post("/subastas/s-1/ofertas/o-1/rechazar")
+                patch("/subastas/s-1/ofertas/o-1/rechazar")
                     .cookie(cookie)
             )
             .andExpect(status().isOk());
@@ -171,7 +171,7 @@ class ControladorSubastaTest {
     @Test
     void cancelarSubasta_retorna200() throws Exception {
         mockMvc.perform(
-                post("/subastas/s-1/cancelar")
+                patch("/subastas/s-1/cancelar")
                     .cookie(cookie)
             )
             .andExpect(status().isOk());
@@ -183,7 +183,7 @@ class ControladorSubastaTest {
     @Test
     void cerrarSubasta_retorna200() throws Exception {
         mockMvc.perform(
-                post("/subastas/s-1/cerrar")
+                patch("/subastas/s-1/cerrar")
                     .cookie(cookie)
             )
             .andExpect(status().isOk());

@@ -37,19 +37,19 @@ class ServicioPropuestaTest extends MongoTestBase {
 
     sinCampos = new CamposPerfil(false);
     // Figuritas
-    messi = new Figurita(
-        "ARG-10",
-        10,
-        "Messi",
-        Seleccion.ARGENTINA
-    );
+    messi = Figurita.builder()
+        .id("ARG-10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
 
-    mbappe = new Figurita(
-        "FRA-10",
-        10,
-        "Mbappe",
-        Seleccion.FRANCIA
-    );
+    mbappe = Figurita.builder()
+        .id("FRA-10")
+        .numero(10)
+        .jugador("Mbappe")
+        .seleccion(Seleccion.FRANCIA)
+        .build();
 
     // Usuarios
     Usuario user1 = new Usuario(

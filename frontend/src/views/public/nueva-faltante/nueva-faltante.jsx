@@ -2,13 +2,19 @@ import {useState} from "react";
 import SectionCard from "../../../components/ui/section-card/section-card.jsx";
 import AutocompleteInput from "../../../components/ui/autocomplete-input/autocomplete-input.jsx";
 import Button from "../../../components/ui/button/button.jsx";
-import {buscarFiguritas} from "../../../services/figuritaService.js";
-import {agregarFaltante} from "../../../services/coleccionService.js";
+import {buscarFiguritas} from "@/services/figuritaService.js";
+import {agregarFaltante} from "@/services/coleccionService.js";
+import {useToast} from "@/contexts/toastContext.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
+import Breadcrumb from "@/components/ui/breadcrumb/breadcrumb.jsx";
 
 const NuevaFaltante = () => {
     const [figurita, setFigurita] = useState(undefined);
     const [numero, setNumero]   = useState('');
     const [jugador, setJugador] = useState('');
+
+    const {showToast} = useToast();
+    const {handleError} = useError();
 
     const handleSelect = (fig) => {
         setFigurita(fig);
@@ -25,9 +31,24 @@ const NuevaFaltante = () => {
         handleSelect(resultado[0]);
     };
 
+    const ejecutarFormulario = async () => {
+        try {
+            await agregarFaltante(figurita)
+            setNumero('')
+            setJugador('')
+            setFigurita(undefined)
+            showToast("Faltante agregada correctamente")
+        } catch (error) {
+            handleError(error, (err) => showToast(err.mensaje, 'error'))
+        }
+    }
+
     return (
         <div className="d-flex flex-column gap-3">
-
+            <Breadcrumb crumbs={[
+                {name: "Mis figuritas", to: "/mis-figuritas"},
+                {name: "Nueva faltante", to: "/mis-figuritas/nueva-faltante"}
+            ]}/>
             <div
                 className="d-flex flex-column align-items-center justify-content-center rounded-3 py-4"
                 style={{ backgroundColor: '#f8f9fa', border: '1.5px dashed #ced4da', minHeight: '140px' }}
@@ -87,13 +108,7 @@ const NuevaFaltante = () => {
             <Button
                 label="Publicar faltante ↗"
                 disabled={!figurita}
-                onClick={() => {
-                    agregarFaltante(figurita)
-                    alert("Se guardo la faltante")
-                    setNumero('')
-                    setJugador('')
-                    setFigurita(undefined)
-                }}
+                onClick={() => ejecutarFormulario()}
             />
 
         </div>

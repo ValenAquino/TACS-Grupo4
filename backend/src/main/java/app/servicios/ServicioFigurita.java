@@ -1,13 +1,16 @@
 package app.servicios;
 
+import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
+import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.dto.filtros.FiguritasFiltro;
 import app.repositories.RepositorioColecciones;
+import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
 
@@ -21,6 +24,7 @@ public class ServicioFigurita {
 
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioPerfiles repositorioPerfiles;
+  private final RepositorioFiguritas repositorioFiguritas;
 
   public PaginaResultado<FiguritaIntercambiableDto> buscarFiguritas(
       Integer numero, String seleccion, String jugador,
@@ -50,6 +54,16 @@ public class ServicioFigurita {
 
     return new PaginaResultado<>(contenido, paginaRepo.cantidadDeElementos(),
         paginaRepo.cantidadDePaginas(), paginaRepo.numero());
+  }
+
+  public List<FiguritaDto> buscarFiguritasBase(
+      FiguritasFiltro filtros
+  ) {
+
+    List<Figurita> resultado = this.repositorioFiguritas.buscarConFiltros(filtros);
+    return resultado.stream()
+        .map(FiguritaDto::new)
+        .toList();
   }
 
   private Perfil buscarPerfil(String perfilId) {

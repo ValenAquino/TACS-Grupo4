@@ -37,7 +37,7 @@ class ServicioNotificacionTest {
     servicioNotificacion.notificarInteresados(interesados, cuerpo);
 
     verify(repositorioNotificaciones, times(3))
-        .save(any(Notificacion.class));
+        .guardar(any(Notificacion.class));
   }
 
   @Test
@@ -46,6 +46,6 @@ class ServicioNotificacionTest {
     servicioNotificacion.notificarInteresados(List.of(), "mensaje");
 
     verify(repositorioNotificaciones, never())
-        .save(any(Notificacion.class));
+        .guardar(any(Notificacion.class));
   }
 }

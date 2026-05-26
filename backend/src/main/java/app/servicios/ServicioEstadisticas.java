@@ -4,12 +4,14 @@ import app.dto.EstadisticasDto;
 import app.dto.FiguritasPorModalidadDto;
 import app.dto.PropuestasPorEstadoDto;
 import app.dto.SeleccionCantidadDto;
+import app.dto.filtros.RepetidasFiltro;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.EstadoProceso;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Subasta;
+import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +34,12 @@ public class ServicioEstadisticas {
     private final RepositorioPerfiles repositorioPerfiles;
     private final RepositorioPropuestas repositorioPropuestas;
     private final RepositorioSubastas repositorioSubastas;
+    private final RepositorioColecciones repositorioColecciones;
 
-    @Transactional
     public EstadisticasDto obtenerEstadisticas() {
         long totalUsuarios = repositorioPerfiles.contar();
 
-        List<FiguritaIntercambiable> todasLasRepetidas = repositorioPerfiles.buscarTodos(new CamposPerfil(false))
-            .stream()
-            .flatMap(u -> u.getColeccion().getRepetidas().stream())
-            .collect(Collectors.toList());
-
-        int totalFiguritasPublicadas = todasLasRepetidas.size();
+        long totalFiguritasPublicadas = this.repositorioColecciones.contarRepetidas(new ArrayList<>());
 
         int totalPropuestas = repositorioPropuestas.contar();
 
@@ -50,8 +48,8 @@ public class ServicioEstadisticas {
         PaginaResultado<Subasta> totalSubastasActivas = repositorioSubastas.buscarTodos(filtros, new CamposSubasta(false, false));
 
         PropuestasPorEstadoDto propuestasPorEstado = calcularPropuestasPorEstado();
-        FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad(todasLasRepetidas);
-        List<SeleccionCantidadDto> topSelecciones = calcularTopSelecciones(todasLasRepetidas);
+
+        FiguritasPorModalidadDto figuritasPorModalidad = calcularFiguritasPorModalidad();
 
         return new EstadisticasDto(
             totalUsuarios,
@@ -59,8 +57,7 @@ public class ServicioEstadisticas {
             totalPropuestas,
             (int) totalSubastasActivas.cantidadDeElementos(),
             propuestasPorEstado,
-            figuritasPorModalidad,
-            topSelecciones
+            figuritasPorModalidad
         );
     }
 
@@ -75,25 +72,17 @@ public class ServicioEstadisticas {
         );
     }
 
-    private FiguritasPorModalidadDto calcularFiguritasPorModalidad(List<FiguritaIntercambiable> repetidas) {
-        int soloIntercambio = (int) repetidas.stream()
-            .filter(f -> f.soporta(MetodoIntercambio.INTERCAMBIO) && !f.soporta(MetodoIntercambio.SUBASTA))
-            .count();
-        int soloSubasta = (int) repetidas.stream()
-            .filter(f -> f.soporta(MetodoIntercambio.SUBASTA) && !f.soporta(MetodoIntercambio.INTERCAMBIO))
-            .count();
-        int ambos = (int) repetidas.stream()
-            .filter(f -> f.soporta(MetodoIntercambio.INTERCAMBIO) && f.soporta(MetodoIntercambio.SUBASTA))
-            .count();
-        return new FiguritasPorModalidadDto(soloIntercambio, soloSubasta, ambos);
-    }
+    private FiguritasPorModalidadDto calcularFiguritasPorModalidad() {
+        long soloIntercambio = this.repositorioColecciones
+            .contarRepetidas(List.of(MetodoIntercambio.INTERCAMBIO));
 
-    private List<SeleccionCantidadDto> calcularTopSelecciones(List<FiguritaIntercambiable> repetidas) {
-        return repetidas.stream()
-            .collect(Collectors.groupingBy(f -> f.getFigurita().getSeleccion().name(), Collectors.counting()))
-            .entrySet().stream()
-            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .map(e -> new SeleccionCantidadDto(e.getKey(), e.getValue()))
-            .collect(Collectors.toList());
+        long soloSubasta = this.repositorioColecciones
+            .contarRepetidas(List.of(MetodoIntercambio.SUBASTA));
+
+        long ambos = this.repositorioColecciones
+            .contarRepetidas(List.of(MetodoIntercambio.SUBASTA, MetodoIntercambio.INTERCAMBIO));
+
+        return new FiguritasPorModalidadDto(soloIntercambio, soloSubasta, ambos);
+
     }
 }

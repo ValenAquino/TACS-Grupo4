@@ -24,7 +24,7 @@ public class ControladorPropuesta {
         @CookieValue("token") String token,
         @Valid @RequestBody CrearPropuestaRequest request
     ) {
-        String autorId = this.obtenerPerfilIdDeCookie(token);
+        String autorId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.status(201).body(propuestaService.crearPropuesta(autorId, request));
     }
 
@@ -33,7 +33,7 @@ public class ControladorPropuesta {
             @CookieValue String token,
             @PathVariable String prop_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.ok(this.propuestaService.obtenerPorId(prop_id, perfilId));
     }
 
@@ -42,7 +42,7 @@ public class ControladorPropuesta {
         @CookieValue String token,
         @PathVariable String prop_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         propuestaService.aceptar(prop_id, perfilId);
         return ResponseEntity.noContent().build();
     }
@@ -52,7 +52,7 @@ public class ControladorPropuesta {
         @CookieValue String token,
         @PathVariable String prop_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         propuestaService.rechazar(prop_id, perfilId);
         return ResponseEntity.noContent().build();
     }
@@ -62,7 +62,7 @@ public class ControladorPropuesta {
         @CookieValue String token,
         @PathVariable String prop_id
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         propuestaService.cancelar(prop_id, perfilId);
         return ResponseEntity.noContent().build();
     }
@@ -72,11 +72,8 @@ public class ControladorPropuesta {
         @CookieValue String token,
         @ModelAttribute PropuestasFiltro filtros
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.ok(this.propuestaService.buscarPropuestas(perfilId, filtros));
     }
 
-    private String obtenerPerfilIdDeCookie(String token) {
-        return this.servicioJwt.getPerfilId(token);
-    }
 }

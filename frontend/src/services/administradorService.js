@@ -16,7 +16,6 @@ export const obtenerEstadisticas = async () => {
             ambos: data.figuritas_por_modalidad.ambos,
           }
         : undefined,
-      topSelecciones: data.top_selecciones,
     }
   } catch (error) {
     handleAxiosError(error)

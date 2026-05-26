@@ -6,13 +6,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CamposSubasta {
-  Boolean solicitadas;
-  Boolean ofertadas;
+  Boolean ofertas;
+  Boolean figuritasSolicitadas;
   Boolean fechaCierre;
 
-  public CamposSubasta(Boolean ofertadas, Boolean solicitadas) {
-    this.ofertadas = ofertadas;
-    this.solicitadas = solicitadas;
+  public CamposSubasta(Boolean ofertas, Boolean figuritasSolicitadas) {
+    this.ofertas = ofertas;
+    this.figuritasSolicitadas = figuritasSolicitadas;
     this.fechaCierre = false;
   }
 }

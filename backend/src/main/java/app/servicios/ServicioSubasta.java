@@ -103,21 +103,32 @@ public class ServicioSubasta {
   }
 
   @Transactional
-  public void editarOfertaEnSubasta(String perfilId, String subastaId, String ofertaId, EditarOfertaRequest body){
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
-    Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
-    List<Figurita> nuevasFiguritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
-
-    Propuesta oferta = subasta.modificarFiguritasDeOferta(ofertaId, perfilId, nuevasFiguritas);
-
+  public void editarOfertaEnSubasta(String perfilId, String subastaId, String ofertaId, EditarOfertaRequest body) {
+    CamposSubasta camposSubasta = new CamposSubasta(true, false);
     CamposColeccion camposColeccion = new CamposColeccion(true, false);
-    this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
+
+    Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
+
+    // cargar colección antes de modificar
+    Propuesta oferta = subasta.getOfertas().stream()
+        .filter(o -> o.getId().equals(ofertaId))
+        .findFirst()
+        .orElseThrow(() -> new BadRequestException("Oferta no encontrada"));
+
+    Coleccion coleccion = this.repositorioColecciones.buscarPorId(
+        oferta.getAutor().getColeccion().getId(), camposColeccion);
+    oferta.getAutor().setColeccion(coleccion);
+
+    List<Figurita> nuevasFiguritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
+    subasta.modificarFiguritasDeOferta(ofertaId, perfilId, nuevasFiguritas);
+
+    this.repositorioColecciones.guardar(coleccion, camposColeccion);
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
 
   @Transactional
   public void cancelarOferta(String perfilId, String subastaId, String ofertaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, false);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
     if (!subasta.estaActivo()) {
@@ -148,7 +159,7 @@ public class ServicioSubasta {
 
   @Transactional
   public void rechazarOferta(String perfilId, String subastaId, String ofertaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, false);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
     if (!subasta.estaActivo()) {
@@ -165,7 +176,7 @@ public class ServicioSubasta {
 
   @Transactional
   public void cancelarSubasta(String perfilId, String subastaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(true, true, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, false, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
@@ -185,7 +196,7 @@ public class ServicioSubasta {
 
   @Transactional
   public void cerrarSubasta(String perfilId, String subastaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(true, true, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, false, true);
     CamposColeccion todo = new CamposColeccion(true, true);
     CamposColeccion soloRepetidas = new CamposColeccion(true, false);
 

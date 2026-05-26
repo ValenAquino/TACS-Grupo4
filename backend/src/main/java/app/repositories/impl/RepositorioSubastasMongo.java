@@ -39,10 +39,10 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   public void guardar(Subasta subasta, CamposSubasta campos) {
     Update update = new Update();
 
-    if (campos.getOfertadas()) {
+    if (campos.getOfertas()) {
       update.set("ofertas", subasta.getOfertas());
     }
-    if (campos.getSolicitadas()) {
+    if (campos.getFiguritasSolicitadas()) {
       update.set("figuritasSolicitadas", subasta.getFiguritasSolicitadas());
     }
 
@@ -172,10 +172,10 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   }
 
   private void conCamposCargados(Query query, CamposSubasta campos) {
-    if(!campos.getOfertadas()) {
-      query.fields().exclude("figuritasOfrecidas");
+    if(!campos.getOfertas()) {
+      query.fields().exclude("ofertas");
     }
-    if(!campos.getSolicitadas()) {
+    if(!campos.getFiguritasSolicitadas()) {
       query.fields().exclude("figuritasSolicitadas");
     }
   }

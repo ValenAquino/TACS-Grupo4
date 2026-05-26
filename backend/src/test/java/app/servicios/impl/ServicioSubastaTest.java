@@ -44,7 +44,12 @@ public class ServicioSubastaTest extends MongoTestBase {
 
   @BeforeEach
   void setUp() {
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    messi = Figurita.builder()
+        .id("ARG-10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
     repositorioFiguritas.guardar(messi);
 
     Coleccion coleccionSinMessi = new Coleccion("c-1");
@@ -88,7 +93,12 @@ public class ServicioSubastaTest extends MongoTestBase {
 
   @Test
   void crearSubastaNoNotificaUsuarios() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
+    Figurita diMaria = Figurita.builder()
+        .id("ARG-11")
+        .numero(11)
+        .jugador("Di María")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
     repositorioFiguritas.guardar(diMaria);
 
     service.crearSubasta("2", "ARG-11", 30, List.of(), 0);

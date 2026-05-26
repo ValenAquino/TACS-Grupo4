@@ -18,6 +18,7 @@ import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
+import app.servicios.ServicioEnriquecimiento;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
   private final RepositorioColecciones colecciones;
   private final RepositorioUsuarios usuarios;
   private final RepositorioCalificacion calificaciones;
+  private final ServicioEnriquecimiento enriquecimiento;
 
   public InicializadorDeDatos(RepositorioPerfiles perfiles,
                               RepositorioPropuestas propuestas,
@@ -47,7 +49,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
                               RepositorioColecciones colecciones,
                               RepositorioFiguritas figuritas,
                               RepositorioUsuarios usuarios,
-                              RepositorioCalificacion calificaciones) {
+                              RepositorioCalificacion calificaciones,
+                              ServicioEnriquecimiento enriquecimiento) {
     this.perfiles = perfiles;
     this.propuestas = propuestas;
     this.subastas = subastas;
@@ -55,6 +58,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     this.figuritas = figuritas;
     this.usuarios = usuarios;
     this.calificaciones = calificaciones;
+    this.enriquecimiento = enriquecimiento;
   }
 
   // ─── HELPERS ──────────────────────────────────────────────────────────────
@@ -102,7 +106,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
   @Override
   public void run(String... args) {
-    if (subastas.contar() > 0) {
+    if (perfiles.contar() > 0) {
+      enriquecimiento.enriquecer();
       return;
     }
 
@@ -111,6 +116,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     Map<String, Perfil> perfs = cargarPerfiles(figs);
     cargarPropuestas(figs, perfs.get("lucas"), perfs.get("sofia"), perfs.get("juan"),perfs.get("valentina"));
     cargarSubastas(figs, perfs.get("lucas"), perfs.get("sofia"), perfs.get("matias"));
+    enriquecimiento.enriquecer();
   }
 
 //  private void limpiarBaseDeDatos() {

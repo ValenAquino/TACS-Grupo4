@@ -33,7 +33,12 @@ class ControladorFiguritaTest {
   @MockBean
   ServicioFigurita figuritaService;
 
-  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+  Figurita messi = Figurita.builder()
+      .id("ARG-10")
+      .numero(10)
+      .jugador("Messi")
+      .seleccion(Seleccion.ARGENTINA)
+      .build();
   FiguritaIntercambiable intercambiable = new FiguritaIntercambiable(
       messi, 2, List.of(MetodoIntercambio.INTERCAMBIO), "usuario-1");
   FiguritaIntercambiableDto dto = new FiguritaIntercambiableDto(intercambiable);

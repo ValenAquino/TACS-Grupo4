@@ -25,4 +25,12 @@ public class Figurita {
 
   private Seleccion seleccion;
 
+  private String posicion;
+
+  private String imagenUrl;
+
+  /** null = sin procesar, "EN_PROCESO", "COMPLETADO" */
+  private String imagenStatus;
+
+  private java.time.LocalDateTime imagenCreadoEn;
 }

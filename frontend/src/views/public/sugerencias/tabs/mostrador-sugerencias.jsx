@@ -18,9 +18,8 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
         try {
             setCargando(true)
             const payload = await buscarSugerencias({ tipo, pagina: pagina, limite:10})
-            setPaginasTotales(payload.cantidadDePaginas)
+            setPaginasTotales(payload.cantidad_de_paginas)
             setSugerencias(payload.contenido)
-
         } catch (error) {
             setError(true)
         } finally {

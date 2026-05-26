@@ -168,7 +168,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
       agregarRepetidaNueva(coleccionLucas, figs.get("ARG-9"),  2, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId());                            // J. Álvarez x2
       agregarRepetidaNueva(coleccionLucas, figs.get("ARG-8"),  2, List.of(MetodoIntercambio.SUBASTA),     lucas.getId());                            // E. Fernández x2
       agregarRepetidaNueva(coleccionLucas, figs.get("BRA-10"), 2, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), lucas.getId()); // Neymar x2
-      agregarRepetidaNueva(coleccionLucas, figs.get("BRA-11"), 3, List.of(MetodoIntercambio.SUBASTA),     lucas.getId());                            // Vinícius x3
+      agregarRepetidaNueva(coleccionLucas, figs.get("BRA-11"), 3, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA),     lucas.getId());                            // Vinícius x3
       agregarRepetidaNueva(coleccionLucas, figs.get("FRA-10"), 2, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), lucas.getId()); // Mbappé x2
       agregarRepetidaNueva(coleccionLucas, figs.get("FRA-7"),  2, List.of(MetodoIntercambio.INTERCAMBIO), lucas.getId());                            // Griezmann x2
 
@@ -320,78 +320,60 @@ private void cargarPropuestas(Map<String, Figurita> figs,
                               Perfil lucas, Perfil sofia,
                               Perfil juan, Perfil valentina) {
 
-  /// ── PROPUESTAS ───────────────────────────────────────────────────────────
-
-// P01 — Lucas → Juan : ofrece Messi, busca Modrić
+  // P01 — Lucas → Juan : ofrece Messi (ARG-10 INTERCAMBIO), busca Modrić (CRO-10 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(lucas)
-      .destinatario(juan)
+      .autor(lucas).destinatario(juan)
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("ARG-10"))))
-      .figuritaBuscada(figs.get("CRO-10"))
-      .build());
+      .figuritaBuscada(figs.get("CRO-10")).build());
   reservar(lucas, "ARG-10");
 
-// P02 — Lucas → Juan : ofrece Di María, busca Modrić
+  // P02 — Lucas → Juan : ofrece Di María (ARG-11 INTERCAMBIO), busca Modrić (CRO-10 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(lucas)
-      .destinatario(juan)
+      .autor(lucas).destinatario(juan)
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("ARG-11"))))
-      .figuritaBuscada(figs.get("CRO-10"))
-      .build());
+      .figuritaBuscada(figs.get("CRO-10")).build());
   reservar(lucas, "ARG-11");
 
-// P03 — Lucas → Valentina : ofrece Neymar, busca Modrić
+  // P03 — Lucas → Juan : ofrece Neymar (BRA-10 INTERCAMBIO), busca Modrić (CRO-10 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(lucas)
-      .destinatario(valentina)
+      .autor(lucas).destinatario(juan)
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("BRA-10"))))
-      .figuritaBuscada(figs.get("CRO-10"))
-      .build());
+      .figuritaBuscada(figs.get("CRO-10")).build());
   reservar(lucas, "BRA-10");
 
-// P04 — Lucas → Valentina : ofrece Vinícius, busca Modrić
+  // P04 — Lucas → Valentina : ofrece Vinícius (BRA-11 INTERCAMBIO), busca Perišić (CRO-7 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(lucas)
-      .destinatario(valentina)
+      .autor(lucas).destinatario(valentina)
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("BRA-11"))))
-      .figuritaBuscada(figs.get("CRO-10"))
-      .build());
+      .figuritaBuscada(figs.get("CRO-7")).build());
   reservar(lucas, "BRA-11");
 
-// P05 — Lucas → Sofía : ofrece Griezmann, busca Kimmich
+  // P05 — Lucas → Sofía : ofrece Griezmann (FRA-7 INTERCAMBIO), busca Kimmich (GER-6 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(lucas)
-      .destinatario(sofia)
+      .autor(lucas).destinatario(sofia)
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("FRA-7"))))
-      .figuritaBuscada(figs.get("GER-6"))
-      .build());
+      .figuritaBuscada(figs.get("GER-6")).build());
   reservar(lucas, "FRA-7");
 
-// P06 — Lucas → Sofía : ofrece J.Álvarez, busca Kimmich
+  // P06 — Lucas → Sofía : ofrece J.Álvarez (ARG-9 INTERCAMBIO), busca Kimmich (GER-6 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(lucas)
-      .destinatario(sofia)
+      .autor(lucas).destinatario(sofia)
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("ARG-9"))))
-      .figuritaBuscada(figs.get("GER-6"))
-      .build());
+      .figuritaBuscada(figs.get("GER-6")).build());
   reservar(lucas, "ARG-9");
 
-// P07 — Valentina → Lucas : ofrece Modrić, busca Vinícius
+  // P07 — Valentina → Lucas : ofrece Perišić (CRO-7 INTERCAMBIO), busca Messi (ARG-10 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(valentina)
-      .destinatario(lucas)
-      .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("CRO-10"))))
-      .figuritaBuscada(figs.get("BRA-11"))
-      .build());
-  reservar(valentina, "CRO-10");
+      .autor(valentina).destinatario(lucas)
+      .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("CRO-7"))))
+      .figuritaBuscada(figs.get("ARG-10")).build());
+  reservar(valentina, "CRO-7");
 
-// P08 — Sofía → Lucas : ofrece Kimmich, busca Messi
+  // P08 — Sofía → Lucas : ofrece Kimmich (GER-6 INTERCAMBIO), busca Messi (ARG-10 INTERCAMBIO ✅)
   propuestas.guardar(Propuesta.builder()
-      .autor(sofia)
-      .destinatario(lucas)
+      .autor(sofia).destinatario(lucas)
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("GER-6"))))
-      .figuritaBuscada(figs.get("ARG-10"))
-      .build());
+      .figuritaBuscada(figs.get("ARG-10")).build());
   reservar(sofia, "GER-6");
 }
 

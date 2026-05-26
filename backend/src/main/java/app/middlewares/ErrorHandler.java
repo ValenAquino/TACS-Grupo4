@@ -121,7 +121,7 @@ public class ErrorHandler {
       Exception ex
   ) {
 
-    System.err.println(ex.getMessage() + "\n" + ex.getCause() + "\n" + ex.getSuppressed());
+    ex.printStackTrace();
 
     ErrorResponse error = new ErrorResponse(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),

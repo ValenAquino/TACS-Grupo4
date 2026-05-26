@@ -17,6 +17,7 @@ public class CalificacionRequest {
   @JsonProperty("valor")
   @Min(1)
   @Max(5)
+  @NotNull
   private Integer valor;
 
   @JsonProperty("destinatario_id")

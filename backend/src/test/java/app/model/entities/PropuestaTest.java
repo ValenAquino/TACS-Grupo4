@@ -64,8 +64,7 @@ class PropuestaTest {
             "ARG10",
             10,
             "Messi",
-            Seleccion.ARGENTINA,
-            null
+            Seleccion.ARGENTINA
         );
 
     diMaria =
@@ -73,8 +72,7 @@ class PropuestaTest {
             "ARG11",
             11,
             "Di María",
-            Seleccion.ARGENTINA,
-            null
+            Seleccion.ARGENTINA
         );
 
     origen.getColeccion()

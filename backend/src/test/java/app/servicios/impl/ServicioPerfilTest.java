@@ -59,7 +59,7 @@ class ServicioPerfilTest extends MongoTestBase {
     repositorioPerfiles.guardar(usuario);
     repositorioPerfiles.guardar(otro);
 
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
     repositorioFiguritas.guardar(messi);
   }
 
@@ -185,7 +185,7 @@ class ServicioPerfilTest extends MongoTestBase {
 
   @Test
   void obtenerSugerencias_conCoincidencias_retornaSugerencias() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
+    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
     repositorioFiguritas.guardar(diMaria);
     usuario.getColeccion().agregarFaltante(messi);
     usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(diMaria, 2, new ArrayList<>()));
@@ -215,7 +215,7 @@ class ServicioPerfilTest extends MongoTestBase {
 
   @Test
   void obtenerSugerencias_sinCoincidencias_retornaListaVacia() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
     usuario.getColeccion().getFaltantes().add(messi);
 
     when(jwt.getPerfilId(any())).thenReturn("1");

@@ -44,7 +44,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
   @BeforeEach
   void setUp() {
-    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+    messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
     repositorioFiguritas.guardar(messi);
 
     Coleccion coleccionSinMessi = new Coleccion("c-1");
@@ -88,7 +88,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
   @Test
   void crearSubastaNoNotificaUsuarios() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
+    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
     repositorioFiguritas.guardar(diMaria);
 
     service.crearSubasta("2", "ARG-11", 30, List.of(), 0);
@@ -358,7 +358,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.cancelarOferta(lucas.getId(), "s-1", "o-1");
 
-    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(false, true));
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, false));
 
     assertEquals(EstadoProceso.CANCELADO, buscarOfertaEn(subasta, "o-1").getEstadoActual().getValor());
   }

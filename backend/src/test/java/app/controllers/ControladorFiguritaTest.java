@@ -33,7 +33,7 @@ class ControladorFiguritaTest {
   @MockBean
   ServicioFigurita figuritaService;
 
-  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+  Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
   FiguritaIntercambiable intercambiable = new FiguritaIntercambiable(
       messi, 2, List.of(MetodoIntercambio.INTERCAMBIO), "usuario-1");
   FiguritaIntercambiableDto dto = new FiguritaIntercambiableDto(intercambiable);

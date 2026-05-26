@@ -5,7 +5,7 @@ const PerfilSimple = ({perfil}) => {
 
     const navigate = useNavigate()
 
-    const renderStars = (rating) => {
+    const estrellas = (rating) => {
         return (
             <div className={styles.stars}>
                 {[1,2,3,4,5].map((i) => (
@@ -23,7 +23,7 @@ const PerfilSimple = ({perfil}) => {
             <div>
                 <h5 className="m-0">{perfil.nombre}</h5>
                 <div className="fs-6 d-flex align-items-center gap-2">
-                    {renderStars(perfil.calificacion)}
+                    {estrellas(perfil.calificacion)}
                     <span>{perfil.calificacion}</span>
                 </div>
             </div>

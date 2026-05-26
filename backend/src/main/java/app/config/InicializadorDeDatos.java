@@ -416,16 +416,22 @@ private void reservar(Perfil perfil, String figuritaId) {
 
 // Oferta de Matías a S1
     Propuesta ofertaMatias = Propuesta.builder()
+        .id("1")
         .autor(matias)
+        .destinatario(lucas)
         .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("URU-9"))))
+        .figuritaBuscada(figs.get("FRA-7"))
         .build();
     s1.getOfertas().add(ofertaMatias);
     reservar(matias, "URU-9");
 
 // Oferta de Sofía a S1
     Propuesta ofertaSofia = Propuesta.builder()
+        .id("2")
         .autor(sofia)
+        .destinatario(lucas)
         .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("ESP-10"))))
+        .figuritaBuscada(figs.get("FRA-7"))
         .build();
     s1.getOfertas().add(ofertaSofia);
     reservar(sofia, "ESP-10");
@@ -444,8 +450,11 @@ private void reservar(Perfil perfil, String figuritaId) {
 
 // Oferta de Lucas a S2
     Propuesta ofertaLucas = Propuesta.builder()
+        .id("3")
         .autor(lucas)
+        .destinatario(sofia)
         .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("ARG-8"))))
+        .figuritaBuscada(figs.get("POR-7"))
         .build();
     s2.getOfertas().add(ofertaLucas);
     reservar(lucas, "ARG-8");

@@ -1,4 +1,4 @@
-const renderStars = (score) => {
+const estrellas = (score) => {
   const fullStars = Math.floor(score)
   const emptyStars = 5 - fullStars
   return (
@@ -9,4 +9,4 @@ const renderStars = (score) => {
   )
 }
 
-export default renderStars
+export default estrellas

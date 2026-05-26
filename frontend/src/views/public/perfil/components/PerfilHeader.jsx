@@ -1,4 +1,4 @@
-import renderStars from '@/utils/renderStars.jsx'
+import estrellas from '@/components/ui/estrellas/estrellas.jsx'
 import styles from './PerfilHeader.module.css'
 
 const PerfilHeader = ({
@@ -18,7 +18,12 @@ const PerfilHeader = ({
         <div className="d-flex align-items-center gap-3 text-white">
           <div className={styles.avatar}>
             {!loading && perfil?.nombre
-              ? perfil.nombre.trim().split(/\s+/).map(p => p[0].toUpperCase()).join('').slice(0, 2)
+              ? perfil.nombre
+                  .trim()
+                  .split(/\s+/)
+                  .map((p) => p[0].toUpperCase())
+                  .join('')
+                  .slice(0, 2)
               : '?'}
           </div>
 
@@ -29,7 +34,7 @@ const PerfilHeader = ({
               <>
                 <h2 className={`mb-0 fw-bold ${styles.nombre}`}>{perfil?.nombre}</h2>
                 <div>
-                  {renderStars(Number(promedio))} ⭐ {promedio} ({reviews.cantidad_de_elementos})
+                  {estrellas(Number(promedio))} ⭐ {promedio} ({reviews.cantidad_de_elementos})
                 </div>
               </>
             )}
@@ -42,7 +47,10 @@ const PerfilHeader = ({
           </button>
 
           {perfilId != null && (
-            <button className={`btn btn-outline-light ${styles['btn-editar']}`} onClick={onCerrarSesionClick}>
+            <button
+              className={`btn btn-outline-light ${styles['btn-editar']}`}
+              onClick={onCerrarSesionClick}
+            >
               Cerrar sesion
             </button>
           )}

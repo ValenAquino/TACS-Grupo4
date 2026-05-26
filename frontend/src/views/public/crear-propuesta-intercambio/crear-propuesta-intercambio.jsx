@@ -4,6 +4,7 @@ import SectionTitle from '@/components/ui/section-title/section-title.jsx'
 import SelectorRepetidas from '@/components/ui/selector-repetidas/selector-repetidas.jsx'
 import Button from '@/components/ui/button/button.jsx'
 import useCrearPropuesta from './useCrearPropuesta'
+import UserChip from '@/components/ui/user-chip/user-chip.jsx'
 import styles from './crear-propuesta-intercambio.module.css'
 
 const CrearPropuestaIntercambio = () => {
@@ -27,12 +28,9 @@ const CrearPropuestaIntercambio = () => {
       </div>
 
       <SectionCard>
-        <SectionTitle>FIGURITA QUE QUERÉS OBTENER</SectionTitle>
+        <SectionTitle>PUBLICADA POR</SectionTitle>
         <SectionCard.Section>
-          <div className="d-flex flex-column gap-1">
-            <p className={styles.crearPropuestaLabel}>Publicada por</p>
-            <p className={styles.crearPropuestaDuenio}>{figurita.nombre_usuario}</p>
-          </div>
+          <UserChip nombre={figurita.nombre_usuario} reputacion={figurita.reputacion} />
         </SectionCard.Section>
       </SectionCard>
 

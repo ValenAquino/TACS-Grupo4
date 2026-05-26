@@ -1,4 +1,5 @@
 import Etiqueta from '../../../../../components/ui/etiqueta/etiqueta.jsx'
+import estrellas from '@/components/ui/estrellas/estrellas.jsx'
 import { truncarADosDecimales } from '../../../../../utils/estandarizar.js'
 
 const VARIANTE_ESTADO = {
@@ -13,12 +14,6 @@ const LABEL_ESTADO = {
   ACEPTADO: 'Aceptado',
   RECHAZADO: 'Rechazado',
   CANCELADO: 'Cancelado',
-}
-
-const renderStars = (rating) => {
-  const full = Math.floor(rating ?? 0)
-  const empty = 5 - full
-  return '★'.repeat(full) + '☆'.repeat(empty)
 }
 
 const HeaderUsuarioEstado = ({ destinatario, estado }) => (
@@ -39,7 +34,7 @@ const HeaderUsuarioEstado = ({ destinatario, estado }) => (
       <div className="d-flex flex-column">
         <span className="fw-semibold">{destinatario.nombre}</span>
         <small className="text-muted">
-          {renderStars(destinatario.calificacion_media)} {truncarADosDecimales(destinatario.calificacion_media)}
+          {estrellas(destinatario.calificacion_media)} {truncarADosDecimales(destinatario.calificacion_media)}
         </small>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import renderStars from '@/utils/renderStars'
+import estrellas from '../estrellas/estrellas.jsx'
 import styles from './user-chip.module.css'
 
 const UserChip = ({ nombre, reputacion = 0 }) => (
@@ -7,7 +7,7 @@ const UserChip = ({ nombre, reputacion = 0 }) => (
       <span className={styles.avatar}>{nombre.slice(0, 2).toUpperCase()}</span>
       <span className={styles.name}>{nombre}</span>
     </div>
-    <span className={styles.stars}>{renderStars(reputacion)}</span>
+    <span className={styles.stars}>{estrellas (reputacion)}</span>
   </div>
 )
 

@@ -73,7 +73,7 @@ public class ServicioSubasta {
   public void ofertarEnSubasta(String autorId, String subastaId, List<String> rawFiguritasId) {
     CamposPerfil conColeccion = new CamposPerfil(true);
     Perfil autor = this.repositorioPerfiles.buscarPorId(autorId, conColeccion);
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, false);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
     Perfil destinatario = subasta.getAutor();
 

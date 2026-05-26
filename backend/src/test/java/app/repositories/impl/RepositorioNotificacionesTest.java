@@ -48,12 +48,12 @@ public class RepositorioNotificacionesTest extends MongoTestBase {
     Notificacion notificacion4 = new Notificacion(mensaje, perfil2);
     Notificacion notificacion5 = new Notificacion(mensaje, perfil2);
 
-    repositorioNotificaciones.guardar(notificacion1);
-    repositorioNotificaciones.guardar(notificacion2);
-    repositorioNotificaciones.guardar(notificacion3);
-    repositorioNotificaciones.guardar(notificacion4);
-    repositorioNotificaciones.guardar(notificacion5);
+    repositorioNotificaciones.save(notificacion1);
+    repositorioNotificaciones.save(notificacion2);
+    repositorioNotificaciones.save(notificacion3);
+    repositorioNotificaciones.save(notificacion4);
+    repositorioNotificaciones.save(notificacion5);
 
-    assertEquals(3, repositorioNotificaciones.buscarPorPerfil(perfil1).size());
+    assertEquals(3, repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfil1.getId()).size());
   }
 }

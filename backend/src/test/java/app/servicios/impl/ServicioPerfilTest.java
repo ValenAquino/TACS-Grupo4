@@ -18,10 +18,12 @@ import java.util.List;
 
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPerfil;
+import app.servicios.ServicioNotificacion;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import app.repositories.RepositorioUsuarios;
 
 class ServicioPerfilTest extends MongoTestBase {
 
@@ -33,9 +35,15 @@ class ServicioPerfilTest extends MongoTestBase {
   @Mock
   private ServicioJwt jwt;
 
+  @Mock
+  ServicioNotificacion servicioNotificacion;
+  @Mock
+  RepositorioUsuarios repositorioUsuarios;
+
   @BeforeEach
   void setUp() {
-    service = new ServicioPerfil(repositorioCalificacion, repositorioPerfiles, repositorioNotificaciones, repositorioUsuarios);
+    service = new ServicioPerfil(repositorioCalificacion, repositorioPerfiles, repositorioNotificaciones, servicioNotificacion, repositorioUsuarios);
+
 
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     Coleccion colec = new Coleccion("c-1");

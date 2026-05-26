@@ -156,6 +156,7 @@
                     <exclude>app.config</exclude>
                     <exclude>app</exclude>
                     <exclude>default</exclude>
+                    <exclude>app.repositories</exclude>
                   </excludes>
                 </rule>
               </rules>

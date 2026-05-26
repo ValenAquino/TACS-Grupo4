@@ -4,6 +4,7 @@ import app.model.entities.MetodoIntercambio;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public record RepetidaRequest (
 
   @JsonProperty("cantidad_existente")
   @Positive
+  @NotNull
   Integer cantidadExistente,
 
   @JsonProperty("fig_id")

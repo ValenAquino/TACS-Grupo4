@@ -136,11 +136,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
   private void cargarAdmin() {
     Usuario admin = crearUsuario("admin", "admin", Rol.ADMINISTRADOR);
     Coleccion coleccion = crearColeccion();
-    Perfil.builder()
-        .usuario(admin)
-        .nombre("admin")
-        .coleccion(coleccion)
-        .build();
+    crearPerfil("admin-id-001", "admin", admin, coleccion, "admin");
   }
 
   // ─── PERFILES ─────────────────────────────────────────────────────────────

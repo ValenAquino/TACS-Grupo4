@@ -3,7 +3,7 @@ package app.servicios;
 import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
 import app.dto.FiguritaDto;
-import app.dto.NotificacionesDto;
+import app.dto.NotificacionDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.filtros.SugerenciasFiltro;
@@ -36,7 +36,9 @@ public class ServicioPerfil {
   private final RepositorioCalificacion repositorioCalificacion;
   private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioNotificaciones repositorioNotificaciones;
+  private final ServicioNotificacion servicioNotificacion;
   private final RepositorioUsuarios repositorioUsuarios;
+
 
   public List<FiguritaDto> obtenerFaltantes(String userId) {
     CamposPerfil campos = new CamposPerfil(false);
@@ -110,12 +112,12 @@ public class ServicioPerfil {
     return contadores;
   }
 
-  public List<NotificacionesDto> obtenerNotificaciones(String userId) {
-    CamposPerfil sinCampos = new CamposPerfil(false);
-    Perfil perfil = repositorioPerfiles.buscarPorId(userId, sinCampos);
-
-    return this.repositorioNotificaciones.buscarPorPerfil(perfil).stream().map(NotificacionesDto::new).toList();
-  }
+    public List<NotificacionDto> obtenerNotificaciones(String perfilId) {
+        return this.servicioNotificacion.obtenerPorPerfil(perfilId)
+                .stream()
+                .map(NotificacionDto::new)
+                .toList();
+    }
 
   public PerfilDto obtenerPerfil(String perfilId) {
     Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(true));
@@ -161,5 +163,9 @@ public class ServicioPerfil {
         resultado.cantidadDeElementos(),
         resultado.cantidadDePaginas(),
         resultado.numero());
+  }
+
+  public void marcarTodasNotifsLeidas(String perfilId) {
+      servicioNotificacion.marcarTodasLeidas(perfilId);
   }
 }

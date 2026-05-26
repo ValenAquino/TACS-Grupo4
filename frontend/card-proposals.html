@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FiguritaCard — Propuestas</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      padding: 32px 24px;
+      color: #111827;
+    }
+
+    h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+    .page-subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 40px; }
+
+    .section { margin-bottom: 56px; }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 4px;
+    }
+    .section-desc {
+      font-size: 0.82rem;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    .grid-3 { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+
+    /* ─── SHARED TOKENS ──────────────────────── */
+    :root {
+      --badge-intercambio-bg: #dcfce7; --badge-intercambio-fg: #16a34a;
+      --badge-subasta-bg: #ffedd5;     --badge-subasta-fg: #ea580c;
+      --badge-ambos-bg: #ede9fe;       --badge-ambos-fg: #7c3aed;
+      --color-intercambio: #16a34a;
+      --color-subasta: #ea580c;
+      --color-ambos: #7c3aed;
+      --img-url: url('https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png');
+    }
+
+    .badge {
+      font-size: 0.68rem; font-weight: 700;
+      padding: 2px 9px; border-radius: 999px;
+      text-transform: lowercase; white-space: nowrap;
+    }
+    .badge-intercambio { background: var(--badge-intercambio-bg); color: var(--badge-intercambio-fg); }
+    .badge-subasta     { background: var(--badge-subasta-bg);     color: var(--badge-subasta-fg); }
+    .badge-ambos       { background: var(--badge-ambos-bg);       color: var(--badge-ambos-fg); }
+
+    /* ─── OPCIÓN A — Panel con imagen flotante ─ */
+    .card-a {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .card-a:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+
+    .card-a .panel {
+      position: relative;
+      height: 150px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .card-a.intercambio .panel { background: linear-gradient(160deg, #bbf7d0, #dcfce7); }
+    .card-a.subasta     .panel { background: linear-gradient(160deg, #fed7aa, #ffedd5); }
+    .card-a.ambos       .panel { background: linear-gradient(160deg, #ddd6fe, #ede9fe); }
+
+    .card-a .panel-header {
+      position: absolute;
+      top: 10px; left: 12px; right: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-a .number { font-size: 0.75rem; font-weight: 700; color: #374151; }
+
+    .card-a .player-img {
+      width: auto;
+      height: 140px;
+      object-fit: contain;
+      position: absolute;
+      bottom: -20px;
+    }
+
+    .card-a .body {
+      padding: 28px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .card-a .name { font-size: 0.95rem; font-weight: 700; color: #111827; text-align: center; }
+    .card-a .subtitle { font-size: 0.75rem; color: #6b7280; text-align: center; }
+    .card-a .user-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; color: #374151;
+      margin-top: 2px;
+    }
+    .card-a .stars { color: #f59e0b; font-size: 0.7rem; }
+    .card-a .available { font-size: 0.75rem; color: #16a34a; font-weight: 600; }
+    .card-a .btn {
+      display: block; width: 100%;
+      padding: 9px 0;
+      border: 1.5px solid #d1d5db; border-radius: 9px;
+      background: transparent; color: #374151;
+      font-size: 0.84rem; font-weight: 500;
+      text-align: center; text-decoration: none; cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .card-a .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+    .card-a .btn.subasta-btn {
+      background: #ea580c; border-color: #ea580c; color: #fff; font-weight: 600;
+    }
+    .card-a .btn.subasta-btn:hover { background: #c2410c; }
+
+    /* ─── OPCIÓN B — Horizontal compacta ──────── */
+    .card-b {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .card-b:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.11); }
+
+    .card-b .img-col {
+      width: 100px;
+      min-width: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+    }
+    .card-b.intercambio .img-col { background: linear-gradient(160deg, #d1fae5, #f0fdf4); }
+    .card-b.subasta     .img-col { background: linear-gradient(160deg, #fed7aa, #fff7ed); }
+    .card-b.ambos       .img-col { background: linear-gradient(160deg, #ddd6fe, #faf5ff); }
+
+    .card-b .img-col img {
+      height: 90px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .card-b .info-col {
+      flex: 1;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .card-b .top-row {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-b .number { font-size: 0.72rem; font-weight: 700; color: #9ca3af; }
+    .card-b .name { font-size: 0.94rem; font-weight: 700; color: #111827; }
+    .card-b .subtitle { font-size: 0.75rem; color: #6b7280; }
+    .card-b .user-row {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: #374151; margin-top: 2px;
+    }
+    .card-b .stars { color: #f59e0b; font-size: 0.68rem; }
+    .card-b .available { font-size: 0.73rem; color: #16a34a; font-weight: 600; }
+    .card-b .btn {
+      display: block; width: 100%;
+      padding: 7px 0;
+      border: 1.5px solid #d1d5db; border-radius: 8px;
+      background: transparent; color: #374151;
+      font-size: 0.8rem; font-weight: 500;
+      text-align: center; text-decoration: none; cursor: pointer;
+      margin-top: auto;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .card-b .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+    .card-b .btn.subasta-btn {
+      background: #ea580c; border-color: #ea580c; color: #fff; font-weight: 600;
+    }
+
+    /* ─── OPCIÓN C — Full image hero ──────────── */
+    .card-c {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .card-c:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+
+    .card-c .hero {
+      position: relative;
+      height: 160px;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .card-c .hero img {
+      height: 155px;
+      width: auto;
+      object-fit: contain;
+    }
+    .card-c .hero-number {
+      position: absolute;
+      top: 10px; left: 12px;
+      font-size: 0.72rem; font-weight: 700; color: #6b7280;
+    }
+    .card-c .hero-badge {
+      position: absolute;
+      top: 10px; right: 12px;
+    }
+
+    .card-c .body {
+      padding: 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .card-c .name { font-size: 0.95rem; font-weight: 700; color: #111827; }
+    .card-c .subtitle { font-size: 0.75rem; color: #6b7280; }
+    .card-c .meta-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.75rem; color: #374151;
+      margin-top: 2px; flex-wrap: wrap;
+    }
+    .card-c .stars { color: #f59e0b; font-size: 0.68rem; }
+    .card-c .dot { color: #d1d5db; }
+    .card-c .available { font-size: 0.73rem; color: #16a34a; font-weight: 600; }
+    .card-c .divider { border: none; border-top: 1px solid #f3f4f6; margin: 6px 0 2px; }
+    .card-c .btn {
+      display: block; width: 100%;
+      padding: 9px 0;
+      border: 1.5px solid #d1d5db; border-radius: 9px;
+      background: transparent; color: #374151;
+      font-size: 0.84rem; font-weight: 500;
+      text-align: center; text-decoration: none; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .card-c .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+    .card-c .btn.subasta-btn {
+      background: #ea580c; border-color: #ea580c; color: #fff; font-weight: 600;
+    }
+
+    /* ─── Avatar chip ─────────────────────────── */
+    .avatar {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #6b7280;
+      color: #fff;
+      font-size: 0.6rem; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FiguritaCard — Propuestas de diseño</h1>
+  <p class="page-subtitle">Mismos datos, tres layouts distintos. Variantes: intercambio / subasta / ambos.</p>
+
+  <!-- ═══ OPCIÓN A ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">A — Panel con imagen flotante</div>
+    <div class="section-desc">Header coloreado según tipo, imagen que rompe la línea divisoria. Efecto sticker Panini moderno.</div>
+    <div class="grid grid-3">
+
+      <!-- intercambio -->
+      <div class="card-a intercambio">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="number">#203</span>
+            <span class="badge badge-intercambio">intercambio</span>
+          </div>
+          <img class="player-img" src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="body">
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="user-row">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span>@crack10</span>
+          </div>
+          <span class="available">2 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <!-- subasta -->
+      <div class="card-a subasta">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="number">#88</span>
+            <span class="badge badge-subasta">subasta</span>
+          </div>
+          <img class="player-img" src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="body">
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="user-row">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span>@futbola</span>
+          </div>
+          <span class="available">1 disponible</span>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <!-- ambos -->
+      <div class="card-a ambos">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="number">#14</span>
+            <span class="badge badge-ambos">ambos</span>
+          </div>
+          <img class="player-img" src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="body">
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="user-row">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span>@pedri_fan</span>
+          </div>
+          <span class="available">3 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ OPCIÓN B ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">B — Horizontal compacta</div>
+    <div class="section-desc">Imagen a la izquierda con fondo coloreado, info a la derecha. Mayor densidad de información por pantalla.</div>
+    <div class="grid grid-2">
+
+      <!-- intercambio -->
+      <div class="card-b intercambio">
+        <div class="img-col">
+          <img src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#203</span>
+            <span class="badge badge-intercambio">intercambio</span>
+          </div>
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="user-row">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span>@crack10</span>
+          </div>
+          <span class="available">2 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <!-- subasta -->
+      <div class="card-b subasta">
+        <div class="img-col">
+          <img src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#88</span>
+            <span class="badge badge-subasta">subasta</span>
+          </div>
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="user-row">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span>@futbola</span>
+          </div>
+          <span class="available">1 disponible</span>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <!-- ambos -->
+      <div class="card-b ambos">
+        <div class="img-col">
+          <img src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#14</span>
+            <span class="badge badge-ambos">ambos</span>
+          </div>
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="user-row">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span>@pedri_fan</span>
+          </div>
+          <span class="available">3 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" style="margin-top:4px" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ OPCIÓN C ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">C — Full image hero</div>
+    <div class="section-desc">Imagen full-bleed sobre fondo neutro, número y badge flotando. Más visual e impactante.</div>
+    <div class="grid grid-3">
+
+      <!-- intercambio -->
+      <div class="card-c">
+        <div class="hero">
+          <span class="hero-number">#203</span>
+          <span class="hero-badge badge badge-intercambio">intercambio</span>
+          <img src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="body">
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="meta-row">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span class="dot">·</span>
+            <span>@crack10</span>
+            <span class="dot">·</span>
+            <span class="available">2 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <!-- subasta -->
+      <div class="card-c">
+        <div class="hero">
+          <span class="hero-number">#88</span>
+          <span class="hero-badge badge badge-subasta">subasta</span>
+          <img src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="body">
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="meta-row">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span class="dot">·</span>
+            <span>@futbola</span>
+            <span class="dot">·</span>
+            <span class="available">1 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <!-- ambos -->
+      <div class="card-c">
+        <div class="hero">
+          <span class="hero-number">#14</span>
+          <span class="hero-badge badge badge-ambos">ambos</span>
+          <img src="https://r2.thesportsdb.com/images/media/player/cutout/e0i2051750317027.png" alt="jugador" />
+        </div>
+        <div class="body">
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="meta-row">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span class="dot">·</span>
+            <span>@pedri_fan</span>
+            <span class="dot">·</span>
+            <span class="available">3 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" style="margin-top:6px" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <hr style="border:none;border-top:2px solid #e5e7eb;margin:0 0 48px" />
+  <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:6px;color:#111827">Con imagen real (thumb JPG)</h2>
+  <p style="color:#6b7280;font-size:0.85rem;margin-bottom:40px">Mismos layouts, imagen con contexto/fondo. Funciona con <code>object-fit:cover</code>.</p>
+
+  <!-- ═══ A con foto ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">A — Panel con foto (cover)</div>
+    <div class="section-desc">El header coloreado pasa a ser la zona de imagen con overlay de gradiente en la parte inferior.</div>
+    <div class="grid grid-3">
+
+      <div class="card-a intercambio" style="overflow:hidden">
+        <div class="panel" style="overflow:hidden">
+          <div class="panel-header" style="z-index:2;position:absolute">
+            <span class="number" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)">#203</span>
+            <span class="badge badge-intercambio">intercambio</span>
+          </div>
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:150px;object-fit:cover;object-position:top;position:absolute;top:0;left:0" alt="" />
+          <div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,rgba(0,0,0,.45))"></div>
+        </div>
+        <div class="body">
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="user-row">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span>@crack10</span>
+          </div>
+          <span class="available">2 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <div class="card-a subasta" style="overflow:hidden">
+        <div class="panel" style="overflow:hidden">
+          <div class="panel-header" style="z-index:2;position:absolute">
+            <span class="number" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)">#88</span>
+            <span class="badge badge-subasta">subasta</span>
+          </div>
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:150px;object-fit:cover;object-position:top;position:absolute;top:0;left:0" alt="" />
+          <div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,rgba(0,0,0,.45))"></div>
+        </div>
+        <div class="body">
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="user-row">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span>@futbola</span>
+          </div>
+          <span class="available">1 disponible</span>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <div class="card-a ambos" style="overflow:hidden">
+        <div class="panel" style="overflow:hidden">
+          <div class="panel-header" style="z-index:2;position:absolute">
+            <span class="number" style="color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)">#14</span>
+            <span class="badge badge-ambos">ambos</span>
+          </div>
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:150px;object-fit:cover;object-position:top;position:absolute;top:0;left:0" alt="" />
+          <div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(transparent,rgba(0,0,0,.45))"></div>
+        </div>
+        <div class="body">
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="user-row">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span>@pedri_fan</span>
+          </div>
+          <span class="available">3 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ B con foto ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">B — Horizontal con foto (cover)</div>
+    <div class="section-desc">Imagen cuadrada a la izquierda con object-fit cover. Muy densa y legible en mobile.</div>
+    <div class="grid grid-2">
+
+      <div class="card-b intercambio">
+        <div class="img-col" style="padding:0;overflow:hidden;min-width:100px;width:100px">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:100%;object-fit:cover;object-position:top;display:block" alt="" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#203</span>
+            <span class="badge badge-intercambio">intercambio</span>
+          </div>
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="user-row">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span>@crack10</span>
+          </div>
+          <span class="available">2 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <div class="card-b subasta">
+        <div class="img-col" style="padding:0;overflow:hidden;min-width:100px;width:100px">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:100%;object-fit:cover;object-position:top;display:block" alt="" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#88</span>
+            <span class="badge badge-subasta">subasta</span>
+          </div>
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="user-row">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span>@futbola</span>
+          </div>
+          <span class="available">1 disponible</span>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <div class="card-b ambos">
+        <div class="img-col" style="padding:0;overflow:hidden;min-width:100px;width:100px">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:100%;object-fit:cover;object-position:top;display:block" alt="" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#14</span>
+            <span class="badge badge-ambos">ambos</span>
+          </div>
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="user-row">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span>@pedri_fan</span>
+          </div>
+          <span class="available">3 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" style="margin-top:4px" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ C con foto ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">C — Full image hero con foto</div>
+    <div class="section-desc">La foto ocupa toda la zona superior como hero. Número y badge flotando sobre ella.</div>
+    <div class="grid grid-3">
+
+      <div class="card-c">
+        <div class="hero" style="overflow:hidden">
+          <span class="hero-number">#203</span>
+          <span class="hero-badge badge badge-intercambio">intercambio</span>
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:100%;object-fit:cover;object-position:top;position:absolute;top:0;left:0" alt="" />
+        </div>
+        <div class="body">
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="meta-row">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span class="dot">·</span>
+            <span>@crack10</span>
+            <span class="dot">·</span>
+            <span class="available">2 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <div class="card-c">
+        <div class="hero" style="overflow:hidden">
+          <span class="hero-number">#88</span>
+          <span class="hero-badge badge badge-subasta">subasta</span>
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:100%;object-fit:cover;object-position:top;position:absolute;top:0;left:0" alt="" />
+        </div>
+        <div class="body">
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="meta-row">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span class="dot">·</span>
+            <span>@futbola</span>
+            <span class="dot">·</span>
+            <span class="available">1 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <div class="card-c">
+        <div class="hero" style="overflow:hidden">
+          <span class="hero-number">#14</span>
+          <span class="hero-badge badge badge-ambos">ambos</span>
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg"
+               style="width:100%;height:100%;object-fit:cover;object-position:top;position:absolute;top:0;left:0" alt="" />
+        </div>
+        <div class="body">
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="meta-row">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span class="dot">·</span>
+            <span>@pedri_fan</span>
+            <span class="dot">·</span>
+            <span class="available">3 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" style="margin-top:6px" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ D — NUEVA: foto circular + info en línea ═══════════ -->
+  <div class="section">
+    <div class="section-title">D — Avatar circular (nuevo diseño, solo foto)</div>
+    <div class="section-desc">Foto recortada en círculo, todo en una card compacta y horizontal. Estilo app moderna de mercado.</div>
+    <div class="grid grid-2">
+
+      <style>
+        .card-d {
+          background: #fff;
+          border-radius: 14px;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+          padding: 14px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .card-d:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.11); }
+        .card-d .top { display: flex; align-items: center; gap: 12px; }
+        .card-d .avatar-img {
+          width: 64px; height: 64px;
+          border-radius: 50%;
+          object-fit: cover;
+          object-position: top;
+          flex-shrink: 0;
+          border: 2px solid #e5e7eb;
+        }
+        .card-d .top-info { flex: 1; }
+        .card-d .top-row { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-d .name { font-size: 0.94rem; font-weight: 700; color: #111827; }
+        .card-d .subtitle { font-size: 0.75rem; color: #6b7280; }
+        .card-d .number { font-size: 0.7rem; font-weight: 700; color: #9ca3af; }
+        .card-d .meta { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #374151; flex-wrap: wrap; margin-top: 4px; }
+        .card-d .stars { color: #f59e0b; font-size: 0.68rem; }
+        .card-d .available { color: #16a34a; font-weight: 600; }
+        .card-d .actions { display: flex; gap: 8px; }
+        .card-d .btn {
+          flex: 1; padding: 8px 0;
+          border: 1.5px solid #d1d5db; border-radius: 9px;
+          background: transparent; color: #374151;
+          font-size: 0.8rem; font-weight: 500;
+          text-align: center; text-decoration: none; cursor: pointer;
+          transition: background 0.15s;
+        }
+        .card-d .btn:hover { background: #f9fafb; }
+        .card-d .btn.subasta-btn { background:#ea580c;border-color:#ea580c;color:#fff;font-weight:600; }
+      </style>
+
+      <div class="card-d">
+        <div class="top">
+          <img class="avatar-img" src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="top-info">
+            <div class="top-row">
+              <div>
+                <p class="name">Lionel Messi</p>
+                <p class="subtitle">Argentina</p>
+              </div>
+              <span class="badge badge-intercambio">intercambio</span>
+            </div>
+            <div class="meta">
+              <span class="number">#203</span>
+              <span class="stars">★★★★☆</span>
+              <span>@crack10</span>
+              <span class="available">2 disp.</span>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <div class="card-d">
+        <div class="top">
+          <img class="avatar-img" src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="top-info">
+            <div class="top-row">
+              <div>
+                <p class="name">Kylian Mbappé</p>
+                <p class="subtitle">Francia</p>
+              </div>
+              <span class="badge badge-subasta">subasta</span>
+            </div>
+            <div class="meta">
+              <span class="number">#88</span>
+              <span class="stars">★★★☆☆</span>
+              <span>@futbola</span>
+              <span class="available">1 disp.</span>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <div class="card-d">
+        <div class="top">
+          <img class="avatar-img" src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="top-info">
+            <div class="top-row">
+              <div>
+                <p class="name">Pedri González</p>
+                <p class="subtitle">España</p>
+              </div>
+              <span class="badge badge-ambos">ambos</span>
+            </div>
+            <div class="meta">
+              <span class="number">#14</span>
+              <span class="stars">★★★★★</span>
+              <span>@pedri_fan</span>
+              <span class="available">3 disp.</span>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <hr style="border:none;border-top:2px solid #e5e7eb;margin:0 0 48px" />
+  <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:6px;color:#111827">Con efectos visuales</h2>
+  <p style="color:#6b7280;font-size:0.85rem;margin-bottom:40px">Pasá el mouse por las cards para ver los efectos de hover.</p>
+
+  <style>
+    /* ── E: Hero con gradiente + glow + zoom ─── */
+    .card-e {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      cursor: pointer;
+    }
+    .card-e.intercambio:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(22,163,74,.25); }
+    .card-e.subasta:hover     { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(234,88,12,.25); }
+    .card-e.ambos:hover       { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(124,58,237,.25); }
+
+    .card-e .hero {
+      position: relative;
+      height: 180px;
+      overflow: hidden;
+    }
+    .card-e .hero img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .card-e:hover .hero img { transform: scale(1.06); }
+
+    /* gradiente inferior sobre la foto */
+    .card-e .hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 70px;
+      background: linear-gradient(transparent, rgba(0,0,0,.55));
+      pointer-events: none;
+    }
+
+    /* franja de color superior según tipo */
+    .card-e .hero::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 4px;
+      z-index: 2;
+    }
+    .card-e.intercambio .hero::before { background: #16a34a; }
+    .card-e.subasta     .hero::before { background: #ea580c; }
+    .card-e.ambos       .hero::before { background: #7c3aed; }
+
+    .card-e .hero-overlay {
+      position: absolute; bottom: 10px; left: 12px; right: 12px;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      z-index: 1;
+    }
+    .card-e .hero-number { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,.85); }
+
+    .card-e .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 5px; }
+    .card-e .name { font-size: 0.95rem; font-weight: 700; color: #111827; }
+    .card-e .subtitle { font-size: 0.75rem; color: #6b7280; }
+    .card-e .meta { display: flex; align-items: center; gap: 7px; font-size: 0.75rem; color: #374151; flex-wrap: wrap; margin-top: 2px; }
+    .card-e .stars { color: #f59e0b; font-size: 0.68rem; }
+    .card-e .available { color: #16a34a; font-weight: 600; }
+    .card-e .divider { border: none; border-top: 1px solid #f3f4f6; margin: 4px 0; }
+    .card-e .btn {
+      display: block; width: 100%; padding: 9px 0;
+      border: 1.5px solid #d1d5db; border-radius: 9px;
+      background: transparent; color: #374151;
+      font-size: 0.84rem; font-weight: 500;
+      text-align: center; text-decoration: none; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .card-e .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+    .card-e .btn.subasta-btn { background:#ea580c;border-color:#ea580c;color:#fff;font-weight:600; }
+    .card-e .btn.subasta-btn:hover { background:#c2410c; }
+
+    /* ── F: Horizontal con acento + shine ─────── */
+    .card-f {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card-f.intercambio:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,.2); }
+    .card-f.subasta:hover     { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(234,88,12,.2); }
+    .card-f.ambos:hover       { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,.2); }
+
+    /* borde izquierdo coloreado */
+    .card-f::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+    }
+    .card-f.intercambio::before { background: #16a34a; }
+    .card-f.subasta::before     { background: #ea580c; }
+    .card-f.ambos::before       { background: #7c3aed; }
+
+    /* shine diagonal en hover */
+    .card-f::after {
+      content: '';
+      position: absolute; top: 0; left: -75%;
+      width: 50%; height: 100%;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.45) 50%, transparent 70%);
+      transform: skewX(-15deg);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+    .card-f:hover::after { left: 130%; }
+
+    .card-f .img-col {
+      width: 100px; min-width: 100px;
+      overflow: hidden; position: relative;
+    }
+    .card-f .img-col img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .card-f:hover .img-col img { transform: scale(1.08); }
+
+    .card-f .info-col { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .card-f .top-row { display: flex; justify-content: space-between; align-items: center; }
+    .card-f .number { font-size: 0.72rem; font-weight: 700; color: #9ca3af; }
+    .card-f .name { font-size: 0.94rem; font-weight: 700; color: #111827; }
+    .card-f .subtitle { font-size: 0.75rem; color: #6b7280; }
+    .card-f .user-row { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #374151; margin-top: 2px; }
+    .card-f .stars { color: #f59e0b; font-size: 0.68rem; }
+    .card-f .available { font-size: 0.73rem; color: #16a34a; font-weight: 600; }
+    .card-f .btn {
+      display: block; width: 100%; padding: 7px 0; margin-top: auto;
+      border: 1.5px solid #d1d5db; border-radius: 8px;
+      background: transparent; color: #374151;
+      font-size: 0.8rem; font-weight: 500;
+      text-align: center; text-decoration: none; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .card-f .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+    .card-f .btn.subasta-btn { background:#ea580c;border-color:#ea580c;color:#fff;font-weight:600; }
+
+    /* ── G: "Foil" premium — tint de color + noise ── */
+    .card-g {
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.22s, box-shadow 0.22s;
+    }
+    .card-g.intercambio { box-shadow: 0 2px 12px rgba(22,163,74,.15); }
+    .card-g.subasta     { box-shadow: 0 2px 12px rgba(234,88,12,.15); }
+    .card-g.ambos       { box-shadow: 0 2px 12px rgba(124,58,237,.15); }
+    .card-g.intercambio:hover { transform: translateY(-4px) rotate(-0.5deg); box-shadow: 0 16px 40px rgba(22,163,74,.3); }
+    .card-g.subasta:hover     { transform: translateY(-4px) rotate(-0.5deg); box-shadow: 0 16px 40px rgba(234,88,12,.3); }
+    .card-g.ambos:hover       { transform: translateY(-4px) rotate(-0.5deg); box-shadow: 0 16px 40px rgba(124,58,237,.3); }
+
+    .card-g .hero {
+      position: relative; height: 180px; overflow: hidden;
+    }
+    .card-g .hero img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .card-g:hover .hero img { transform: scale(1.08); }
+
+    /* tint de color sobre la foto */
+    .card-g.intercambio .hero .tint { background: rgba(22,163,74,.15); }
+    .card-g.subasta     .hero .tint { background: rgba(234,88,12,.15); }
+    .card-g.ambos       .hero .tint { background: rgba(124,58,237,.15); }
+    .card-g .hero .tint {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .card-g:hover .hero .tint { opacity: 0; }
+
+    /* gradiente inferior */
+    .card-g .hero .grad {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(transparent, rgba(0,0,0,.6));
+      pointer-events: none;
+    }
+    .card-g .hero .info-over {
+      position: absolute; bottom: 10px; left: 12px; right: 12px;
+      z-index: 1;
+    }
+    .card-g .hero .info-over .p-name { font-size: 1rem; font-weight: 800; color: #fff; line-height: 1.2; }
+    .card-g .hero .info-over .p-sub  { font-size: 0.75rem; color: rgba(255,255,255,.8); }
+    .card-g .hero .num-badge {
+      position: absolute; top: 10px; left: 12px; right: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      z-index: 1;
+    }
+    .card-g .hero .num { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,.9); }
+
+    .card-g .body {
+      padding: 10px 14px 14px;
+      display: flex; flex-direction: column; gap: 6px;
+      background: #fff;
+    }
+    .card-g .meta { display: flex; align-items: center; gap: 7px; font-size: 0.75rem; color: #374151; }
+    .card-g .stars { color: #f59e0b; font-size: 0.68rem; }
+    .card-g .available { color: #16a34a; font-weight: 600; font-size: 0.73rem; }
+    .card-g .btn {
+      display: block; width: 100%; padding: 9px 0;
+      border: none; border-radius: 9px;
+      font-size: 0.84rem; font-weight: 700;
+      text-align: center; text-decoration: none; cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .card-g .btn:hover { filter: brightness(0.9); }
+    .card-g.intercambio .btn { background: #dcfce7; color: #15803d; }
+    .card-g.subasta     .btn { background: #ffedd5; color: #c2410c; }
+    .card-g.ambos       .btn { background: #ede9fe; color: #6d28d9; }
+    .card-g .btn.action-subasta { background:#ea580c;color:#fff;margin-top:4px; }
+  </style>
+
+  <!-- ═══ E: Hero glow + zoom + franja ═══════════════════════ -->
+  <div class="section">
+    <div class="section-title">E — Hero con glow coloreado + zoom + franja superior</div>
+    <div class="section-desc">Glow al hover con el color del tipo, zoom suave en la foto, gradiente inferior y franja de 4px arriba.</div>
+    <div class="grid grid-3">
+
+      <div class="card-e intercambio">
+        <div class="hero">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="hero-overlay">
+            <span class="hero-number">#203</span>
+            <span class="badge badge-intercambio">intercambio</span>
+          </div>
+        </div>
+        <div class="body">
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="meta">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span>@crack10</span>
+            <span style="color:#d1d5db">·</span>
+            <span class="available">2 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <div class="card-e subasta">
+        <div class="hero">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="hero-overlay">
+            <span class="hero-number">#88</span>
+            <span class="badge badge-subasta">subasta</span>
+          </div>
+        </div>
+        <div class="body">
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="meta">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span>@futbola</span>
+            <span style="color:#d1d5db">·</span>
+            <span class="available">1 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <div class="card-e ambos">
+        <div class="hero">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="hero-overlay">
+            <span class="hero-number">#14</span>
+            <span class="badge badge-ambos">ambos</span>
+          </div>
+        </div>
+        <div class="body">
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="meta">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span>@pedri_fan</span>
+            <span style="color:#d1d5db">·</span>
+            <span class="available">3 disp.</span>
+          </div>
+          <hr class="divider" />
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" style="margin-top:6px" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ F: Horizontal shine ══════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">F — Horizontal con borde acento + shine al hover</div>
+    <div class="section-desc">Borde izquierdo coloreado por tipo, destello diagonal en hover, zoom en la foto.</div>
+    <div class="grid grid-2">
+
+      <div class="card-f intercambio">
+        <div class="img-col">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#203</span>
+            <span class="badge badge-intercambio">intercambio</span>
+          </div>
+          <p class="name">Lionel Messi</p>
+          <p class="subtitle">Argentina</p>
+          <div class="user-row">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span>@crack10</span>
+          </div>
+          <span class="available">2 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <div class="card-f subasta">
+        <div class="img-col">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#88</span>
+            <span class="badge badge-subasta">subasta</span>
+          </div>
+          <p class="name">Kylian Mbappé</p>
+          <p class="subtitle">Francia</p>
+          <div class="user-row">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span>@futbola</span>
+          </div>
+          <span class="available">1 disponible</span>
+          <a class="btn subasta-btn" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <div class="card-f ambos">
+        <div class="img-col">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+        </div>
+        <div class="info-col">
+          <div class="top-row">
+            <span class="number">#14</span>
+            <span class="badge badge-ambos">ambos</span>
+          </div>
+          <p class="name">Pedri González</p>
+          <p class="subtitle">España</p>
+          <div class="user-row">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span>@pedri_fan</span>
+          </div>
+          <span class="available">3 disponibles</span>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn subasta-btn" style="margin-top:4px" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ G: Foto full con nombre sobre imagen + tint ══════════ -->
+  <div class="section">
+    <div class="section-title">G — Nombre sobre la foto + tint de color + micro-rotación</div>
+    <div class="section-desc">Nombre y selección sobre el gradiente de la foto. Tint de color que desaparece al hacer hover. Ligera rotación al levantar.</div>
+    <div class="grid grid-3">
+
+      <div class="card-g intercambio">
+        <div class="hero">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="tint"></div>
+          <div class="grad"></div>
+          <div class="num-badge">
+            <span class="num">#203</span>
+            <span class="badge badge-intercambio">intercambio</span>
+          </div>
+          <div class="info-over">
+            <p class="p-name">Lionel Messi</p>
+            <p class="p-sub">Argentina</p>
+          </div>
+        </div>
+        <div class="body">
+          <div class="meta">
+            <span class="avatar">LM</span>
+            <span class="stars">★★★★☆</span>
+            <span style="font-size:.75rem">@crack10</span>
+            <span style="color:#d1d5db">·</span>
+            <span class="available">2 disp.</span>
+          </div>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+
+      <div class="card-g subasta">
+        <div class="hero">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="tint"></div>
+          <div class="grad"></div>
+          <div class="num-badge">
+            <span class="num">#88</span>
+            <span class="badge badge-subasta">subasta</span>
+          </div>
+          <div class="info-over">
+            <p class="p-name">Kylian Mbappé</p>
+            <p class="p-sub">Francia</p>
+          </div>
+        </div>
+        <div class="body">
+          <div class="meta">
+            <span class="avatar">KM</span>
+            <span class="stars">★★★☆☆</span>
+            <span style="font-size:.75rem">@futbola</span>
+            <span style="color:#d1d5db">·</span>
+            <span class="available">1 disp.</span>
+          </div>
+          <a class="btn action-subasta" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+      <div class="card-g ambos">
+        <div class="hero">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <div class="tint"></div>
+          <div class="grad"></div>
+          <div class="num-badge">
+            <span class="num">#14</span>
+            <span class="badge badge-ambos">ambos</span>
+          </div>
+          <div class="info-over">
+            <p class="p-name">Pedri González</p>
+            <p class="p-sub">España</p>
+          </div>
+        </div>
+        <div class="body">
+          <div class="meta">
+            <span class="avatar">PG</span>
+            <span class="stars">★★★★★</span>
+            <span style="font-size:.75rem">@pedri_fan</span>
+            <span style="color:#d1d5db">·</span>
+            <span class="available">3 disp.</span>
+          </div>
+          <a class="btn" href="#">Proponer intercambio ↗</a>
+          <a class="btn action-subasta" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <hr style="border:none;border-top:2px solid #e5e7eb;margin:0 0 48px" />
+  <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:6px;color:#111827">Propuestas de botones</h2>
+  <p style="color:#6b7280;font-size:0.85rem;margin-bottom:40px">Mismo diseño E, mismos colores de paleta. Solo cambia el estilo de los botones de acción.</p>
+
+  <style>
+    :root {
+      --color-secondary: #175a2d;
+      --color-secondary-acent: #b1f5c7;
+      --color-terciary: #d49a2c;
+    }
+
+    .btn-test-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s, box-shadow 0.22s;
+      max-width: 280px;
+    }
+
+    .btn-test-card.tipo-intercambio:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(23,90,45,.28); }
+    .btn-test-card.tipo-subasta:hover     { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(23,90,45,.18); }
+    .btn-test-card.tipo-ambos:hover       { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(212,154,44,.35); }
+
+    .btn-test-card .hero {
+      position: relative; height: 180px; overflow: hidden; flex-shrink: 0;
+    }
+    .btn-test-card .hero::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; z-index: 2;
+    }
+    .btn-test-card.tipo-intercambio .hero::before { background: var(--color-secondary); }
+    .btn-test-card.tipo-subasta     .hero::before { background: var(--color-secondary-acent); }
+    .btn-test-card.tipo-ambos       .hero::before { background: var(--color-terciary); }
+    .btn-test-card .hero::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 70px; background: linear-gradient(transparent, rgba(0,0,0,.55));
+      pointer-events: none; z-index: 1;
+    }
+    .btn-test-card .hero img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;
+      transition: transform 0.4s;
+    }
+    .btn-test-card:hover .hero img { transform: scale(1.06); }
+    .btn-test-card .hero-overlay {
+      position: absolute; bottom: 10px; left: 12px; right: 12px;
+      display: flex; justify-content: space-between; align-items: flex-end; z-index: 2;
+    }
+    .btn-test-card .hero-num { font-size: .78rem; font-weight: 700; color: rgba(255,255,255,.9); }
+
+    .btn-test-card .body {
+      padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 5px;
+    }
+    .btn-test-card .p-name    { font-size: .95rem; font-weight: 700; color: #111827; margin: 0; }
+    .btn-test-card .p-sub     { font-size: .75rem; color: #6b7280; margin: 0; }
+    .btn-test-card .p-meta    { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: #374151; flex-wrap: wrap; margin-top: 2px; }
+    .btn-test-card .p-stars   { color: #f59e0b; font-size: .68rem; }
+    .btn-test-card .p-avail   { color: var(--color-secondary); font-weight: 600; font-size: .73rem; }
+    .btn-test-card .p-avatar  { width: 20px; height: 20px; border-radius: 50%; background: #6b7280; color: #fff; font-size: .6rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-test-card .p-divider { border: none; border-top: 1px solid #f3f4f6; margin: 4px 0 2px; }
+
+    /* ── A: Ambos filled ──────────────────────────── */
+    .btn-a-intercambio {
+      display: block; width: 100%; padding: 9px 0; border-radius: 9px; border: none;
+      background: var(--color-secondary); color: #fff;
+      font-size: .84rem; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer;
+      margin-top: 2px; transition: filter .15s;
+    }
+    .btn-a-intercambio:hover { filter: brightness(1.15); }
+
+    .btn-a-subasta {
+      display: block; width: 100%; padding: 9px 0; border-radius: 9px; border: none;
+      background: var(--color-terciary); color: #fff;
+      font-size: .84rem; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer;
+      margin-top: 6px; transition: filter .15s;
+    }
+    .btn-a-subasta:hover { filter: brightness(1.1); }
+
+    /* ── B: Ambos outlined ───────────────────────── */
+    .btn-b-intercambio {
+      display: block; width: 100%; padding: 9px 0; border-radius: 9px;
+      border: 2px solid var(--color-secondary); background: transparent;
+      color: var(--color-secondary);
+      font-size: .84rem; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer;
+      margin-top: 2px; transition: background .15s, color .15s;
+    }
+    .btn-b-intercambio:hover { background: var(--color-secondary); color: #fff; }
+
+    .btn-b-subasta {
+      display: block; width: 100%; padding: 9px 0; border-radius: 9px;
+      border: 2px solid var(--color-terciary); background: transparent;
+      color: #8a5e0a;
+      font-size: .84rem; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer;
+      margin-top: 6px; transition: background .15s, color .15s;
+    }
+    .btn-b-subasta:hover { background: var(--color-terciary); color: #fff; }
+
+    /* ── C: Ambos neutral ────────────────────────── */
+    .btn-c {
+      display: block; width: 100%; padding: 9px 0; border-radius: 9px;
+      border: 1.5px solid #d1d5db; background: transparent; color: #374151;
+      font-size: .84rem; font-weight: 500; text-align: center; text-decoration: none; cursor: pointer;
+      margin-top: 2px; transition: background .15s, border-color .15s;
+    }
+    .btn-c:hover { background: #f9fafb; border-color: #9ca3af; }
+    .btn-c + .btn-c { margin-top: 6px; }
+
+    .cards-row {
+      display: flex; flex-wrap: wrap; gap: 24px;
+    }
+
+    .option-label {
+      font-size: .82rem; font-weight: 700; color: #374151;
+      margin-bottom: 10px; text-transform: uppercase; letter-spacing: .04em;
+    }
+  </style>
+
+  <!-- Fila de badges auxiliar -->
+  <style>
+    .badge-v2 { font-size:.68rem; font-weight:700; padding:2px 9px; border-radius:999px; text-transform:lowercase; white-space:nowrap; }
+    .bv-intercambio { background: var(--color-secondary-acent); color: var(--color-secondary); }
+    .bv-subasta     { background: color-mix(in srgb, var(--color-secondary-acent) 40%, white); color: var(--color-secondary); }
+    .bv-ambos       { background: color-mix(in srgb, var(--color-terciary) 18%, white); color: #8a5e0a; }
+  </style>
+
+  <div class="section">
+    <div class="cards-row">
+
+      <!-- A -->
+      <div>
+        <p class="option-label">A — Ambos filled</p>
+        <div class="btn-test-card tipo-ambos">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#203</span>
+              <span class="badge-v2 bv-ambos">ambos</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Lionel Messi</p>
+            <p class="p-sub">Argentina</p>
+            <div class="p-meta">
+              <span class="p-avatar">LM</span>
+              <span class="p-stars">★★★★☆</span>
+              <span>@crack10</span>
+              <span style="color:#d1d5db">·</span>
+              <span class="p-avail">2 disp.</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-a-intercambio" href="#">Proponer intercambio ↗</a>
+            <a class="btn-a-subasta" href="#">Ver subasta ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- B -->
+      <div>
+        <p class="option-label">B — Ambos outlined</p>
+        <div class="btn-test-card tipo-ambos">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#203</span>
+              <span class="badge-v2 bv-ambos">ambos</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Lionel Messi</p>
+            <p class="p-sub">Argentina</p>
+            <div class="p-meta">
+              <span class="p-avatar">LM</span>
+              <span class="p-stars">★★★★☆</span>
+              <span>@crack10</span>
+              <span style="color:#d1d5db">·</span>
+              <span class="p-avail">2 disp.</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-b-intercambio" href="#">Proponer intercambio ↗</a>
+            <a class="btn-b-subasta" href="#">Ver subasta ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- C -->
+      <div>
+        <p class="option-label">C — Ambos neutral</p>
+        <div class="btn-test-card tipo-ambos">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#203</span>
+              <span class="badge-v2 bv-ambos">ambos</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Lionel Messi</p>
+            <p class="p-sub">Argentina</p>
+            <div class="p-meta">
+              <span class="p-avatar">LM</span>
+              <span class="p-stars">★★★★☆</span>
+              <span>@crack10</span>
+              <span style="color:#d1d5db">·</span>
+              <span class="p-avail">2 disp.</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-c" href="#">Proponer intercambio ↗</a>
+            <a class="btn-c" href="#">Ver subasta ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solo intercambio - las 3 opciones -->
+      <div>
+        <p class="option-label">A — Solo intercambio</p>
+        <div class="btn-test-card tipo-intercambio">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#88</span>
+              <span class="badge-v2 bv-intercambio">intercambio</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Kylian Mbappé</p>
+            <p class="p-sub">Francia</p>
+            <div class="p-meta">
+              <span class="p-avatar">KM</span>
+              <span class="p-stars">★★★☆☆</span>
+              <span>@futbola</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-a-intercambio" href="#">Proponer intercambio ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="option-label">B — Solo intercambio</p>
+        <div class="btn-test-card tipo-intercambio">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#88</span>
+              <span class="badge-v2 bv-intercambio">intercambio</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Kylian Mbappé</p>
+            <p class="p-sub">Francia</p>
+            <div class="p-meta">
+              <span class="p-avatar">KM</span>
+              <span class="p-stars">★★★☆☆</span>
+              <span>@futbola</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-b-intercambio" href="#">Proponer intercambio ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="option-label">C — Solo intercambio</p>
+        <div class="btn-test-card tipo-intercambio">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#88</span>
+              <span class="badge-v2 bv-intercambio">intercambio</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Kylian Mbappé</p>
+            <p class="p-sub">Francia</p>
+            <div class="p-meta">
+              <span class="p-avatar">KM</span>
+              <span class="p-stars">★★★☆☆</span>
+              <span>@futbola</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-c" href="#">Proponer intercambio ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solo subasta -->
+      <div>
+        <p class="option-label">A — Solo subasta</p>
+        <div class="btn-test-card tipo-subasta">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#14</span>
+              <span class="badge-v2 bv-subasta">subasta</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Pedri González</p>
+            <p class="p-sub">España</p>
+            <div class="p-meta">
+              <span class="p-avatar">PG</span>
+              <span class="p-stars">★★★★★</span>
+              <span>@pedri_fan</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-a-subasta" style="margin-top:2px" href="#">Ver subasta ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="option-label">B — Solo subasta</p>
+        <div class="btn-test-card tipo-subasta">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#14</span>
+              <span class="badge-v2 bv-subasta">subasta</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Pedri González</p>
+            <p class="p-sub">España</p>
+            <div class="p-meta">
+              <span class="p-avatar">PG</span>
+              <span class="p-stars">★★★★★</span>
+              <span>@pedri_fan</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-b-subasta" style="margin-top:2px" href="#">Ver subasta ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="option-label">C — Solo subasta</p>
+        <div class="btn-test-card tipo-subasta">
+          <div class="hero">
+            <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+            <div class="hero-overlay">
+              <span class="hero-num">#14</span>
+              <span class="badge-v2 bv-subasta">subasta</span>
+            </div>
+          </div>
+          <div class="body">
+            <p class="p-name">Pedri González</p>
+            <p class="p-sub">España</p>
+            <div class="p-meta">
+              <span class="p-avatar">PG</span>
+              <span class="p-stars">★★★★★</span>
+              <span>@pedri_fan</span>
+            </div>
+            <hr class="p-divider" />
+            <a class="btn-c" style="margin-top:2px" href="#">Ver subasta ↗</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <hr style="border:none;border-top:2px solid #e5e7eb;margin:0 0 48px" />
+  <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:6px">Propuestas de disposición del cuerpo</h2>
+  <p style="color:#6b7280;font-size:0.85rem;margin-bottom:32px">Variaciones del bloque de info debajo de la imagen.</p>
+
+  <style>
+    :root { --cg:#175a2d; --cgl:#b1f5c7; --cd:#d49a2c; }
+
+    .pc { background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); display:flex; flex-direction:column; max-width:280px; }
+
+    .pc .ph { position:relative; height:180px; overflow:hidden; }
+    .pc .ph::before { content:''; position:absolute; top:0;left:0;right:0;height:4px;z-index:2;background:var(--cg); }
+    .pc .ph::after { content:''; position:absolute; bottom:0;left:0;right:0;height:70px;background:linear-gradient(transparent,rgba(0,0,0,.55));z-index:1; }
+    .pc .ph img { width:100%;height:100%;object-fit:cover;object-position:top;display:block; }
+    .pc .ph .on { position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-end;z-index:2; }
+    .pc .ph .on .num { font-size:1.1rem;font-weight:800;color:rgba(255,255,255,.9); }
+    .pc .ph .on .tag { font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--cgl);color:var(--cg); }
+
+    .pc .bd { padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px; }
+    .dv { border:none;border-top:1px solid #f3f4f6;margin:2px 0; }
+
+    .av { width:38px;height:38px;border-radius:50%;background:#374151;color:#fff;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0; }
+
+    .btn-i { display:block;width:100%;padding:8px 0;border:2px solid var(--cg);border-radius:9px;background:transparent;color:var(--cg);font-size:.82rem;font-weight:600;text-align:center;text-decoration:none;cursor:pointer; }
+
+    /* ── Layout actual (del screenshot) ── */
+    .la-name-row { display:flex;justify-content:space-between;align-items:flex-start;gap:8px; }
+    .la-name { font-size:1.2rem;font-weight:800;color:#111827;margin:0;line-height:1.2; }
+    .la-sub { font-size:.72rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.04em;margin:3px 0 0; }
+    .la-disp { display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0; }
+    .la-disp-n { font-size:1.5rem;font-weight:800;color:var(--cg);line-height:1; }
+    .la-disp-l { font-size:.7rem;color:#9ca3af;margin-top:1px; }
+    .la-user { display:flex;align-items:center;justify-content:space-between; }
+    .la-user-l { display:flex;align-items:center;gap:10px; }
+    .la-user-name { font-size:.88rem;font-weight:700;color:#111827; }
+    .la-rating { font-size:.88rem;font-weight:700;color:var(--cd); }
+
+    /* ── Layout B: nombre grande, stats inline ── */
+    .lb-name { font-size:1.3rem;font-weight:800;color:#111827;margin:0;line-height:1.2; }
+    .lb-meta { display:flex;align-items:center;justify-content:space-between;margin-top:2px; }
+    .lb-sub { font-size:.72rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.04em; }
+    .lb-disp { font-size:.78rem;font-weight:700;color:var(--cg); }
+    .lb-user { display:flex;align-items:center;justify-content:space-between; }
+    .lb-user-l { display:flex;align-items:center;gap:8px; }
+    .lb-user-name { font-size:.85rem;font-weight:700;color:#111827; }
+    .lb-rating { font-size:.85rem;font-weight:700;color:var(--cd); }
+
+    /* ── Layout C: chips de stats ── */
+    .lc-name { font-size:1.15rem;font-weight:800;color:#111827;margin:0; }
+    .lc-sub { font-size:.72rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.04em;margin:2px 0 0; }
+    .lc-chips { display:flex;gap:6px;flex-wrap:wrap; }
+    .lc-chip { font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:999px; }
+    .lc-chip-disp { background:color-mix(in srgb,var(--cg) 10%,white);color:var(--cg); }
+    .lc-chip-rat  { background:color-mix(in srgb,var(--cd) 12%,white);color:#8a5e0a; }
+    .lc-user { display:flex;align-items:center;gap:8px; }
+    .lc-user-name { font-size:.85rem;font-weight:700;color:#111827; }
+  </style>
+
+  <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start;margin-bottom:56px;">
+
+    <!-- Layout actual -->
+    <div>
+      <p style="font-size:.82rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Actual (del screenshot)</p>
+      <p style="font-size:.78rem;color:#6b7280;margin-bottom:12px;max-width:280px">Nombre grande, disponibles en grande a la derecha. Usuario con rating dorado.</p>
+      <div class="pc">
+        <div class="ph">
+          <img src="/jugador-placeholder.png" alt="" />
+          <div class="on"><span class="num">#203</span><span class="tag">intercambio</span></div>
+        </div>
+        <div class="bd">
+          <div class="la-name-row">
+            <div><p class="la-name">Musiala</p><p class="la-sub">Alemania</p></div>
+            <div class="la-disp"><span class="la-disp-n">2</span><span class="la-disp-l">disponibles</span></div>
+          </div>
+          <hr class="dv" />
+          <div class="la-user">
+            <div class="la-user-l"><span class="av">JU</span><span class="la-user-name">Juan</span></div>
+            <span class="la-rating">4 / 5</span>
+          </div>
+          <hr class="dv" />
+          <a class="btn-i" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout B -->
+    <div>
+      <p style="font-size:.82rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">B — País y disponibles en una línea</p>
+      <p style="font-size:.78rem;color:#6b7280;margin-bottom:12px;max-width:280px">Nombre muy grande arriba, país y disponibles en la misma fila. Más compacto.</p>
+      <div class="pc">
+        <div class="ph">
+          <img src="/jugador-placeholder.png" alt="" />
+          <div class="on"><span class="num">#203</span><span class="tag">intercambio</span></div>
+        </div>
+        <div class="bd">
+          <p class="lb-name">Musiala</p>
+          <div class="lb-meta">
+            <span class="lb-sub">Alemania</span>
+            <span class="lb-disp">2 disponibles</span>
+          </div>
+          <hr class="dv" />
+          <div class="lb-user">
+            <div class="lb-user-l"><span class="av">JU</span><span class="lb-user-name">Juan</span></div>
+            <span class="la-rating">4 / 5</span>
+          </div>
+          <hr class="dv" />
+          <a class="btn-i" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout C -->
+    <div>
+      <p style="font-size:.82rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">C — Chips de stats</p>
+      <p style="font-size:.78rem;color:#6b7280;margin-bottom:12px;max-width:280px">Disponibles y rating como chips de colores. Usuario sin divider, todo integrado.</p>
+      <div class="pc">
+        <div class="ph">
+          <img src="/jugador-placeholder.png" alt="" />
+          <div class="on"><span class="num">#203</span><span class="tag">intercambio</span></div>
+        </div>
+        <div class="bd">
+          <p class="lc-name">Musiala</p>
+          <p class="lc-sub">Alemania</p>
+          <div class="lc-chips">
+            <span class="lc-chip lc-chip-disp">2 disponibles</span>
+            <span class="lc-chip lc-chip-rat">4 / 5 ★</span>
+          </div>
+          <hr class="dv" />
+          <div class="lc-user"><span class="av">JU</span><span class="lc-user-name">Juan</span></div>
+          <hr class="dv" />
+          <a class="btn-i" href="#">Proponer intercambio ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <hr style="border:none;border-top:2px solid #e5e7eb;margin:0 0 48px" />
+  <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:6px">Propuestas para "ambos"</h2>
+  <p style="color:#6b7280;font-size:0.85rem;margin-bottom:32px">Verde = intercambio · Dorado = subasta. ¿Cómo combinarlos?</p>
+
+  <style>
+    :root {
+      --cg: #175a2d;
+      --cgl: #b1f5c7;
+      --cd: #d49a2c;
+      --cdl: color-mix(in srgb, #d49a2c 18%, white);
+    }
+
+    .ac {
+      background:#fff; border-radius:16px; overflow:hidden;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+      display:flex; flex-direction:column; max-width:260px;
+      transition:transform .22s, box-shadow .22s;
+    }
+    .ac:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(212,154,44,.3); }
+
+    .ac .h { position:relative; height:180px; overflow:hidden; }
+    .ac .h::after {
+      content:''; position:absolute; bottom:0; left:0; right:0;
+      height:70px; background:linear-gradient(transparent,rgba(0,0,0,.55));
+      z-index:1; pointer-events:none;
+    }
+    .ac .h img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; transition:transform .4s; }
+    .ac:hover .h img { transform:scale(1.06); }
+    .ac .num { position:absolute; bottom:10px; left:12px; font-size:1.1rem; font-weight:800; color:rgba(255,255,255,.9); z-index:2; }
+    .ac .bgs { position:absolute; bottom:10px; right:12px; z-index:2; display:flex; gap:4px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+
+    .ac .bd { padding:12px 14px 14px; display:flex; flex-direction:column; gap:5px; }
+    .ac .nm { font-size:.95rem; font-weight:700; color:#111827; margin:0; }
+    .ac .sb { font-size:.75rem; color:#6b7280; margin:0; }
+    .ac .dv { border:none; border-top:1px solid #f3f4f6; margin:4px 0 2px; }
+    .ac .bi {
+      display:block; width:100%; padding:9px 0; border:none; border-radius:9px;
+      background:var(--cg); color:#fff; font-size:.84rem; font-weight:600;
+      text-align:center; text-decoration:none; cursor:pointer; margin-top:2px; transition:filter .15s;
+    }
+    .ac .bi:hover { filter:brightness(1.15); }
+    .ac .bs {
+      display:block; width:100%; padding:9px 0; border:none; border-radius:9px;
+      background:var(--cd); color:#fff; font-size:.84rem; font-weight:600;
+      text-align:center; text-decoration:none; cursor:pointer; margin-top:6px; transition:filter .15s;
+    }
+    .ac .bs:hover { filter:brightness(1.1); }
+
+    /* etiquetas */
+    .et { font-size:.68rem; font-weight:700; padding:2px 9px; border-radius:999px; white-space:nowrap; }
+    .et-v { background:var(--cgl); color:var(--cg); }
+    .et-d { background:var(--cdl); color:#8a5e0a; }
+
+    /* strips */
+    .sa::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; z-index:2; background:linear-gradient(to right, var(--cg) 50%, var(--cd) 50%); }
+    .sb2::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; z-index:2; background:linear-gradient(to right, var(--cg), var(--cd)); }
+    .sc::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; z-index:2; background:var(--cd); }
+
+    /* etiqueta partido */
+    .ep { display:inline-flex; border-radius:999px; overflow:hidden; font-size:.68rem; font-weight:700; }
+    .ep .el { padding:2px 8px; background:var(--cgl); color:var(--cg); }
+    .ep .er { padding:2px 8px; background:var(--cdl); color:#8a5e0a; }
+
+    /* etiqueta borde degradado */
+    .ed {
+      font-size:.68rem; font-weight:700; padding:2px 9px; border-radius:999px;
+      background:#fff; border:1.5px solid transparent; background-clip:padding-box;
+      position:relative; color:var(--cg);
+    }
+    .ed::before {
+      content:''; position:absolute; inset:-1.5px; border-radius:999px; z-index:-1;
+      background:linear-gradient(to right, var(--cg), var(--cd));
+    }
+  </style>
+
+  <div style="display:flex; flex-wrap:wrap; gap:32px; align-items:flex-start;">
+
+    <!-- A -->
+    <div>
+      <p style="font-size:.82rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">A — Dos etiquetas separadas</p>
+      <p style="font-size:.78rem;color:#6b7280;margin-bottom:12px;max-width:260px">Una verde, una dorada. Franja cortada al medio.</p>
+      <div class="ac">
+        <div class="h sa">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <span class="num">#203</span>
+          <div class="bgs">
+            <span class="et et-v">intercambio</span>
+            <span class="et et-d">subasta</span>
+          </div>
+        </div>
+        <div class="bd">
+          <p class="nm">Lionel Messi</p><p class="sb">Argentina</p>
+          <hr class="dv" />
+          <a class="bi" href="#">Proponer intercambio ↗</a>
+          <a class="bs" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div>
+      <p style="font-size:.82rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">B — Etiqueta partida</p>
+      <p style="font-size:.78rem;color:#6b7280;margin-bottom:12px;max-width:260px">Una sola pastilla dividida. Franja degradado suave.</p>
+      <div class="ac">
+        <div class="h sb2">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <span class="num">#203</span>
+          <div class="bgs">
+            <span class="ep"><span class="el">intercambio</span><span class="er">subasta</span></span>
+          </div>
+        </div>
+        <div class="bd">
+          <p class="nm">Lionel Messi</p><p class="sb">Argentina</p>
+          <hr class="dv" />
+          <a class="bi" href="#">Proponer intercambio ↗</a>
+          <a class="bs" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div>
+      <p style="font-size:.82rem;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">C — "ambos" con borde degradado</p>
+      <p style="font-size:.78rem;color:#6b7280;margin-bottom:12px;max-width:260px">Una palabra, borde verde→dorado. Franja dorada. Minimalista.</p>
+      <div class="ac">
+        <div class="h sc">
+          <img src="https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg" alt="" />
+          <span class="num">#203</span>
+          <div class="bgs">
+            <span class="ed">ambos</span>
+          </div>
+        </div>
+        <div class="bd">
+          <p class="nm">Lionel Messi</p><p class="sb">Argentina</p>
+          <hr class="dv" />
+          <a class="bi" href="#">Proponer intercambio ↗</a>
+          <a class="bs" href="#">Ver subasta ↗</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

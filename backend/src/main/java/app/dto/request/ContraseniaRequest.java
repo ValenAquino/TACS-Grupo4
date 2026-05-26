@@ -6,11 +6,11 @@ import lombok.Getter;
 
 @Getter
 public class ContraseniaRequest {
-  @NotBlank
   @JsonProperty("contrasenia_actual")
+  @NotBlank
   private String contraseniaActual;
 
-  @NotBlank
   @JsonProperty("contrasenia_nueva")
+  @NotBlank
   private String contraseniaNueva;
 }

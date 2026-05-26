@@ -49,7 +49,7 @@ class ControladorColeccionTest {
     String json = """
             {
                 "fig_id": "ARG-10",
-                "cantidad_disponible": 2,
+                "cantidad_existente": 2,
                 "modos_intercambio": ["SUBASTA"]
             }
             """;
@@ -106,7 +106,7 @@ class ControladorColeccionTest {
     String json = """
             {
                 "fig_id": "ARG-10",
-                "cantidad_disponible": 2,
+                "cantidad_existente": 2,
                 "modos_intercambio": ["SUBASTA"]
             }
             """;
@@ -128,6 +128,172 @@ class ControladorColeccionTest {
     String json = """
             {
                 "fig_id": "ARG-10"
+            }
+            """;
+
+    mockMvc.perform(post("/colecciones/faltantes")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  //Con bodys invalidos
+  @Test
+  void agregarRepetidaFalla_figIdNull() throws Exception {
+    String json = """
+      {
+          "fig_id": null,
+          "cantidad_existente": 2,
+          "modos_intercambio": ["SUBASTA"]
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarRepetidaFalla_figIdVacio() throws Exception {
+    String json = """
+      {
+          "fig_id": "",
+          "cantidad_existente": 2,
+          "modos_intercambio": ["SUBASTA"]
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarRepetidaFalla_figIdEspacios() throws Exception {
+    String json = """
+      {
+          "fig_id": "   ",
+          "cantidad_existente": 2,
+          "modos_intercambio": ["SUBASTA"]
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarRepetidaFalla_cantidadExistenteNull() throws Exception {
+    String json = """
+      {
+          "fig_id": "ARG-10",
+          "cantidad_existente": null,
+          "modos_intercambio": ["SUBASTA"]
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarRepetidaFalla_cantidadExistenteCero() throws Exception {
+    String json = """
+      {
+          "fig_id": "ARG-10",
+          "cantidad_existente": 0,
+          "modos_intercambio": ["SUBASTA"]
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarRepetidaFalla_cantidadExistenteNegativa() throws Exception {
+    String json = """
+      {
+          "fig_id": "ARG-10",
+          "cantidad_existente": -1,
+          "modos_intercambio": ["SUBASTA"]
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarRepetidaFalla_modosIntercambioNull() throws Exception {
+    String json = """
+      {
+          "fig_id": "ARG-10",
+          "cantidad_existente": 2,
+          "modos_intercambio": null
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarRepetidaFalla_modosIntercambioVacio() throws Exception {
+    String json = """
+      {
+          "fig_id": "ARG-10",
+          "cantidad_existente": 2,
+          "modos_intercambio": []
+      }
+      """;
+
+    mockMvc.perform(post("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void agregarFaltanteFalla_fig_idNull() throws Exception {
+    String json = """
+            {
+                "fig_id": null
+            }
+            """;
+
+    mockMvc.perform(post("/colecciones/faltantes")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json))
+        .andExpect(status().isBadRequest());
+  }
+  @Test
+  void agregarFaltanteFalla_fig_idVacio() throws Exception {
+    String json = """
+            {
+                "fig_id": ""
             }
             """;
 

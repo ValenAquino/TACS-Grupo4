@@ -31,7 +31,6 @@ import java.util.List;
 public class RepositorioSubastasMongo implements RepositorioSubastas {
   @Autowired
   MongoTemplate mongoTemplate;
-
   @Override
   public void guardar(Subasta subasta) {
     this.mongoTemplate.save(subasta);
@@ -40,20 +39,16 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   public void guardar(Subasta subasta, CamposSubasta campos) {
     Update update = new Update();
 
-    if (campos.getOfertadas()) {
-      update.set("figuritasOfrecidas", subasta.getOfertas());
+    if (campos.getOfertas()) {
+      update.set("ofertas", subasta.getOfertas());
     }
-    if (campos.getSolicitadas()) {
+    if (campos.getFiguritasSolicitadas()) {
       update.set("figuritasSolicitadas", subasta.getFiguritasSolicitadas());
     }
 
-    Document doc = new Document();
-    mongoTemplate.getConverter().write(subasta, doc);
-    doc.remove("_id");
-    doc.remove("figuritasOfrecidas");
-    doc.remove("figuritasSolicitadas");
-
-    doc.forEach(update::set);
+    if (campos.getFechaCierre()) {
+      update.set("fechaCierre", subasta.getFechaCierre());
+    }
 
     mongoTemplate.updateFirst(
         Query.query(Criteria.where("_id").is(subasta.getId())),
@@ -177,10 +172,10 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
   }
 
   private void conCamposCargados(Query query, CamposSubasta campos) {
-    if(!campos.getOfertadas()) {
-      query.fields().exclude("figuritasOfrecidas");
+    if(!campos.getOfertas()) {
+      query.fields().exclude("ofertas");
     }
-    if(!campos.getSolicitadas()) {
+    if(!campos.getFiguritasSolicitadas()) {
       query.fields().exclude("figuritasSolicitadas");
     }
   }

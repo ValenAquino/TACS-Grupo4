@@ -1,0 +1,184 @@
+.perfil-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-header {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  background-color: #175A2D;
+  margin-top: -32px;
+}
+
+.perfil-header-inner {
+  max-width: 1100px;
+}
+
+.perfil-header-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: white;
+  min-width: 0;
+}
+
+.perfil-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: #3a7d5d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  border: 4px solid #629176;
+  flex-shrink: 0;
+  font-weight: 700;
+}
+
+.perfil-title-wrap {
+  min-width: 0;
+}
+
+.perfil-title {
+  margin-bottom: 0;
+  font-weight: 700;
+  max-width: 750px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.perfil-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.perfil-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.perfil-edit-btn {
+  padding: 10px 18px;
+}
+
+.perfil-logout-btn {
+  white-space: nowrap;
+}
+
+.perfil-stats {
+  background-color: #0f3d1f;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+}
+
+.perfil-stats-inner {
+  max-width: 60%;
+}
+
+.perfil-stat {
+  flex: 1;
+  padding: 0.75rem 0;
+}
+
+.perfil-stat:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.perfil-stat-value {
+  color: #FFC107;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.perfil-stat-label {
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.perfil-content {
+  max-width: 1100px;
+  width: 100%;
+}
+
+.perfil-review-card {
+  padding: 0.75rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.perfil-review-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.perfil-review-text {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.perfil-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.perfil-modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  position: relative;
+}
+
+.perfil-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+}
+
+.perfil-modal-title {
+  margin-bottom: 1rem;
+}
+
+.perfil-modal-label {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.perfil-modal-input {
+  margin-bottom: 1rem;
+}
+
+.perfil-modal-save {
+  background-color: #175A2D;
+  color: white;
+}

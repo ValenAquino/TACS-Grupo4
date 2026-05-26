@@ -9,12 +9,12 @@ import PerfilSimple from '@/components/ui/perfil-simple/perfil-simple.jsx'
 import OfertaCard from './oferta-card.jsx'
 import TuOfertaCard from './tu-oferta-card.jsx'
 import Button from '@/components/ui/button/button.jsx'
-import useUsuarioActual from '@/hooks/useUsuarioActual.js'
+import {useAuth} from "@/contexts/userContext.jsx";
 import { useNavigate } from 'react-router-dom'
 
 const VerSubasta = () => {
   const { subId } = useParams()
-  const { userId } = useUsuarioActual()
+  const { user } = useAuth() 
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(false)
   const [subasta, setSubasta] = useState(undefined)
@@ -54,7 +54,7 @@ const VerSubasta = () => {
   }
 
   const mostrarOfertaDeUsuario = (ofertas) => {
-    const ofertaPropia = ofertas.find((o) => o.autor.usuario_id === userId.toString()) //Mismo Id que la sesion
+    const ofertaPropia = ofertas.find((o) => o.autor.id === user.perfil_id) 
     return ofertaPropia !== undefined ? (
       <TuOfertaCard oferta={ofertaPropia} subasta={subasta} subastaAbierta={subastaAbierta} />
     ) : (
@@ -278,7 +278,7 @@ const VerSubasta = () => {
               )}
             </div>
           </SectionCard.Section>
-          {subasta.perfil.usuario_id !== userId && subastaAbierta ? (
+          {subasta.perfil.id !== user.perfil_id && subastaAbierta ? (
             <>
               <SectionTitle>TU OFERTA</SectionTitle>
               <SectionCard.Section>{mostrarOfertaDeUsuario(subasta.ofertas)}</SectionCard.Section>

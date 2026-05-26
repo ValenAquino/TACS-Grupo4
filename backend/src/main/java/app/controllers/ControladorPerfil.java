@@ -2,7 +2,7 @@ package app.controllers;
 
 import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
-import app.dto.NotificacionesDto;
+import app.dto.NotificacionDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.filtros.SugerenciasFiltro;
@@ -12,6 +12,8 @@ import app.dto.request.PerfilRequest;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPerfil;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @RequestMapping("/perfil")
@@ -35,7 +38,7 @@ public class ControladorPerfil {
     @PostMapping("/calificaciones")
     public ResponseEntity<Void> calificarPerfil(
         @CookieValue("token") String token,
-        @RequestBody CalificacionRequest body
+        @Valid @RequestBody CalificacionRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         this.perfilService.agregarCalificacion(
@@ -55,7 +58,6 @@ public class ControladorPerfil {
         @CookieValue("token") String token,
         @RequestParam Integer pagina,
         @RequestParam Integer limite
-
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.ok(this.perfilService.obtenerCalificaciones(perfilId, pagina, limite));
@@ -81,11 +83,20 @@ public class ControladorPerfil {
     }
 
     @GetMapping("/notificaciones")
-    public ResponseEntity<List<NotificacionesDto>> obtenerNotificaciones(
+    public ResponseEntity<List<NotificacionDto>> obtenerNotificaciones(
         @CookieValue String token
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(perfilId));
+    }
+
+    @PatchMapping("/notificaciones/leidas")
+    public ResponseEntity<Void> marcarTodasLeidas(
+            @CookieValue String token
+    ) {
+        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        this.perfilService.marcarTodasNotifsLeidas(perfilId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
@@ -99,7 +110,7 @@ public class ControladorPerfil {
     @PutMapping
     public ResponseEntity<Void> editarPerfil(
         @CookieValue("token") String token,
-        @RequestBody PerfilRequest body
+        @Valid @RequestBody PerfilRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         this.perfilService.editarPerfil(perfilId, body);

@@ -16,11 +16,25 @@ public class ServicioNotificacion {
 
   private final RepositorioNotificaciones repositorioNotificaciones;
 
-  public void  notificarInteresados(List<Perfil> interesados, String cuerpo) {
-    interesados.forEach(u -> {
-      Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
-      Notificacion noti = new Notificacion(mensaje, u);
-      this.repositorioNotificaciones.guardar(noti);
-    });
+    //Generico para notificaciones sin link.
+    public void notificarInteresados(List<Perfil> interesados, String cuerpo) {
+        notificarInteresados(interesados, cuerpo, null);
+    }
+
+    public void notificarInteresados(List<Perfil> interesados, String cuerpo, String link) {
+        interesados.forEach(perfil -> {
+            Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
+            repositorioNotificaciones.save(new Notificacion(mensaje, perfil, link));
+        });
+    }
+
+  public List<Notificacion> obtenerPorPerfil(String perfilId) {
+      return repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
+  }
+
+  public void marcarTodasLeidas(String perfilId) {
+      List<Notificacion> notis = repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
+      notis.forEach(Notificacion::marcarLeida);
+      repositorioNotificaciones.saveAll(notis);
   }
 }

@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.AccessLevel;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,9 +42,19 @@ public class Propuesta {
         List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE))
     );
 
+    @Getter(AccessLevel.NONE)
     @Builder.Default
     private EstadoPropuesta estadoActual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
 
+    public EstadoPropuesta getEstadoActual() {
+        if (estado == null || estado.isEmpty()) {
+            EstadoPropuesta inicial = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.PENDIENTE);
+            estado = new ArrayList<>();
+            estado.add(inicial);
+            return inicial;
+        }
+        return estado.get(estado.size() - 1);
+    }
 
     /**
      * Acepta la propuesta. Valida que {@code usuario} sea el destinatario
@@ -76,7 +87,7 @@ public class Propuesta {
      */
     public void rechazar(String perfilId) {
         validarUsuarioDestino(perfilId);
-        validarPendiente();
+        validarPendienteOSeleccionada();
         ejecutarRechazo();
         EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO);
         estado.add(actual);
@@ -144,6 +155,13 @@ public class Propuesta {
 
     private void validarPendiente() {
         if (getEstadoActual().getValor() != EstadoProceso.PENDIENTE) {
+            throw new BadRequestException("La propuesta ya fue respondida");
+        }
+    }
+
+    private void validarPendienteOSeleccionada() {
+        EstadoProceso estado = getEstadoActual().getValor();
+        if (estado != EstadoProceso.PENDIENTE && estado != EstadoProceso.SELECCIONADO) {
             throw new BadRequestException("La propuesta ya fue respondida");
         }
     }

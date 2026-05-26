@@ -30,11 +30,10 @@ export const buscarSubastas = async (filtros) => {
   }
 }
 
-export const crearOferta = async (subastaId, userId, body) => {
+export const crearOferta = async (subastaId, body) => {
   try {
     const { data } = await api.post(`${SUBASTAS_URL}/${subastaId}/ofertas`, {
       figuritas_ofrecidas_id: body,
-      autor_id: userId,
     })
     return data
   } catch (error) {

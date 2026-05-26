@@ -1,3 +1,4 @@
+/*
 package app.repositories.impl;
 
 import app.model.entities.Perfil;
@@ -30,3 +31,4 @@ public class RepositorioNotificacionesMongo implements RepositorioNotificaciones
     return this.mongoTemplate.find(query, Notificacion.class);
   }
 }
+*/

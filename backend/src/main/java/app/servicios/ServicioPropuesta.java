@@ -14,6 +14,7 @@ import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
+import app.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -73,6 +74,16 @@ public class ServicioPropuesta {
     return new PropuestaDto(propuesta);
   }
 
+   public PropuestaDto obtenerPorId(String propuestaId, String perfilId) {
+      Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
+      if (propuesta == null) throw new NotFoundException("Propuesta no encontrada");
+
+      String tipo = propuesta.getDestinatario().getId().equals(perfilId)
+            ? "RECIBIDA"
+            : "ENVIADA";
+      return new PropuestaDto(propuesta, tipo);
+  }
+
   @Transactional
   public void aceptar(String propuestaId, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
@@ -93,6 +104,10 @@ public class ServicioPropuesta {
 
     repositorioPropuestas.guardar(propuesta);
 
+    //Para Notificaciones
+    String link = "/intercambios/" + propuestaId;
+    String cuerpo = "Tu propuesta de intercambio fue aceptada";
+    notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 
   @Transactional
@@ -105,6 +120,11 @@ public class ServicioPropuesta {
     repositorioColecciones.guardar(autor.getColeccion());
 
     repositorioPropuestas.guardar(propuesta);
+
+    //Para Notificaciones
+    String link = "/intercambios/" + id;
+    String cuerpo = "Tu propuesta de intercambio fue rechazada";
+    notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 
   @Transactional

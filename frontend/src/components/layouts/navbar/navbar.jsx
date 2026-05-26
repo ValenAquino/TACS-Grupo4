@@ -1,10 +1,16 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
 import "./navbar.css";
 import { useAuth } from "@/contexts/userContext.jsx";
 import Button from "@/components/ui/button/button.jsx";
+import { obtenerNotificaciones, marcarTodasLeidas } from "@/services/notificacionesService.js";
 
 const Navbar = () => {
     const { user, tieneSesion } = useAuth();
+    const [abierto, setAbierto] = useState(false);
+    const [notificaciones, setNotificaciones] = useState([]);
+    const wrapperRef = useRef(null);
 
     const NAV_LINKS = [
         { to: "/explorar", label: "Explorar" },
@@ -15,9 +21,67 @@ const Navbar = () => {
       { to: "/registrar", label: "Nuevo Admin", privilege: "ADMINISTRADOR"}
     ];
 
+    const noLeidas = notificaciones.filter((n) => !n.leida).length;
+
+    // Carga inicial de notificaciones cuando hay sesión
+    useEffect(() => {
+        if (tieneSesion) {
+            obtenerNotificaciones().then(setNotificaciones);
+        }
+    }, [tieneSesion]);
+
+    // Cierra el popover si se toca fuera
+    useEffect(() => {
+        const handleClickFuera = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                setAbierto(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickFuera);
+        return () => document.removeEventListener("mousedown", handleClickFuera);
+    }, []);
+
+    const toggleNotificaciones = async () => {
+        if (abierto) {
+            // Al cerrar, marca todas como leídas y actualiza el estado local
+            await marcarTodasLeidas();
+            setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
+            setAbierto(false);
+        } else {
+            const data = await obtenerNotificaciones();
+            setNotificaciones(data);
+            setAbierto(true);
+        }
+    };
+
+    const formatearFecha = (fecha) => {
+        if (!fecha) return "";
+        return new Date(fecha).toLocaleDateString("es-AR", {
+            day: "2-digit",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
+
+    const navigate = useNavigate();
+
+    const handleClickNotificacion = async (n) => {
+        if (n.link) {
+            await marcarTodasLeidas();
+            setNotificaciones((prev) => prev.map((x) => ({ ...x, leida: true })));
+            setAbierto(false);
+            navigate(n.link);
+        }
+    };
+
     const SesionActiva = () => (
-        <>
-            <button className="btn btn-link p-0 position-relative navbar-notification-btn">
+        <div className="navbar-notifications-wrapper" ref={wrapperRef}>
+            <button
+                className="btn btn-link p-0 position-relative navbar-notification-btn"
+                onClick={toggleNotificaciones}
+                type="button"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="22"
@@ -28,17 +92,46 @@ const Navbar = () => {
                     <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7a5.002 5.002 0 0 0-3.005-4.901z" />
                 </svg>
 
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill navbar-badge">
-                    3
-                </span>
+                {noLeidas > 0 && (
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill navbar-badge">
+                        {noLeidas}
+                    </span>
+                )}
             </button>
+
+            {abierto && (
+                <div className="navbar-notifications-popover">
+                    <div className="navbar-notifications-header">Notificaciones</div>
+
+                    {notificaciones.length === 0 ? (
+                        <div className="navbar-notifications-empty">
+                            No tenés notificaciones
+                        </div>
+                    ) : (
+                        notificaciones.map((n) => (
+                            <div
+                                key={n.id}
+                                className={`navbar-notification-item ${!n.leida ? "navbar-notification-item--no-leida" : ""}
+                                ${n.link ? "navbar-notification-item--clickeable" : ""}`}
+
+                                onClick={() => handleClickNotificacion(n)}
+                            >
+                                <div className="navbar-notification-texto">{n.cuerpo}</div>
+                                <div className="navbar-notification-fecha">
+                                    {formatearFecha(n.fecha)}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
 
             <Link to="/perfil" className="navbar-avatar-link">
                 <div className="rounded-circle d-flex align-items-center justify-content-center fw-bold navbar-avatar">
                     MG
                 </div>
             </Link>
-        </>
+        </div>
     );
 
     const SinSesion = () => (
@@ -46,12 +139,13 @@ const Navbar = () => {
             <Link to="/registrar">
                 <Button label="Registrarse" />
             </Link>
-
             <Link to="/login">
                 <Button label="Iniciar sesión" />
             </Link>
         </>
     );
+
+
 
     return (
         <nav className="navbar navbar-expand-lg navbar-custom">
@@ -65,7 +159,6 @@ const Navbar = () => {
                 {/* MOBILE */}
                 <div className="d-flex align-items-center gap-3 ms-auto d-lg-none">
                     {tieneSesion ? <SesionActiva /> : <SinSesion />}
-
                     <button
                         className="navbar-toggler border-0"
                         type="button"

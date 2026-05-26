@@ -20,6 +20,7 @@ const useCrearPropuesta = (figurita) => {
         figurita.figurita_id,
         seleccionadas.map((f) => f.figurita_id),
       )
+      showToast('Propuesta creada correctamente', 'success')
       navigate('/intercambios')
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))

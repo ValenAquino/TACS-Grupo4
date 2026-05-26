@@ -6,14 +6,18 @@ import {useCallback, useEffect, useState} from "react";
 import {buscarContadoresSugerencias} from "@/services/perfilService.js";
 import ExtraInfo from "@/components/ui/extra-info/extra-info.jsx";
 import MostradorSugerencias from "./tabs/mostrador-sugerencias.jsx";
-import useUsuarioActual from "@/hooks/useUsuarioActual.js";
+import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
 
 const Sugerencias = () => {
 
+
+    const {showToast} = useToast()
+    const {handleError, errorTemplate} = useError()
+
     const [cargando, setCargando] = useState(true)
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(errorTemplate())
     const [contadores, setContadores] = useState([])
-    const {userId} = useUsuarioActual()
 
     const TABS = [
         { key: 'todos', label: 'Todos', component: MostradorSugerencias, props: {} },
@@ -28,9 +32,8 @@ const Sugerencias = () => {
             const payload = await buscarContadoresSugerencias()
             setContadores(payload)
 
-          // eslint-disable-next-line no-unused-vars
         } catch (error) {
-            setError(true)
+          showToast(handleError(error, setError),'error')
         } finally {
             setCargando(false)
         }
@@ -38,12 +41,6 @@ const Sugerencias = () => {
 
     useEffect(() => {
         cargarContadores()
-        /*
-            stat: [{
-                nombre: (string)
-                 valor: (number)
-            }]
-        */
     }, []);
 
     const mostrarContadores = () => {
@@ -68,7 +65,7 @@ const Sugerencias = () => {
                 <div
                     className={styles.statGrid + " d-grid gap-3"}
                 >
-                    {cargando ? <h2>Cargando estadisticas...</h2> : error ? <p className="text-center text-secondary">No se pudo cargar la información</p> : mostrarContadores()}
+                    {cargando ? <h2>Cargando estadisticas...</h2> : error.codigo ? <p className="text-center text-secondary">No se pudo cargar la información</p> : mostrarContadores()}
                 </div>
                 <ExtraInfo>
                     <h6 className="m-0"><strong>¿Cómo funciona?</strong></h6>

@@ -6,6 +6,7 @@ import Paginacion from '../../../../../components/ui/paginacion/paginacion.jsx'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/contexts/userContext.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 
 const Participo = () => {
   const [data, setData] = useState({})
@@ -16,6 +17,7 @@ const Participo = () => {
   const navigate = useNavigate()
   const { handleError } = useError()
   const { user } = useAuth()
+  const {showToast} = useToast()
 
   useEffect(() => {
     const cargar = async () => {
@@ -29,7 +31,7 @@ const Participo = () => {
         })
         setData(res)
       } catch (error) {
-        handleError(error, () => {})
+        showToast(handleError(error, (m) => {}),'error')
       } finally {
         setLoading(false)
       }

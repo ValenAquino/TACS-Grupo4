@@ -162,6 +162,23 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
 
     return mongoTemplate.find(querySubastas, Subasta.class).stream().map(this::normalizar).toList();
   }
+  @Override
+  public List<Subasta> buscarActivasPorFiguritasSubastadas(List<String> figuritaIds) {
+    Date ahora = new Date();
+
+    List<DBRef> refs = figuritaIds.stream()
+        .map(id -> new DBRef("figuritas", id))
+        .toList();
+
+    Query query = new Query();
+    query.addCriteria(new Criteria().andOperator(
+        Criteria.where("figuritaSubastada").in(refs),
+        Criteria.where("fechaInicio").lte(ahora),
+        Criteria.where("fechaCierre").gt(ahora)
+    ));
+
+    return mongoTemplate.find(query, Subasta.class);
+  }
 
   private void conCamposCargados(Query query, CamposSubasta campos) {
     if(!campos.getOfertas()) {

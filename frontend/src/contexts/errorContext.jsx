@@ -26,15 +26,15 @@ export const ErrorProvider = ({ children }) => {
                         from: location.pathname
                     }
                 });
-                break;
+              return "El servidor no responde"
 
             case "FORBIDDEN":
                 navigate("/unauthorized");
-                break;
+              return "Acceso denegado"
 
             case "INTERNAL_SERVER_ERROR":
                 navigate("/error-interno");
-                break;
+                return "Error interno del servidor"
 
 
             default: {

@@ -16,10 +16,8 @@ public class PerfilDto {
   private List<MedioDeContacto> mediosDeContacto;
 
   public PerfilDto(Perfil perfil) {
-    this.usuarioId = perfil.getUsuario().getId();
     this.id = perfil.getId();
     this.nombre = perfil.getNombre();
-    this.nombreUsuario = perfil.getUsuario().getNombre();
     this.iniciales = calcularIniciales(nombre);
     this.calificacionMedia = perfil.getCalificacionMedia();
     this.mediosDeContacto = perfil.getMediosDeContacto();

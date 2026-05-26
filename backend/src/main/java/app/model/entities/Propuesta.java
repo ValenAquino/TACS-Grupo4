@@ -107,7 +107,16 @@ public class Propuesta {
         estado.add(actual);
         setEstadoActual(actual);
     }
-
+    /**
+     * Modifica las figuritas ofrecidas por el autor. Libera las reservas anteriores,
+     * asigna las nuevas figuritas y las reserva según el método de intercambio indicado.
+     * Resetea el estado de la propuesta a PENDIENTE para que el destinatario la revise nuevamente.
+     *
+     * @param perfilId       ID del perfil que intenta modificar la propuesta
+     * @param nuevasFiguritas lista de figuritas que reemplazarán a las ofrecidas actualmente
+     * @param metodo         método de intercambio usado para reservar las nuevas figuritas
+     * @throws ForbiddenException si {@code perfilId} no es el autor
+     */
     public void modificarFiguritas(String perfilId, List<Figurita> nuevasFiguritas,  MetodoIntercambio metodo) {
         validarUsuarioAutor(perfilId);
         ejecutarRechazo();

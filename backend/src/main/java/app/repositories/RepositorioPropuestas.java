@@ -1,15 +1,15 @@
 package app.repositories;
 
+import app.dto.filtros.PropuestasFiltro;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.propuesta.PropuestasDto;
 import app.model.entities.Propuesta;
 import java.util.List;
 
 public interface RepositorioPropuestas {
-    // Propuestas enviadas
-    List<Propuesta> buscarPorAutorId(String userId);
-    // Propuestas recibidas
-    List<Propuesta> buscarPorDestinatarioId(String userId);
-    List<Propuesta> buscarTodos();
+    List<Propuesta> buscarTodosEstadisticas();
     Propuesta buscarPorId(String id);
     int contar();
     void guardar(Propuesta propuesta);
+    PaginaResultado<Propuesta> buscarTodos(String perfilId, PropuestasFiltro filtros);
 }

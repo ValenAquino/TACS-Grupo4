@@ -94,6 +94,39 @@
     flex: 0 0 140px;
 }
 
+.chipsActivos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chipActivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-secondary);
+  background: var(--color-secondary);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.chipActivo:hover {
+  background: #1a6e38;
+  border-color: #1a6e38;
+}
+
+.chipX {
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0.75;
+}
+
 @media (max-width: 768px) {
     .filtrosRow {
         flex-direction: column;

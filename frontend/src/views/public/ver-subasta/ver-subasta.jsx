@@ -1,21 +1,27 @@
 import styles from './ver-subasta.module.css'
 import { useParams } from 'react-router'
 import { useEffect, useState } from 'react'
-import { buscarSubasta, crearOferta } from '../../../services/subastasService.js'
-import Breadcrumb from '../../../components/ui/breadcrumb/breadcrumb.jsx'
-import SectionCard from '../../../components/ui/section-card/section-card.jsx'
-import SectionTitle from '../../../components/ui/section-title/section-title.jsx'
-import PerfilSimple from '../../../components/ui/perfil-simple/perfil-simple.jsx'
+import { buscarSubasta } from '@/services/subastasService.js'
+import Breadcrumb from '@/components/ui/breadcrumb/breadcrumb.jsx'
+import SectionCard from '@/components/ui/section-card/section-card.jsx'
+import SectionTitle from '@/components/ui/section-title/section-title.jsx'
+import PerfilSimple from '@/components/ui/perfil-simple/perfil-simple.jsx'
 import OfertaCard from './oferta-card.jsx'
 import TuOfertaCard from './tu-oferta-card.jsx'
-import Button from '../../../components/ui/button/button.jsx'
-import useUsuarioActual from '../../../hooks/useUsuarioActual.js'
+import Button from '@/components/ui/button/button.jsx'
+import {useAuth} from "@/contexts/userContext.jsx";
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
 
 const VerSubasta = () => {
   const { subId } = useParams()
-  const { userId } = useUsuarioActual()
+  const { user } = useAuth()
+  const { showToast } = useToast()
+  const {handleError, errorTemplate} = useError()
+
   const [cargando, setCargando] = useState(true)
+  const [error, setError] = useState(errorTemplate())
   const [subasta, setSubasta] = useState(undefined)
   const [tiempo, setTiempo] = useState(0)
   const [subastaAbierta, setSubastaAbierta] = useState(false)
@@ -53,14 +59,14 @@ const VerSubasta = () => {
   }
 
   const mostrarOfertaDeUsuario = (ofertas) => {
-    const ofertaPropia = ofertas.find((o) => o.autor.usuario_id === userId.toString()) //Mismo Id que la sesion
+    const ofertaPropia = ofertas.find((o) => o.autor.id === user.perfil_id) 
     return ofertaPropia !== undefined ? (
-      <TuOfertaCard oferta={ofertaPropia} subastaAbierta={subastaAbierta} />
+      <TuOfertaCard oferta={ofertaPropia} subasta={subasta} subastaAbierta={subastaAbierta} />
     ) : (
       subastaAbierta && (
         <div className={'d-flex flex-row justify-content-center align-items-center gap-2'}>
           <p>¿Aún no ofertaste?</p>
-          <Button onClick={() => navigate(`/subastas/${subId}/nuevaOferta`)}>
+          <Button onClick={() => navigate(`/subastas/${subId}/crear-oferta`)}>
             Proponer Oferta
           </Button>
         </div>
@@ -76,7 +82,7 @@ const VerSubasta = () => {
       setSubastaAbierta(new Date(payload.cierre) > new Date())
       setTiempo(payload.tiempo_restante)
     } catch (err) {
-      console.log(err)
+      showToast(handleError(err, setError),'error')
     } finally {
       setCargando(false)
     }
@@ -276,7 +282,7 @@ const VerSubasta = () => {
               )}
             </div>
           </SectionCard.Section>
-          {subasta.perfil.usuario_id !== userId && subastaAbierta ? (
+          {subasta.perfil.id !== user.perfil_id && subastaAbierta ? (
             <>
               <SectionTitle>TU OFERTA</SectionTitle>
               <SectionCard.Section>{mostrarOfertaDeUsuario(subasta.ofertas)}</SectionCard.Section>
@@ -295,7 +301,13 @@ const VerSubasta = () => {
           { name: `#${subId}`, to: `/subastas/${subId}` },
         ]}
       />
-      {cargando ? <h2>Cargando subasta...</h2> : mostrarSubasta()}
+      {cargando ? (
+        <h2>Cargando subasta...</h2>
+      ) : error.codigo ? (
+        <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
+      ) : (
+        mostrarSubasta()
+      )}
     </div>
   )
 }

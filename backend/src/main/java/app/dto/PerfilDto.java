@@ -1,7 +1,8 @@
 package app.dto;
 
+import app.model.entities.MedioDeContacto;
 import app.model.entities.Perfil;
-import lombok.AllArgsConstructor;
+import java.util.List;
 import lombok.Getter;
 
 @Getter
@@ -9,16 +10,24 @@ public class PerfilDto {
   private String id;
   private String usuarioId;
   private String nombre;
-  private Number calificacion;
+  private String nombreUsuario;
   private String iniciales;
+  private Number calificacionMedia;
+  private List<MedioDeContacto> mediosDeContacto;
 
   public PerfilDto(Perfil perfil) {
-    this.usuarioId = perfil.getUsuario().getId();
     this.id = perfil.getId();
     this.nombre = perfil.getNombre();
-    this.calificacion = perfil.obtenerCalificacionMedia();
     this.iniciales = calcularIniciales(nombre);
+    this.calificacionMedia = perfil.getCalificacionMedia();
+    this.mediosDeContacto = perfil.getMediosDeContacto();
+
+    if (perfil.getUsuario() != null) {
+        this.usuarioId = perfil.getUsuario().getId();
+        this.nombreUsuario = perfil.getUsuario().getNombre();
+    }
   }
+
 
   private String calcularIniciales(String nombre) {
     String[] partes = nombre.trim().split("\\s+");

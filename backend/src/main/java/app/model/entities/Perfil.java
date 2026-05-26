@@ -1,33 +1,57 @@
 package app.model.entities;
 
+import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@NoArgsConstructor
+@Builder
 @AllArgsConstructor
 @Getter
 @Setter
+@Document(collection = "perfiles")
 public class Perfil {
+
+    @Id
     private String id;
+
+    @DBRef
     private Usuario usuario;
+
     private String nombre;
-    private Coleccion coleccion;
-    private List<MedioDeContacto> mediosDeContacto;
-    private List<Calificacion> calificaciones;
+
+    @DBRef
+    @Builder.Default
+    private Coleccion coleccion = new Coleccion();
+
+    @Builder.Default
+    private List<MedioDeContacto> mediosDeContacto = new ArrayList<>();
+
+    @Builder.Default
+    private Double calificacionMedia = 0.0;
+    @Builder.Default
+    private int cantidadCalificaciones = 0;
 
     /**
      * Calcula el promedio de las calificaciones recibidas.
-     * Retorna 0 si el perfil aún no tiene calificaciones.
      */
-    public double obtenerCalificacionMedia() {
-        return calificaciones.stream()
-            .mapToInt(Calificacion::getValor)
-            .average()
-            .orElse(1.0);
+    public void agregarNuevaCalificacion(Calificacion calificacion) {
+        this.cantidadCalificaciones++;
+        this.calificacionMedia = this.calificacionMedia +
+            (calificacion.getValor() - this.calificacionMedia) / this.cantidadCalificaciones;
     }
 
-    public void agregarNuevaCalificacion(Calificacion calificacion){
-        this.calificaciones.add(calificacion);
+    public String getIniciales() {
+        return this.nombre
+            .substring(0, Math.min(2, this.nombre.length()))
+            .toUpperCase();
     }
 }

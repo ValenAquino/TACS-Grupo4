@@ -1,0 +1,257 @@
+package app.repositories.impl;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import app.MongoTestBase;
+import app.dto.filtros.FaltantesFiltro;
+import app.dto.filtros.FiguritasFiltro;
+import app.dto.filtros.RepetidasFiltro;
+import app.dto.paginacion.PaginaResultado;
+import app.dto.paginacion.Repetidas;
+import app.model.entities.Coleccion;
+import app.model.entities.Figurita;
+import app.model.entities.FiguritaIntercambiable;
+import app.model.entities.MetodoIntercambio;
+import app.model.entities.Seleccion;
+import app.repositories.impl.campos.CamposColeccion;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class RepositorioColeccionesTest extends MongoTestBase {
+
+  Figurita messi;
+  Figurita diMaria;
+  Figurita dybala;
+
+  @BeforeEach
+  void setUp() {
+    messi = Figurita.builder().id("ARG-10").numero(10).jugador("Messi").seleccion(Seleccion.ARGENTINA).build();
+    diMaria = Figurita.builder().id("ARG-11").numero(11).jugador("Di maria").seleccion(Seleccion.ARGENTINA).build();
+    dybala = Figurita.builder().id("ARG-21").numero(21).jugador("Dybala").seleccion(Seleccion.ARGENTINA).build();
+
+    repositorioFiguritas.guardar(messi);
+    repositorioFiguritas.guardar(diMaria);
+    repositorioFiguritas.guardar(dybala);
+  }
+
+  @Test
+  void findByIdNoEncuentraYtiraExcepcion() {
+    Coleccion coleccion = new Coleccion();
+
+    repositorioColecciones.guardar(coleccion);
+
+    CamposColeccion sinCampos = new CamposColeccion(false, false);
+
+    assertThrows(RuntimeException.class, () -> repositorioColecciones.buscarPorId("11", sinCampos));
+  }
+
+  @Test
+  void findByIdNoCargaListas() {
+    Coleccion coleccion = new Coleccion();
+    coleccion.getFaltantes().add(messi);
+    coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
+
+    repositorioColecciones.guardar(coleccion);
+
+    coleccion = repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false));
+    assertEquals(0, coleccion.getFaltantes().size());
+    assertEquals(0, coleccion.getRepetidas().size());
+    assertInstanceOf(List.class, coleccion.getFaltantes());
+    assertInstanceOf(List.class, coleccion.getRepetidas());
+  }
+
+  @Test
+  void findByIdCargaListaRepetidaYNoFaltante() {
+    Coleccion coleccion = new Coleccion();
+    coleccion.getFaltantes().add(messi);
+    coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
+
+    repositorioColecciones.guardar(coleccion);
+
+    coleccion = repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(true, false));
+    assertEquals(0, coleccion.getFaltantes().size());
+    assertEquals(1, coleccion.getRepetidas().size());
+    assertInstanceOf(List.class, coleccion.getFaltantes());
+  }
+
+  @Test
+  void findByIdValido() {
+    Coleccion coleccion = new Coleccion();
+
+    repositorioColecciones.guardar(coleccion);
+
+
+    assertEquals(coleccion.getId(), repositorioColecciones.buscarPorId(coleccion.getId(), new CamposColeccion(false, false)).getId());
+  }
+
+  @Test
+  void buscarFaltantesDevuelveResultadosPaginados() {
+    Coleccion coleccion = new Coleccion();
+
+    coleccion.getFaltantes().addAll(List.of(
+        messi,
+        diMaria,
+        dybala
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    PaginaResultado<Figurita> dto = repositorioColecciones.buscarFaltantes(
+        coleccion.getId(),
+        new FaltantesFiltro(2, 1)
+    );
+
+    assertEquals(3, dto.cantidadDeElementos());
+    assertEquals(1, dto.numero());
+    assertEquals(2, dto.cantidadDePaginas());
+    assertEquals(2, dto.contenido().size());
+  }
+
+  @Test
+  void buscarFaltantesSegundaPagina() {
+    Coleccion coleccion = new Coleccion();
+
+    coleccion.getFaltantes().addAll(List.of(
+        messi,
+        diMaria,
+        dybala
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    PaginaResultado dto = repositorioColecciones.buscarFaltantes(
+        coleccion.getId(),
+        new FaltantesFiltro(2, 2)
+    );
+
+    assertEquals(1, dto.contenido().size());
+    assertEquals(2, dto.numero());
+  }
+
+  @Test
+  void buscarRepetidasSinFiltroDevuelveTodo() {
+    Coleccion coleccion = new Coleccion();
+
+    coleccion.getRepetidas().addAll(List.of(
+        FiguritaIntercambiable.builder().figurita(messi).cantidadExistente(2).metodos(List.of(MetodoIntercambio.SUBASTA)).build(),
+        FiguritaIntercambiable.builder().figurita(diMaria).cantidadExistente(3).metodos(List.of(MetodoIntercambio.INTERCAMBIO)).build(),
+        FiguritaIntercambiable.builder().figurita(dybala).cantidadExistente(1).metodos(List.of(MetodoIntercambio.SUBASTA)).build()
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    Repetidas dto = repositorioColecciones.buscarRepetidas(
+        coleccion.getId(),
+        new RepetidasFiltro(null, 10, 1)
+    );
+
+    assertEquals(3, dto.getPublicadas());
+    assertEquals(6, dto.getDisponibles());
+    assertEquals(3, dto.getData().cantidadDeElementos());
+    assertEquals(3, dto.getData().contenido().size());
+  }
+
+  @Test
+  void buscarRepetidasFiltraPorSubasta() {
+    Coleccion coleccion = new Coleccion();
+
+    coleccion.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    Repetidas dto = repositorioColecciones.buscarRepetidas(
+        coleccion.getId(),
+        new RepetidasFiltro(MetodoIntercambio.SUBASTA, 10, 1)
+    );
+
+    assertEquals(2, dto.getData().cantidadDeElementos());
+    assertEquals(2, dto.getData().contenido().size());
+  }
+
+  @Test
+  void buscarRepetidasFiltraPorIntercambio() {
+    Coleccion coleccion = new Coleccion();
+
+    coleccion.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    Repetidas<FiguritaIntercambiable> dto = repositorioColecciones.buscarRepetidas(
+        coleccion.getId(),
+        new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, 10, 1)
+    );
+
+    assertEquals(1, dto.getData().cantidadDeElementos());
+    assertEquals(1, dto.getData().contenido().size());
+  }
+
+  @Test
+  void buscarRepetidasRespetaPaginacion() {
+    Coleccion coleccion = new Coleccion();
+
+    coleccion.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.SUBASTA))
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    Repetidas dto = repositorioColecciones.buscarRepetidas(
+        coleccion.getId(),
+        new RepetidasFiltro(null, 2, 2)
+    );
+
+    assertEquals(1, dto.getData().contenido().size());
+    assertEquals(2, dto.getData().numero());
+    assertEquals(2, dto.getData().cantidadDePaginas());
+  }
+
+  @Test
+  void buscarIntercambiablesConFiltrosPorTipo() {
+    Coleccion coleccion = new Coleccion("10");
+
+    coleccion.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(
+            messi,
+            2,
+            List.of(MetodoIntercambio.SUBASTA)
+        ),
+        new FiguritaIntercambiable(
+            diMaria,
+            1,
+            List.of(MetodoIntercambio.INTERCAMBIO)
+        )
+    ));
+
+    repositorioColecciones.guardar(coleccion);
+
+    PaginaResultado<FiguritaIntercambiable> resultado =
+        repositorioColecciones.buscarIntercambiablesConFiltros(
+            new FiguritasFiltro(
+                null,
+                null,
+                null,
+                null,
+                List.of(MetodoIntercambio.SUBASTA)
+            ),
+            1,
+            10
+        );
+
+    assertEquals(1, resultado.contenido().size());
+    assertEquals("Messi",
+        resultado.contenido().get(0).getFigurita().getJugador());
+  }
+}

@@ -3,7 +3,7 @@ const Tabs = ({ tabs, activeKey, onTabChange }) => (
         {tabs.map(({ key, label }) => (
             <li key={key} className="nav-item">
                 <button
-                    className={`nav-link ${activeKey === key ? 'active' : ''}`}
+                    className={`nav-link ${activeKey ===  key ? 'active' : 'text-secondary'}`}
                     onClick={() => onTabChange(key)}
                 >
                     {label}

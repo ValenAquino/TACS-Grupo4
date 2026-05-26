@@ -1,0 +1,43 @@
+.intercambios-container {
+    max-width: 900px;
+}
+
+.intercambios-title {
+    color: #175A2D;
+}
+
+/* Tabs */
+
+.tabs-fullwidth .nav {
+    display: flex;
+    width: 100%;
+    background-color: #e9f5ee;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabs-fullwidth .nav-item {
+    flex: 1;
+}
+
+.tabs-fullwidth .nav-link {
+    width: 100%;
+    text-align: center;
+    color: #175A2D;
+    font-weight: 600;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+/* TAB ACTIVO */
+.tabs-fullwidth .nav-link.active {
+    background-color: #175A2D;
+    color: white;
+    border-color: #175A2D;
+}
+
+/* HOVER */
+.tabs-fullwidth .nav-link:hover {
+    background-color: #1f6b3a;
+    color: white;
+}

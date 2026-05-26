@@ -1,18 +1,23 @@
-import Breadcrumb from "../../../components/ui/breadcrumb/breadcrumb.jsx";
-import ContadorCard from "../../../components/ui/contador-card/contador-card.jsx";
+import Breadcrumb from "@/components/ui/breadcrumb/breadcrumb.jsx";
+import ContadorCard from "@/components/ui/contador-card/contador-card.jsx";
 import styles from './sugerencias.module.css';
-import TabsContainer from "../../../components/ui/tabs-container/tabs-container.jsx";
+import TabsContainer from "@/components/ui/tabs-container/tabs-container.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarContadoresSugerencias} from "@/services/perfilService.js";
-import ExtraInfo from "../../../components/ui/extra-info/extra-info.jsx";
+import ExtraInfo from "@/components/ui/extra-info/extra-info.jsx";
 import MostradorSugerencias from "./tabs/mostrador-sugerencias.jsx";
-import useUsuarioActual from "../../../hooks/useUsuarioActual.js";
+import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
 
 const Sugerencias = () => {
 
+
+    const {showToast} = useToast()
+    const {handleError, errorTemplate} = useError()
+
     const [cargando, setCargando] = useState(true)
+    const [error, setError] = useState(errorTemplate())
     const [contadores, setContadores] = useState([])
-    const {userId} = useUsuarioActual()
 
     const TABS = [
         { key: 'todos', label: 'Todos', component: MostradorSugerencias, props: {} },
@@ -24,11 +29,11 @@ const Sugerencias = () => {
     const cargarContadores = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarContadoresSugerencias({userId})
+            const payload = await buscarContadoresSugerencias()
             setContadores(payload)
 
         } catch (error) {
-            console.log(error)
+          showToast(handleError(error, setError),'error')
         } finally {
             setCargando(false)
         }
@@ -36,12 +41,6 @@ const Sugerencias = () => {
 
     useEffect(() => {
         cargarContadores()
-        /*
-            stat: [{
-                nombre: (string)
-                 valor: (number)
-            }]
-        */
     }, []);
 
     const mostrarContadores = () => {
@@ -66,7 +65,7 @@ const Sugerencias = () => {
                 <div
                     className={styles.statGrid + " d-grid gap-3"}
                 >
-                    {cargando ? <h2>Cargando estadisticas...</h2> : mostrarContadores()}
+                    {cargando ? <h2>Cargando estadisticas...</h2> : error.codigo ? <p className="text-center text-secondary">No se pudo cargar la información</p> : mostrarContadores()}
                 </div>
                 <ExtraInfo>
                     <h6 className="m-0"><strong>¿Cómo funciona?</strong></h6>

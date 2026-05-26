@@ -20,6 +20,12 @@
   --border-color-light: #e4e3e3;
   --border-color-dark: #C8C8C8;
   --border-weight: 2px;
+
+    --color-success: #2BFA35;
+    --color-warning: #FFC107;
+    --color-caution: #dc2626;
+
+    --footer-height: 48px;
 }
 
 * {

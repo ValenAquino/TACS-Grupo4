@@ -1,0 +1,74 @@
+services:
+
+  mongodb:
+    image: mongo:7
+    command: ["--replSet", "rs0"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_dev:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  mongo-init:
+    image: mongo:7
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command:
+      - mongosh
+      - --host
+      - mongodb:27017
+      - --eval
+      - |
+        // Intenta obtener el estado del replica set.
+        // Si falla, significa que todavía no fue inicializado → lo iniciamos.
+        // En arranques posteriores rs.status() ya funciona y el catch no se ejecuta.
+        try { rs.status() }
+        catch(e) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongodb:27017'}]}) }
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    env_file: .env
+    ports:
+      - "8080:8080"
+    command: mvn spring-boot:run
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/src
+          target: /app/src
+          initial_sync: true
+        - action: sync
+          path: ./frontend/index.html
+          target: /app/index.html
+          initial_sync: true
+        - action: sync
+          path: ./frontend/public
+          target: /app/public
+          initial_sync: true
+
+volumes:
+  mongodb_data_dev:

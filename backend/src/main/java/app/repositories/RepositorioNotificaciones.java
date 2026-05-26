@@ -6,6 +6,10 @@ import app.model.notificador.Notificacion;
 import java.util.List;
 
 public interface RepositorioNotificaciones {
-  void guardar(Notificacion notificacion);
-  List<Notificacion> buscarPorUsuario(Perfil usuario);
+    List<Notificacion> buscarPorPerfilFechaDesc(String perfilId);
+
+    void guardar(Notificacion notificacion);
+    void guardar(List<Notificacion> notificaciones);
+
+    List<Notificacion> buscarPorPerfil(Perfil perfil);
 }

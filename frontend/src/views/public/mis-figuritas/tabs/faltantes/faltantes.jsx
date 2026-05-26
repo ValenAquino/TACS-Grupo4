@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
-import { buscarFaltantes } from "../../../../../services/coleccionService.js";
+import { buscarFaltantes } from "@/services/coleccionService.js";
 import FaltanteCard from "../../../../../components/ui/faltante-card/faltante-card.jsx";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
 import { useNavigate } from "react-router";
 import Button from "../../../../../components/ui/button/button.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
+import { useToast } from '@/contexts/toastContext.jsx'
 
-const Faltantes = ({ colId }) => {
+const Faltantes = () => {
+
+    const {handleError} = useError()
+
     const [faltantes, setFaltantes] = useState([]);
     const [filtros, setFiltros] = useState({});
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [pagina, setPagina] = useState(1);
+
+    const {showToast} = useToast()
 
     const navigate = useNavigate();
 
@@ -19,7 +25,7 @@ const Faltantes = ({ colId }) => {
             try {
                 setLoading(true);
 
-                const faltantesApi = await buscarFaltantes(colId, {
+                const faltantesApi = await buscarFaltantes({
                     ...filtros,
                     pagina,
                     limite: 10,
@@ -27,22 +33,14 @@ const Faltantes = ({ colId }) => {
 
                 setFaltantes(faltantesApi);
             } catch (err) {
-                setError(true);
+                showToast(handleError(err, (m) => {}),'error')
             } finally {
                 setLoading(false);
             }
         };
 
         cargarFaltantes();
-    }, [colId, filtros, pagina]);
-
-    if (error) {
-        return (
-            <div className="text-center py-4 text-danger">
-                Error al cargar faltantes
-            </div>
-        );
-    }
+    }, [filtros, pagina]);
 
     return (
         <div className="container-fluid px-0 d-flex flex-column gap-4">
@@ -54,7 +52,7 @@ const Faltantes = ({ colId }) => {
                         style={{ backgroundColor: "var(--color-primary)" }}
                     >
                         <p className="mb-1 fw-bold fs-2">
-                            {faltantes.resultados ?? 0}
+                            {faltantes.cantidad_de_elementos ?? 0}
                         </p>
                         <p className="mb-0 text-muted">Me Faltan</p>
                     </div>
@@ -63,7 +61,7 @@ const Faltantes = ({ colId }) => {
 
             <div className="d-flex justify-content-between align-items-center gap-3 flex-nowrap">
                 <p className="mb-0">
-                    {faltantes.resultados ?? 0} resultados encontrados
+                    {faltantes.cantidad_de_elementos ?? 0} resultados encontrados
                 </p>
 
                 <div className="flex-shrink-0">
@@ -92,8 +90,8 @@ const Faltantes = ({ colId }) => {
             ) : (
                 <>
                     <div className="row g-3 justify-content-center">
-                        {faltantes?.data?.length > 0 ? (
-                            faltantes.data.map((fig) => (
+                        {faltantes?.contenido?.length > 0 ? (
+                            faltantes.contenido.map((fig) => (
                                 <div
                                     key={fig.id}
                                     className="col-6 col-md-4 col-lg-3 d-flex justify-content-center"
@@ -109,13 +107,11 @@ const Faltantes = ({ colId }) => {
                         )}
                     </div>
 
-                    <div className="pt-3 d-flex justify-content-center">
-                        <Paginacion
-                            page={pagina}
-                            totalPages={faltantes.paginas_totales ?? 1}
-                            onChange={setPagina}
-                        />
-                    </div>
+                    <Paginacion
+                        page={pagina}
+                        totalPages={faltantes.cantidad_de_paginas ?? 1}
+                        onChange={setPagina}
+                    />
                 </>
             )}
         </div>

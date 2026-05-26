@@ -1,0 +1,83 @@
+package app.servicios;
+
+import app.dto.request.UsuarioRequest;
+import app.exceptions.BadRequestException;
+import app.exceptions.UnauthorizedException;
+import app.model.entities.Coleccion;
+import app.model.entities.Perfil;
+import app.model.entities.Rol;
+import app.model.entities.Usuario;
+import app.repositories.RepositorioColecciones;
+import app.repositories.RepositorioPerfiles;
+import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposPerfil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+
+@Service
+@RequiredArgsConstructor
+public class ServicioUsuario {
+
+  private final RepositorioUsuarios repositorioUsuarios;
+  private final RepositorioPerfiles repositorioPerfiles;
+  private final RepositorioColecciones repositorioColecciones;
+
+  public void registrarUsuario(UsuarioRequest request) {
+    request.setRol(Rol.USUARIO);
+
+    this.registrar(request);
+  }
+
+  public void registrarAdministrador(UsuarioRequest request, Rol rol) {
+
+    if(rol == Rol.ADMINISTRADOR) {
+      this.registrar(request);
+    } else {
+      throw new UnauthorizedException("Acceso denegado por rol invalido");
+    }
+  }
+
+  public void editarContrasenia(String perfilId, String contraseniaActual, String contraseniaNueva) {
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    Perfil perfil = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
+    Usuario usuario = perfil.getUsuario();
+    if (!passwordEncoder.matches(contraseniaActual, usuario.getContrasenia())) {
+      throw new BadRequestException("La contraseña actual es incorrecta");
+    }
+    this.repositorioUsuarios.guardar(
+        new Usuario(usuario.getId(), usuario.getRol(), usuario.getNombre(), passwordEncoder.encode(contraseniaNueva))
+    );
+  }
+
+  private void registrar(UsuarioRequest request) {
+    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    Usuario usuarioNuevo;
+
+    if(request.getRol() == null) {
+      usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), Rol.USUARIO);
+    } else {
+      usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), request.getRol());
+    }
+
+    this.repositorioUsuarios.guardar(usuarioNuevo);
+
+    Coleccion coleccion = new Coleccion();
+
+    this.repositorioColecciones.guardar(coleccion);
+
+    Perfil perfil = Perfil.builder()
+        .usuario(usuarioNuevo)
+        .nombre(usuarioNuevo.getNombre())
+        .coleccion(coleccion)
+        .build();
+
+    this.repositorioPerfiles.guardar(perfil);
+  }
+}
+
+

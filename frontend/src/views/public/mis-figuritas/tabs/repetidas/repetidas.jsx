@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { buscarRepetidas } from "../../../../../services/coleccionService.js";
+import { buscarRepetidas } from "@/services/coleccionService.js";
 import RepetidaCard from "../../../../../components/ui/repetida-card/repetida-card.jsx";
 import FilterChip from "../../../../../components/ui/filter-chip/filter-chip.jsx";
 import Button from "../../../../../components/ui/button/button.jsx";
 import { useNavigate } from "react-router";
 import Paginacion from "../../../../../components/ui/paginacion/paginacion.jsx";
+import {useError} from "@/contexts/errorContext.jsx";
+import { useToast } from '@/contexts/toastContext.jsx'
 
-const Repetidas = ({ colId }) => {
+const Repetidas = () => {
     const [repetidas, setRepetidas] = useState({});
     const [filtros, setFiltros] = useState({
         metodoIntercambio: "",
@@ -16,6 +18,9 @@ const Repetidas = ({ colId }) => {
     const [error, setError] = useState(false);
     const [pagina, setPagina] = useState(1);
 
+    const {handleError} = useError()
+    const {showToast} = useToast()
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +28,7 @@ const Repetidas = ({ colId }) => {
             try {
                 setLoading(true);
 
-                const repetidasApi = await buscarRepetidas(colId, {
+                const repetidasApi = await buscarRepetidas({
                     ...filtros,
                     pagina,
                     limite: 10,
@@ -31,14 +36,14 @@ const Repetidas = ({ colId }) => {
 
                 setRepetidas(repetidasApi);
             } catch (err) {
-                setError(true);
+              showToast(handleError(err, setError),'error')
             } finally {
                 setLoading(false);
             }
         };
 
         cargarRepetidas();
-    }, [colId, filtros, pagina]);
+    }, [filtros, pagina]);
 
     const cambiarFiltro = (nuevoTipo) => {
         setFiltros((prev) => {
@@ -121,7 +126,7 @@ const Repetidas = ({ colId }) => {
 
             <div className="d-flex justify-content-between align-items-center gap-3 flex-nowrap">
                 <p className="mb-0">
-                    {repetidas.resultados ?? 0} resultados encontrados
+                    {repetidas.cantidad_de_elementos ?? 0} resultados encontrados
                 </p>
 
                 <div className="flex-shrink-0">
@@ -153,8 +158,8 @@ const Repetidas = ({ colId }) => {
             ) : (
                 <>
                     <div className="row g-3 justify-content-center">
-                        {repetidas?.data?.length > 0 ? (
-                            repetidas.data.map((fig) => (
+                        {repetidas?.contenido?.length > 0 ? (
+                            repetidas.contenido.map((fig) => (
                                 <div
                                     key={fig.figurita_id}
                                     className="col-6 col-md-4 col-lg-3 d-flex justify-content-center"
@@ -172,15 +177,13 @@ const Repetidas = ({ colId }) => {
                         )}
                     </div>
 
-                    <div className="pt-3 d-flex justify-content-center">
-                        <Paginacion
-                            page={pagina}
-                            totalPages={
-                                repetidas.paginas_totales ?? 1
-                            }
-                            onChange={setPagina}
-                        />
-                    </div>
+                    <Paginacion
+                        page={pagina}
+                        totalPages={
+                            repetidas.cantidad_de_paginas ?? 1
+                        }
+                        onChange={setPagina}
+                    />
                 </>
             )}
         </div>

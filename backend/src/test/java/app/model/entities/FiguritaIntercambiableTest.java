@@ -1,10 +1,8 @@
 package app.model.entities;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import app.exceptions.BadRequestException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,52 +13,123 @@ class FiguritaIntercambiableTest {
 
   @BeforeEach
   void setUp() {
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
-    fi = new FiguritaIntercambiable(messi, 3, List.of(MetodoIntercambio.INTERCAMBIO));
+    Figurita messi = Figurita.builder()
+        .id("ARG-10")
+        .numero(10)
+        .jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
+
+    fi = new FiguritaIntercambiable(
+        messi,
+        3,
+        List.of(MetodoIntercambio.INTERCAMBIO)
+    );
   }
 
   @Test
-  void hayCantidadDisponible_cuandoHayStock_retornaTrue() {
-    assertTrue(fi.hayCantidadDisponible());
+  void soporta_cuandoMetodoExiste_retornaTrue() {
+    assertTrue(fi.soporta(MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
-  void hayCantidadDisponible_cuandoTodoReservado_retornaFalse() {
-    fi.reservarFiguritaIntercambiable();
-    fi.reservarFiguritaIntercambiable();
-    fi.reservarFiguritaIntercambiable();
-    assertFalse(fi.hayCantidadDisponible());
+  void soporta_cuandoMetodoNoExiste_retornaFalse() {
+    assertFalse(fi.soporta(MetodoIntercambio.SUBASTA));
   }
 
   @Test
-  void reservar_decrementaDisponibilidad() {
-    fi.reservarFiguritaIntercambiable();
+  void getCantidadDisponible_sinReservas_retornaCantidadExistente() {
+    assertEquals(3, fi.getCantidadDisponible());
+  }
+
+  @Test
+  void getCantidadDisponible_conReservas_retornaCantidadRestante() {
+    fi.reservar(MetodoIntercambio.INTERCAMBIO);
+
+    assertEquals(2, fi.getCantidadDisponible());
+  }
+
+  @Test
+  void reservar_incrementaCantidadReservada() {
+    fi.reservar(MetodoIntercambio.INTERCAMBIO);
+
     assertEquals(1, fi.getCantidadReservada());
   }
 
   @Test
-  void reservar_sinStock_lanzaExcepcion() {
-    fi.reservarFiguritaIntercambiable();
-    fi.reservarFiguritaIntercambiable();
-    fi.reservarFiguritaIntercambiable();
-    assertThrows(RuntimeException.class, () -> fi.reservarFiguritaIntercambiable());
+  void reservar_conMetodoNoSoportado_lanzaExcepcion() {
+    BadRequestException ex = assertThrows(
+        BadRequestException.class,
+        () -> fi.reservar(MetodoIntercambio.SUBASTA)
+    );
+
+    assertEquals(
+        "Esta figurita no soporta el metodo seleccionado",
+        ex.getMessage()
+    );
+  }
+
+  @Test
+  void reservar_sinDisponibilidad_lanzaExcepcion() {
+    fi.reservar(MetodoIntercambio.INTERCAMBIO);
+    fi.reservar(MetodoIntercambio.INTERCAMBIO);
+    fi.reservar(MetodoIntercambio.INTERCAMBIO);
+
+    BadRequestException ex = assertThrows(
+        BadRequestException.class,
+        () -> fi.reservar(MetodoIntercambio.INTERCAMBIO)
+    );
+
+    assertEquals(
+        "No hay figuritas disponibles para reservar",
+        ex.getMessage()
+    );
   }
 
   @Test
   void eliminarReserva_decrementaReservadas() {
-    fi.reservarFiguritaIntercambiable();
+    fi.reservar(MetodoIntercambio.INTERCAMBIO);
+
     fi.eliminarReserva();
+
     assertEquals(0, fi.getCantidadReservada());
   }
 
   @Test
   void eliminarReserva_sinReservas_lanzaExcepcion() {
-    assertThrows(RuntimeException.class, () -> fi.eliminarReserva());
+    RuntimeException ex = assertThrows(
+        RuntimeException.class,
+        () -> fi.eliminarReserva()
+    );
+
+    assertEquals(
+        "No hay reservas para eliminar",
+        ex.getMessage()
+    );
   }
 
   @Test
-  void cambioConcretado_decrementaStock() {
+  void cambioConcretado_decrementaCantidadExistente() {
     fi.cambioConcretado();
+
+    assertEquals(2, fi.getCantidadExistente());
+  }
+
+  @Test
+  void cambioConcretado_conReserva_eliminaReserva() {
+    fi.reservar(MetodoIntercambio.INTERCAMBIO);
+
+    fi.cambioConcretado();
+
+    assertEquals(2, fi.getCantidadExistente());
+    assertEquals(0, fi.getCantidadReservada());
+  }
+
+  @Test
+  void cambioConcretado_sinReserva_noModificaReservadas() {
+    fi.cambioConcretado();
+
+    assertEquals(0, fi.getCantidadReservada());
     assertEquals(2, fi.getCantidadExistente());
   }
 
@@ -69,14 +138,15 @@ class FiguritaIntercambiableTest {
     fi.cambioConcretado();
     fi.cambioConcretado();
     fi.cambioConcretado();
-    assertThrows(RuntimeException.class, () -> fi.cambioConcretado());
-  }
 
-  @Test
-  void cambioConcretado_conReserva_eliminaReserva() {
-    fi.reservarFiguritaIntercambiable();
-    fi.cambioConcretado();
-    assertEquals(0, fi.getCantidadReservada());
-    assertEquals(2, fi.getCantidadExistente());
+    BadRequestException ex = assertThrows(
+        BadRequestException.class,
+        () -> fi.cambioConcretado()
+    );
+
+    assertEquals(
+        "No hay cantidad existente de esta figurita",
+        ex.getMessage()
+    );
   }
 }

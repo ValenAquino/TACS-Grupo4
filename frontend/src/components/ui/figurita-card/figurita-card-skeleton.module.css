@@ -1,18 +1,56 @@
 .card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding-bottom: 4px;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.hero {
+    height: 180px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    flex-shrink: 0;
+}
+
+.body {
+    padding: 12px 14px 14px;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
 .bone {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
     background-size: 200% 100%;
     animation: shimmer 1.4s infinite;
     border-radius: 6px;
+}
+
+.boneName {
+    height: 14px;
+    width: 55%;
+}
+
+.boneSub {
+    height: 11px;
+    width: 35%;
+}
+
+.boneUser {
+    height: 11px;
+    width: 65%;
+    margin-top: 2px;
+}
+
+.boneBtn {
+    height: 36px;
+    width: 100%;
+    border-radius: 9px;
+    margin-top: 4px;
 }
 
 @keyframes shimmer {
@@ -22,35 +60,4 @@
     100% {
         background-position: -200% 0;
     }
-}
-
-/* Tamaños de huesos */
-.boneXs {
-    height: 12px;
-    width: 60px;
-}
-
-.boneSm {
-    height: 16px;
-    width: 72px;
-    border-radius: 999px;
-}
-
-.boneMd {
-    height: 14px;
-    width: 120px;
-}
-
-.boneEmoji {
-    height: 80px;
-}
-
-.boneUser {
-    height: 12px;
-    width: 100px;
-}
-
-.boneBtn {
-    height: 34px;
-    width: 100%;
 }

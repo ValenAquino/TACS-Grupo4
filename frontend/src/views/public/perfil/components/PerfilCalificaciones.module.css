@@ -1,0 +1,21 @@
+.wrapper {
+  max-width: 1100px;
+  width: 100%;
+}
+
+.avatar-reviewer {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.descripcion {
+  font-size: 0.9rem;
+}

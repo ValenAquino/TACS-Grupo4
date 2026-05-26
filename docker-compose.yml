@@ -1,5 +1,30 @@
 services:
-  app:
-    build: .
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      # Atlas auto-descubre el nombre del replica set via SRV — no hay que forzar rs0.
+      - MONGO_REPLICA_SET_NAME=
     ports:
       - "8080:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:8080"
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy

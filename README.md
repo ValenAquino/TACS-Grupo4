@@ -4,40 +4,81 @@ Aplicación de intercambio de figuritas del Mundial. Permite a los usuarios gest
 
 ## Stack tecnológico
 
+### Backend
+
+| Componente  | Tecnología        |
+|-------------|-------------------|
+| Lenguaje    | Java 17           |
+| Framework   | Spring Boot 3.2.5 |
+| Build       | Maven 3.9+        |
+| Tests       | JUnit 5 + Mockito |
+| Cobertura   | JaCoCo            |
+| Calidad     | SpotBugs          |
+| Boilerplate | Lombok            |
+
+### Frontend
+
+| Componente  | Tecnología         |
+|-------------|--------------------|
+| Lenguaje    | JavaScript         |
+| Framework   | React 19           |
+| Build       | Vite 8             |
+| Router      | React Router 7     |
+| HTTP Client | Axios              |
+| Servidor    | Nginx (producción) |
+
+### Infraestructura
+
 | Componente       | Tecnología                 |
 |------------------|----------------------------|
-| Lenguaje         | Java 17                    |
-| Framework        | Spring Boot 3.2.5          |
-| Build            | Maven 3.9+                 |
-| Tests            | JUnit 5 + Mockito          |
-| Cobertura        | JaCoCo                     |
-| Calidad          | SpotBugs                   |
-| Boilerplate      | Lombok                     |
 | Containerización | Docker (multi-stage build) |
+| Orquestación     | Docker Compose             |
 | CI               | GitHub Actions             |
 
-## Levantar la aplicación
+## Comandos
 
-### Con Docker Compose
+El proyecto usa un `Makefile` para unificar todos los comandos.
+
+### Prod
+
+| Comando           | Descripción                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| `make build`      | Compila las imágenes y levanta el stack en background                       |
+| `make up`         | Levanta el stack sin recompilar (requiere haber corrido `make build` antes) |
+| `make down`       | Baja el stack                                                               |
+| `make logs`       | Muestra los logs de todos los servicios en tiempo real                      |
+| `make logs-back`  | Logs solo del backend                                                       |
+| `make logs-front` | Logs solo del frontend                                                      |
+
+| Servicio | URL                   |
+|----------|-----------------------|
+| Frontend | http://localhost:5173 |
+| Backend  | http://localhost:8080 |
+
+### Dev
+
+| Comando          | Descripción                                          |
+|------------------|------------------------------------------------------|
+| `make dev`       | Levanta el stack completo con Compose Watch activo   |
+| `make dev-down`  | Baja el stack de desarrollo                          |
+| `make dev-back`  | Levanta o recarga solo el backend                    |
+| `make dev-front` | Levanta o recarga solo el frontend                   |
+| `make test`      | Corre los tests del backend en un contenedor efímero |
+
+En modo desarrollo el frontend tiene hot reaload. Al guardar cualquier archivo en `src/`
+Vite actualiza el browser sin recargar la página.
+El backend se recarga manualmente con `make dev-back` cuando se cambia código Java.
+
+### Variables de entorno
+
+Crear un `.env` en la raíz a partir del ejemplo antes de levantar el stack:
 
 ```bash
-docker compose up
+cp .env.example .env
 ```
 
-### Con Docker
-
-```bash
-docker build -t tacs-grupo5 .
-docker run -p 8080:8080 tacs-grupo5
-```
-
-### Con Maven
-
-```bash
-mvn spring-boot:run
-```
-
-La aplicación queda disponible en `http://localhost:8080`.
+Los valores por defecto funcionan para dev sin modificaciones.
+En prod reemplazar `MONGO_URI` con la URI de Atlas y `CORS_ORIGIN` con el dominio real.
 
 ---
 
@@ -147,31 +188,31 @@ La aplicación queda disponible en `http://localhost:8080`.
 
 ### Figuritas
 
-| Método | Endpoint     | Descripción                                                       |
-|--------|--------------|-------------------------------------------------------------------|
+| Método | Endpoint     | Descripción                                                         |
+|--------|--------------|---------------------------------------------------------------------|
 | GET    | `/figuritas` | Lista figuritas intercambiables con filtros opcionales y paginación |
 
 El endpoint soporta dos modos de búsqueda mutuamente excluyentes según si se envía `q`:
 
 **Modo búsqueda libre (`q` presente):** OR entre campos, AND entre términos.
 
-| Param           | Tipo    | Requerido | Default | Descripción                                                                 |
-|-----------------|---------|-----------|---------|-----------------------------------------------------------------------------|
+| Param           | Tipo    | Requerido | Default | Descripción                                                                                                           |
+|-----------------|---------|-----------|---------|-----------------------------------------------------------------------------------------------------------------------|
 | `q`             | String  | Sí        | —       | Texto libre; términos separados por espacio se combinan con AND, cada uno busca en jugador, selección y número con OR |
-| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos                          |
-| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                                               |
-| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                                                |
+| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos                                                                     |
+| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                                                                                         |
+| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                                                                                          |
 
 **Modo filtros estructurados (`q` ausente):** AND entre todos los parámetros.
 
-| Param           | Tipo    | Requerido | Default | Descripción                                          |
-|-----------------|---------|-----------|---------|------------------------------------------------------|
-| `numero`        | Integer | No        | —       | Número exacto de figurita                            |
+| Param           | Tipo    | Requerido | Default | Descripción                                            |
+|-----------------|---------|-----------|---------|--------------------------------------------------------|
+| `numero`        | Integer | No        | —       | Número exacto de figurita                              |
 | `seleccion`     | Enum    | No        | —       | `ARGENTINA`, `BRASIL`, `FRANCIA`, `ESPAÑA`, `ALEMANIA` |
-| `jugador`       | String  | No        | —       | Nombre del jugador (contains, case-insensitive)      |
-| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos   |
-| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                        |
-| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                         |
+| `jugador`       | String  | No        | —       | Nombre del jugador (contains, case-insensitive)        |
+| `tipo`          | Enum    | No        | —       | `INTERCAMBIO` o `SUBASTA`; ausente devuelve todos      |
+| `pagina`        | Integer | No        | `0`     | Página solicitada (0-indexed)                          |
+| `tamanioPagina` | Integer | No        | `12`    | Tamaño de página (máximo 40)                           |
 
 **Respuesta:**
 
@@ -186,7 +227,9 @@ El endpoint soporta dos modos de búsqueda mutuamente excluyentes según si se e
       "seleccion": "ARGENTINA",
       "cantidad_existente": 3,
       "cantidad_reservada": 0,
-      "metodos": ["INTERCAMBIO"],
+      "metodos": [
+        "INTERCAMBIO"
+      ],
       "usuario_id": "1000",
       "nombre_usuario": "Lucas",
       "reputacion": 4
@@ -222,6 +265,47 @@ Los IDs de perfiles, figuritas y colecciones usados en los ejemplos corresponden
 
 ## Decisiones de diseño
 
+### Docker: multi-stage builds
+
+Tanto el backend como el frontend usan [multi-stage builds](https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/). La imagen final no contiene el compilador ni las dependencias de build, solo el artefacto ejecutable.
+
+Cada Dockerfile define stages separados para desarrollo y producción:
+
+```
+# Backend
+dependencies  →  mvn dependency:go-offline (deps cacheadas)
+dev           →  + código fuente, sin tests
+build         →  + mvn verify (tests + SpotBugs + JaCoCo)
+runtime       →  JAR en JRE Alpine (imagen final de prod)
+
+# Frontend
+deps          →  npm ci (node_modules cacheados)
+dev           →  + código fuente, sin build
+builder       →  + npm run build
+production    →  Nginx con /dist (imagen final de prod)
+```
+
+### Docker: entorno de desarrollo con Compose Watch
+
+El stack de desarrollo usa `docker-compose.dev.yml`, que buildea hasta el stage `dev` de cada Dockerfile (sin `mvn verify` ni `npm run build`).
+
+Los cambios en el código fuente se sincronizan al contenedor usando [Compose Watch](https://fsck.sh/en/blog/docker-compose-watch-modern-workflows/),
+que transfiere archivos a través del socket Docker sin requerir volume mounts ni configuración especial del host.
+Para el frontend, Vite detecta el cambio y actualiza el browser automáticamente (Hot Reload).
+Para el backend, el redespliegue es manual con `make dev-back`.
+
+### Docker: health check y orden de inicio
+
+El backend expone `/ping` como endpoint de salud. Docker Compose espera que esté `healthy` antes de iniciar el frontend (`condition: service_healthy`),
+evitando que las primeras llamadas a la API fallen durante el arranque ([referencia](https://docs.docker.com/compose/how-tos/startup-order/)).
+El `start_period` de 15s le da margen a Spring Boot para inicializar.
+
+Ambos servicios tienen `restart: unless-stopped` para que Docker los recupere automáticamente ante una caída.
+
+### CORS configurable
+
+El origin permitido se define en `application.properties` y puede sobreescribirse vía variable de entorno `CORS_ORIGIN`. Esto permite usar `http://localhost:5173` en desarrollo y la URL real en producción sin recompilar.
+
 ### `MetodoIntercambio` como enum y no como entidad
 
 Los métodos de intercambio son un conjunto cerrado y conocido en tiempo de compilación (`INTERCAMBIO`, `SUBASTA`). Modelarlos como enum evita una tabla extra en la base de datos, elimina joins innecesarios y permite usar el compilador como validación. Si en el futuro aparece un nuevo método de
@@ -239,16 +323,18 @@ permite que operaciones sobre la colección no requieran cargar el perfil comple
 ## Ejecutar tests
 
 ```bash
-mvn test
+make test
 ```
+
+Corre los tests dentro de un contenedor efímero sin levantar el stack completo. No requiere Java instalado localmente.
 
 ## Validar el proyecto
 
 ```bash
-mvn clean verify
+docker compose -f docker-compose.dev.yml run --rm backend mvn verify
 ```
 
-Este comando ejecuta los tests, corre el análisis de SpotBugs y valida la cobertura mínima con JaCoCo.
+Ejecuta tests, análisis de SpotBugs y cobertura mínima con JaCoCo (80%). Este mismo comando corre automáticamente en cada `make build` (producción).
 
 ## Configuración del IDE (IntelliJ)
 
@@ -263,4 +349,3 @@ En **File > Settings > Editor > Code Style**, seleccionar `Unix and OS X (\n)` e
 ### Indentación con 2 espacios
 
 En **File > Settings > Editor > Code Style > Java > Tabs and Indents**, setear Tab size, Indent y Continuation indent en 2, 2 y 4.
-

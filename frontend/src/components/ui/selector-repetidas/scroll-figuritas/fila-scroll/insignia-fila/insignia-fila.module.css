@@ -1,0 +1,36 @@
+.scroll-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.scroll-badge {
+  font-size: 0.68rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.scroll-badge.requerida {
+  background-color: color-mix(in srgb, var(--color-secondary-acent) 40%, transparent);
+  color: var(--color-secondary);
+}
+
+.scroll-badge.sin-stock-badge {
+  background-color: var(--color-primary-acent);
+  color: var(--color-subtitle);
+}
+
+.scroll-badge.advertencia {
+  background-color: color-mix(in srgb, var(--color-terciary) 15%, transparent);
+  color: var(--color-terciary);
+}
+
+.scroll-badge.cantidad {
+  background-color: color-mix(in srgb, var(--color-secondary-acent) 40%, transparent);
+  color: var(--color-secondary);
+}
+
+.scroll-badge-total {
+  opacity: 0.65;
+}

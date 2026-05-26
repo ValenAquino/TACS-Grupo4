@@ -368,7 +368,7 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     service.cancelarOferta(lucas.getId(), "s-1", "o-1");
 
-    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(false, true));
+    subasta = repositorioSubastas.buscarPorId("s-1", new CamposSubasta(true, false));
 
     assertEquals(EstadoProceso.CANCELADO, buscarOfertaEn(subasta, "o-1").getEstadoActual().getValor());
   }

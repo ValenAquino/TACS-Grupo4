@@ -25,6 +25,11 @@ public class PerfilDto {
     this.mediosDeContacto = perfil.getMediosDeContacto();
   }
 
+  if (perfil.getUsuario() != null) {
+      this.usuarioId = perfil.getUsuario().getId();
+      this.nombreUsuario = perfil.getUsuario().getNombre();
+  }
+
   private String calcularIniciales(String nombre) {
     String[] partes = nombre.trim().split("\\s+");
     if (partes.length == 1) return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();

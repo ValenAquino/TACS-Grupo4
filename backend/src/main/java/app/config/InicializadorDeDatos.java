@@ -106,7 +106,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
   @Override
   public void run(String... args) {
-    if (subastas.contar() > 0) {
+    if (perfiles.contar() > 0) {
       enriquecimiento.enriquecer();
       return;
     }

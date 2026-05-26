@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import app.repositories.RepositorioUsuarios;
 
 class ServicioPerfilTest extends MongoTestBase {
 

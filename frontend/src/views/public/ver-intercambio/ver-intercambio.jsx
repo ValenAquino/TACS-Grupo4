@@ -156,42 +156,25 @@
                 </SectionCard>
 
                 <SectionCard>
-
                     <SectionTitle>
-                        FIGURITA SOLICITADA
+                        {esRecibida ? "FIGURITA QUE VOS ENTREGÁS" : "FIGURITA QUE SOLICITÁS"}
                     </SectionTitle>
-
                     <SectionCard.Section>
-
-                        <FiguritaCard
-                            figurita={propuesta.figurita_buscada}
-                        />
-
+                        <FiguritaCard figurita={propuesta.figurita_buscada} />
                     </SectionCard.Section>
-
                 </SectionCard>
 
                 <SectionCard>
-
                     <SectionTitle>
-                        FIGURITAS OFRECIDAS ({propuesta.figuritas_ofrecidas.length})
+                        {`${esRecibida ? "FIGURITAS QUE VOS RECIBÍS" : "FIGURITAS QUE OFRECÉS"} (${propuesta.figuritas_ofrecidas.length})`}
                     </SectionTitle>
-
                     <SectionCard.Section>
-
                         <div className="d-flex flex-column gap-3">
-
                             {propuesta.figuritas_ofrecidas.map((fig) => (
-                                <FiguritaCard
-                                    key={fig.id}
-                                    figurita={fig}
-                                />
+                                <FiguritaCard key={fig.id} figurita={fig} />
                             ))}
-
                         </div>
-
                     </SectionCard.Section>
-
                 </SectionCard>
 
                 <SectionCard>
@@ -202,7 +185,7 @@
 
                     <SectionCard.Section>
 
-                        <OfertaCard propuesta={propuesta} tipo={propuesta.tipo}/>
+                        <OfertaCard propuesta={propuesta} tipo={propuesta.tipo} />
 
                     </SectionCard.Section>
 

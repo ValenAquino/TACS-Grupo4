@@ -3,7 +3,7 @@ package app.servicios;
 import app.dto.CalificacionDto;
 import app.dto.ContadorDto;
 import app.dto.FiguritaDto;
-import app.dto.NotificacionesDto;
+import app.dto.NotificacionDto;
 import app.dto.PerfilDto;
 import app.dto.SugerenciaDto;
 import app.dto.filtros.SugerenciasFiltro;

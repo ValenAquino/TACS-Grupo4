@@ -363,4 +363,41 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     try { return Integer.parseInt(termino); }
     catch (NumberFormatException e) { return null; }
   }
+
+  public long contarRepetidas(List<MetodoIntercambio> metodos) {
+
+    List<AggregationOperation> operaciones = new ArrayList<>();
+
+    operaciones.add(Aggregation.unwind("repetidas"));
+
+    if (!metodos.isEmpty()) {
+      operaciones.add(
+          Aggregation.match(
+              Criteria.where("repetidas.metodos").all(metodos)
+          )
+      );
+    }
+
+    operaciones.add(
+        Aggregation.group()
+            .sum("repetidas.cantidadExistente")
+            .as("total")
+    );
+
+    Aggregation aggregation =
+        Aggregation.newAggregation(operaciones);
+
+    AggregationResults<Document> resultado =
+        mongoTemplate.aggregate(
+            aggregation,
+            Coleccion.class,
+            Document.class
+        );
+
+    Document doc = resultado.getUniqueMappedResult();
+
+    Number total = doc != null ? doc.get("total", Number.class) : 0L;
+
+    return total.longValue();
+  }
 }

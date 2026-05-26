@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Breadcrumb from '../../../components/ui/breadcrumb/breadcrumb.jsx'
 import SectionCard from '../../../components/ui/section-card/section-card.jsx'
 import SectionTitle from '../../../components/ui/section-title/section-title.jsx'
@@ -11,7 +11,7 @@ import {
   aceptarPropuesta,
   rechazarPropuesta,
   cancelarPropuesta,
-} from '../../../services/propuestasService.js'
+} from '@/services/propuestasService.js'
 
 import FiguritaCard from './figurita-card.jsx'
 import OfertaCard from './oferta-card.jsx'
@@ -21,7 +21,6 @@ import { useToast } from '@/contexts/toastContext.jsx'
 
 const VerIntercambio = () => {
   const { intercambioId } = useParams()
-  const navigate = useNavigate()
   const [cargando, setCargando] = useState(true)
   const [propuesta, setPropuesta] = useState(null)
 
@@ -34,7 +33,10 @@ const VerIntercambio = () => {
       const data = await obtenerPropuesta(intercambioId)
       setPropuesta(data)
     } catch (error) {
-      handleError(error, () => {})
+      showToast(
+        handleError(error, (m) => {}),
+        'error',
+      )
     } finally {
       setCargando(false)
     }
@@ -47,37 +49,39 @@ const VerIntercambio = () => {
   const ejecutarAceptar = async () => {
     try {
       await aceptarPropuesta(propuesta.id)
-
-      setPropuesta((prev) => ({
-        ...prev,
-        estado: 'ACEPTADO',
-      }))
+      setPropuesta((prev) => ({ ...prev, estado: 'ACEPTADO' }))
       showToast('Propuesta aceptada correctamente.')
     } catch (error) {
-      handleError(error, (err) => showToast(err.mensaje, 'error'))
+      showToast(
+        handleError(error, (m) => {}),
+        'error',
+      )
     }
   }
 
   const ejecutarRechazar = async () => {
     try {
       await rechazarPropuesta(propuesta.id)
-
-      setPropuesta((prev) => ({
-        ...prev,
-        estado: 'RECHAZADO',
-      }))
+      setPropuesta((prev) => ({ ...prev, estado: 'RECHAZADO' }))
       showToast('Propuesta rechazada correctamente.')
     } catch (error) {
-      handleError(error, (err) => showToast(err.mensaje, 'error'))
+      showToast(
+        handleError(error, (m) => {}),
+        'error',
+      )
     }
   }
+
   const ejecutarCancelar = async () => {
     try {
       await cancelarPropuesta(propuesta.id)
       setPropuesta((prev) => ({ ...prev, estado: 'CANCELADO' }))
       showToast('Propuesta cancelada correctamente.')
     } catch (error) {
-      handleError(error, (err) => showToast(err.mensaje, 'error'))
+      showToast(
+        handleError(error, (m) => {}),
+        'error',
+      )
     }
   }
 
@@ -96,6 +100,7 @@ const VerIntercambio = () => {
       </div>
     )
   }
+
   const esRecibida = propuesta?.tipo === 'RECIBIDA'
   const esEnviada = propuesta?.tipo === 'ENVIADA'
 
@@ -136,14 +141,15 @@ const VerIntercambio = () => {
                 <Button label="Aceptar" onClick={ejecutarAceptar} variante="exitoBorde" />
               </div>
             )}
-            {puedeCancelar && <Button label="Cancelar" onClick={ejecutarCancelar} variante="peligroBorde" />}
+            {puedeCancelar && (
+              <Button label="Cancelar" onClick={ejecutarCancelar} variante="peligroBorde" />
+            )}
           </div>
         </SectionCard.Section>
       </SectionCard>
 
       <SectionCard>
         <SectionTitle>USUARIO</SectionTitle>
-
         <SectionCard.Section>
           <PerfilSimple perfil={esRecibida ? propuesta.autor : propuesta.destinatario} />
         </SectionCard.Section>
@@ -173,7 +179,6 @@ const VerIntercambio = () => {
 
       <SectionCard>
         <SectionTitle>RESUMEN DE LA PROPUESTA</SectionTitle>
-
         <SectionCard.Section>
           <OfertaCard propuesta={propuesta} tipo={propuesta.tipo} />
         </SectionCard.Section>

@@ -77,7 +77,7 @@ public class ControladorSubasta {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{sub_id}/ofertas/{oferta_id}/seleccionar")
+    @PatchMapping("/{sub_id}/ofertas/{oferta_id}/seleccionar")
     public ResponseEntity<Void> seleccionarOferta(
         @CookieValue("token") String token,
         @PathVariable String sub_id,
@@ -88,7 +88,7 @@ public class ControladorSubasta {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{sub_id}/ofertas/{oferta_id}/rechazar")
+    @PatchMapping("/{sub_id}/ofertas/{oferta_id}/rechazar")
     public ResponseEntity<Void> rechazarOferta(
         @CookieValue("token") String token,
         @PathVariable String sub_id,
@@ -99,7 +99,7 @@ public class ControladorSubasta {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{sub_id}/cancelar")
+    @PatchMapping("/{sub_id}/cancelar")
     public ResponseEntity<Void> cancelarSubasta(
         @CookieValue("token") String token,
         @PathVariable String sub_id
@@ -109,7 +109,7 @@ public class ControladorSubasta {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{sub_id}/cerrar")
+    @PatchMapping("/{sub_id}/cerrar")
     public ResponseEntity<Void> cerrarSubasta(
         @CookieValue("token") String token,
         @PathVariable String sub_id

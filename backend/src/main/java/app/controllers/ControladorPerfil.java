@@ -12,6 +12,8 @@ import app.dto.request.PerfilRequest;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPerfil;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -36,7 +38,7 @@ public class ControladorPerfil {
     @PostMapping("/calificaciones")
     public ResponseEntity<Void> calificarPerfil(
         @CookieValue("token") String token,
-        @RequestBody CalificacionRequest body
+        @Valid @RequestBody CalificacionRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         this.perfilService.agregarCalificacion(
@@ -56,7 +58,6 @@ public class ControladorPerfil {
         @CookieValue("token") String token,
         @RequestParam Integer pagina,
         @RequestParam Integer limite
-
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.ok(this.perfilService.obtenerCalificaciones(perfilId, pagina, limite));
@@ -109,7 +110,7 @@ public class ControladorPerfil {
     @PutMapping
     public ResponseEntity<Void> editarPerfil(
         @CookieValue("token") String token,
-        @RequestBody PerfilRequest body
+        @Valid @RequestBody PerfilRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         this.perfilService.editarPerfil(perfilId, body);

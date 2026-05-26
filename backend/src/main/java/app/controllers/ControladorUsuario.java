@@ -20,7 +20,7 @@ public class ControladorUsuario {
 
   @PostMapping("/usuarios")
   public ResponseEntity<Void> registrarUsuario(
-      @RequestBody UsuarioRequest request
+      @Valid @RequestBody UsuarioRequest request
   ) {
     this.servicioUsuario.registrarUsuario(request);
     return ResponseEntity.noContent().build();
@@ -39,7 +39,7 @@ public class ControladorUsuario {
   @PostMapping("/administradores")
   public ResponseEntity<Void> registrarAdministrador(
       @CookieValue("token") String token,
-      @RequestBody UsuarioRequest request
+      @Valid @RequestBody UsuarioRequest request
   ) {
     this.servicioUsuario.registrarAdministrador(request, Rol.valueOf(this.servicioJwt.getRol(token)));
     return ResponseEntity.noContent().build();

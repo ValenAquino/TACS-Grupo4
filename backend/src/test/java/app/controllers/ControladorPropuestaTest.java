@@ -1,6 +1,5 @@
 package app.controllers;
 
-import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
@@ -8,21 +7,16 @@ import app.servicios.ServicioJwt;
 import app.servicios.ServicioPropuesta;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.ArgumentCaptor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -265,5 +259,166 @@ class ControladorPropuestaTest {
 
         verify(servicioJwt)
             .getPerfilId("fake-token");
+    }
+    @Test
+    void crearPropuestaFalla_destinatarioIdNull() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":null,
+                    "figurita_buscada_id":"ARG10",
+                    "figuritas_ofrecidas_ids":[
+                        "ARG1",
+                        "ARG2"
+                    ]
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearPropuestaFalla_destinatarioIdVacio() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":"",
+                    "figurita_buscada_id":"ARG10",
+                    "figuritas_ofrecidas_ids":[
+                        "ARG1",
+                        "ARG2"
+                    ]
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearPropuestaFalla_destinatarioIdEspacios() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":"   ",
+                    "figurita_buscada_id":"ARG10",
+                    "figuritas_ofrecidas_ids":[
+                        "ARG1",
+                        "ARG2"
+                    ]
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearPropuestaFalla_figuritaBuscadaIdNull() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":"2000",
+                    "figurita_buscada_id":null,
+                    "figuritas_ofrecidas_ids":[
+                        "ARG1",
+                        "ARG2"
+                    ]
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearPropuestaFalla_figuritaBuscadaIdVacio() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":"2000",
+                    "figurita_buscada_id":"",
+                    "figuritas_ofrecidas_ids":[
+                        "ARG1",
+                        "ARG2"
+                    ]
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearPropuestaFalla_figuritaBuscadaIdEspacios() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":"2000",
+                    "figurita_buscada_id":"   ",
+                    "figuritas_ofrecidas_ids":[
+                        "ARG1",
+                        "ARG2"
+                    ]
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearPropuestaFalla_figuritasOfrecidasIdsNull() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":"2000",
+                    "figurita_buscada_id":"ARG10",
+                    "figuritas_ofrecidas_ids":null
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void crearPropuestaFalla_figuritasOfrecidasIdsVacio() throws Exception {
+
+        mockMvc.perform(
+                post("/propuestas")
+                    .cookie(cookie)
+                    .contentType("application/json")
+                    .content("""
+                {
+                    "destinatario_id":"2000",
+                    "figurita_buscada_id":"ARG10",
+                    "figuritas_ofrecidas_ids":[]
+                }
+                """)
+            )
+            .andExpect(status().isBadRequest());
     }
 }

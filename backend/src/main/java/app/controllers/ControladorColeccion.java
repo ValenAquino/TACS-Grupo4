@@ -10,6 +10,7 @@ import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.servicios.ServicioColeccion;
 import app.servicios.ServicioJwt;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,7 @@ public class ControladorColeccion {
     @PostMapping("/faltantes")
     public ResponseEntity<Void> agregarFaltante(
         @CookieValue("token") String token,
-        @RequestBody FaltanteRequest request
+        @Valid @RequestBody FaltanteRequest request
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);
         coleccionService.agregarFaltante(colId, request.getFigId());
@@ -40,7 +41,7 @@ public class ControladorColeccion {
     @PostMapping("/repetidas")
     public ResponseEntity<Void> agregarRepetida(
         @CookieValue("token") String token,
-        @RequestBody RepetidaRequest request
+        @Valid @RequestBody RepetidaRequest request
     ) {
         String colId = this.obtenerColeccionIdDeCookie(token);
         coleccionService.agregarRepetida(colId,

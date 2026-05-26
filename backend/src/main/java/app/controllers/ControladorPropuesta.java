@@ -7,6 +7,7 @@ import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioPropuesta;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class ControladorPropuesta {
     @PostMapping
     public ResponseEntity<PropuestaDto> crearPropuesta(
         @CookieValue("token") String token,
-        @RequestBody CrearPropuestaRequest request
+        @Valid @RequestBody CrearPropuestaRequest request
     ) {
         String autorId = this.obtenerPerfilIdDeCookie(token);
         return ResponseEntity.status(201).body(propuestaService.crearPropuesta(autorId, request));

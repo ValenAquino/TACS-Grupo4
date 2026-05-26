@@ -8,6 +8,7 @@ import app.dto.request.OfertarEnSubastaRequest;
 import app.dto.subasta.SubastaDto;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSubasta;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class ControladorSubasta {
     @PostMapping
     public ResponseEntity<Void> crearSubasta(
         @CookieValue String token,
-        @RequestBody CrearSubastaRequest body
+        @Valid @RequestBody CrearSubastaRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         this.subastaService.crearSubasta(
@@ -46,7 +47,7 @@ public class ControladorSubasta {
     public ResponseEntity<Void> ofertarEnSubasta(
         @CookieValue String token,
         @PathVariable String sub_id,
-        @RequestBody OfertarEnSubastaRequest body
+        @Valid @RequestBody OfertarEnSubastaRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         this.subastaService.ofertarEnSubasta(perfilId, sub_id, body.getFiguritasOfrecidasId());
@@ -58,7 +59,7 @@ public class ControladorSubasta {
         @CookieValue String token,
         @PathVariable String sub_id,
         @PathVariable String oferta_id,
-        @RequestBody EditarOfertaRequest body
+        @Valid @RequestBody EditarOfertaRequest body
     ) {
         String perfilId = this.obtenerPerfilIdDeCookie(token);
         this.subastaService.editarOfertaEnSubasta(perfilId, sub_id, oferta_id, body);

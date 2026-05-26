@@ -2,8 +2,11 @@ import {useState} from "react";
 import SectionCard from "../../../components/ui/section-card/section-card.jsx";
 import AutocompleteInput from "../../../components/ui/autocomplete-input/autocomplete-input.jsx";
 import Button from "../../../components/ui/button/button.jsx";
-import {buscarFiguritas} from "../../../services/figuritaService.js";
-import {agregarRepetida} from "../../../services/coleccionService.js";
+import {buscarFiguritas} from '@/services/figuritaService.js';
+import {agregarRepetida} from '@/services/coleccionService.js';
+import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
+import Breadcrumb from '@/components/ui/breadcrumb/breadcrumb.jsx'
 
 const NuevaRepetida = () => {
     const [figurita, setFigurita] = useState(undefined);
@@ -12,7 +15,8 @@ const NuevaRepetida = () => {
     const [cantidad, setCantidad] = useState(0);
     const [modosIntercambio, setModosIntercambio] = useState([]);
 
-    const colId = "2"
+    const {showToast} = useToast();
+    const {handleError} = useError();
 
     const handleSelect = (fig) => {
         setFigurita(fig);
@@ -37,9 +41,25 @@ const NuevaRepetida = () => {
         );
     };
 
+    const ejecutarFormulario = async () => {
+      try {
+        await agregarRepetida({id: figurita.id, cantidad: cantidad, modosIntercambio: modosIntercambio});
+        setNumero('')
+        setJugador('')
+        setModosIntercambio([])
+        setFigurita(undefined)
+
+      } catch (error) {
+        handleError(error, (err) => showToast(err.mensaje, 'error'))
+      }
+    }
+
     return (
         <div className="d-flex flex-column gap-3">
-
+            <Breadcrumb crumbs={[
+              {name: "Mis figuritas", to: "/mis-figuritas"},
+              {name: "Nueva repetida", to: "/mis-figuritas/nueva-repetida"}
+            ]}/>
             <div
                 className="d-flex flex-column align-items-center justify-content-center rounded-3 py-4"
                 style={{ backgroundColor: '#f8f9fa', border: '1.5px dashed #ced4da', minHeight: '140px' }}
@@ -165,12 +185,7 @@ const NuevaRepetida = () => {
                 label="Publicar Repetida ↗"
                 disabled={!figurita || modosIntercambio.length === 0}
                 onClick={() => {
-                    agregarRepetida({id: figurita.id, cantidad: cantidad, modosIntercambio: modosIntercambio});
-                    alert("Se guardo la repetida")
-                    setNumero('')
-                    setJugador('')
-                    setModosIntercambio([])
-                    setFigurita(undefined)
+                    ejecutarFormulario()
                 }}
             />
 

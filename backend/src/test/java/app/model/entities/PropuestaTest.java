@@ -1,6 +1,7 @@
 package app.model.entities;
 
 import app.exceptions.BadRequestException;
+import app.exceptions.ForbiddenException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -181,7 +182,7 @@ class PropuestaTest {
   @Test
   void cancelarConUsuarioNoAutor_lanzaExcepcion() {
     assertThrows(
-        BadRequestException.class,
+        ForbiddenException.class,
         () -> propuesta.cancelar(destino.getId())
     );
   }
@@ -195,7 +196,7 @@ class PropuestaTest {
             .build();
 
     assertThrows(
-        BadRequestException.class,
+        ForbiddenException.class,
         () -> propuesta.aceptar(otro.getId())
     );
   }
@@ -209,7 +210,7 @@ class PropuestaTest {
             .build();
 
     assertThrows(
-        BadRequestException.class,
+        ForbiddenException.class,
         () -> propuesta.rechazar(otro.getId())
     );
   }

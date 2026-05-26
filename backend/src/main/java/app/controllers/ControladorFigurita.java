@@ -1,6 +1,8 @@
 package app.controllers;
 
+import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
+import app.dto.filtros.FiguritasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.servicios.ServicioFigurita;
@@ -8,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,5 +38,12 @@ public class ControladorFigurita {
         return ResponseEntity.ok(
             figuritaService.buscarFiguritas(numero, seleccion, jugador, tipo, pagina, tamanioDePaginaAcotado)
         );
+    }
+
+    @GetMapping("/figuritas")
+    public ResponseEntity<List<FiguritaDto>> obtenerFiguritasBase(
+        @ModelAttribute FiguritasFiltro filtros
+    ) {
+        return ResponseEntity.ok(this.figuritaService.buscarFiguritasBase(filtros));
     }
 }

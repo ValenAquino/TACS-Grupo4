@@ -128,7 +128,6 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
         .map(r -> r.getFigurita().getId())
         .toList();
 
-    // Ops base (sin paginación)
     List<AggregationOperation> ops = new ArrayList<>();
 
     ops.add(Aggregation.match(
@@ -180,7 +179,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
       )))));
     }
 
-    // Count: mismas ops + $count
+    // Count
     List<AggregationOperation> countOps = new ArrayList<>(ops);
     countOps.add(Aggregation.count().as("total"));
     Document countDoc = mongoTemplate.aggregate(
@@ -202,9 +201,21 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     List<Sugerencia> sugerencias = resultados.getMappedResults().stream()
         .map(doc -> {
           Perfil perfil = converter.read(Perfil.class, (Document) doc.get("perfil"));
+
           List<Figurita> sugeridas = ((List<Document>) doc.get("sugeridas")).stream()
-              .map(d -> converter.read(Figurita.class, d))
+              .map(d -> {
+                Object figuritaRef = d.get("figurita");
+                if (figuritaRef instanceof com.mongodb.DBRef ref) {
+                  return mongoTemplate.findById(ref.getId().toString(), Figurita.class);
+                }
+                if (figuritaRef instanceof Document figDoc) {
+                  return converter.read(Figurita.class, figDoc);
+                }
+                return null;
+              })
+              .filter(Objects::nonNull)
               .toList();
+
           List<Figurita> necesarias = ((List<Object>) doc.get("necesarias")).stream()
               .map(item -> {
                 if (item instanceof com.mongodb.DBRef ref) {
@@ -214,6 +225,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
               })
               .filter(Objects::nonNull)
               .toList();
+
           return new Sugerencia(perfil, sugeridas, necesarias);
         })
         .toList();

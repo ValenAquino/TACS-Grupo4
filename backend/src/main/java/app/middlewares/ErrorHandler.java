@@ -2,6 +2,7 @@ package app.middlewares;
 
 import app.dto.response.ErrorResponse;
 import app.exceptions.BadRequestException;
+import app.exceptions.ForbiddenException;
 import app.exceptions.NotFoundException;
 import app.exceptions.UnauthorizedException;
 import java.time.LocalDateTime;
@@ -63,6 +64,23 @@ public class ErrorHandler {
 
     return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
+        .body(error);
+  }
+
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<ErrorResponse> handleForbidden(
+      ForbiddenException ex
+  ) {
+
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.FORBIDDEN.value(),
+        ex.getMessage(),
+        Map.of(),
+        LocalDateTime.now()
+    );
+
+    return ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
         .body(error);
   }
 

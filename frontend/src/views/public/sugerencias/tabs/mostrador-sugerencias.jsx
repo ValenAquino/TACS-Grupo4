@@ -3,7 +3,6 @@ import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "@/services/perfilService.js";
 import ExtraInfo from "@/components/ui/extra-info/extra-info.jsx";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
-import useUsuarioActual from "@/hooks/useUsuarioActual.js";
 import { useError } from '@/contexts/errorContext.jsx'
 import { useToast } from '@/contexts/toastContext.jsx'
 

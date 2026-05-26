@@ -1,4 +1,4 @@
-/*
+
 package app.repositories.impl;
 
 import app.model.entities.Perfil;
@@ -13,6 +13,7 @@ import java.util.List;
 
 @Repository
 public class RepositorioNotificacionesMongo implements RepositorioNotificaciones {
+
   @Autowired
   MongoTemplate mongoTemplate;
 
@@ -25,10 +26,22 @@ public class RepositorioNotificacionesMongo implements RepositorioNotificaciones
   public List<Notificacion> buscarPorPerfil(Perfil perfil) {
     Query query = new Query();
     query.addCriteria(
-        Criteria.where("perfil").is(perfil)
+        Criteria.where("perfil").is(perfil.getId())
     );
 
     return this.mongoTemplate.find(query, Notificacion.class);
   }
+
+  @Override
+  public List<Notificacion> buscarPorPerfilFechaDesc(String perfilId) {
+
+    Query query = new Query();
+    query.addCriteria(
+        Criteria.where("perfil").is(perfilId)
+    );
+
+    query.getSortObject();
+
+    return this.mongoTemplate.find(query, Notificacion.class);
+  }
 }
-*/

@@ -9,6 +9,7 @@ import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
 import app.exceptions.BadRequestException;
+import app.exceptions.ForbiddenException;
 import app.exceptions.NotFoundException;
 import app.model.entities.*;
 import app.repositories.impl.campos.CamposPerfil;
@@ -502,7 +503,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     repositorioPropuestas.guardar(propuesta);
 
     assertThrows(
-        BadRequestException.class,
+        ForbiddenException.class,
         () -> propuestaService.aceptar(
             propuesta.getId(),
             "1000"
@@ -671,7 +672,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     repositorioPropuestas.guardar(propuesta);
 
     assertThrows(
-        BadRequestException.class,
+        ForbiddenException.class,
         () -> propuestaService.rechazar(
             propuesta.getId(),
             "1000"
@@ -692,7 +693,7 @@ class ServicioPropuestaTest extends MongoTestBase {
     repositorioPropuestas.guardar(propuesta);
 
     assertThrows(
-        BadRequestException.class,
+        ForbiddenException.class,
         () -> propuestaService.cancelar(
             propuesta.getId(),
             "1001"

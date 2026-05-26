@@ -4,6 +4,8 @@ import app.exceptions.BadRequestException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import app.exceptions.ForbiddenException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -181,13 +183,13 @@ public class Propuesta {
 
     private void validarUsuarioDestino(String perfilId) {
         if (!this.destinatario.getId().equals(perfilId)) {
-            throw new BadRequestException("Solo el destinatario puede responder la propuesta");
+            throw new ForbiddenException("Solo el destinatario puede responder la propuesta");
         }
     }
 
     private void validarUsuarioAutor(String perfilId) {
         if (!this.autor.getId().equals(perfilId)) {
-            throw new BadRequestException("Solo el autor puede responder la propuesta");
+            throw new ForbiddenException("Solo el autor puede responder la propuesta");
         }
     }
 

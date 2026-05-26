@@ -24,17 +24,19 @@ public class ServicioNotificacion {
     public void notificarInteresados(List<Perfil> interesados, String cuerpo, String link) {
         interesados.forEach(perfil -> {
             Mensaje mensaje = new Mensaje(cuerpo, LocalDateTime.now());
-            repositorioNotificaciones.save(new Notificacion(mensaje, perfil, link));
+            repositorioNotificaciones.guardar(new Notificacion(mensaje, perfil, link));
         });
     }
 
     public List<Notificacion> obtenerPorPerfil(String perfilId) {
-        return repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
+        return repositorioNotificaciones.buscarPorPerfilFechaDesc(perfilId);
     }
 
     public void marcarTodasLeidas(String perfilId) {
-        List<Notificacion> notis = repositorioNotificaciones.findByPerfilIdOrderByMensajeFechaDesc(perfilId);
-        notis.forEach(Notificacion::marcarLeida);
-        repositorioNotificaciones.saveAll(notis);
+        List<Notificacion> notis = repositorioNotificaciones.buscarPorPerfilFechaDesc(perfilId);
+        notis.forEach(n -> {
+            n.marcarLeida();
+            this.repositorioNotificaciones.guardar(n);
+        });
     }
 }

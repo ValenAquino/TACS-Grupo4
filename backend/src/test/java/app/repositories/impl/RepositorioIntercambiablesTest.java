@@ -15,6 +15,8 @@ import app.model.entities.Rol;
 import app.model.entities.Seleccion;
 import app.model.entities.Usuario;
 import app.dto.filtros.FiguritasFiltro;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.Test;
 public class RepositorioIntercambiablesTest extends MongoTestBase {
   private FiguritaIntercambiable intercambiableMessi;
   private FiguritaIntercambiable intercambiableMbappe;
+  private FiguritaIntercambiable intercambiableNeymar;
   private Coleccion coleccion;
 
   @BeforeEach
@@ -30,19 +33,14 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     coleccion = new Coleccion("c-1");
     Coleccion coleccionDos = new Coleccion("c-2");
     Figurita messi = Figurita.builder()
-        .id("ARG-10")
-        .numero(10)
-        .jugador("Messi")
-        .seleccion(Seleccion.ARGENTINA)
-        .posicion("Delantero")
-        .build();
+        .id("ARG-10").numero(10).jugador("Messi")
+        .seleccion(Seleccion.ARGENTINA).posicion("Delantero").build();
     Figurita mbappe = Figurita.builder()
-        .id("FRA-10")
-        .numero(10)
-        .jugador("Mbappé")
-        .seleccion(Seleccion.FRANCIA)
-        .posicion("Delantero")
-        .build();
+        .id("FRA-10").numero(10).jugador("Mbappé")
+        .seleccion(Seleccion.FRANCIA).posicion("Delantero").build();
+    Figurita neymar = Figurita.builder()
+        .id("BRA-10").numero(10).jugador("Neymar")
+        .seleccion(Seleccion.BRASIL).build();
     repositorioFiguritas.guardar(messi);
     repositorioFiguritas.guardar(mbappe);
 
@@ -61,12 +59,18 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
         .coleccion(coleccionDos)
         .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@adas")))
         .build();
+
     repositorioPerfiles.guardar(perfilUno);
     repositorioPerfiles.guardar(perfilDos);
-    intercambiableMessi = new FiguritaIntercambiable(messi, 3, List.of(MetodoIntercambio.INTERCAMBIO), perfilUno.getId());
-    intercambiableMbappe = new FiguritaIntercambiable(mbappe, 2, List.of(MetodoIntercambio.SUBASTA), perfilDos.getId());
+    intercambiableMessi = new FiguritaIntercambiable(messi, 3,
+        List.of(MetodoIntercambio.INTERCAMBIO), perfilUno.getId());
+    intercambiableMbappe = new FiguritaIntercambiable(mbappe, 2,
+        List.of(MetodoIntercambio.SUBASTA), perfilDos.getId());
+    intercambiableNeymar = new FiguritaIntercambiable(neymar, 4,
+        List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), perfilUno.getId());
     coleccion.agregarRepetida(intercambiableMessi);
     coleccion.agregarRepetida(intercambiableMbappe);
+    coleccion.agregarRepetida(intercambiableNeymar);
     repositorioColecciones.guardar(coleccion);
   }
 
@@ -228,7 +232,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
   void buscarPorPerfilId_perfilIdExistente_retornaFiguritas() {
     var resultado = repositorioColecciones.buscarIntercambiablesPorPerfilId("perfil-1");
 
-    assertEquals(2, resultado.size());
+    assertEquals(3, resultado.size());
   }
 
   @Test
@@ -236,5 +240,44 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesPorPerfilId("perfil-99");
 
     assertTrue(resultado.isEmpty());
+  }
+
+  @Test
+  void contarRepetidasSinFiltrosDevuelveTodas() {
+    long resultado = repositorioColecciones.contarRepetidas(
+        new ArrayList<>()
+    );
+
+    assertEquals(9L, resultado);
+  }
+
+  @Test
+  void contarRepetidasFiltrandoPorIntercambio() {
+    long resultado = repositorioColecciones.contarRepetidas(
+        List.of(MetodoIntercambio.INTERCAMBIO)
+    );
+
+    assertEquals(7L, resultado);
+  }
+
+  @Test
+  void contarRepetidasFiltrandoPorSubasta() {
+    long resultado = repositorioColecciones.contarRepetidas(
+        List.of(MetodoIntercambio.SUBASTA)
+    );
+
+    assertEquals(6L, resultado);
+  }
+
+  @Test
+  void contarRepetidasConMultiplesMetodosUsaAll() {
+    long resultado = repositorioColecciones.contarRepetidas(
+        List.of(
+            MetodoIntercambio.INTERCAMBIO,
+            MetodoIntercambio.SUBASTA
+        )
+    );
+
+    assertEquals(4L, resultado);
   }
 }

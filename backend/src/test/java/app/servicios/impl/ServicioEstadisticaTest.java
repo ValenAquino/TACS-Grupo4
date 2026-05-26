@@ -1,7 +1,7 @@
 package app.servicios.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import app.MongoTestBase;
 import app.dto.EstadisticasDto;
 import app.model.entities.*;
@@ -62,7 +62,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
 
     @BeforeEach
     void setUp() {
-        service = new ServicioEstadisticas(repositorioPerfiles, repositorioPropuestas, repositorioSubastas);
+        service = new ServicioEstadisticas(repositorioPerfiles, repositorioPropuestas, repositorioSubastas, repositorioColecciones);
     }
 
     @Test
@@ -198,7 +198,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
     }
 
     @Test
-    void ropuestasPorEstado_variasDelMismoEstado_acumulaCorrectamente() {
+    void propuestasPorEstado_variasDelMismoEstado_acumulaCorrectamente() {
         Perfil autor = perfil("a", "usr-a", "Autor");
         Perfil destinatario = perfil("d", "usr-d", "Dest");
 
@@ -275,72 +275,9 @@ class ServicioEstadisticaTest extends MongoTestBase {
 
         EstadisticasDto resultado = service.obtenerEstadisticas();
 
-        assertEquals(1, resultado.getFiguritasPorModalidad().getSoloIntercambio());
-        assertEquals(1, resultado.getFiguritasPorModalidad().getSoloSubasta());
+        assertEquals(2, resultado.getFiguritasPorModalidad().getSoloIntercambio());
+        assertEquals(2, resultado.getFiguritasPorModalidad().getSoloSubasta());
         assertEquals(1, resultado.getFiguritasPorModalidad().getAmbos());
-    }
-
-    @Test
-    void topSelecciones_sinFiguritas_retornaListaVacia() {
-        EstadisticasDto resultado = service.obtenerEstadisticas();
-
-        assertTrue(resultado.getTopSelecciones().isEmpty());
-    }
-
-    @Test
-    void topSelecciones_retornaTop3OrdenadoDescendente() {
-        Coleccion coleccion = new Coleccion();
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f1", Seleccion.ARGENTINA)));
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f2", Seleccion.ARGENTINA)));
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f3", Seleccion.ARGENTINA)));
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f4", Seleccion.BRASIL)));
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f5", Seleccion.BRASIL)));
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f6", Seleccion.ESPAÑA)));
-
-        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
-
-        Perfil u1 = Perfil.builder()
-            .id("1").usuario(user)
-            .nombre("Lucas").coleccion(coleccion)
-            .mediosDeContacto(telegram("@lucas"))
-            .build();
-
-        repositorioColecciones.guardar(coleccion);
-        repositorioUsuarios.guardar(user);
-        repositorioPerfiles.guardar(u1);
-
-        EstadisticasDto resultado = service.obtenerEstadisticas();
-
-        assertEquals(3, resultado.getTopSelecciones().size());
-        assertEquals("ARGENTINA", resultado.getTopSelecciones().get(0).getSeleccion());
-        assertEquals(3, resultado.getTopSelecciones().get(0).getCantidad());
-        assertEquals("BRASIL", resultado.getTopSelecciones().get(1).getSeleccion());
-        assertEquals(2, resultado.getTopSelecciones().get(1).getCantidad());
-        assertEquals("ESPAÑA", resultado.getTopSelecciones().get(2).getSeleccion());
-        assertEquals(1, resultado.getTopSelecciones().get(2).getCantidad());
-    }
-
-    @Test
-    void topSelecciones_menosDeTresSelecciones_retornaSoloLasExistentes() {
-        Coleccion coleccion = new Coleccion();
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f1", Seleccion.ARGENTINA)));
-        coleccion.getRepetidas().add(soloIntercambio(figurita("f2", Seleccion.BRASIL)));
-
-        Usuario user = new Usuario("usr-1", Rol.USUARIO, "lucas", "fiscella");
-
-        Perfil u1 = Perfil.builder()
-            .id("1").usuario(user)
-            .nombre("Lucas").coleccion(coleccion)
-            .mediosDeContacto(telegram("@lucas"))
-            .build();
-
-        repositorioColecciones.guardar(coleccion);
-        repositorioUsuarios.guardar(user);
-        repositorioPerfiles.guardar(u1);
-
-        EstadisticasDto resultado = service.obtenerEstadisticas();
-
-        assertEquals(2, resultado.getTopSelecciones().size());
     }
 
     private Propuesta propuestaConEstado(

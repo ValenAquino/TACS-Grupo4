@@ -3,26 +3,28 @@ import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "@/services/perfilService.js";
 import ExtraInfo from "@/components/ui/extra-info/extra-info.jsx";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
-import useUsuarioActual from "@/hooks/useUsuarioActual.js";
+import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 
 const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
 
+    const {handleError, errorTemplate} = useError()
+    const {showToast} = useToast()
+
     const [cargando, setCargando] = useState(true)
-    const [error, setError] = useState(false)
+    const [error, setError] = useState(errorTemplate());
     const [sugerencias, setSugerencias] = useState([])
     const [pagina, setPagina] = useState(1)
     const [paginasTotales, setPaginasTotales] = useState(1)
-    const {userId} = useUsuarioActual()
 
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
             const payload = await buscarSugerencias({ tipo, pagina: pagina, limite:10})
-            setPaginasTotales(payload.cantidadDePaginas)
+            setPaginasTotales(payload.cantidad_de_paginas)
             setSugerencias(payload.contenido)
-
         } catch (error) {
-            setError(true)
+          showToast(handleError(error, setError),'error')
         } finally {
             setCargando(false)
         }
@@ -33,7 +35,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     }, [tipo]);
 
     const mostrarSugerencias = () => {
-        if (error) return <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
+        if (error.codigo != null) return <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
         return (
             <>
                 {

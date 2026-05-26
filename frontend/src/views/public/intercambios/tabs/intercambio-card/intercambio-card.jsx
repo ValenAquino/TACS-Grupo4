@@ -50,10 +50,10 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
     try {
       await cancelarPropuesta(intercambio.id)
       setConfirmAction(null)
-      showToast('Propuesta cancelada correctamente.')
+      showToast('Propuesta cancelada correctamente', 'success')
       onActualizado?.()
     } catch (error) {
-      handleError(error, (err) => showToast(err.mensaje, 'error'))
+      showToast(handleError(error, (m) => {}),'error')
     }
   }
 
@@ -61,10 +61,10 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
     try {
       await aceptarPropuesta(intercambio.id)
       setConfirmAction(null)
-      showToast('Propuesta aceptada correctamente.')
+      showToast('Propuesta aceptada correctamente', 'success')
       onActualizado?.()
     } catch (error) {
-      handleError(error, (err) => showToast(err.mensaje, 'error'))
+      showToast(handleError(error, (m) => {}),'error')
     }
   }
 
@@ -72,10 +72,10 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
     try {
       await rechazarPropuesta(intercambio.id)
       setConfirmAction(null)
-      showToast('Propuesta rechazada correctamente.')
+      showToast('Propuesta rechazada correctamente', 'success')
       onActualizado?.()
     } catch (error) {
-      handleError(error, (err) => showToast(err.mensaje, 'error'))
+      showToast(handleError(error, (m) => {}),'error')
     }
   }
 
@@ -113,7 +113,7 @@ const IntercambioCard = ({ intercambio, tipo = 'RECIBIDAS', onActualizado }) => 
       showToast('Calificación realizada correctamente.')
       onActualizado?.()
     } catch (error) {
-      handleError(error, (err) => showToast(err.mensaje, 'error'))
+      showToast(handleError(error, (m) => {}),'error')
     }
   }
 

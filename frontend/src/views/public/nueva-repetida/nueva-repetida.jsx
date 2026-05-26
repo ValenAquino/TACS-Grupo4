@@ -49,8 +49,9 @@ const NuevaRepetida = () => {
         setModosIntercambio([])
         setFigurita(undefined)
 
+        showToast("Repetida agregada correctamente",'success')
       } catch (error) {
-        handleError(error, (err) => showToast(err.mensaje, 'error'))
+        showToast(handleError(error, (m) => {}),'error')
       }
     }
 

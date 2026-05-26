@@ -86,6 +86,7 @@ const EditarOferta = () => {
         oferta.id,
         todasSeleccionadas.map((f) => f.figurita_id ?? f.id),
       )
+      showToast('Oferta editada correctamente', 'success')
       navigate('/subastas')
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))

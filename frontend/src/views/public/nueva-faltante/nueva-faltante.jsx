@@ -37,9 +37,9 @@ const NuevaFaltante = () => {
             setNumero('')
             setJugador('')
             setFigurita(undefined)
-            showToast("Faltante agregada correctamente")
+            showToast("Faltante agregada correctamente","success")
         } catch (error) {
-            handleError(error, (err) => showToast(err.mensaje, 'error'))
+            showToast(handleError(error, (m) => {}),'error')
         }
     }
 

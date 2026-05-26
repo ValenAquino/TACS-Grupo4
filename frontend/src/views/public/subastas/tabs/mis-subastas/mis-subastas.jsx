@@ -7,6 +7,7 @@ import Paginacion from '../../../../../components/ui/paginacion/paginacion.jsx'
 import { useNavigate } from 'react-router'
 import { useAuth } from '@/contexts/userContext.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
+import { useToast } from '@/contexts/toastContext.jsx'
 
 const MisSubastas = () => {
   const [data, setData] = useState({})
@@ -18,6 +19,7 @@ const MisSubastas = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { handleError } = useError()
+  const { showToast } = useToast()
 
   useEffect(() => {
     const cargar = async () => {
@@ -26,7 +28,7 @@ const MisSubastas = () => {
         const res = await buscarSubastas({ autorId: user.perfil_id, estado, pagina, limite: 5 })
         setData(res)
       } catch (error) {
-        handleError(error, () => {})
+        showToast(handleError(error, (m) => {}),'error')
       } finally {
         setLoading(false)
       }

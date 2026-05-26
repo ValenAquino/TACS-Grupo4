@@ -204,6 +204,7 @@ const CrearSubasta = () => {
         figuritas_deseadas_ids: figuritasDeseadas.map((f) => f.id),
         calificacion_minima: calificacionMin,
       })
+      showToast('Subasta creada correctamente', 'success')
       navigate('/subastas')
     } catch (e) {
       handleError(e, (err) => showToast(err.mensaje, 'error'))

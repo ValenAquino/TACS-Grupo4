@@ -14,12 +14,12 @@ export const usePerfil = () => {
   const { showToast } = useToast()
   const { user, cerrarSesion } = useAuth()
 
-  const manejarCierreDeSesion = () => {
+  const manejarCierreDeSesion = async () => {
     try {
-      cerrarSesion()
+      await cerrarSesion()
       showToast('Cierre de sesion exitoso', 'success')
     } catch (error) {
-      showToast('Error al cerrar la sesion', 'error')
+      handleError(error, () => {})
     }
   }
 

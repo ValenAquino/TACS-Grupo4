@@ -40,7 +40,7 @@ public class ControladorPerfil {
         @CookieValue("token") String token,
         @Valid @RequestBody CalificacionRequest body
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.perfilService.agregarCalificacion(
             perfilId,
             body.getDestinatarioId(),
@@ -59,7 +59,7 @@ public class ControladorPerfil {
         @RequestParam Integer pagina,
         @RequestParam Integer limite
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.ok(this.perfilService.obtenerCalificaciones(perfilId, pagina, limite));
     }
 
@@ -68,7 +68,7 @@ public class ControladorPerfil {
         @CookieValue String token,
         @ModelAttribute SugerenciasFiltro filtro
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         PaginaResultado<SugerenciaDto> sugerenciasDto = this.perfilService.obtenerSugerencias(perfilId, filtro);
 
         return ResponseEntity.ok().body(sugerenciasDto);
@@ -78,7 +78,7 @@ public class ControladorPerfil {
     public ResponseEntity<List<ContadorDto>> obtenerContadores(
         @CookieValue("token") String token
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.ok(this.perfilService.obtenerContadores(perfilId));
     }
 
@@ -86,7 +86,7 @@ public class ControladorPerfil {
     public ResponseEntity<List<NotificacionDto>> obtenerNotificaciones(
         @CookieValue String token
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.ok(this.perfilService.obtenerNotificaciones(perfilId));
     }
 
@@ -94,7 +94,7 @@ public class ControladorPerfil {
     public ResponseEntity<Void> marcarTodasLeidas(
             @CookieValue String token
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.perfilService.marcarTodasNotifsLeidas(perfilId);
         return ResponseEntity.noContent().build();
     }
@@ -103,7 +103,7 @@ public class ControladorPerfil {
     public ResponseEntity<PerfilDto> obtenerPerfil(
         @CookieValue("token") String token
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         return ResponseEntity.ok(this.perfilService.obtenerPerfil(perfilId));
     }
 
@@ -112,13 +112,9 @@ public class ControladorPerfil {
         @CookieValue("token") String token,
         @Valid @RequestBody PerfilRequest body
     ) {
-        String perfilId = this.obtenerPerfilIdDeCookie(token);
+        String perfilId = this.servicioJwt.getPerfilId(token);
         this.perfilService.editarPerfil(perfilId, body);
         return ResponseEntity.ok().build();
     }
 
-
-    private String obtenerPerfilIdDeCookie(String token) {
-        return this.servicioJwt.getPerfilId(token);
-    }
 }

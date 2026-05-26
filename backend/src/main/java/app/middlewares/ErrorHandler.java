@@ -2,6 +2,7 @@ package app.middlewares;
 
 import app.dto.response.ErrorResponse;
 import app.exceptions.BadRequestException;
+import app.exceptions.ForbiddenException;
 import app.exceptions.NotFoundException;
 import app.exceptions.UnauthorizedException;
 import java.time.LocalDateTime;
@@ -66,6 +67,23 @@ public class ErrorHandler {
         .body(error);
   }
 
+  @ExceptionHandler(ForbiddenException.class)
+  public ResponseEntity<ErrorResponse> handleForbidden(
+      ForbiddenException ex
+  ) {
+
+    ErrorResponse error = new ErrorResponse(
+        HttpStatus.FORBIDDEN.value(),
+        ex.getMessage(),
+        Map.of(),
+        LocalDateTime.now()
+    );
+
+    return ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
+        .body(error);
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
     Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
@@ -121,7 +139,7 @@ public class ErrorHandler {
       Exception ex
   ) {
 
-    System.err.println(ex.getMessage() + "\n" + ex.getCause() + "\n" + ex.getSuppressed());
+    ex.printStackTrace();
 
     ErrorResponse error = new ErrorResponse(
         HttpStatus.INTERNAL_SERVER_ERROR.value(),

@@ -63,7 +63,7 @@ export const cancelarOferta = async (subId, ofertaId) => {
 
 export const seleccionarOferta = async (subastaId, ofertaId) => {
   try {
-    const { data } = await api.post(`${SUBASTAS_URL}/${subastaId}/ofertas/${ofertaId}/seleccionar`)
+    const { data } = await api.patch(`${SUBASTAS_URL}/${subastaId}/ofertas/${ofertaId}/seleccionar`)
     return data
   } catch (error) {
     handleAxiosError(error)
@@ -72,7 +72,7 @@ export const seleccionarOferta = async (subastaId, ofertaId) => {
 
 export const rechazarOferta = async (subastaId, ofertaId) => {
   try {
-    const { data } = await api.post(`${SUBASTAS_URL}/${subastaId}/ofertas/${ofertaId}/rechazar`)
+    const { data } = await api.patch(`${SUBASTAS_URL}/${subastaId}/ofertas/${ofertaId}/rechazar`)
     return data
   } catch (error) {
     handleAxiosError(error)
@@ -81,7 +81,7 @@ export const rechazarOferta = async (subastaId, ofertaId) => {
 
 export const cancelarSubasta = async (subastaId) => {
   try {
-    const { data } = await api.post(`${SUBASTAS_URL}/${subastaId}/cancelar`)
+    const { data } = await api.patch(`${SUBASTAS_URL}/${subastaId}/cancelar`)
     return data
   } catch (error) {
     handleAxiosError(error)
@@ -90,7 +90,7 @@ export const cancelarSubasta = async (subastaId) => {
 
 export const cerrarSubasta = async (subastaId) => {
   try {
-    const { data } = await api.post(`${SUBASTAS_URL}/${subastaId}/cerrar`)
+    const { data } = await api.patch(`${SUBASTAS_URL}/${subastaId}/cerrar`)
     return data
   } catch (error) {
     handleAxiosError(error)

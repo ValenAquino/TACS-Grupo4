@@ -5,10 +5,18 @@ import "./navbar.css";
 import { useAuth } from "@/contexts/userContext.jsx";
 import Button from "@/components/ui/button/button.jsx";
 import { obtenerNotificaciones, marcarTodasLeidas } from "@/services/notificacionesService.js";
+import { buscarUsuario } from '@/services/sesionService.js'
+import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
+import { buscarPerfil } from '@/services/perfilService.js'
 
 const Navbar = () => {
+    const {showToast} = useToast();
+    const { handleError } = useError();
+
     const { user, tieneSesion } = useAuth();
     const [abierto, setAbierto] = useState(false);
+    const [iniciales, setIniciales] = useState(undefined);
     const [notificaciones, setNotificaciones] = useState([]);
     const wrapperRef = useRef(null);
 
@@ -23,10 +31,20 @@ const Navbar = () => {
 
     const noLeidas = notificaciones.filter((n) => !n.leida).length;
 
+    const cargarIniciales = async () => {
+      try {
+        const data = await buscarPerfil(user.perfilId)
+        setIniciales(data.iniciales)
+      } catch (error) {
+        showToast(handleError(error, (m) => {}), "error");
+      }
+    }
+
     // Carga inicial de notificaciones cuando hay sesión
     useEffect(() => {
         if (tieneSesion) {
             obtenerNotificaciones().then(setNotificaciones);
+            cargarIniciales()
         }
     }, [tieneSesion]);
 
@@ -128,7 +146,7 @@ const Navbar = () => {
 
             <Link to="/perfil" className="navbar-avatar-link">
                 <div className="rounded-circle d-flex align-items-center justify-content-center fw-bold navbar-avatar">
-                    MG
+                  {iniciales}
                 </div>
             </Link>
         </div>

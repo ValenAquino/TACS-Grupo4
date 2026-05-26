@@ -15,12 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class TheSportsDbImagenProveedor implements ImagenJugadorProveedor {
+
+  private static final Logger log = LoggerFactory.getLogger(TheSportsDbImagenProveedor.class);
 
   private final RestTemplate restTemplate;
   private final RateLimiter rateLimiter;
@@ -67,18 +71,25 @@ public class TheSportsDbImagenProveedor implements ImagenJugadorProveedor {
   }
 
   private Optional<String> buscarImagenInterna(String nombreJugador) {
-    String format = "%s/%s/searchplayers.php?p=%s";
-    String url = String.format(format, baseUrl, apiKey, normalizarNombre(nombreJugador));
+    String url = String.format("%s/%s/searchplayers.php?p=%s", baseUrl, apiKey, normalizarNombre(nombreJugador));
 
     try {
       TheSportsDbResponse response = restTemplate.getForObject(url, TheSportsDbResponse.class);
-      return extraerThumb(response);
+      Optional<String> thumb = extraerThumb(response);
+      if (thumb.isPresent()) {
+        log.info("200 OK - imagen encontrada: {}", nombreJugador);
+      } else {
+        log.warn("200 OK - sin imagen: {}", nombreJugador);
+      }
+      return thumb;
     } catch (HttpClientErrorException e) {
+      log.error("{} - {}", e.getStatusCode().value(), nombreJugador);
       if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
         throw new RateLimitException("Rate limit alcanzado para TheSportsDB (HTTP 429)");
       }
       return Optional.empty();
     } catch (Exception e) {
+      log.error("Error inesperado buscando imagen de {}: {}", nombreJugador, e.getMessage());
       return Optional.empty();
     }
   }
@@ -113,10 +124,13 @@ public class TheSportsDbImagenProveedor implements ImagenJugadorProveedor {
   }
 
   private static RateLimiter crearRateLimiter(int rpm) {
+    // 1 permiso cada (60/rpm) segundos — emite permisos de a uno, espaciados uniformemente.
+    // Ej: 30rpm → 1 permiso cada 2s. Evita consumir todos los permisos de golpe.
+    long segundosEntreRequests = Math.max(1L, 60L / rpm);
     return RateLimiter.of("thesportsdb", RateLimiterConfig.custom()
-        .limitForPeriod(rpm)
-        .limitRefreshPeriod(Duration.ofMinutes(1))
-        .timeoutDuration(Duration.ofSeconds(5))
+        .limitForPeriod(1)
+        .limitRefreshPeriod(Duration.ofSeconds(segundosEntreRequests))
+        .timeoutDuration(Duration.ofSeconds(segundosEntreRequests + 1))
         .build());
   }
 

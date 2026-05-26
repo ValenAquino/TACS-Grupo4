@@ -20,13 +20,11 @@ public class FiguritaIntercambiableDto {
   private String perfilId;
   private String nombreUsuario;
   private Integer reputacion;
-  private String posicion;
 
   public FiguritaIntercambiableDto(FiguritaIntercambiable f, Perfil perfil) {
     this.figuritaId = f.getFigurita().getId();
     this.numero = f.getFigurita().getNumero();
     this.jugador = f.getFigurita().getJugador();
-    this.posicion = f.getFigurita().getPosicion();
     this.seleccion = f.getFigurita().getSeleccion();
     this.cantidadExistente = f.getCantidadExistente();
     this.cantidadReservada = f.getCantidadReservada();

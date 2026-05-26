@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class ColeccionTest {
 
   Figurita messi = new Figurita(
-      "ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
+      "ARG-10", 10, "Messi", Seleccion.ARGENTINA);
 
   Figurita diMaria = new Figurita(
-      "ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
+      "ARG-11", 11, "Di María", Seleccion.ARGENTINA);
 
   @Test
   void agregarNuevaFaltante() {

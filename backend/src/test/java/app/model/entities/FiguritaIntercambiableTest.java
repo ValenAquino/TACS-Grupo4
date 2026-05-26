@@ -17,8 +17,7 @@ class FiguritaIntercambiableTest {
         "ARG-10",
         10,
         "Messi",
-        Seleccion.ARGENTINA,
-        null
+        Seleccion.ARGENTINA
     );
 
     fi = new FiguritaIntercambiable(

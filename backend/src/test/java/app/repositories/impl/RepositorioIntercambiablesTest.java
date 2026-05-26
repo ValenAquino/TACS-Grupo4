@@ -29,8 +29,8 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
   void setUp() {
     coleccion = new Coleccion("c-1");
     Coleccion coleccionDos = new Coleccion("c-2");
-    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, "Delantero");
-    Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA, "Delantero");
+    Figurita messi = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+    Figurita mbappe = new Figurita("FRA-10", 10, "Mbappé", Seleccion.FRANCIA);
     repositorioFiguritas.guardar(messi);
     repositorioFiguritas.guardar(mbappe);
 
@@ -69,7 +69,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarConFiltros_porNumero_retornaCoincidencia() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, "Extremo");
+    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
     repositorioFiguritas.guardar(diMaria);
     coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 1, List.of(MetodoIntercambio.INTERCAMBIO), "perfil-1"));
     repositorioColecciones.guardar(coleccion);
@@ -121,7 +121,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
   @Test
   void buscarConFiltros_conPaginacion_retornaPaginaCorrecta() {
-    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, "Extremo");
+    Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
     repositorioFiguritas.guardar(diMaria);
     coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 1, List.of(MetodoIntercambio.INTERCAMBIO), "perfil-1"));
     repositorioColecciones.guardar(coleccion);

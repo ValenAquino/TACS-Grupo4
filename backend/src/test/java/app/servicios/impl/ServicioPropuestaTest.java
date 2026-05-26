@@ -40,16 +40,14 @@ class ServicioPropuestaTest extends MongoTestBase {
         "ARG-10",
         10,
         "Messi",
-        Seleccion.ARGENTINA,
-        null
+        Seleccion.ARGENTINA
     );
 
     mbappe = new Figurita(
         "FRA-10",
         10,
         "Mbappe",
-        Seleccion.FRANCIA,
-        null
+        Seleccion.FRANCIA
     );
 
     // Usuarios

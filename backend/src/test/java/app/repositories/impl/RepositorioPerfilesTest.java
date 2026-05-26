@@ -60,8 +60,8 @@ class RepositorioPerfilesTest extends MongoTestBase {
             .mediosDeContacto(telegram("@cristina"))
             .build();
 
-        Figurita messi   = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA, null);
-        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA, null);
+        Figurita messi   = new Figurita("ARG-10", 10, "Messi", Seleccion.ARGENTINA);
+        Figurita diMaria = new Figurita("ARG-11", 11, "Di María", Seleccion.ARGENTINA);
 
         perfil.getColeccion().agregarFaltante(messi);
         perfil.getColeccion().agregarFaltante(diMaria);

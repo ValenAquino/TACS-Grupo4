@@ -25,5 +25,4 @@ public class Figurita {
 
   private Seleccion seleccion;
 
-  private String posicion;
 }

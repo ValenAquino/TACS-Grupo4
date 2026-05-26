@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import renderStars from '@/utils/renderStars.jsx'
+import Estrellas from '@/components/ui/estrellas/estrellas.jsx'
 import { useEditarPerfil } from '../../hooks/useEditarPerfil.js'
 import ColumnaDatosPerfil from './ColumnaDatosPerfil.jsx'
 import ColumnaContrasenia from './ColumnaContrasenia.jsx'
@@ -46,7 +46,7 @@ const ModalEditarPerfil = ({ perfil, reviews, promedio, onGuardar, onCerrar }) =
               <div className={styles['preview-nombre']}>{perfil.nombre}</div>
               <div className={styles['preview-usuario']}>@{perfil.nombre_usuario}</div>
               <div className={styles['preview-rating']}>
-                {renderStars(Number(promedio))}{' '}
+                <Estrellas calificacion={perfil.calificacion_media}/>
                 <span className={styles['preview-rating-count']}>
                   {promedio} ({reviews.cantidad_de_elementos ?? 0})
                 </span>

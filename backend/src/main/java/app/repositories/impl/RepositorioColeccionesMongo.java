@@ -15,6 +15,7 @@ import app.repositories.RepositorioColecciones;
 import app.repositories.impl.campos.CamposColeccion;
 import com.mongodb.DBRef;
 import com.mongodb.client.result.UpdateResult;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bson.Document;
@@ -40,23 +41,17 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   public void guardar(Coleccion coleccion) {
     mongoTemplate.save(coleccion);
   }
-
   public void guardar(Coleccion coleccion, CamposColeccion campos) {
     Update update = new Update();
-
-    Document doc = new Document();
-    mongoTemplate.getConverter().write(coleccion, doc);
-    doc.remove("_id");
-    doc.remove("repetidas");
-    doc.remove("faltantes");
-
-    doc.forEach(update::set);
 
     if (campos.getConRepetidas()) {
       update.set("repetidas", coleccion.getRepetidas());
     }
     if (campos.getConFaltantes()) {
-      update.set("faltantes", coleccion.getFaltantes());
+      List<DBRef> refs = coleccion.getFaltantes().stream()
+          .map(f -> new DBRef("figuritas", f.getId()))
+          .collect(Collectors.toList());
+      update.set("faltantes", refs);
     }
 
     mongoTemplate.updateFirst(
@@ -69,9 +64,9 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   public void agregarFaltante(String colId, Figurita figurita) {
     Query query = Query.query(
         Criteria.where("_id").is(colId)
-            .and("faltantes").ne(figurita.getId())
+            .and("faltantes.$id").ne(figurita.getId())
     );
-    Update update = new Update().push("faltantes", figurita);
+    Update update = new Update().push("faltantes", new DBRef("figuritas", figurita.getId()));
 
     UpdateResult result = mongoTemplate.updateFirst(query, update, Coleccion.class);
 
@@ -138,52 +133,32 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     return new Repetidas<>(cantidadResultadosCrudo, cantidadResultadosDisponibles, data);
   }
 
-  public PaginaResultado<Figurita> buscarFaltantes(
-      String colId,
-      FaltantesFiltro filtros
-  ){
+  public PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros) {
     int pagina = filtros.pagina();
     int limite = filtros.limite();
 
-    List<AggregationOperation> ops = new ArrayList<>();
+    int cantidadResultados = this.contarCampoEnColeccion(colId, "faltantes", new ArrayList<>());
 
-    ops.add(
-        Aggregation.lookup(
-            "figuritas",
-            "faltantes.$id",
-            "_id",
-            "faltantes"
-        )
-    );
+    List<AggregationOperation> operaciones = new ArrayList<>();
+    operaciones.add(Aggregation.match(Criteria.where("_id").is(colId)));
+    operaciones.add(Aggregation.unwind("faltantes"));
+    operaciones.add(Aggregation.lookup("figuritas", "faltantes.$id", "_id", "figurita"));
+    operaciones.add(Aggregation.unwind("figurita"));
+    operaciones.add(Aggregation.skip((long) (pagina - 1) * limite));
+    operaciones.add(Aggregation.limit(limite));
+    operaciones.add(Aggregation.replaceRoot("figurita"));
 
-    ops.add(Aggregation.unwind("faltantes"));
-
-    int cantidadResultados =
-        this.contarCampoEnColeccion(colId,"faltantes",new ArrayList<>());
-
-    AggregationResults<Document> resultado =
-        this.buscarCampoEnColeccion(
-            colId,
-            "faltantes",
-            ops,
-            pagina,
-            limite
-        );
+    Aggregation aggregation = Aggregation.newAggregation(operaciones);
+    AggregationResults<Document> resultado = mongoTemplate.aggregate(aggregation, "colecciones", Document.class);
 
     MongoConverter converter = mongoTemplate.getConverter();
+    List<Figurita> figuritas = resultado.getMappedResults()
+        .stream()
+        .map(doc -> converter.read(Figurita.class, doc))
+        .toList();
 
-    List<Figurita> figuritas =
-        resultado.getMappedResults()
-            .stream()
-            .map(doc -> converter.read(Figurita.class, doc))
-            .toList();
-
-    return new PaginaResultado<>(
-        figuritas,
-        cantidadResultados,
-        (int)Math.ceil((double)cantidadResultados/limite),
-        pagina
-    );
+    return new PaginaResultado<>(figuritas, cantidadResultados,
+        (int) Math.ceil((double) cantidadResultados / limite), pagina);
   }
 
   @Override

@@ -36,7 +36,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
     }
 
     private Figurita figurita(String id, Seleccion seleccion) {
-        Figurita fig =  new Figurita(id, 1, "Jugador", seleccion, "Delantero");
+        Figurita fig =  new Figurita(id, 1, "Jugador", seleccion);
         repositorioFiguritas.guardar(fig);
 
         return fig;

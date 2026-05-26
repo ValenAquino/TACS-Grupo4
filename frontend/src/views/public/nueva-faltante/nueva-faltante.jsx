@@ -31,8 +31,7 @@ const NuevaFaltante = () => {
         handleSelect(resultado[0]);
     };
 
-    const ejecutarFormulario = async (e) => {
-        e.preventDefault();
+    const ejecutarFormulario = async () => {
         try {
             await agregarFaltante(figurita)
             setNumero('')
@@ -109,7 +108,7 @@ const NuevaFaltante = () => {
             <Button
                 label="Publicar faltante ↗"
                 disabled={!figurita}
-                onClick={(e) => ejecutarFormulario(e)}
+                onClick={() => ejecutarFormulario()}
             />
 
         </div>

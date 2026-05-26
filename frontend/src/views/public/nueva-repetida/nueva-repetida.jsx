@@ -2,8 +2,8 @@ import {useState} from "react";
 import SectionCard from "../../../components/ui/section-card/section-card.jsx";
 import AutocompleteInput from "../../../components/ui/autocomplete-input/autocomplete-input.jsx";
 import Button from "../../../components/ui/button/button.jsx";
-import {buscarFiguritas} from "../../../services/figuritaService.js";
-import {agregarRepetida} from "../../../services/coleccionService.js";
+import {buscarFiguritas} from '@/services/figuritaService.js';
+import {agregarRepetida} from '@/services/coleccionService.js';
 import { useToast } from '@/contexts/toastContext.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
 import Breadcrumb from '@/components/ui/breadcrumb/breadcrumb.jsx'
@@ -41,9 +41,7 @@ const NuevaRepetida = () => {
         );
     };
 
-    const ejecutarFormulario = async (e) => {
-      e.preventDefault();
-
+    const ejecutarFormulario = async () => {
       try {
         await agregarRepetida({id: figurita.id, cantidad: cantidad, modosIntercambio: modosIntercambio});
         setNumero('')
@@ -186,8 +184,8 @@ const NuevaRepetida = () => {
             <Button
                 label="Publicar Repetida ↗"
                 disabled={!figurita || modosIntercambio.length === 0}
-                onClick={(e) => {
-                    ejecutarFormulario(e)
+                onClick={() => {
+                    ejecutarFormulario()
                 }}
             />
 

@@ -2,9 +2,9 @@ package app.servicios.impl;
 
 import app.client.ImagenJugadorProveedor;
 import app.model.entities.Figurita;
-import app.model.entities.ImagenFigurita;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioImagenesFiguritas;
+import app.servicios.ServicioEnriquecimiento;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
@@ -13,26 +13,26 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ServicioDeAgregacionDeDatos {
+public class ServicioDeAgregacionDeDatos implements ServicioEnriquecimiento {
 
   private static final Logger log = LoggerFactory.getLogger(ServicioDeAgregacionDeDatos.class);
   private static final String STATUS_COMPLETADO = "COMPLETADO";
+  private static final Duration TIMEOUT_PROCESAMIENTO = Duration.ofMinutes(10);
 
-  private final RepositorioImagenesFiguritas repositorioImagenes;
   private final ImagenJugadorProveedor imagenProveedor;
   private final RepositorioFiguritas repositorioFiguritas;
 
-  public ServicioDeAgregacionDeDatos(RepositorioImagenesFiguritas repositorioImagenes,
-                                     ImagenJugadorProveedor imagenProveedor,
+  public ServicioDeAgregacionDeDatos(ImagenJugadorProveedor imagenProveedor,
                                      RepositorioFiguritas repositorioFiguritas) {
-    this.repositorioImagenes = repositorioImagenes;
     this.imagenProveedor = imagenProveedor;
     this.repositorioFiguritas = repositorioFiguritas;
   }
 
+  @Override
   @Async
-  public void agregarDatos(List<Figurita> figuritas) {
-    for (Figurita figurita : figuritas) {
+  public void enriquecer() {
+    List<Figurita> pendientes = repositorioFiguritas.buscarPendientes(TIMEOUT_PROCESAMIENTO);
+    for (Figurita figurita : pendientes) {
       try {
         procesarFigurita(figurita);
       } catch (Exception e) {
@@ -42,40 +42,20 @@ public class ServicioDeAgregacionDeDatos {
   }
 
   private void procesarFigurita(Figurita figurita) {
-    ImagenFigurita anterior = repositorioImagenes.iniciarProcesamiento(figurita.getId());
-
-    // nadie proceso esta figurita todavía
-    if (anterior == null) {
-      enriquecerConApi(figurita);
+    Figurita reclamada = repositorioFiguritas.reclamarParaProcesamiento(figurita.getId(), TIMEOUT_PROCESAMIENTO);
+    if (reclamada == null) {
+      // otra instancia se adelantó
       return;
     }
 
-    // ya fue procesada
-    if (anterior.getStatus().equals(STATUS_COMPLETADO)) {
-      aplicarImagen(figurita, anterior.getImagenUrl());
-      return;
-    }
+    String url = imagenProveedor.buscarImagen(figurita.getJugador()).orElse(null);
+    figurita.setImagenUrl(url);
+    figurita.setImagenStatus(STATUS_COMPLETADO);
+    figurita.setImagenCreadoEn(LocalDateTime.now());
+    repositorioFiguritas.guardar(figurita);
 
-    // está siendo procesada o quedó inconsistente
-    if (repositorioImagenes.retomarProcesamiento(figurita.getId()) != null) {
-      enriquecerConApi(figurita);
-    }
-  }
-
-  private void enriquecerConApi(Figurita figurita) {
-    String imagenUrl = imagenProveedor.buscarImagen(figurita.getJugador()).orElse(null);
-    ImagenFigurita imagen = new ImagenFigurita(figurita.getId(), imagenUrl, STATUS_COMPLETADO, LocalDateTime.now());
-
-    repositorioImagenes.guardar(imagen);
-    aplicarImagen(figurita, imagenUrl);
-
-    if (imagenUrl != null) {
+    if (url != null) {
       log.info("Imagen obtenida: {}", figurita.getJugador());
     }
-  }
-
-  private void aplicarImagen(Figurita figurita, String imagenUrl) {
-    figurita.setImagenUrl(imagenUrl);
-    repositorioFiguritas.guardar(figurita);
   }
 }

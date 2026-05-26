@@ -96,16 +96,17 @@ public class TheSportsDbImagenProveedor implements ImagenJugadorProveedor {
 
   /**
    * Normaliza el nombre para la URL: NFD descompone cada carácter especial en sus partes
-   * ({@code á} → {@code a} + acento), una regex elimina los acentos sueltos, luego
-   * minúsculas y espacios a {@code _}.
+   * ({@code á} → {@code a} + diacrítico), se eliminan los diacríticos y cualquier carácter no
+   * alfanumérico (apóstrofes, guiones, etc.), luego minúsculas y espacios a {@code _}.
    *
-   * <p>Ej: {@code "Di María"} → {@code "di_maria"}, {@code "Mbappé"} → {@code "mbappe"}.
+   * <p>Ej: {@code "Di María"} → {@code "di_maria"}, {@code "N'Golo Kanté"} → {@code "ngolo_kante"}.
    */
   private static String normalizarNombre(String nombre) {
     if (nombre == null) return "";
     String nfd = Normalizer.normalize(nombre, Normalizer.Form.NFD);
     return nfd.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
         .toLowerCase()
+        .replaceAll("[^a-z0-9 ]", "")
         .replace(' ', '_');
   }
 

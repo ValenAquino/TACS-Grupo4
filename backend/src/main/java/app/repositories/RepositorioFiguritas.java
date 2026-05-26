@@ -2,13 +2,13 @@ package app.repositories;
 
 import app.dto.filtros.FiguritasFiltro;
 import app.model.entities.Figurita;
+import java.time.Duration;
 import java.util.List;
 
 public interface RepositorioFiguritas {
 
   /** @throws app.exceptions.NotFoundException si no existe figurita con ese id */
   Figurita buscarPorId(String id);
-
 
   List<Figurita> buscarPorIds(List<String> ids);
 
@@ -22,5 +22,21 @@ public interface RepositorioFiguritas {
 
   void guardar(Figurita figurita);
 
-  List<Figurita> buscarTodas();
+  /**
+   * Retorna figuritas que aún no tienen imagen asignada: {@code imagenStatus} null, o
+   * {@code EN_PROCESO} con {@code imagenCreadoEn} anterior a {@code now - ttl} (registros
+   * colgados).
+   */
+  List<Figurita> buscarPendientes(Duration ttl);
+
+  /**
+   * Intenta atómicamente reclamar el procesamiento de una figurita via {@code findAndModify}.
+   * La query sólo matchea si el documento está en estado pendiente (ver {@link #buscarPendientes}).
+   * Al matchear actualiza {@code imagenStatus=EN_PROCESO} e {@code imagenCreadoEn=now}, por lo que
+   * un segundo llamador concurrente ya no matchea el TTL expirado.
+   *
+   * @return el documento <em>anterior</em> si el claim fue exitoso, {@code null} si otro proceso
+   *     ya lo tomó
+   */
+  Figurita reclamarParaProcesamiento(String figuritaId, Duration ttl);
 }

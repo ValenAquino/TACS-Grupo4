@@ -104,13 +104,11 @@ const Faltantes = () => {
                         )}
                     </div>
 
-                    <div className="pt-3 d-flex justify-content-center">
-                        <Paginacion
-                            page={pagina}
-                            totalPages={faltantes.cantidad_de_paginas ?? 1}
-                            onChange={setPagina}
-                        />
-                    </div>
+                    <Paginacion
+                        page={pagina}
+                        totalPages={faltantes.cantidad_de_paginas ?? 1}
+                        onChange={setPagina}
+                    />
                 </>
             )}
         </div>

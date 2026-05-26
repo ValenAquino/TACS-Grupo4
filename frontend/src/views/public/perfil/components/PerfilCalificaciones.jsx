@@ -1,5 +1,5 @@
 import Paginacion from '@/components/ui/paginacion/paginacion.jsx'
-import estrellas from '@/components/ui/estrellas/estrellas.jsx'
+import Estrellas from '@/components/ui/estrellas/estrellas.jsx'
 import CalificacionSkeleton from './CalificacionSkeleton.jsx'
 import styles from './PerfilCalificaciones.module.css'
 
@@ -25,7 +25,7 @@ const PerfilCalificaciones = ({ reviews, loadingNotificaciones, pagina, onPagina
                 <div className="flex-grow-1">
                   <strong>{r.nombre}</strong>
                   <div>
-                    {estrellas(r.valor)} {r.valor}/5
+                    <Estrellas calificacion={r.valor} mostrarNumero={true} decimales={0}/>/5
                   </div>
                   <p className={`mb-0 text-muted ${styles.descripcion}`}>{r.descripcion}</p>
                 </div>

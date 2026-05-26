@@ -31,7 +31,6 @@ import java.util.List;
 public class RepositorioSubastasMongo implements RepositorioSubastas {
   @Autowired
   MongoTemplate mongoTemplate;
-
   @Override
   public void guardar(Subasta subasta) {
     this.mongoTemplate.save(subasta);
@@ -41,19 +40,15 @@ public class RepositorioSubastasMongo implements RepositorioSubastas {
     Update update = new Update();
 
     if (campos.getOfertadas()) {
-      update.set("figuritasOfrecidas", subasta.getOfertas());
+      update.set("ofertas", subasta.getOfertas());
     }
     if (campos.getSolicitadas()) {
       update.set("figuritasSolicitadas", subasta.getFiguritasSolicitadas());
     }
 
-    Document doc = new Document();
-    mongoTemplate.getConverter().write(subasta, doc);
-    doc.remove("_id");
-    doc.remove("figuritasOfrecidas");
-    doc.remove("figuritasSolicitadas");
-
-    doc.forEach(update::set);
+    if (campos.getFechaCierre()) {
+      update.set("fechaCierre", subasta.getFechaCierre());
+    }
 
     mongoTemplate.updateFirst(
         Query.query(Criteria.where("_id").is(subasta.getId())),

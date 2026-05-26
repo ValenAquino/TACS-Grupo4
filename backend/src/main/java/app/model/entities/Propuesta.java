@@ -76,7 +76,7 @@ public class Propuesta {
      */
     public void rechazar(String perfilId) {
         validarUsuarioDestino(perfilId);
-        validarPendiente();
+        validarPendienteOSeleccionada();
         ejecutarRechazo();
         EstadoPropuesta actual = new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.RECHAZADO);
         estado.add(actual);
@@ -144,6 +144,13 @@ public class Propuesta {
 
     private void validarPendiente() {
         if (getEstadoActual().getValor() != EstadoProceso.PENDIENTE) {
+            throw new BadRequestException("La propuesta ya fue respondida");
+        }
+    }
+
+    private void validarPendienteOSeleccionada() {
+        EstadoProceso estado = getEstadoActual().getValor();
+        if (estado != EstadoProceso.PENDIENTE && estado != EstadoProceso.SELECCIONADO) {
             throw new BadRequestException("La propuesta ya fue respondida");
         }
     }

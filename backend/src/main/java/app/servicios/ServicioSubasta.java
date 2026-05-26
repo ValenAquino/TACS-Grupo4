@@ -134,7 +134,7 @@ public class ServicioSubasta {
 
   @Transactional
   public void seleccionarOferta( String perfilId, String subastaId, String ofertaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, false);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
 
     if (!subasta.estaActivo()) {
@@ -165,7 +165,7 @@ public class ServicioSubasta {
 
   @Transactional
   public void cancelarSubasta(String perfilId, String subastaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, true, true);
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
@@ -185,7 +185,10 @@ public class ServicioSubasta {
 
   @Transactional
   public void cerrarSubasta(String perfilId, String subastaId) {
-    CamposSubasta camposSubasta = new CamposSubasta(false, true);
+    CamposSubasta camposSubasta = new CamposSubasta(true, true, true);
+    CamposColeccion todo = new CamposColeccion(true, true);
+    CamposColeccion soloRepetidas = new CamposColeccion(true, false);
+
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, camposSubasta);
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
@@ -193,12 +196,30 @@ public class ServicioSubasta {
 
     Propuesta seleccionada = subasta.obtenerSeleccionada();
 
+    // cargar colección del ganador y del autor de la subasta
+    if (seleccionada != null) {
+      Coleccion colGanador = repositorioColecciones.buscarPorId(
+          seleccionada.getAutor().getColeccion().getId(), todo);
+      seleccionada.getAutor().setColeccion(colGanador);
+
+      Coleccion colAutor = repositorioColecciones.buscarPorId(
+          subasta.getAutor().getColeccion().getId(), todo);
+      subasta.getAutor().setColeccion(colAutor);
+      seleccionada.getDestinatario().setColeccion(colAutor); // misma instancia
+    }
+
+    // cargar colecciones de los ofertantes rechazados
+    subasta.getOfertas().stream()
+        .filter(o -> o.getEstadoActual().getValor() != EstadoProceso.CANCELADO)
+        .filter(o -> seleccionada == null || !o.getId().equals(seleccionada.getId()))
+        .forEach(o -> {
+          Coleccion col = repositorioColecciones.buscarPorId(
+              o.getAutor().getColeccion().getId(), soloRepetidas);
+          o.getAutor().setColeccion(col);
+        });
+
     subasta.cerrar(perfilId);
 
-    CamposColeccion soloRepetidas = new CamposColeccion(true, false);
-    CamposColeccion todo = new CamposColeccion(true, true);
-
-    // rechazados: solo repetidas
     subasta.getOfertas().stream()
         .filter(o -> seleccionada == null || !o.getId().equals(seleccionada.getId()))
         .filter(o -> o.getEstadoActual().getValor() != EstadoProceso.CANCELADO)
@@ -206,7 +227,6 @@ public class ServicioSubasta {
         .distinct()
         .forEach(col -> this.repositorioColecciones.guardar(col, soloRepetidas));
 
-    // ganador y autor: repetidas y faltantes
     if (seleccionada != null) {
       this.repositorioColecciones.guardar(seleccionada.getAutor().getColeccion(), todo);
       this.repositorioColecciones.guardar(subasta.getAutor().getColeccion(), todo);

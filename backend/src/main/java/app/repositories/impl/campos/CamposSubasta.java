@@ -8,4 +8,11 @@ import lombok.Getter;
 public class CamposSubasta {
   Boolean solicitadas;
   Boolean ofertadas;
+  Boolean fechaCierre;
+
+  public CamposSubasta(Boolean ofertadas, Boolean solicitadas) {
+    this.ofertadas = ofertadas;
+    this.solicitadas = solicitadas;
+    this.fechaCierre = false;
+  }
 }

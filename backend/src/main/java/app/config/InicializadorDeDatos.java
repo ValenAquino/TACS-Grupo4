@@ -84,9 +84,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
     return p;
   }
 
-  private Coleccion crearColeccion(List<Figurita> faltantes) {
+  private Coleccion crearColeccion() {
     Coleccion c = new Coleccion();
-    c.getFaltantes().addAll(faltantes);
     colecciones.guardar(c);
     return c;
   }
@@ -103,6 +102,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
   @Override
   public void run(String... args) {
+    if (subastas.contar() > 0) {
+      return;
+    }
 
     Map<String, Figurita> figs = cargarFiguritas();
     cargarAdmin();
@@ -133,7 +135,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
   private void cargarAdmin() {
     Usuario admin = crearUsuario("admin", "admin", Rol.ADMINISTRADOR);
-    Coleccion coleccion = crearColeccion(List.of());
+    Coleccion coleccion = crearColeccion();
     Perfil.builder()
         .usuario(admin)
         .nombre("admin")
@@ -145,16 +147,18 @@ public class InicializadorDeDatos implements CommandLineRunner {
 
   private Map<String, Perfil> cargarPerfiles(Map<String, Figurita> figs) {
       // ── LUCAS ───────────────────────────────────────────────────────────────
-//    Faltantes: Lewandowski (POL-9), Eriksen (DEN-10), Xhaka (SUI-10), Kimmich (GER-6), De Bruyne (BEL-7), Modrić (CRO-10), Ronaldo POR-7
+//    Faltantes: Lewandowski (POL-9), Eriksen (DEN-10), Xhaka (SUI-10), Kimmich (GER-6), De Bruyne (BEL-7), Modrić (CRO-10), Ronaldo POR-7, Pedri "ESP-10"
 //    Repetidas: Messi x3, Di María x2, J.Álvarez x2, E.Fernández x2, Neymar x2, Vinícius x3, Mbappé x2, Griezmann x2
-      Coleccion coleccionLucas = crearColeccion(List.of(
+    Coleccion coleccionLucas = crearColeccion();
+    coleccionLucas.getFaltantes().addAll(List.of(
           figs.get("POL-9"),  // Lewandowski
           figs.get("DEN-10"), // Eriksen
           figs.get("SUI-10"), // Xhaka
           figs.get("GER-6"),  // Kimmich
           figs.get("BEL-7"),  // De Bruyne
           figs.get("CRO-10"),  // Modrić
-          figs.get("POR-7")  // Ronaldo
+          figs.get("POR-7"),  // Ronaldo
+          figs.get("ESP-10")  // Pedri
       ));
       Usuario userLucas = crearUsuario("lucas_fis", "gordo123", Rol.USUARIO);
       Perfil lucas = crearPerfil("lucas-id-001", "Lucas", userLucas, coleccionLucas, "@lucas");
@@ -173,7 +177,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
       // ── SOFÍA ───────────────────────────────────────────────────────────────
 //    Faltantes: Messi (ARG-10), J.Álvarez (ARG-9), Neymar (BRA-10), Vinícius (BRA-11), D.Núñez (URU-9), E.Valencia (ECU-9),Griezmann, E.Fernández
 //    Repetidas: Pedri x2, Morata x2, Kimmich x3, Neuer x2, Ronaldo x3, B.Fernandes x2,
-      Coleccion coleccionSofia = crearColeccion(List.of(
+    Coleccion coleccionSofia = crearColeccion();
+
+    coleccionSofia.getFaltantes().addAll(List.of(
           figs.get("ARG-10"), // Messi
           figs.get("ARG-9"),  // J. Álvarez
           figs.get("BRA-10"), // Neymar
@@ -198,7 +204,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
       // ── MATÍAS ──────────────────────────────────────────────────────────────
 //    Faltantes: Pedri (ESP-10), Gavi (ESP-6), Mbappé (FRA-10), Griezmann (FRA-7), Ronaldo (POR-7), B.Silva (POR-10)
 //    Repetidas: D.Núñez x2, De Arrascaeta x2, Valverde x2, E.Valencia x3, Caicedo x2
-      Coleccion coleccionMatias = crearColeccion(List.of(
+    Coleccion coleccionMatias = crearColeccion();
+
+    coleccionMatias.getFaltantes().addAll(List.of(
           figs.get("ESP-10"), // Pedri
           figs.get("ESP-6"),  // Gavi
           figs.get("FRA-10"), // Mbappé
@@ -220,7 +228,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
       // ── JUAN ────────────────────────────────────────────────────────────────
 //    Faltantes: Messi (ARG-10), Di María (ARG-11), J.Álvarez (ARG-9), E.Fernández (ARG-8)
 //    Repetidas: Ziyech x2, Hakimi x2, Modrić x2
-      Coleccion coleccionJuan = crearColeccion(List.of(
+    Coleccion coleccionJuan = crearColeccion();
+
+    coleccionJuan.getFaltantes().addAll(List.of(
           figs.get("ARG-10"), // Messi
           figs.get("ARG-11"), // Di María
           figs.get("ARG-9"),  // J. Álvarez
@@ -238,7 +248,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
       // ── VALENTINA ───────────────────────────────────────────────────────────
 //    Faltantes: Messi (ARG-10), Di María (ARG-11), Neymar (BRA-10), Vinícius (BRA-11), Mbappé (FRA-10), Kane (ENG-9)
 //    Repetidas: Ziyech x2, En-Nesyri x2, Mané x3, Koulibaly x2, Modrić x3, Perišić x2
-      Coleccion coleccionValentina = crearColeccion(List.of(
+    Coleccion coleccionValentina = crearColeccion();
+
+    coleccionValentina.getFaltantes().addAll(List.of(
           figs.get("ARG-10"), // Messi
           figs.get("ARG-11"), // Di María
           figs.get("BRA-10"), // Neymar
@@ -261,7 +273,9 @@ public class InicializadorDeDatos implements CommandLineRunner {
       // ── DIEGO ───────────────────────────────────────────────────────────────
 //    Faltantes: D.Martínez (ARG-1), Bellingham (ENG-8), Van Dijk (NED-4), Kubo (JPN-7), Son (KOR-7), Partey (GHA-6)
 //    Repetidas: Messi x2, J.Álvarez x2, Kane x2, Sterling x2, Depay x2, Gakpo x2, De Bruyne x3, Lukaku x2, Ronaldo x2
-      Coleccion coleccionDiego = crearColeccion(List.of(
+    Coleccion coleccionDiego = crearColeccion();
+
+    coleccionDiego.getFaltantes().addAll(List.of(
           figs.get("ARG-1"),  // D. Martínez
           figs.get("ENG-8"),  // Bellingham
           figs.get("NED-4"),  // Van Dijk

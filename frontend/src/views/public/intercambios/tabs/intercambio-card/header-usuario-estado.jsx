@@ -1,6 +1,5 @@
 import Etiqueta from '../../../../../components/ui/etiqueta/etiqueta.jsx'
-import estrellas from '@/components/ui/estrellas/estrellas.jsx'
-import { truncarADosDecimales } from '../../../../../utils/estandarizar.js'
+import Estrellas from '@/components/ui/estrellas/estrellas.jsx'
 
 const VARIANTE_ESTADO = {
   PENDIENTE: 'advertencia',
@@ -33,9 +32,7 @@ const HeaderUsuarioEstado = ({ destinatario, estado }) => (
 
       <div className="d-flex flex-column">
         <span className="fw-semibold">{destinatario.nombre}</span>
-        <small className="text-muted">
-          {estrellas(destinatario.calificacion_media)} {truncarADosDecimales(destinatario.calificacion_media)}
-        </small>
+        <Estrellas calificacion={destinatario.calificacion_media} mostrarNumero={true} />
       </div>
     </div>
 

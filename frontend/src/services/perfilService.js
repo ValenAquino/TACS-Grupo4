@@ -23,12 +23,10 @@ export const buscarSugerencias = async ({ tipo, pagina, limite }) => {
 }
 
 export const calificarPerfil = async (
-  autorId,
-  perfilId,
-  { valor, descripcion, transactionId, tipoTransaccion },
+  { destinatarioId, valor, descripcion, transactionId, tipoTransaccion },
 ) => {
   await api.post(`/perfil/calificaciones`, {
-    destinatario_id: perfilId,
+    destinatario_id: destinatarioId,
     valor,
     descripcion,
     transaction_id: transactionId,

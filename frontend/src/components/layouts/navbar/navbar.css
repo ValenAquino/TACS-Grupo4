@@ -13,15 +13,6 @@
   gap: 8px;
 }
 
-.navbar-logo-icon {
-  background-color: var(--color-terciary);
-  color: var(--color-secondary);
-  border-radius: 6px;
-  padding: 2px 10px;
-  font-weight: 800;
-  font-size: 1rem;
-}
-
 .navbar-toggler-custom {
   filter: invert(1);
 }

@@ -65,7 +65,7 @@ public class ServicioColeccion {
 
   public Repetidas<FiguritaIntercambiableDto> buscarRepetidas(String colId, RepetidasFiltro filtros) {
     String colIdFaltantes = resolverColIdFaltantes(filtros.perfilId());
-//puede que sea null el colIdFaltantes
+
     Repetidas<FiguritaIntercambiable> repetidas =
         this.repositorioColecciones.buscarRepetidas(colId, filtros, colIdFaltantes);
 

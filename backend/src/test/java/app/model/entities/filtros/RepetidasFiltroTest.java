@@ -28,6 +28,7 @@ class RepetidasFiltroTest {
     RepetidasFiltro filtro = new RepetidasFiltro(null,null, null, null);
 
     assertNull(filtro.metodoIntercambio());
+    assertNull(filtro.perfilId());
     assertNull(filtro.limite());
     assertNull(filtro.pagina());
   }

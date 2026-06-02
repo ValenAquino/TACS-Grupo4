@@ -67,8 +67,6 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     repositorioUsuarios.guardar(user);
     repositorioColecciones.guardar(coleccionMessiFaltante,  new CamposColeccion(false, true));
-    Coleccion verificacion = repositorioColecciones.buscarPorId("c-1", new CamposColeccion(false, true));
-    System.out.println("Verificacion faltantes: " + verificacion.getFaltantes());
     repositorioPerfiles.guardar(lucas);
 
     Coleccion coleccionRepetidos = new Coleccion("c-2");

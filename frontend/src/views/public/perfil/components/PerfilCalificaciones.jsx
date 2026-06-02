@@ -25,7 +25,7 @@ const PerfilCalificaciones = ({ reviews, loadingNotificaciones, pagina, onPagina
                 <div className="flex-grow-1">
                   <strong>{r.nombre}</strong>
                   <div>
-                    <Estrellas calificacion={r.valor} mostrarNumero={true} decimales={0}/>/5
+                    <Estrellas calificacion={r.valor} mostrarNumero={true} decimales={0}/>
                   </div>
                   <p className={`mb-0 text-muted ${styles.descripcion}`}>{r.descripcion}</p>
                 </div>

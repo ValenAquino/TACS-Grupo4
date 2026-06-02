@@ -52,20 +52,23 @@ public class ServicioSubastaTest extends MongoTestBase {
         .build();
     repositorioFiguritas.guardar(messi);
 
-    Coleccion coleccionSinMessi = new Coleccion("c-1");
-    coleccionSinMessi.getFaltantes().add(messi);
+    Coleccion coleccionMessiFaltante = new Coleccion("c-1");
+    repositorioColecciones.guardar(coleccionMessiFaltante);
+    coleccionMessiFaltante.getFaltantes().add(messi);
 
     Usuario user = new Usuario("u-1", Rol.USUARIO, "lucas", "fiscella");
     lucas = Perfil.builder()
         .id("1")
         .usuario(user)
         .nombre("Lucas")
-        .coleccion(coleccionSinMessi)
+        .coleccion(coleccionMessiFaltante)
         .mediosDeContacto(telegram("@lucas"))
         .build();
 
     repositorioUsuarios.guardar(user);
-    repositorioColecciones.guardar(coleccionSinMessi);
+    repositorioColecciones.guardar(coleccionMessiFaltante,  new CamposColeccion(false, true));
+    Coleccion verificacion = repositorioColecciones.buscarPorId("c-1", new CamposColeccion(false, true));
+    System.out.println("Verificacion faltantes: " + verificacion.getFaltantes());
     repositorioPerfiles.guardar(lucas);
 
     Coleccion coleccionRepetidos = new Coleccion("c-2");
@@ -688,11 +691,11 @@ public class ServicioSubastaTest extends MongoTestBase {
 
     @BeforeEach
     void setUpRepetidas() {
-      coleccionLucas = new Coleccion("c-1");
+      coleccionLucas = repositorioColecciones.buscarPorId("c-1", new CamposColeccion(true, true));
       coleccionLucas.getRepetidas().add(
           new FiguritaIntercambiable(messi, 2, 0, List.of(MetodoIntercambio.SUBASTA, MetodoIntercambio.INTERCAMBIO), lucas.getId())
       );
-      repositorioColecciones.guardar(coleccionLucas);
+      repositorioColecciones.guardar(coleccionLucas, new CamposColeccion(true, true));
     }
 
     @Test
@@ -706,13 +709,34 @@ public class ServicioSubastaTest extends MongoTestBase {
 
       service.ofertarEnSubasta(lucas.getId(), "s-1", List.of("ARG-10"));
 
-      Coleccion col = repositorioColecciones.buscarPorId("c-1", new CamposColeccion(true, false));
+      Coleccion col = repositorioColecciones.buscarPorId("c-1", new CamposColeccion(true, true));
       FiguritaIntercambiable repetida = col.getRepetidas().stream()
           .filter(r -> r.getFigurita().getId().equals("ARG-10"))
           .findFirst().orElseThrow();
 
       assertEquals(1, repetida.getCantidadReservada());
     }
+    @Test
+    void ofertarEnSubasta_figuritaNoEsFaltante_lanzaExcepcion() {
+      Figurita diMaria = Figurita.builder()
+          .id("ARG-11")
+          .numero(11)
+          .jugador("Di María")
+          .seleccion(Seleccion.ARGENTINA)
+          .build();
+      repositorioFiguritas.guardar(diMaria);
+
+      Subasta subasta = Subasta.builder()
+          .id("s-1").autor(sofia)
+          .fechaInicio(LocalDateTime.now().minusHours(1))
+          .fechaCierre(LocalDateTime.now().plusDays(1))
+          .figuritaSubastada(diMaria).build();
+      repositorioSubastas.guardar(subasta);
+
+      assertThrows(BadRequestException.class,
+          () -> service.ofertarEnSubasta(lucas.getId(), "s-1", List.of("ARG-10")));
+    }
+
 
     @Test
     void cancelarOferta_liberaReservaDelAutor() {

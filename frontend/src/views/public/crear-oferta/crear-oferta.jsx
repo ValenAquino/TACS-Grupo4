@@ -47,7 +47,7 @@ const CrearOferta = () => {
           buscarPerfil(),
         ])
         setSubasta(payloadSubasta)
-        setRepetidas(payloadRepetidas ?? [])
+        setRepetidas(payloadRepetidas?.contenido ?? [])
         setCalificacion(payloadPerfil?.calificacion_media ?? null)
       } catch (e) {
         handleError(e, (err) => showToast(err.mensaje, 'error'))

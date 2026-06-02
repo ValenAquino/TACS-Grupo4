@@ -4,7 +4,6 @@ import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
-import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
@@ -16,7 +15,6 @@ import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
 import java.util.List;
 
-import app.repositories.impl.campos.CamposColeccion;
 import app.repositories.impl.campos.CamposPerfil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ServicioColeccion {
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioColecciones repositorioColecciones;
-  private final RepositorioPerfiles repositorioUsuarios;
+  private final RepositorioPerfiles repositorioPerfiles;
   private final ServicioNotificacion notificacionService;
 
   public void agregarFaltante(String colId, String figId) {
@@ -47,7 +45,7 @@ public class ServicioColeccion {
 
     this.repositorioColecciones.agregarRepetida(colId, repetida);
 
-    List<Perfil> interesados = this.repositorioUsuarios.buscarPorFiguritaFaltante(figurita, new CamposPerfil(true));
+    List<Perfil> interesados = this.repositorioPerfiles.buscarPorFiguritaFaltante(figurita, new CamposPerfil(true));
 
     String cuerpo = "Nueva figurita disponible, Numero: " + figurita.getId() +
         ", Cantidad: " + cantidadExistente;
@@ -66,9 +64,20 @@ public class ServicioColeccion {
   }
 
   public Repetidas<FiguritaIntercambiableDto> buscarRepetidas(String colId, RepetidasFiltro filtros) {
-    Repetidas<FiguritaIntercambiable> repetidas = this.repositorioColecciones.buscarRepetidas(colId, filtros);
-    PaginaResultado<FiguritaIntercambiableDto> paginacionDto = repetidas.getData().mapearA(FiguritaIntercambiableDto::new);
+    String colIdFaltantes = resolverColIdFaltantes(filtros.perfilId());
+//puede que sea null el colIdFaltantes
+    Repetidas<FiguritaIntercambiable> repetidas =
+        this.repositorioColecciones.buscarRepetidas(colId, filtros, colIdFaltantes);
+
+    PaginaResultado<FiguritaIntercambiableDto> paginacionDto =
+        repetidas.getData().mapearA(FiguritaIntercambiableDto::new);
 
     return new Repetidas<>(repetidas.getPublicadas(), repetidas.getDisponibles(), paginacionDto);
+  }
+
+  private String resolverColIdFaltantes(String perfilId) {
+    if (perfilId == null) return null;
+    Perfil perfilFaltantes = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
+    return perfilFaltantes.getColeccion().getId();
   }
 }

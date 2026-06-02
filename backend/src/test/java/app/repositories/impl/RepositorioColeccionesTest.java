@@ -145,7 +145,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
     Repetidas dto = repositorioColecciones.buscarRepetidas(
         coleccion.getId(),
-        new RepetidasFiltro(null, 10, 1)
+        new RepetidasFiltro(null, null,10, 1),
+        null
+
     );
 
     assertEquals(3, dto.getPublicadas());
@@ -168,7 +170,8 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
     Repetidas dto = repositorioColecciones.buscarRepetidas(
         coleccion.getId(),
-        new RepetidasFiltro(MetodoIntercambio.SUBASTA, 10, 1)
+        new RepetidasFiltro(MetodoIntercambio.SUBASTA,null, 10, 1),
+        null
     );
 
     assertEquals(2, dto.getData().cantidadDeElementos());
@@ -189,7 +192,8 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
     Repetidas<FiguritaIntercambiable> dto = repositorioColecciones.buscarRepetidas(
         coleccion.getId(),
-        new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, 10, 1)
+        new RepetidasFiltro(MetodoIntercambio.INTERCAMBIO, null, 10, 1),
+        null
     );
 
     assertEquals(1, dto.getData().cantidadDeElementos());
@@ -210,7 +214,8 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
     Repetidas dto = repositorioColecciones.buscarRepetidas(
         coleccion.getId(),
-        new RepetidasFiltro(null, 2, 2)
+        new RepetidasFiltro(null,null, 2, 2),
+        null
     );
 
     assertEquals(1, dto.getData().contenido().size());
@@ -253,5 +258,78 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     assertEquals(1, resultado.contenido().size());
     assertEquals("Messi",
         resultado.contenido().get(0).getFigurita().getJugador());
+  }
+
+  @Test
+  void buscarRepetidasFiltraPorCoincidenciaConFaltantesDeOtroPerfil() {
+    // Colección del perfil logueado con repetidas
+    Coleccion colLogueado = new Coleccion();
+    colLogueado.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO)),
+        new FiguritaIntercambiable(dybala, 1, List.of(MetodoIntercambio.INTERCAMBIO))
+    ));
+    repositorioColecciones.guardar(colLogueado);
+
+    // Colección del otro perfil con solo messi como faltante
+    Coleccion colOtroPerfil = new Coleccion();
+    colOtroPerfil.getFaltantes().add(messi);
+    repositorioColecciones.guardar(colOtroPerfil);
+
+    Repetidas<FiguritaIntercambiable> dto = repositorioColecciones.buscarRepetidas(
+        colLogueado.getId(),
+        new RepetidasFiltro(null, null, 10, 1),
+        colOtroPerfil.getId()
+    );
+
+    assertEquals(1, dto.getData().cantidadDeElementos());
+    assertEquals(1, dto.getData().contenido().size());
+    assertEquals("Messi", dto.getData().contenido().get(0).getFigurita().getJugador());
+  }
+
+  @Test
+  void buscarRepetidasConFaltantesDeOtroPerfilSinCoincidencias() {
+    Coleccion colLogueado = new Coleccion();
+    colLogueado.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO))
+    ));
+    repositorioColecciones.guardar(colLogueado);
+
+    // El otro perfil tiene faltantes que no coinciden con ninguna repetida
+    Coleccion colOtroPerfil = new Coleccion();
+    colOtroPerfil.getFaltantes().add(dybala);
+    repositorioColecciones.guardar(colOtroPerfil);
+
+    Repetidas<FiguritaIntercambiable> dto = repositorioColecciones.buscarRepetidas(
+        colLogueado.getId(),
+        new RepetidasFiltro(null, null, 10, 1),
+        colOtroPerfil.getId()
+    );
+
+    assertEquals(0, dto.getData().cantidadDeElementos());
+    assertEquals(0, dto.getData().contenido().size());
+  }
+  @Test
+  void buscarRepetidasCombinaFiltroMetodoYCoincidenciaFaltantes() {
+    Coleccion colLogueado = new Coleccion();
+    colLogueado.getRepetidas().addAll(List.of(
+        new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.SUBASTA)),
+        new FiguritaIntercambiable(diMaria, 3, List.of(MetodoIntercambio.INTERCAMBIO))
+        // ambas son faltantes del otro perfil, pero solo messi es SUBASTA
+    ));
+    repositorioColecciones.guardar(colLogueado);
+
+    Coleccion colOtroPerfil = new Coleccion();
+    colOtroPerfil.getFaltantes().addAll(List.of(messi, diMaria));
+    repositorioColecciones.guardar(colOtroPerfil);
+
+    Repetidas<FiguritaIntercambiable> dto = repositorioColecciones.buscarRepetidas(
+        colLogueado.getId(),
+        new RepetidasFiltro(MetodoIntercambio.SUBASTA, null, 10, 1),
+        colOtroPerfil.getId()
+    );
+
+    assertEquals(1, dto.getData().cantidadDeElementos());
+    assertEquals("Messi", dto.getData().contenido().get(0).getFigurita().getJugador());
   }
 }

@@ -101,22 +101,29 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     return this.normalizar(coleccion);
   }
 
-  public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros) {
+  public Repetidas<FiguritaIntercambiable> buscarRepetidas(String colId, RepetidasFiltro filtros, String colIdFaltantes) {
     int pagina = filtros.pagina();
     int limite = filtros.limite();
 
     List<AggregationOperation> filtrado = new ArrayList<>();
-    if(filtros.metodoIntercambio() != null){
+
+    if (filtros.metodoIntercambio() != null) {
       filtrado.add(Aggregation.match(
           Criteria.where("repetidas.metodos").is(filtros.metodoIntercambio())
       ));
     }
 
+    if (colIdFaltantes != null) {
+      List<String> idsFaltantes = obtenerIdsFaltantes(colIdFaltantes);
+      filtrado.add(Aggregation.match(
+          Criteria.where("repetidas.figurita.$id").in(idsFaltantes)
+      ));
+    }
+
     int cantidadResultadosCrudo = this.contarCampoEnColeccion(colId, "repetidas", filtrado);
-
     int cantidadResultadosDisponibles = this.sumarDisponibles(colId, "repetidas", filtrado);
-
     AggregationResults<Document> resultado = this.buscarCampoEnColeccion(colId, "repetidas", filtrado, pagina, limite);
+
 
     List<FiguritaIntercambiable> figuritas = this.mapearADominio(resultado);
 
@@ -128,6 +135,21 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
             limite);
 
     return new Repetidas<>(cantidadResultadosCrudo, cantidadResultadosDisponibles, data);
+  }
+
+  private List<String> obtenerIdsFaltantes(String colIdFaltantes) {
+    Query query = new Query(Criteria.where("_id").is(colIdFaltantes));
+    query.fields().include("faltantes");
+
+    Document coleccion = mongoTemplate.findOne(query, Document.class, "colecciones");
+    if (coleccion == null) return List.of();
+
+    List<Object> faltantes = coleccion.getList("faltantes", Object.class);
+    if (faltantes == null) return List.of();
+
+    return faltantes.stream()
+        .map(ref -> ((DBRef) ref).getId().toString())
+        .toList();
   }
 
   public PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros) {

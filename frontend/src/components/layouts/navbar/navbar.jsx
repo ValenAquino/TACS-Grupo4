@@ -5,11 +5,9 @@ import './navbar.css'
 import { useAuth } from '@/contexts/userContext.jsx'
 import Button from '@/components/ui/button/button.jsx'
 import { obtenerNotificaciones, marcarTodasLeidas } from '@/services/notificacionesService.js'
-import { buscarUsuario } from '@/services/sesionService.js'
 import { useToast } from '@/contexts/toastContext.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
 import { buscarPerfil } from '@/services/perfilService.js'
-import figunetLogo from '/figunet_favicon.svg'
 
 const Navbar = () => {
   const { showToast } = useToast()

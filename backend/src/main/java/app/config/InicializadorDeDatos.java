@@ -385,7 +385,7 @@ private void cargarPropuestas(Map<String, Figurita> figs,
 
   // P09 FINALIZADA — Valentina → Lucas : ofrece Sergio Rochet (URU-1 INTERCAMBIO), busca Guillermo Varela (URU-2 INTERCAMBIO ✅)
   Propuesta p09 = Propuesta.builder()
-      .autor(sofia).destinatario(lucas).estado(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO)))
+      .autor(valentina).destinatario(lucas).estado(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO)))
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("URU-1"))))
       .figuritaBuscada(figs.get("URU-2")).build();
 
@@ -558,8 +558,9 @@ private void reservar(Perfil perfil, String figuritaId) {
         .transaccionId(s4.getId())
         .tipoTransaccion(MetodoIntercambio.SUBASTA)
         .build();
-    calificaciones.guardar(calificacionAValentina);
+
     valentina.agregarNuevaCalificacion(calificacionAValentina);
+    calificaciones.guardar(calificacionAValentina);
     perfiles.guardar(valentina);
 
   }

@@ -2,6 +2,7 @@ import { resolverTipo } from '@/utils/figuritas'
 import styles from './figurita-card.module.css'
 import CardActionBtn from './card-action-buttons'
 import UserChip from '@/components/ui/user-chip/user-chip'
+import { useAuth } from '@/contexts/userContext.jsx'
 
 const TYPE_LABELS = {
   intercambio: { label: 'intercambio', className: styles.badgeIntercambio },
@@ -37,6 +38,7 @@ const CardBody = ({
   extra,
   tipo,
   figurita,
+  esPropio,
 }) => (
   <div className={styles.body}>
     <p className={styles.cardName}>{jugador}</p>
@@ -59,16 +61,16 @@ const CardBody = ({
       </>
     )}
 
-    {(tipo === 'intercambio' || tipo === 'ambos') && (
+    {!esPropio && (tipo === 'intercambio' || tipo === 'ambos') && (
       <CardActionBtn to="/intercambios/crear" label="Proponer intercambio ↗" state={{ figurita }} />
     )}
     {(tipo === 'subasta' || tipo === 'ambos') && figurita.subasta_id && (
-  <CardActionBtn
-    to={`/subastas/${figurita.subasta_id}`}
-    label="Ver subasta ↗"
-    variant="subasta"
-  />
-)}
+      <CardActionBtn
+        to={`/subastas/${figurita.subasta_id}`}
+        label="Ver subasta ↗"
+        variant="subasta"
+      />
+    )}
   </div>
 )
 
@@ -85,6 +87,8 @@ const FiguritaCard = ({
   figurita,
 }) => {
   const tipo = resolverTipo(metodos)
+  const { user } = useAuth()
+  const esPropio = user?.perfil_id === figurita?.perfil_id
 
   return (
     <div className={`${styles.card} ${CARD_CLASS[tipo] ?? ''}`}>
@@ -98,6 +102,7 @@ const FiguritaCard = ({
         extra={extra}
         tipo={tipo}
         figurita={figurita}
+        esPropio={esPropio}
       />
     </div>
   )

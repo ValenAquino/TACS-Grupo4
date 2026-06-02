@@ -81,6 +81,10 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
+    if (!autor.getColeccion().tieneFaltante(subasta.getFiguritaSubastada())) {
+      throw new BadRequestException("La figurita subastada #" + subasta.getFiguritaSubastada().getNumero() + " no está en tus faltantes");
+    }
+
     if (rawFiguritasId.size() != rawFiguritasId.stream().distinct().count()) {
       throw new BadRequestException("Figuritas ofrecidas repetidas");
     }

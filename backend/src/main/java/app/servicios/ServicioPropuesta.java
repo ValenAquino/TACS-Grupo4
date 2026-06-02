@@ -5,6 +5,7 @@ import app.dto.PropuestaDto;
 import app.dto.filtros.PropuestasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.CrearPropuestaRequest;
+import app.exceptions.BadRequestException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
@@ -49,6 +50,10 @@ public class ServicioPropuesta {
 
     Figurita figuritaBuscada = repositorioFiguritas
         .buscarPorId(request.getFiguritaBuscadaId());
+
+    if (!autor.getColeccion().tieneFaltante(figuritaBuscada)) {
+      throw new BadRequestException("La figurita #" + figuritaBuscada.getNumero() + " no está en tus faltantes");
+    }
 
     List<Figurita> figuritasOfrecidas = request.getFiguritasOfrecidasIds()
         .stream()

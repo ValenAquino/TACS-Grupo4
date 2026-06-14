@@ -4,7 +4,7 @@ import {useAuth} from "@/contexts/userContext.jsx";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URI,
-    timeout: 20000,
+    timeout: 40000,
     headers: {
         "Content-Type": "application/json",
     },

@@ -14,6 +14,10 @@ COPY . .
 # --- Etapa de build ---
 # Compila la app con Vite para producción
 FROM dev AS builder
+
+ARG VITE_BACKEND_URI
+ENV VITE_BACKEND_URI=$VITE_BACKEND_URI
+
 RUN npm run build
 
 # --- Etapa de runtime ---

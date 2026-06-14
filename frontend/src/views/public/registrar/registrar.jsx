@@ -5,11 +5,8 @@ import { useToast } from '@/contexts/toastContext.jsx'
 import { useAuth } from '@/contexts/userContext.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
 import ModalInformativo from '@/components/ui/modales/modal-informativo/modal-informativo.jsx'
-import { IconoOjoTachado } from '@/components/ui/iconos/ojo-tachado/ojo-tachado.jsx'
-import { IconoOjo } from '@/components/ui/iconos/ojo/ojo.jsx'
-import styles from './registrar.module.css'
-import { IconoAdvertencia } from '@/components/ui/iconos/advertencia/advertencia.jsx'
-import { IconoVerificado } from '@/components/ui/iconos/verificado/verificado.jsx'
+import TextoInput from '@/components/ui/input-texto/input-texto.jsx'
+import ContraseniaInput from '@/components/ui/input-contrasenia/input-contrasenia.jsx'
 
 function Registrar() {
   const [formData, setFormData] = useState({
@@ -25,9 +22,6 @@ function Registrar() {
     errorTemplate({ nombre: undefined, contrasenia: undefined }),
   )
   const [onSubmit, setOnSubmit] = useState(false)
-
-  const [mostrarContrasenia, setMostrarContrasenia] = useState(false)
-  const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false)
 
   const [tocado, setTocado] = useState({
     nombre: false,
@@ -190,165 +184,41 @@ function Registrar() {
         </p>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Nombre de usuario</label>
-            <div className="input-group">
-              <input
-                type="text"
-                name="nombre"
-                className={`form-control ${
-                  tocado.nombre && errorNombre
-                    ? styles.inputInvalido
-                    : tocado.nombre && nombreEsValido
-                      ? styles.inputValido
-                      : ''
-                }`}
-                placeholder="juanperez123"
-                value={formData.nombre}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                style={{
-                  borderColor:
-                    !(tocado.nombre && errorNombre) && !(tocado.nombre && nombreEsValido)
-                      ? 'var(--border-color-dark)'
-                      : undefined,
-                }}
-              />
-              {tocado.nombre && nombreEsValido && (
-                <span
-                  className="input-group-text"
-                  style={{ backgroundColor: 'transparent', borderColor: 'var(--color-success)' }}
-                >
-                  <IconoVerificado />
-                </span>
-              )}
-            </div>
+          <TextoInput
+            name="nombre"
+            label="Nombre de usuario"
+            placeholder="juanperez123"
+            value={formData.nombre}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            tocado={tocado.nombre}
+            esValido={nombreEsValido}
+            error={errorNombre}
+            hint='Debe ser único, sin espacios. Solo letras, números, "_" o ".".'
+          />
 
-            {tocado.nombre && errorNombre && (
-              <small
-                className={`form-text d-flex align-items-center gap-1 mt-1 ${styles.textoInvalido}`}
-              >
-                <IconoAdvertencia /> {errorNombre}
-              </small>
-            )}
+          <ContraseniaInput
+            name="contrasenia"
+            label="Contraseña"
+            value={formData.contrasenia}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            tocado={tocado.contrasenia}
+            esValido={passwordEsValida}
+            error={errorContrasenia}
+            hint="La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula, un número y un carácter especial."
+          />
 
-            <small className={`form-text d-block mt-1 ${styles.textoNeutro}`}>
-              Debe ser único, sin espacios. Solo letras, números, "_" o ".".
-            </small>
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Contraseña</label>
-
-            <div className="input-group">
-              <input
-                type={mostrarContrasenia ? 'text' : 'password'}
-                name="contrasenia"
-                className={`form-control ${
-                  tocado.contrasenia && errorContrasenia
-                    ? styles.inputInvalido
-                    : tocado.contrasenia && passwordEsValida
-                      ? styles.inputValido
-                      : ''
-                }`}
-                placeholder="********"
-                value={formData.contrasenia}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                style={{
-                  borderColor:
-                    !(tocado.contrasenia && errorContrasenia) &&
-                    !(tocado.contrasenia && passwordEsValida)
-                      ? 'var(--border-color-dark)'
-                      : undefined,
-                }}
-              />
-              {tocado.contrasenia && passwordEsValida && (
-                <span
-                  className="input-group-text"
-                  style={{ backgroundColor: 'transparent', borderColor: 'var(--color-success)' }}
-                >
-                  <IconoVerificado />
-                </span>
-              )}
-              <button
-                type="button"
-                className="btn"
-                onClick={() => setMostrarContrasenia(!mostrarContrasenia)}
-                style={{ borderColor: 'var(--border-color-dark)', color: 'var(--color-subtitle)' }}
-                aria-label={mostrarContrasenia ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                tabIndex={-1}
-              >
-                {mostrarContrasenia ? <IconoOjoTachado /> : <IconoOjo />}
-              </button>
-            </div>
-
-            {tocado.contrasenia && errorContrasenia && (
-              <small
-                className={`form-text d-flex align-items-center gap-1 mt-1 ${styles.textoInvalido}`}
-              >
-                <IconoAdvertencia /> {errorContrasenia}
-              </small>
-            )}
-
-            <small className={`form-text d-block mt-1 ${styles.textoNeutro}`}>
-              La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una
-              minúscula, un número y un carácter especial.
-            </small>
-          </div>
-
-          <div className="mb-4">
-            <label className="form-label">Confirmar contraseña</label>
-
-            <div className="input-group">
-              <input
-                type={mostrarConfirmacion ? 'text' : 'password'}
-                name="confirmarContrasenia"
-                className={`form-control ${
-                  tocado.confirmarContrasenia && errorConfirmacion
-                    ? styles.inputInvalido
-                    : tocado.confirmarContrasenia && contraseniasCoinciden
-                      ? styles.inputValido
-                      : ''
-                }`}
-                placeholder="********"
-                value={formData.confirmarContrasenia}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                style={{
-                  borderColor: !(tocado.confirmarContrasenia && errorConfirmacion)
-                    ? 'var(--border-color-dark)'
-                    : undefined,
-                }}
-              />
-              {tocado.confirmarContrasenia && contraseniasCoinciden && (
-                <span
-                  className="input-group-text"
-                  style={{ backgroundColor: 'transparent', borderColor: 'var(--color-success)' }}
-                >
-                  <IconoVerificado />
-                </span>
-              )}
-              <button
-                type="button"
-                className="btn"
-                onClick={() => setMostrarConfirmacion(!mostrarConfirmacion)}
-                style={{ borderColor: 'var(--border-color-dark)', color: 'var(--color-subtitle)' }}
-                aria-label={mostrarConfirmacion ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                tabIndex={-1}
-              >
-                {mostrarConfirmacion ? <IconoOjoTachado /> : <IconoOjo />}
-              </button>
-            </div>
-
-            {tocado.confirmarContrasenia && errorConfirmacion && (
-              <small
-                className={`form-text d-flex align-items-center gap-1 mt-1 ${styles.textoInvalido}`}
-              >
-                <IconoAdvertencia /> {errorConfirmacion}
-              </small>
-            )}
-          </div>
+          <ContraseniaInput
+            name="confirmarContrasenia"
+            label="Confirmar contraseña"
+            value={formData.confirmarContrasenia}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            tocado={tocado.confirmarContrasenia}
+            esValido={contraseniasCoinciden}
+            error={errorConfirmacion}
+          />
 
           {user?.rol === 'ADMINISTRADOR' && (
             <div className="mb-4">

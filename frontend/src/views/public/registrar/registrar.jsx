@@ -8,6 +8,8 @@ import ModalInformativo from '@/components/ui/modales/modal-informativo/modal-in
 import { IconoOjoTachado } from '@/components/ui/iconos/ojo-tachado/ojo-tachado.jsx'
 import { IconoOjo } from '@/components/ui/iconos/ojo/ojo.jsx'
 import styles from './registrar.module.css'
+import { IconoAdvertencia } from '@/components/ui/iconos/advertencia/advertencia.jsx'
+import { IconoVerificado } from '@/components/ui/iconos/verificado/verificado.jsx'
 
 function Registrar() {
   const [formData, setFormData] = useState({
@@ -24,15 +26,41 @@ function Registrar() {
   )
   const [onSubmit, setOnSubmit] = useState(false)
 
-  // --- Visibilidad de contraseñas ---
   const [mostrarContrasenia, setMostrarContrasenia] = useState(false)
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false)
+
+  const [tocado, setTocado] = useState({
+    nombre: false,
+    contrasenia: false,
+    confirmarContrasenia: false,
+  })
 
   const { showToast } = useToast()
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  // --- Validación de fuerza de contraseña en tiempo real ---
+  const validarNombre = (nombre) => {
+    return {
+      sinEspacios: !/\s/.test(nombre),
+      longitudMinima: nombre.length >= 3,
+      caracteresValidos: /^[a-zA-Z0-9_.]*$/.test(nombre),
+    }
+  }
+
+  const nombreChecks = validarNombre(formData.nombre)
+  const nombreEsValido = formData.nombre.length > 0 && Object.values(nombreChecks).every(Boolean)
+
+  const getErrorNombre = () => {
+    if (formData.nombre.length === 0) return 'El nombre de usuario no puede estar vacío'
+    if (!nombreChecks.sinEspacios) return 'El nombre de usuario no puede contener espacios'
+    if (!nombreChecks.longitudMinima) return 'El nombre de usuario debe tener al menos 3 caracteres'
+    if (!nombreChecks.caracteresValidos)
+      return 'El nombre de usuario contiene caracteres no permitidos'
+    return null
+  }
+
+  const errorNombre = getErrorNombre()
+
   const validarContrasenia = (contrasenia) => {
     return {
       longitud: contrasenia.length >= 8,
@@ -46,13 +74,33 @@ function Registrar() {
   const passwordChecks = validarContrasenia(formData.contrasenia)
   const passwordEsValida = Object.values(passwordChecks).every(Boolean)
 
-  // --- Coincidencia de contraseñas en tiempo real ---
+  const getErrorContrasenia = () => {
+    if (formData.contrasenia.length === 0) return 'La contraseña no puede estar vacía'
+    if (!passwordChecks.longitud) return 'La contraseña es demasiado corta'
+
+    const faltantes = []
+    if (!passwordChecks.mayuscula) faltantes.push('una mayúscula')
+    if (!passwordChecks.minuscula) faltantes.push('una minúscula')
+    if (!passwordChecks.numero) faltantes.push('un número')
+    if (!passwordChecks.especial) faltantes.push('un carácter especial')
+
+    if (faltantes.length === 0) return null
+    return `La contraseña necesita ${faltantes.join(', ')}`
+  }
+
+  const errorContrasenia = getErrorContrasenia()
+
   const contraseniasCoinciden =
     formData.confirmarContrasenia.length > 0 &&
     formData.contrasenia === formData.confirmarContrasenia
 
-  const mostrarErrorCoincidencia =
-    formData.confirmarContrasenia.length > 0 && !contraseniasCoinciden
+  const getErrorConfirmacion = () => {
+    if (formData.confirmarContrasenia.length === 0) return 'Confirmá tu contraseña'
+    if (!contraseniasCoinciden) return 'Las contraseñas no coinciden'
+    return null
+  }
+
+  const errorConfirmacion = getErrorConfirmacion()
 
   const handleChange = (e) => {
     setFormData({
@@ -61,21 +109,25 @@ function Registrar() {
     })
   }
 
+  const handleBlur = (e) => {
+    setTocado((prev) => ({ ...prev, [e.target.name]: true }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!formData.nombre || !formData.contrasenia || !formData.confirmarContrasenia) {
-      showToast('Completa todos los campos', 'error')
-      return
-    }
+    setTocado({ nombre: true, contrasenia: true, confirmarContrasenia: true })
 
-    if (!passwordEsValida) {
-      showToast('La contraseña no cumple con los requisitos de seguridad', 'error')
-      return
-    }
+    if (errorNombre || errorContrasenia || errorConfirmacion) {
+      showToast('Revisá los campos marcados en rojo', 'error')
 
-    if (formData.contrasenia !== formData.confirmarContrasenia) {
-      showToast('Las contraseñas no coinciden', 'error')
+      if (errorNombre) {
+        document.querySelector('input[name="nombre"]')?.focus()
+      } else if (errorContrasenia) {
+        document.querySelector('input[name="contrasenia"]')?.focus()
+      } else {
+        document.querySelector('input[name="confirmarContrasenia"]')?.focus()
+      }
       return
     }
 
@@ -100,13 +152,6 @@ function Registrar() {
       setOnSubmit(false)
     }
   }
-
-  const RequisitoItem = ({ cumplido, texto }) => (
-    <li className={cumplido ? styles.textoValido : styles.textoPendiente}>
-      <span className={styles.icono}>{cumplido ? '✓' : '○'}</span>
-      {texto}
-    </li>
-  )
 
   return (
     <div
@@ -146,19 +191,50 @@ function Registrar() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Nombre</label>
+            <label className="form-label">Nombre de usuario</label>
+            <div className="input-group">
+              <input
+                type="text"
+                name="nombre"
+                className={`form-control ${
+                  tocado.nombre && errorNombre
+                    ? styles.inputInvalido
+                    : tocado.nombre && nombreEsValido
+                      ? styles.inputValido
+                      : ''
+                }`}
+                placeholder="juanperez123"
+                value={formData.nombre}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                style={{
+                  borderColor:
+                    !(tocado.nombre && errorNombre) && !(tocado.nombre && nombreEsValido)
+                      ? 'var(--border-color-dark)'
+                      : undefined,
+                }}
+              />
+              {tocado.nombre && nombreEsValido && (
+                <span
+                  className="input-group-text"
+                  style={{ backgroundColor: 'transparent', borderColor: 'var(--color-success)' }}
+                >
+                  <IconoVerificado />
+                </span>
+              )}
+            </div>
 
-            <input
-              type="text"
-              name="nombre"
-              className="form-control"
-              placeholder="Juan Pérez"
-              value={formData.nombre}
-              onChange={handleChange}
-              style={{
-                borderColor: 'var(--border-color-dark)',
-              }}
-            />
+            {tocado.nombre && errorNombre && (
+              <small
+                className={`form-text d-flex align-items-center gap-1 mt-1 ${styles.textoInvalido}`}
+              >
+                <IconoAdvertencia /> {errorNombre}
+              </small>
+            )}
+
+            <small className={`form-text d-block mt-1 ${styles.textoNeutro}`}>
+              Debe ser único, sin espacios. Solo letras, números, "_" o ".".
+            </small>
           </div>
 
           <div className="mb-3">
@@ -168,22 +244,38 @@ function Registrar() {
               <input
                 type={mostrarContrasenia ? 'text' : 'password'}
                 name="contrasenia"
-                className="form-control"
+                className={`form-control ${
+                  tocado.contrasenia && errorContrasenia
+                    ? styles.inputInvalido
+                    : tocado.contrasenia && passwordEsValida
+                      ? styles.inputValido
+                      : ''
+                }`}
                 placeholder="********"
                 value={formData.contrasenia}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 style={{
-                  borderColor: 'var(--border-color-dark)',
+                  borderColor:
+                    !(tocado.contrasenia && errorContrasenia) &&
+                    !(tocado.contrasenia && passwordEsValida)
+                      ? 'var(--border-color-dark)'
+                      : undefined,
                 }}
               />
+              {tocado.contrasenia && passwordEsValida && (
+                <span
+                  className="input-group-text"
+                  style={{ backgroundColor: 'transparent', borderColor: 'var(--color-success)' }}
+                >
+                  <IconoVerificado />
+                </span>
+              )}
               <button
                 type="button"
                 className="btn"
                 onClick={() => setMostrarContrasenia(!mostrarContrasenia)}
-                style={{
-                  borderColor: 'var(--border-color-dark)',
-                  color: 'var(--color-subtitle)',
-                }}
+                style={{ borderColor: 'var(--border-color-dark)', color: 'var(--color-subtitle)' }}
                 aria-label={mostrarContrasenia ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 tabIndex={-1}
               >
@@ -191,23 +283,18 @@ function Registrar() {
               </button>
             </div>
 
-            {formData.contrasenia.length > 0 &&
-              (passwordEsValida ? (
-                <small className={styles.textoValido}>
-                  <span className={styles.icono}>✓</span> Contraseña segura
-                </small>
-              ) : (
-                <ul className={`list-unstyled mt-2 mb-0 ${styles.listaRequisitos}`}>
-                  <RequisitoItem cumplido={passwordChecks.longitud} texto="Al menos 8 caracteres" />
-                  <RequisitoItem cumplido={passwordChecks.mayuscula} texto="Al menos 1 mayúscula" />
-                  <RequisitoItem cumplido={passwordChecks.minuscula} texto="Al menos 1 minúscula" />
-                  <RequisitoItem cumplido={passwordChecks.numero} texto="Al menos 1 número" />
-                  <RequisitoItem
-                    cumplido={passwordChecks.especial}
-                    texto="Al menos 1 carácter especial"
-                  />
-                </ul>
-              ))}
+            {tocado.contrasenia && errorContrasenia && (
+              <small
+                className={`form-text d-flex align-items-center gap-1 mt-1 ${styles.textoInvalido}`}
+              >
+                <IconoAdvertencia /> {errorContrasenia}
+              </small>
+            )}
+
+            <small className={`form-text d-block mt-1 ${styles.textoNeutro}`}>
+              La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una
+              minúscula, un número y un carácter especial.
+            </small>
           </div>
 
           <div className="mb-4">
@@ -218,44 +305,47 @@ function Registrar() {
                 type={mostrarConfirmacion ? 'text' : 'password'}
                 name="confirmarContrasenia"
                 className={`form-control ${
-                  mostrarErrorCoincidencia
+                  tocado.confirmarContrasenia && errorConfirmacion
                     ? styles.inputInvalido
-                    : contraseniasCoinciden
+                    : tocado.confirmarContrasenia && contraseniasCoinciden
                       ? styles.inputValido
                       : ''
                 }`}
                 placeholder="********"
                 value={formData.confirmarContrasenia}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 style={{
-                  borderColor:
-                    !mostrarErrorCoincidencia && !contraseniasCoinciden
-                      ? 'var(--border-color-dark)'
-                      : undefined,
+                  borderColor: !(tocado.confirmarContrasenia && errorConfirmacion)
+                    ? 'var(--border-color-dark)'
+                    : undefined,
                 }}
               />
+              {tocado.confirmarContrasenia && contraseniasCoinciden && (
+                <span
+                  className="input-group-text"
+                  style={{ backgroundColor: 'transparent', borderColor: 'var(--color-success)' }}
+                >
+                  <IconoVerificado />
+                </span>
+              )}
               <button
                 type="button"
                 className="btn"
                 onClick={() => setMostrarConfirmacion(!mostrarConfirmacion)}
-                style={{
-                  borderColor: 'var(--border-color-dark)',
-                  color: 'var(--color-subtitle)',
-                }}
+                style={{ borderColor: 'var(--border-color-dark)', color: 'var(--color-subtitle)' }}
                 aria-label={mostrarConfirmacion ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 tabIndex={-1}
               >
-                {mostrarConfirmacion  ? <IconoOjoTachado /> : <IconoOjo />}
+                {mostrarConfirmacion ? <IconoOjoTachado /> : <IconoOjo />}
               </button>
             </div>
 
-            {formData.confirmarContrasenia.length > 0 && (
+            {tocado.confirmarContrasenia && errorConfirmacion && (
               <small
-                className={`form-text ${contraseniasCoinciden ? styles.textoValido : styles.textoInvalido}`}
+                className={`form-text d-flex align-items-center gap-1 mt-1 ${styles.textoInvalido}`}
               >
-                {contraseniasCoinciden
-                  ? '✓ Las contraseñas coinciden'
-                  : '✗ Las contraseñas no coinciden'}
+                <IconoAdvertencia /> {errorConfirmacion}
               </small>
             )}
           </div>
@@ -278,7 +368,6 @@ function Registrar() {
           <button
             type="submit"
             className="btn w-100 fw-bold"
-            disabled={!passwordEsValida || !contraseniasCoinciden}
             style={{
               backgroundColor: 'var(--color-secondary)',
               color: 'white',

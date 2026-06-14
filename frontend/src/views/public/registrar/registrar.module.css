@@ -1,33 +1,18 @@
-.inputValido {
-  border-color: var(--color-success) !important;
+.textoNeutro {
+  color: var(--color-subtitle);
+  font-size: 0.85rem;
+}
+
+.textoInvalido {
+  color: var(--color-caution);
+  font-size: 0.85rem;
 }
 
 .inputInvalido {
   border-color: var(--color-caution) !important;
 }
 
-.textoValido {
-  color: var(--color-success);
-}
-
-.textoInvalido {
-  color: var(--color-caution);
-}
-
-.textoPendiente {
-  color: var(--color-subtitle);
-}
-
-.listaRequisitos {
-  font-size: 0.85rem;
-}
-
-.listaRequisitos li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.listaRequisitos .icono {
-  font-weight: bold;
+.inputValido {
+  border-color: var(--color-success) !important;
+  padding-right: 2.5rem;
 }

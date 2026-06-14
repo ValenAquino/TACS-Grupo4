@@ -1,9 +1,12 @@
 package app.servicios.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import app.MongoTestBase;
 import app.dto.EstadisticasDto;
+import app.dto.SesionDto;
+import app.exceptions.UnauthorizedException;
 import app.model.entities.*;
 import app.servicios.ServicioEstadisticas;
 import java.time.LocalDateTime;
@@ -19,6 +22,10 @@ class ServicioEstadisticaTest extends MongoTestBase {
 
     private List<MedioDeContacto> telegram(String numero) {
         return List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, numero));
+    }
+
+    private SesionDto adminSesion() {
+        return new SesionDto("user-id", "ADMINISTRADOR", "p-10", "c-10");
     }
 
     private Perfil perfil(String id, String usuarioId, String nombre) {
@@ -68,7 +75,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
     @Test
     void getEstadisticas_sinDatos_retornaTodosCeros() {
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(0, resultado.getTotalUsuarios());
         assertEquals(0, resultado.getTotalFiguritasPublicadas());
@@ -119,7 +126,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
 
         repositorioSubastas.guardar(subastaActiva);
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(2, resultado.getTotalUsuarios());
         assertEquals(3, resultado.getTotalFiguritasPublicadas());
@@ -142,7 +149,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
         repositorioSubastas.guardar(activa);
         repositorioSubastas.guardar(vencida);
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(1, resultado.getTotalSubastasActivas());
     }
@@ -150,7 +157,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
     @Test
     void propuestasPorEstado_sinPropuestas_retornaCeros() {
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(0, resultado.getPropuestasPorEstado().getPendientes());
         assertEquals(0, resultado.getPropuestasPorEstado().getAceptadas());
@@ -190,7 +197,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
         repositorioPropuestas.guardar(aceptada);
         repositorioPropuestas.guardar(rechazada);
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(1, resultado.getPropuestasPorEstado().getPendientes());
         assertEquals(1, resultado.getPropuestasPorEstado().getAceptadas());
@@ -231,7 +238,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
         repositorioPropuestas.guardar(pendiente2);
         repositorioPropuestas.guardar(aceptada);
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(2, resultado.getPropuestasPorEstado().getPendientes());
         assertEquals(1, resultado.getPropuestasPorEstado().getAceptadas());
@@ -241,7 +248,7 @@ class ServicioEstadisticaTest extends MongoTestBase {
     @Test
     void figuritasPorModalidad_sinFiguritas_retornaCeros() {
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(0, resultado.getFiguritasPorModalidad().getSoloIntercambio());
         assertEquals(0, resultado.getFiguritasPorModalidad().getSoloSubasta());
@@ -273,11 +280,21 @@ class ServicioEstadisticaTest extends MongoTestBase {
 
         repositorioPerfiles.guardar(u1);
 
-        EstadisticasDto resultado = service.obtenerEstadisticas();
+        EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion());
 
         assertEquals(2, resultado.getFiguritasPorModalidad().getSoloIntercambio());
         assertEquals(2, resultado.getFiguritasPorModalidad().getSoloSubasta());
         assertEquals(1, resultado.getFiguritasPorModalidad().getAmbos());
+    }
+
+    @Test
+    void obtenerEstadisticas_usuarioNoAdmin_lanzaUnauthorized() {
+        SesionDto sesion = new SesionDto("u1", "USUARIO", "p-11", "c-10");
+
+        assertThrows(
+            UnauthorizedException.class,
+            () -> service.obtenerEstadisticas(sesion)
+        );
     }
 
     private Propuesta propuestaConEstado(

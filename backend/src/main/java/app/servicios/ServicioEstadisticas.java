@@ -1,12 +1,10 @@
 package app.servicios;
 
-import app.dto.EstadisticasDto;
-import app.dto.FiguritasPorModalidadDto;
-import app.dto.PropuestasPorEstadoDto;
-import app.dto.SeleccionCantidadDto;
+import app.dto.*;
 import app.dto.filtros.RepetidasFiltro;
 import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
+import app.exceptions.UnauthorizedException;
 import app.model.entities.EstadoProceso;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
@@ -36,7 +34,12 @@ public class ServicioEstadisticas {
     private final RepositorioSubastas repositorioSubastas;
     private final RepositorioColecciones repositorioColecciones;
 
-    public EstadisticasDto obtenerEstadisticas() {
+    public EstadisticasDto obtenerEstadisticas(SesionDto dto) {
+
+        if(!"ADMINISTRADOR".equals(dto.rol())) {
+            throw new UnauthorizedException("Solo el admin puede ver las estadisticas");
+        }
+
         long totalUsuarios = repositorioPerfiles.contar();
 
         long totalFiguritasPublicadas = this.repositorioColecciones.contarRepetidas(new ArrayList<>());

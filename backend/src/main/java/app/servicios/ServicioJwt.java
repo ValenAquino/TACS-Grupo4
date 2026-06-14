@@ -17,16 +17,11 @@ import java.time.Duration;
 @Service
 public class ServicioJwt {
 
-  private final String secret;
-  private final Duration expiration;
+  @Value("${jwt.secret}")
+  private String secret;
 
-  public ServicioJwt(
-      @Value("${jwt.secret}") String secret,
-      @Value("${jwt.expiration}") Duration expiration
-  ) {
-    this.secret = secret;
-    this.expiration = expiration;
-  }
+  @Value("${jwt.expiration}")
+  private Duration expiration;
 
   /**
    Metodo que genera un token con UserId, Rol, PerfilId y ColId.

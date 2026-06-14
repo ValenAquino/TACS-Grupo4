@@ -58,6 +58,10 @@ public class ServicioUsuario {
 
     Usuario usuarioNuevo;
 
+    if (this.repositorioUsuarios.existePorNombre(request.getNombre())) {
+      throw new BadRequestException("El nombre de usuario ya está en uso");
+    }
+
     if(request.getRol() == null) {
       usuarioNuevo = new Usuario(request.getNombre(), passwordEncoder.encode(request.getContrasenia()), Rol.USUARIO);
     } else {

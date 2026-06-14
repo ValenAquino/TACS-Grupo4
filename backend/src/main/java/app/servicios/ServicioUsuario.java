@@ -78,6 +78,9 @@ public class ServicioUsuario {
 
     this.repositorioPerfiles.guardar(perfil);
   }
+  public boolean existeNombre(String nombre) {
+    return this.repositorioUsuarios.existePorNombre(nombre);
+  }
 }
 
 

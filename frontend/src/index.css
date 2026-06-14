@@ -10,6 +10,7 @@
   --color-background: #faf9f5;
   --color-text: #212529;
   --color-subtitle: #596061;
+  --color-placeholder: #9d9d9d;
 
   --font-family: "Inter", sans-serif;
 
@@ -60,4 +61,9 @@ h2 {
 p {
   font-size: var(--font-size-p);
   margin: 0;
+}
+
+input::placeholder {
+  color: var(--color-placeholder)  !important;
+  opacity: 1  !important;
 }

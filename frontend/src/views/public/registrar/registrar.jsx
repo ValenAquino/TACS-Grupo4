@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { crearAdministrador, crearUsuario } from '@/services/usuarioService.js'
+import { crearAdministrador, crearUsuario, verificarNombre } from '@/services/usuarioService.js'
 import { useToast } from '@/contexts/toastContext.jsx'
 import { useAuth } from '@/contexts/userContext.jsx'
 import { useError } from '@/contexts/errorContext.jsx'
@@ -23,6 +23,8 @@ function Registrar() {
   )
   const [onSubmit, setOnSubmit] = useState(false)
 
+  const [nombreTomado, setNombreTomado] = useState(false)
+
   const [tocado, setTocado] = useState({
     nombre: false,
     contrasenia: false,
@@ -42,10 +44,13 @@ function Registrar() {
   }
 
   const nombreChecks = validarNombre(formData.nombre)
-  const nombreEsValido = formData.nombre.length > 0 && Object.values(nombreChecks).every(Boolean)
+  const nombreFormatoValido =
+    formData.nombre.length > 0 && Object.values(nombreChecks).every(Boolean)
+  const nombreEsValido = nombreFormatoValido && !nombreTomado
 
   const getErrorNombre = () => {
     if (formData.nombre.length === 0) return 'El nombre de usuario no puede estar vacío'
+    if (nombreTomado) return 'Este nombre de usuario ya está en uso'
     if (!nombreChecks.sinEspacios) return 'El nombre de usuario no puede contener espacios'
     if (!nombreChecks.longitudMinima) return 'El nombre de usuario debe tener al menos 3 caracteres'
     if (!nombreChecks.caracteresValidos)
@@ -105,6 +110,13 @@ function Registrar() {
 
   const handleBlur = (e) => {
     setTocado((prev) => ({ ...prev, [e.target.name]: true }))
+  }
+
+  const handleBlurNombre = async (e) => {
+    handleBlur(e)
+    if (!nombreFormatoValido) return
+    const existe = await verificarNombre(formData.nombre)
+    setNombreTomado(existe)
   }
 
   const handleSubmit = async (e) => {
@@ -190,7 +202,7 @@ function Registrar() {
             placeholder="juanperez123"
             value={formData.nombre}
             onChange={handleChange}
-            onBlur={handleBlur}
+            onBlur={handleBlurNombre}
             tocado={tocado.nombre}
             esValido={nombreEsValido}
             error={errorNombre}

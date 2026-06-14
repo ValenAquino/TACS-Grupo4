@@ -10,6 +10,8 @@ import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -23,7 +25,10 @@ class ServicioJwtTest {
 
   @BeforeEach
   void setUp() {
-    servicioJwt = new ServicioJwt();
+    servicioJwt = new ServicioJwt(
+        "12345678901234567890123456789012",
+        Duration.ofHours(12)
+    );
 
     usuario = mock(Usuario.class);
     perfil = mock(Perfil.class);

@@ -29,8 +29,11 @@ public class ControladorSesion {
 
 
     @GetMapping("/administrador/estadisticas")
-    public ResponseEntity<EstadisticasDto> obtenerEstadisticas() {
-        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas());
+    public ResponseEntity<EstadisticasDto> obtenerEstadisticas(
+        @CookieValue("token") String token
+    ) {
+        SesionDto dto = this.servicioJwt.obtenerSesion(token);
+        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas(dto));
     }
 
     @PostMapping("/login")

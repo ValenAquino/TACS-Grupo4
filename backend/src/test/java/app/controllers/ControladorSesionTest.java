@@ -37,11 +37,19 @@ class ControladorSesionTest {
 
   @Test
   void obtenerEstadisticas_retorna200() throws Exception {
-    EstadisticasDto dto = mock(EstadisticasDto.class);
+    EstadisticasDto estadisticasDto = mock(EstadisticasDto.class);
+    SesionDto sesionDto = mock(SesionDto.class);
 
-    when(estadisticasService.obtenerEstadisticas()).thenReturn(dto);
+    when(servicioJwt.obtenerSesion("fake-token"))
+        .thenReturn(sesionDto);
 
-    mockMvc.perform(get("/administrador/estadisticas"))
+    when(estadisticasService.obtenerEstadisticas(sesionDto))
+        .thenReturn(estadisticasDto);
+
+    mockMvc.perform(
+            get("/administrador/estadisticas")
+                .cookie(new jakarta.servlet.http.Cookie("token", "fake-token"))
+        )
         .andExpect(status().isOk());
   }
 

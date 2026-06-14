@@ -7,15 +7,21 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.time.Duration;
 
 @Service
 public class ServicioJwt {
-  private final String SECRET =
-      "jhggsddahjbujbyutydrrtweawqawq4456778689879864422345";
+
+  @Value("${jwt.secret}")
+  private String secret;
+
+  @Value("${jwt.expiration}")
+  private Duration expiration;
 
   /**
    Metodo que genera un token con UserId, Rol, PerfilId y ColId.
@@ -38,7 +44,7 @@ public class ServicioJwt {
         .setExpiration(
             new Date(
                 System.currentTimeMillis()
-                    + 1000 * 60 * 60 * 12
+                    + expiration.toMillis()
             )
         )
 
@@ -56,7 +62,7 @@ public class ServicioJwt {
   private Key getSignKey() {
 
     return Keys.hmacShaKeyFor(
-        SECRET.getBytes(StandardCharsets.UTF_8)
+        secret.getBytes(StandardCharsets.UTF_8)
     );
   }
 

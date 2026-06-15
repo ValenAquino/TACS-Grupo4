@@ -7,6 +7,7 @@ import app.model.entities.Usuario;
 import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioUsuarios;
 import app.repositories.impl.campos.CamposPerfil;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,15 +19,27 @@ public class ServicioSesion {
   private final RepositorioUsuarios repoUsuario;
   private final RepositorioPerfiles repoPerfiles;
   private final ServicioJwt servicioJwt;
+  private final MeterRegistry meterRegistry;
 
   public String login(LoginRequest request) {
+    try {
+      String token = intentarLogin(request);
+      meterRegistry.counter("auth_login_intentos_total", "resultado", "exitoso").increment();
+      return token;
+    } catch (RuntimeException e) {
+      meterRegistry.counter("auth_login_intentos_total", "resultado", "fallido").increment();
+      throw e;
+    }
+  }
+
+  private String intentarLogin(LoginRequest request) {
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     Usuario usuario = this.repoUsuario.buscarPorNombre(request.nombre());
 
     boolean coincide = passwordEncoder.matches(request.contrasenia(), usuario.getContrasenia());
 
-    if(!coincide) {
+    if (!coincide) {
       throw new UsuarioException("Credenciales invalidas");
     }
 

@@ -101,7 +101,7 @@ class ControladorColeccionTest {
 
     doThrow(new NotFoundException("No se encontro la figurita"))
         .when(serviceColeccion)
-        .agregarRepetida(eq("1"), any(), any(), any());
+        .agregarRepetida(eq("1"), any(),any(), any(), any());
 
     String json = """
             {

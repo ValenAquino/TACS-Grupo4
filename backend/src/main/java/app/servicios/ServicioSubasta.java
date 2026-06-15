@@ -22,8 +22,8 @@ import java.util.List;
 import app.repositories.impl.campos.CamposPerfil;
 import app.repositories.impl.campos.CamposSubasta;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
-import java.time.Duration;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -189,8 +189,9 @@ public class ServicioSubasta {
     if (!subasta.estaActivo()) {
       throw new BadRequestException("La subasta ya cerro");
     }
+    Map<String, EstadoProceso> estadosAntes = snapshotEstados(subasta);
     subasta.cancelar(perfilId);
-    registrarMetricaFinalizacion(subasta, "cancelada");
+    registrarTransiciones(subasta, estadosAntes);
 
     CamposColeccion camposColeccion = new CamposColeccion(true, false);
     subasta.getOfertas().stream()
@@ -238,8 +239,9 @@ public class ServicioSubasta {
           o.getAutor().setColeccion(col);
         });
 
+    Map<String, EstadoProceso> estadosAntes = snapshotEstados(subasta);
     subasta.cerrar(perfilId);
-    registrarMetricaFinalizacion(subasta, seleccionada != null ? "adjudicada" : "sin_oferta");
+    registrarTransiciones(subasta, estadosAntes);
 
     subasta.getOfertas().stream()
         .filter(o -> seleccionada == null || !o.getId().equals(seleccionada.getId()))
@@ -306,14 +308,20 @@ public class ServicioSubasta {
     return new SubastaDto(subasta);
   }
 
-  private void registrarMetricaFinalizacion(Subasta subasta, String resultado) {
-    meterRegistry.counter("subastas_finalizadas_total", "resultado", resultado).increment();
-    Duration duracion = Duration.between(subasta.getFechaInicio(), subasta.getFechaCierre());
-    Timer.builder("subastas_duracion_segundos")
-        .tag("resultado", resultado)
-        .publishPercentileHistogram()
-        .register(meterRegistry)
-        .record(duracion);
+  private void registrarTransicion(EstadoProceso antes, EstadoProceso despues) {
+    if (antes != despues) {
+      meterRegistry.counter("propuestas_transiciones_total", "estado", despues.name().toLowerCase()).increment();
+    }
+  }
+
+  private Map<String, EstadoProceso> snapshotEstados(Subasta subasta) {
+    return subasta.getOfertas().stream()
+        .collect(Collectors.toMap(Propuesta::getId, o -> o.getEstadoActual().getValor()));
+  }
+
+  private void registrarTransiciones(Subasta subasta, Map<String, EstadoProceso> antes) {
+    subasta.getOfertas().forEach(o ->
+        registrarTransicion(antes.get(o.getId()), o.getEstadoActual().getValor()));
   }
 }
 

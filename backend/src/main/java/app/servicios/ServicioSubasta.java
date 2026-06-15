@@ -131,6 +131,7 @@ public class ServicioSubasta {
 
     List<Figurita> nuevasFiguritas = this.repoFigurita.buscarPorIds(body.getFiguritasOfrecidasId());
     subasta.modificarFiguritasDeOferta(ofertaId, perfilId, nuevasFiguritas);
+    meterRegistry.counter("propuestas_transiciones_total", "estado", "pendiente").increment();
 
     this.repositorioColecciones.guardar(coleccion, camposColeccion);
     this.repoSubasta.guardar(subasta, camposSubasta);
@@ -146,6 +147,7 @@ public class ServicioSubasta {
     }
 
     Propuesta oferta = subasta.cancelarOferta(ofertaId, perfilId);
+    meterRegistry.counter("propuestas_transiciones_total", "estado", "cancelado").increment();
 
     CamposColeccion camposColeccion = new CamposColeccion(true, false);
     this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);
@@ -162,7 +164,9 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
 
+    Map<String, EstadoProceso> estadosAntes = snapshotEstados(subasta);
     subasta.seleccionarOferta(ofertaId, perfilId);
+    registrarTransiciones(subasta, estadosAntes);
 
     this.repoSubasta.guardar(subasta, camposSubasta);
   }
@@ -177,6 +181,7 @@ public class ServicioSubasta {
     }
 
     Propuesta oferta = subasta.rechazarOferta(ofertaId, perfilId);
+    meterRegistry.counter("propuestas_transiciones_total", "estado", "rechazado").increment();
 
     CamposColeccion camposColeccion = new CamposColeccion(true, false);
     this.repositorioColecciones.guardar(oferta.getAutor().getColeccion(), camposColeccion);

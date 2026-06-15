@@ -108,6 +108,7 @@ public class ServicioPropuesta {
     );
 
     propuesta.aceptar(perfilId);
+    meterRegistry.counter("propuestas_transiciones_total", "estado", "aceptado").increment();
 
     repositorioColecciones.guardar(autor.getColeccion());
     repositorioColecciones.guardar(coleccionDestinatario);
@@ -122,6 +123,7 @@ public class ServicioPropuesta {
   public void rechazar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.rechazar(perfilId);
+    meterRegistry.counter("propuestas_transiciones_total", "estado", "rechazado").increment();
 
     Perfil autor = propuesta.getAutor();;
 
@@ -139,6 +141,7 @@ public class ServicioPropuesta {
   public void cancelar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
     propuesta.cancelar(perfilId);
+    meterRegistry.counter("propuestas_transiciones_total", "estado", "cancelado").increment();
 
     Perfil autor = propuesta.getAutor();;
 

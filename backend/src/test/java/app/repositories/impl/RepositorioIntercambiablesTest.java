@@ -1,6 +1,7 @@
 package app.repositories.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import app.MongoTestBase;
@@ -51,6 +52,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     Perfil perfilUno = Perfil.builder()
         .id("perfil-1").usuario(user).nombre("Lucas")
         .coleccion(coleccion)
+        .calificacionMedia(4.4)
         .mediosDeContacto(List.of(new MedioDeContacto(MedioComunicacion.TELEGRAM, "@lucas")))
         .build();
     user = new Usuario("u-2", Rol.USUARIO, "adas", "da");
@@ -81,6 +83,12 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, null), 1, 10);
 
     assertEquals(2, resultado.cantidadDeElementos());
+    var resultadoLucas = resultado.contenido().stream()
+        .filter(item -> "perfil-1".equals(item.figurita().getPerfilId()))
+        .findFirst()
+        .orElseThrow();
+    assertEquals("Lucas", resultadoLucas.perfil().nombre());
+    assertEquals(4.4, resultadoLucas.perfil().calificacionMedia());
   }
 
   @Test
@@ -99,7 +107,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, 11, null, null, null), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
-    assertEquals("ARG-11", resultado.contenido().get(0).getFigurita().getId());
+    assertEquals("ARG-11", resultado.contenido().get(0).figurita().getFigurita().getId());
   }
 
   @Test
@@ -107,7 +115,10 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, "ARGENTINA", null, null), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
-    assertEquals(Seleccion.ARGENTINA, resultado.contenido().get(0).getFigurita().getSeleccion());
+    assertEquals(
+        Seleccion.ARGENTINA,
+        resultado.contenido().get(0).figurita().getFigurita().getSeleccion()
+    );
   }
 
   @Test
@@ -122,7 +133,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, List.of(MetodoIntercambio.INTERCAMBIO)), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
-    assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.INTERCAMBIO));
+    assertTrue(resultado.contenido().get(0).figurita().soporta(MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test
@@ -130,7 +141,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(new FiguritasFiltro(null, null, null, null, List.of(MetodoIntercambio.SUBASTA)), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
-    assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.SUBASTA));
+    assertTrue(resultado.contenido().get(0).figurita().soporta(MetodoIntercambio.SUBASTA));
   }
 
   @Test
@@ -139,6 +150,60 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
 
     assertEquals(0, resultado.cantidadDeElementos());
     assertTrue(resultado.contenido().isEmpty());
+  }
+
+  @Test
+  void buscarConFiltros_perfilNuloConservaLaFigurita() {
+    Figurita figurita = Figurita.builder()
+        .id("SIN-PERFIL")
+        .numero(98)
+        .jugador("Sin perfil")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
+    repositorioFiguritas.guardar(figurita);
+    coleccion.agregarRepetida(new FiguritaIntercambiable(
+        figurita,
+        1,
+        List.of(MetodoIntercambio.INTERCAMBIO),
+        null
+    ));
+    repositorioColecciones.guardar(coleccion);
+
+    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(
+        new FiguritasFiltro("SIN-PERFIL", null, null, null, null),
+        1,
+        10
+    );
+
+    assertEquals(1, resultado.contenido().size());
+    assertNull(resultado.contenido().get(0).perfil());
+  }
+
+  @Test
+  void buscarConFiltros_perfilInexistenteConservaLaFigurita() {
+    Figurita figurita = Figurita.builder()
+        .id("PERFIL-INEXISTENTE")
+        .numero(97)
+        .jugador("Perfil inexistente")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
+    repositorioFiguritas.guardar(figurita);
+    coleccion.agregarRepetida(new FiguritaIntercambiable(
+        figurita,
+        1,
+        List.of(MetodoIntercambio.INTERCAMBIO),
+        "no-existe"
+    ));
+    repositorioColecciones.guardar(coleccion);
+
+    var resultado = repositorioColecciones.buscarIntercambiablesConFiltros(
+        new FiguritasFiltro("PERFIL-INEXISTENTE", null, null, null, null),
+        1,
+        10
+    );
+
+    assertEquals(1, resultado.contenido().size());
+    assertNull(resultado.contenido().get(0).perfil());
   }
 
   @Test
@@ -176,7 +241,10 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesPorQuery("argentina", null, 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
-    assertEquals(Seleccion.ARGENTINA, resultado.contenido().get(0).getFigurita().getSeleccion());
+    assertEquals(
+        Seleccion.ARGENTINA,
+        resultado.contenido().get(0).figurita().getFigurita().getSeleccion()
+    );
   }
 
   @Test
@@ -191,7 +259,10 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesPorQuery("10 argentina", null, 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
-    assertEquals(Seleccion.ARGENTINA, resultado.contenido().get(0).getFigurita().getSeleccion());
+    assertEquals(
+        Seleccion.ARGENTINA,
+        resultado.contenido().get(0).figurita().getFigurita().getSeleccion()
+    );
   }
 
   @Test
@@ -199,7 +270,7 @@ public class RepositorioIntercambiablesTest extends MongoTestBase {
     var resultado = repositorioColecciones.buscarIntercambiablesPorQuery("10", List.of(MetodoIntercambio.INTERCAMBIO), 1, 10);
 
     assertEquals(1, resultado.cantidadDeElementos());
-    assertTrue(resultado.contenido().get(0).soporta(MetodoIntercambio.INTERCAMBIO));
+    assertTrue(resultado.contenido().get(0).figurita().soporta(MetodoIntercambio.INTERCAMBIO));
   }
 
   @Test

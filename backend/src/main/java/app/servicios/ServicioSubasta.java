@@ -63,6 +63,7 @@ public class ServicioSubasta {
     nuevaSubasta.reservarFiguritaSubastada();
 
     this.repoSubasta.guardar(nuevaSubasta);
+    meterRegistry.counter("subastas_creadas_total").increment();
     this.repositorioColecciones.guardar(perfil.getColeccion(), new CamposColeccion(true, false));
 
     CamposPerfil conMedio = new CamposPerfil(true);

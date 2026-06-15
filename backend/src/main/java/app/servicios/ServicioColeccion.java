@@ -28,12 +28,28 @@ public class ServicioColeccion {
   private final RepositorioPerfiles repositorioPerfiles;
   private final ServicioNotificacion notificacionService;
 
+  /**
+   * Agrega una figurita a la lista de faltantes de una colección.
+   *
+   * @param colId identificador de la colección a la que se le agregará la figurita faltante
+   * @param figId identificador de la figurita que se marcará como faltante
+   */
   public void agregarFaltante(String colId, String figId) {
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
 
     repositorioColecciones.agregarFaltante(colId, faltante);
   }
 
+  /**
+   * Agrega una figurita repetida a la colección indicada, marcándola como disponible
+   * para intercambio, y notifica a los perfiles que tienen dicha figurita como faltante.
+   *
+   * @param colId identificador de la colección a la que se le agregará la figurita repetida
+   * @param perfilId identificador del perfil propietario de la figurita repetida
+   * @param figId identificador de la figurita que se agregará como repetida
+   * @param cantidadExistente cantidad de unidades disponibles de la figurita
+   * @param modosIntercambio lista de métodos de intercambio aceptados para la figurita
+   */
   @Transactional
   public void agregarRepetida(String colId, String perfilId, String figId, Integer
       cantidadExistente, List<MetodoIntercambio> modosIntercambio) {
@@ -53,6 +69,13 @@ public class ServicioColeccion {
     this.notificacionService.notificarInteresados(interesados, cuerpo);
   }
 
+  /**
+   * Busca, de forma paginada, las figuritas faltantes de una colección según los filtros indicados.
+   *
+   * @param colId identificador de la colección sobre la que se buscarán las figuritas faltantes
+   * @param filtros criterios de filtrado y paginación a aplicar en la búsqueda
+   * @return página de resultados con las figuritas faltantes encontradas, representadas como {@link FiguritaDto}
+   */
   public PaginaResultado<FiguritaDto> buscarFaltantes(String colId, FaltantesFiltro filtros) {
     PaginaResultado<Figurita> resultado = this.repositorioColecciones.buscarFaltantes(colId, filtros);
 
@@ -63,6 +86,16 @@ public class ServicioColeccion {
         resultado.numero());
   }
 
+  /**
+   * Busca, de forma paginada, las figuritas repetidas de una colección según los filtros indicados.
+   * Si el filtro incluye un perfil, se utiliza la colección de faltantes de dicho perfil para
+   * calcular la información de coincidencias (publicadas/disponibles).
+   *
+   * @param colId identificador de la colección sobre la que se buscarán las figuritas repetidas
+   * @param filtros criterios de filtrado y paginación a aplicar en la búsqueda
+   * @return resultado con la cantidad de figuritas publicadas, disponibles y la página de
+   *         figuritas repetidas encontradas, representadas como {@link FiguritaIntercambiableDto}
+   */
   public Repetidas<FiguritaIntercambiableDto> buscarRepetidas(String colId, RepetidasFiltro filtros) {
     String colIdFaltantes = resolverColIdFaltantes(filtros.perfilId());
 
@@ -75,6 +108,14 @@ public class ServicioColeccion {
     return new Repetidas<>(repetidas.getPublicadas(), repetidas.getDisponibles(), paginacionDto);
   }
 
+  /**
+   * Resuelve el identificador de la colección de faltantes asociada a un perfil.
+   *
+   * @param perfilId identificador del perfil del cual se desea obtener la colección de faltantes,
+   *                  o {@code null} si no se desea resolver ninguna colección
+   * @return el identificador de la colección de faltantes del perfil, o {@code null} si
+   *         {@code perfilId} es {@code null}
+   */
   private String resolverColIdFaltantes(String perfilId) {
     if (perfilId == null) return null;
     Perfil perfilFaltantes = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));

@@ -21,6 +21,9 @@ import java.util.List;
 
 import app.repositories.impl.campos.CamposPerfil;
 import app.repositories.impl.campos.CamposSubasta;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +37,7 @@ public class ServicioSubasta {
   private final RepositorioCalificacion repoCalificacion;
   private final RepositorioColecciones repositorioColecciones;
   private final ServicioNotificacion notificacionService;
+  private final MeterRegistry meterRegistry;
 
   @Transactional
   public void crearSubasta(String perfilId, String figuritaId, Integer duracionEnHoras,
@@ -186,6 +190,7 @@ public class ServicioSubasta {
       throw new BadRequestException("La subasta ya cerro");
     }
     subasta.cancelar(perfilId);
+    registrarMetricaFinalizacion(subasta, "cancelada");
 
     CamposColeccion camposColeccion = new CamposColeccion(true, false);
     subasta.getOfertas().stream()
@@ -234,6 +239,7 @@ public class ServicioSubasta {
         });
 
     subasta.cerrar(perfilId);
+    registrarMetricaFinalizacion(subasta, seleccionada != null ? "adjudicada" : "sin_oferta");
 
     subasta.getOfertas().stream()
         .filter(o -> seleccionada == null || !o.getId().equals(seleccionada.getId()))
@@ -298,6 +304,16 @@ public class ServicioSubasta {
     Subasta subasta = this.repoSubasta.buscarPorId(subastaId, new CamposSubasta(true, true));
 
     return new SubastaDto(subasta);
+  }
+
+  private void registrarMetricaFinalizacion(Subasta subasta, String resultado) {
+    meterRegistry.counter("subastas_finalizadas_total", "resultado", resultado).increment();
+    Duration duracion = Duration.between(subasta.getFechaInicio(), subasta.getFechaCierre());
+    Timer.builder("subastas_duracion_segundos")
+        .tag("resultado", resultado)
+        .publishPercentileHistogram()
+        .register(meterRegistry)
+        .record(duracion);
   }
 }
 

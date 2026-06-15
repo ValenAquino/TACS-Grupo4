@@ -1,0 +1,75 @@
+package app.config;
+
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.registry.otlp.OtlpConfig;
+import io.micrometer.registry.otlp.OtlpMeterRegistry;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * El agente de OpenTelemetry no exporta los Meters custom de Micrometer de la
+ * app (resilience4j, contadores de negocio, etc.), solo su propia
+ * instrumentacion (jvm_*, http_server_*, etc.). Este registry exporta esos
+ * Meters por OTLP reusando las mismas variables que ya configura el agente
+ * para trazas (OTEL_EXPORTER_OTLP_ENDPOINT, OTEL_EXPORTER_OTLP_HEADERS,
+ * OTEL_RESOURCE_ATTRIBUTES).
+ */
+@Configuration
+@ConditionalOnProperty("otel.exporter.otlp.endpoint")
+public class OtlpMetricsConfig {
+
+  @Bean
+  public OtlpMeterRegistry otlpMeterRegistry() {
+    Map<String, String> headers = parseKeyValues(System.getenv("OTEL_EXPORTER_OTLP_HEADERS"));
+    Map<String, String> resourceAttributes = parseKeyValues(System.getenv("OTEL_RESOURCE_ATTRIBUTES"));
+    resourceAttributes.putIfAbsent("service.name",
+        System.getenv().getOrDefault("OTEL_SERVICE_NAME", "tacs-backend"));
+
+    String url = System.getenv("OTEL_EXPORTER_OTLP_ENDPOINT") + "/v1/metrics";
+
+    OtlpConfig config = new OtlpConfig() {
+      @Override
+      public String get(@NonNull String key) {
+        return null;
+      }
+
+      @Override
+      public @NonNull String url() {
+        return url;
+      }
+
+      @Override
+      public @NonNull Map<String, String> headers() {
+        return headers;
+      }
+
+      @Override
+      public @NonNull Map<String, String> resourceAttributes() {
+        return resourceAttributes;
+      }
+    };
+
+    return new OtlpMeterRegistry(config, Clock.SYSTEM);
+  }
+
+  private static Map<String, String> parseKeyValues(String raw) {
+    Map<String, String> result = new HashMap<>();
+    if (raw == null || raw.isBlank()) {
+      return result;
+    }
+    for (String par : raw.split(",")) {
+      String[] kv = par.split("=", 2);
+      if (kv.length == 2) {
+        result.put(kv[0].trim(), URLDecoder.decode(kv[1].trim(), StandardCharsets.UTF_8));
+      }
+    }
+    return result;
+  }
+}

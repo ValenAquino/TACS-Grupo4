@@ -59,6 +59,9 @@ public class RepositorioFiguritasMongo implements RepositorioFiguritas {
       query.addCriteria(Criteria.where("seleccion").regex(filtros.seleccion(), "i"));
     }
 
+    int tamanioPagina = filtros.tamanioPaginaEfectivo();
+    query.skip((long) filtros.paginaEfectiva() * tamanioPagina).limit(tamanioPagina);
+
     return this.mongoTemplate.find(query, Figurita.class);
   }
 

@@ -13,7 +13,8 @@ public interface RepositorioFiguritas {
   List<Figurita> buscarPorIds(List<String> ids);
 
   /**
-   * Retorna las figuritas que cumplan los filtros provistos.
+   * Retorna las figuritas que cumplan los filtros provistos, paginadas segun
+   * {@link FiguritasFiltro#paginaEfectiva()} y {@link FiguritasFiltro#tamanioPaginaEfectivo()}.
    * Los parámetros nulos se ignoran. {@code jugador} usa contains case-insensitive.
    *
    * @throws app.exceptions.NotFoundException si ninguna figurita coincide con los filtros

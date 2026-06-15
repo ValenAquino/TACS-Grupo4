@@ -44,4 +44,10 @@ public class ControladorUsuario {
     this.servicioUsuario.registrarAdministrador(request, Rol.valueOf(this.servicioJwt.getRol(token)));
     return ResponseEntity.noContent().build();
   }
+
+  @RequestMapping(value = "/usuarios/{nombre}", method = RequestMethod.HEAD)
+  public ResponseEntity<Void> verificarNombre(@PathVariable String nombre) {
+    boolean existe = this.servicioUsuario.existeNombre(nombre);
+    return existe ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+  }
 }

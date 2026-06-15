@@ -25,6 +25,8 @@ class ServicioColeccionTest extends MongoTestBase {
   private Figurita messi;
   private Coleccion coleccion;
 
+  private String perfilId;
+
   @BeforeEach
   void setUp() {
     service = new ServicioColeccion(repositorioFiguritas, repositorioColecciones,
@@ -41,6 +43,8 @@ class ServicioColeccionTest extends MongoTestBase {
 
     coleccion = new Coleccion();
     repositorioColecciones.guardar(coleccion);
+
+    perfilId = "10";
   }
 
   @Test
@@ -73,7 +77,7 @@ class ServicioColeccionTest extends MongoTestBase {
         .build();
     repositorioPerfiles.guardar(interesado);
 
-    service.agregarRepetida(this.coleccion.getId(),  "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
+    service.agregarRepetida(this.coleccion.getId(), perfilId, "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     Coleccion coleccion = repositorioColecciones.buscarPorId(this.coleccion.getId(), new CamposColeccion(true, false));
 
@@ -83,7 +87,7 @@ class ServicioColeccionTest extends MongoTestBase {
 
   @Test
   void agregarRepetida_sinInteresados_noNotifica() {
-    service.agregarRepetida(this.coleccion.getId(), "ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
+    service.agregarRepetida(this.coleccion.getId(), perfilId,"ARG-10", 2, List.of(MetodoIntercambio.INTERCAMBIO));
 
     repositorioPerfiles.buscarTodos(new CamposPerfil(false)).forEach(p -> assertEquals(0, repositorioNotificaciones.buscarPorPerfil(p).size()));
   }

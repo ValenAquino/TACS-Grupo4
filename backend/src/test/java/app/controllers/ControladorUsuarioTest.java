@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.head;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -433,5 +434,21 @@ public class ControladorUsuarioTest {
                 }
                 """))
         .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void verificarNombreDevuelve200_siExiste() throws Exception {
+    when(repositorioUsuarios.existePorNombre("lucas")).thenReturn(true);
+
+    mockMvc.perform(head("/usuarios/lucas"))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void verificarNombreDevuelve404_siNoExiste() throws Exception {
+    when(repositorioUsuarios.existePorNombre("lucas")).thenReturn(false);
+
+    mockMvc.perform(head("/usuarios/lucas"))
+        .andExpect(status().isNotFound());
   }
 }

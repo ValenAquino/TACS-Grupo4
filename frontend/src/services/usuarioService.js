@@ -33,7 +33,7 @@ export const editarContrasenia = async ({ contraseniaActual, contraseniaNueva })
 
 export const verificarNombre = async (nombre) => {
   try {
-    await api.get(`/usuarios/${nombre}`)
+    await api.head(`/usuarios/${nombre}`)
     return true
   } catch (error) {
     if (error.response?.status === 404) return false

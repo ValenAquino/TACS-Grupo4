@@ -16,11 +16,8 @@ function Registrar() {
     rol: 'USUARIO',
   })
 
-  const { handleError, errorTemplate } = useError()
+  const { handleError } = useError()
 
-  const [errorState, setErrorState] = useState(
-    errorTemplate({ nombre: undefined, contrasenia: undefined }),
-  )
   const [onSubmit, setOnSubmit] = useState(false)
 
   const [nombreTomado, setNombreTomado] = useState(false)
@@ -102,6 +99,7 @@ function Registrar() {
   const errorConfirmacion = getErrorConfirmacion()
 
   const handleChange = (e) => {
+    if (e.target.name === 'nombre') setNombreTomado(false)
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -115,8 +113,15 @@ function Registrar() {
   const handleBlurNombre = async (e) => {
     handleBlur(e)
     if (!nombreFormatoValido) return
-    const existe = await verificarNombre(formData.nombre)
-    setNombreTomado(existe)
+    try {
+      const existe = await verificarNombre(formData.nombre)
+      setNombreTomado(existe)
+    } catch (error) {
+      showToast(
+        handleError(error, () => {}),
+        'error',
+      )
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -153,7 +158,10 @@ function Registrar() {
       showToast(`Usuario creado correctamente`)
       navigate('/')
     } catch (error) {
-      showToast(handleError(error, setErrorState), 'error')
+      showToast(
+        handleError(error, () => {}),
+        'error',
+      )
     } finally {
       setOnSubmit(false)
     }
@@ -240,6 +248,7 @@ function Registrar() {
                 name="rol"
                 onChange={handleChange}
                 value={formData.rol}
+                style={{ borderColor: 'var(--border-color-dark)' }}
               >
                 <option value="USUARIO">USUARIO</option>
                 <option value="ADMINISTRADOR">ADMINISTRADOR</option>
@@ -250,12 +259,13 @@ function Registrar() {
           <button
             type="submit"
             className="btn w-100 fw-bold"
+            disabled={onSubmit}
             style={{
               backgroundColor: 'var(--color-secondary)',
               color: 'white',
             }}
           >
-            Crear cuenta
+            {onSubmit ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
 

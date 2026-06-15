@@ -45,7 +45,7 @@ public class ControladorUsuario {
     return ResponseEntity.noContent().build();
   }
 
-  @GetMapping("/usuarios/{nombre}")
+  @RequestMapping(value = "/usuarios/{nombre}", method = RequestMethod.HEAD)
   public ResponseEntity<Void> verificarNombre(@PathVariable String nombre) {
     boolean existe = this.servicioUsuario.existeNombre(nombre);
     return existe ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();

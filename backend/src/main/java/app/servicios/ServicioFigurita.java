@@ -2,21 +2,17 @@ package app.servicios;
 
 import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
+import app.dto.filtros.FiguritasFiltro;
 import app.dto.paginacion.PaginaResultado;
-import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
-import app.model.entities.Subasta;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Perfil;
-import app.dto.filtros.FiguritasFiltro;
+import app.model.entities.Subasta;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
-import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioSubastas;
+import app.repositories.projections.FiguritaIntercambiableConPerfil;
 import java.util.List;
-
-import app.repositories.impl.campos.CamposPerfil;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +23,6 @@ import org.springframework.stereotype.Service;
 public class ServicioFigurita {
 
   private final RepositorioColecciones repositorioColecciones;
-  private final RepositorioPerfiles repositorioPerfiles;
   private final RepositorioFiguritas repositorioFiguritas;
   private final RepositorioSubastas repositorioSubastas;
 
@@ -36,7 +31,7 @@ public class ServicioFigurita {
       List<MetodoIntercambio> tipos, int pagina, int tamanioPagina) {
 
     FiguritasFiltro filtros = new FiguritasFiltro(null, numero, seleccion, jugador, tipos);
-    PaginaResultado<FiguritaIntercambiable> paginaRepo =
+    PaginaResultado<FiguritaIntercambiableConPerfil> paginaRepo =
         repositorioColecciones.buscarIntercambiablesConFiltros(filtros, pagina, tamanioPagina);
 
     return mapearADto(paginaRepo);
@@ -44,7 +39,7 @@ public class ServicioFigurita {
   public PaginaResultado<FiguritaIntercambiableDto> buscarPorQuery(
       String q, List<MetodoIntercambio> tipos, int pagina, int tamanioPagina) {
 
-    PaginaResultado<FiguritaIntercambiable> paginaRepo =
+    PaginaResultado<FiguritaIntercambiableConPerfil> paginaRepo =
         repositorioColecciones.buscarIntercambiablesPorQuery(q, tipos, pagina, tamanioPagina);
 
     return mapearADto(paginaRepo);
@@ -67,15 +62,18 @@ public class ServicioFigurita {
   }
 
   private PaginaResultado<FiguritaIntercambiableDto> mapearADto(
-      PaginaResultado<FiguritaIntercambiable> paginaRepo) {
+      PaginaResultado<FiguritaIntercambiableConPerfil> paginaRepo) {
 
-    Map<String, String> figuritaIdASubastaId = obtenerMapaSubastasActivas(paginaRepo.contenido());
+    List<FiguritaIntercambiable> figuritas = paginaRepo.contenido().stream()
+        .map(FiguritaIntercambiableConPerfil::figurita)
+        .toList();
+    Map<String, String> figuritaIdASubastaId = obtenerMapaSubastasActivas(figuritas);
 
     List<FiguritaIntercambiableDto> contenido = paginaRepo.contenido().stream()
-        .map(fi -> new FiguritaIntercambiableDto(
-            fi,
-            buscarPerfil(fi.getPerfilId()),
-            figuritaIdASubastaId.get(fi.getFigurita().getId())
+        .map(resultado -> new FiguritaIntercambiableDto(
+            resultado.figurita(),
+            resultado.perfil(),
+            figuritaIdASubastaId.get(resultado.figurita().getFigurita().getId())
         ))
         .toList();
 
@@ -93,11 +91,4 @@ public class ServicioFigurita {
         .toList();
   }
 
-  private Perfil buscarPerfil(String perfilId) {
-    try {
-      return repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
-    } catch (NotFoundException e) {
-      return null;
-    }
-  }
 }

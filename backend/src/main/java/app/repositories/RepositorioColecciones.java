@@ -6,6 +6,7 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
+import app.repositories.projections.FiguritaIntercambiableConPerfil;
 import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.FiguritasFiltro;
 import app.dto.filtros.RepetidasFiltro;
@@ -27,7 +28,7 @@ public interface RepositorioColecciones {
 
   PaginaResultado<Figurita> buscarFaltantes(String colId, FaltantesFiltro filtros);
 
-  PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesConFiltros(
+  PaginaResultado<FiguritaIntercambiableConPerfil> buscarIntercambiablesConFiltros(
       FiguritasFiltro filtros, int pagina, int tamanioPagina);
 
   /**
@@ -35,7 +36,7 @@ public interface RepositorioColecciones {
    * jugador, selección o número en OR. Entre términos se aplica AND.
    * El filtro {@code tipos} se aplica en AND sobre el resultado.
    */
-  PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesPorQuery(
+  PaginaResultado<FiguritaIntercambiableConPerfil> buscarIntercambiablesPorQuery(
       String q, List<MetodoIntercambio> tipos, int pagina, int tamanioPagina);
 
   List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds);

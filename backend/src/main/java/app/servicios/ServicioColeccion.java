@@ -35,13 +35,13 @@ public class ServicioColeccion {
   }
 
   @Transactional
-  public void agregarRepetida(String colId, String figId, Integer
+  public void agregarRepetida(String colId, String perfilId, String figId, Integer
       cantidadExistente, List<MetodoIntercambio> modosIntercambio) {
 
     Figurita figurita = this.repositorioFiguritas.buscarPorId(figId);
 
     FiguritaIntercambiable repetida = new FiguritaIntercambiable(
-        figurita, cantidadExistente, modosIntercambio);
+        figurita, cantidadExistente, modosIntercambio, perfilId);
 
     this.repositorioColecciones.agregarRepetida(colId, repetida);
 

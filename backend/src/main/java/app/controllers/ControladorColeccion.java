@@ -44,7 +44,8 @@ public class ControladorColeccion {
         @Valid @RequestBody RepetidaRequest request
     ) {
         String colId = this.servicioJwt.getColeccionId(token);
-        coleccionService.agregarRepetida(colId,
+        String perfilId = this.servicioJwt.getPerfilId(token);
+        coleccionService.agregarRepetida(colId, perfilId,
             request.figId(), request.cantidadExistente(), request.modosIntercambio());
 
         return ResponseEntity.status(201).build();

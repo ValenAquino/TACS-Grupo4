@@ -13,26 +13,40 @@ const validarMedio = (tipo, valor) => {
 
 export const useMediosContacto = (mediosEditando, setMediosEditando) => {
   const [indiceMedioEditando, setIndiceMedioEditando] = useState(-1)
-  const [medioEditandoData, setMedioEditandoData] = useState({
+
+  const [medioEditandoDataState, setMedioEditandoDataState] = useState({
     medio_comunicacion: 'TELEGRAM',
     valor: '',
   })
-  const [nuevoMedioTipo, setNuevoMedioTipo] = useState('TELEGRAM')
-  const [nuevoMedioValor, setNuevoMedioValor] = useState('')
+  const [nuevoMedioTipoState, setNuevoMedioTipoState] = useState('TELEGRAM')
+  const [nuevoMedioValorState, setNuevoMedioValorState] = useState('')
   const [errorNuevoMedio, setErrorNuevoMedio] = useState(null)
   const [errorMedioEditando, setErrorMedioEditando] = useState(null)
 
+  const setNuevoMedioTipo = (v) => {
+    setNuevoMedioTipoState(v)
+    setErrorNuevoMedio(null)
+  }
+  const setNuevoMedioValor = (v) => {
+    setNuevoMedioValorState(v)
+    setErrorNuevoMedio(null)
+  }
+  const setMedioEditandoData = (updater) => {
+    setMedioEditandoDataState(updater)
+    setErrorMedioEditando(null)
+  }
+
   const agregarMedio = () => {
-    const error = validarMedio(nuevoMedioTipo, nuevoMedioValor)
+    const error = validarMedio(nuevoMedioTipoState, nuevoMedioValorState)
     if (error) {
       setErrorNuevoMedio(error)
       return
     }
     setMediosEditando((prev) => [
       ...prev,
-      { medio_comunicacion: nuevoMedioTipo, valor: nuevoMedioValor },
+      { medio_comunicacion: nuevoMedioTipoState, valor: nuevoMedioValorState },
     ])
-    setNuevoMedioValor('')
+    setNuevoMedioValorState('')
     setErrorNuevoMedio(null)
   }
 
@@ -42,19 +56,24 @@ export const useMediosContacto = (mediosEditando, setMediosEditando) => {
   }
 
   const confirmarEdicionMedio = (i) => {
-    const error = validarMedio(medioEditandoData.medio_comunicacion, medioEditandoData.valor)
+    const error = validarMedio(
+      medioEditandoDataState.medio_comunicacion,
+      medioEditandoDataState.valor,
+    )
     if (error) {
       setErrorMedioEditando(error)
       return
     }
-    setMediosEditando((prev) => prev.map((m, idx) => (idx === i ? { ...medioEditandoData } : m)))
+    setMediosEditando((prev) =>
+      prev.map((m, idx) => (idx === i ? { ...medioEditandoDataState } : m)),
+    )
     setIndiceMedioEditando(-1)
     setErrorMedioEditando(null)
   }
 
   const iniciarEdicionMedio = (i, medio) => {
     setIndiceMedioEditando(i)
-    setMedioEditandoData({ ...medio })
+    setMedioEditandoDataState({ ...medio })
     setErrorMedioEditando(null)
   }
 
@@ -65,21 +84,12 @@ export const useMediosContacto = (mediosEditando, setMediosEditando) => {
 
   return {
     indiceMedioEditando,
-    medioEditandoData,
-    setMedioEditandoData: (updater) => {
-      setErrorMedioEditando(null)
-      setMedioEditandoData(updater)
-    },
-    nuevoMedioTipo,
-    setNuevoMedioTipo: (v) => {
-      setNuevoMedioTipo(v)
-      setErrorNuevoMedio(null)
-    },
-    nuevoMedioValor,
-    setNuevoMedioValor: (v) => {
-      setNuevoMedioValor(v)
-      setErrorNuevoMedio(null)
-    },
+    medioEditandoData: medioEditandoDataState,
+    setMedioEditandoData,
+    nuevoMedioTipo: nuevoMedioTipoState,
+    setNuevoMedioTipo,
+    nuevoMedioValor: nuevoMedioValorState,
+    setNuevoMedioValor,
     errorNuevoMedio,
     errorMedioEditando,
     agregarMedio,

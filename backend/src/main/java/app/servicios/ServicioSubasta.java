@@ -106,6 +106,7 @@ public class ServicioSubasta {
         .build();
 
     subasta.agregarOferta(nuevaPropuesta);
+    meterRegistry.counter("propuestas_creadas_total", "metodo", "subasta").increment();
 
     this.repositorioColecciones.guardar(autor.getColeccion(), new CamposColeccion(true, false));
     this.repoSubasta.guardar(subasta, camposSubasta);

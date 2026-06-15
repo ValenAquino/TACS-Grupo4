@@ -21,6 +21,7 @@ import app.exceptions.NotFoundException;
 import java.util.List;
 
 import app.repositories.impl.campos.CamposPerfil;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class ServicioPropuesta {
   private final RepositorioColecciones repositorioColecciones;
   private final RepositorioCalificacion repositorioCalificacion;
   private final ServicioNotificacion notificacionService;
+  private final MeterRegistry meterRegistry;
 
   /**
    * Crea una propuesta de intercambio. Valida que el usuario origen,
@@ -71,6 +73,7 @@ public class ServicioPropuesta {
 
     repositorioColecciones.guardar(autor.getColeccion());
     repositorioPropuestas.guardar(propuesta);
+    meterRegistry.counter("propuestas_creadas_total", "metodo", "intercambio").increment();
 
     String cuerpo = "Tenes una nueva propuesta de: " + autor.getNombre()
         + " por la figurita numero: " + figuritaBuscada.getNumero();

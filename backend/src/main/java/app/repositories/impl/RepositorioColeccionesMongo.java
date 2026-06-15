@@ -8,6 +8,8 @@ import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
+import app.repositories.projections.FiguritaIntercambiableConPerfil;
+import app.repositories.projections.ResumenPerfil;
 import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.FiguritasFiltro;
 import app.dto.filtros.RepetidasFiltro;
@@ -181,7 +183,7 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
   }
 
   @Override
-  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesConFiltros(
+  public PaginaResultado<FiguritaIntercambiableConPerfil> buscarIntercambiablesConFiltros(
       FiguritasFiltro filtros, int pagina, int limite) {
     List<AggregationOperation> ops = new ArrayList<>();
 
@@ -215,17 +217,19 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
       ));
     }
 
-    AggregationResults<Document> resultado = this.buscarCampoEnColeccion(null, "repetidas", ops, pagina, limite);
+    AggregationResults<Document> resultado =
+        this.buscarIntercambiablesConPerfil(ops, pagina, limite);
 
     int count = this.contarCampoEnColeccion(null, "repetidas", ops);
 
-    List<FiguritaIntercambiable> contenido = this.mapearADominio(resultado);
+    List<FiguritaIntercambiableConPerfil> contenido =
+        this.mapearIntercambiablesConPerfil(resultado);
 
     return new PaginaResultado<>(contenido, count, (int) Math.ceil((double) count / limite), pagina);
   }
 
   @Override
-  public PaginaResultado<FiguritaIntercambiable> buscarIntercambiablesPorQuery(
+  public PaginaResultado<FiguritaIntercambiableConPerfil> buscarIntercambiablesPorQuery(
       String q, List<MetodoIntercambio> tipos, int pagina, int limite) {
 
     String[] terminos = q.trim().toLowerCase().split("\\s+");
@@ -255,8 +259,10 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     }
 
     int count = this.contarCampoEnColeccion(null, "repetidas", ops);
-    AggregationResults<Document> resultado = this.buscarCampoEnColeccion(null, "repetidas", ops, pagina, limite);
-    List<FiguritaIntercambiable> contenido = this.mapearADominio(resultado);
+    AggregationResults<Document> resultado =
+        this.buscarIntercambiablesConPerfil(ops, pagina, limite);
+    List<FiguritaIntercambiableConPerfil> contenido =
+        this.mapearIntercambiablesConPerfil(resultado);
 
     return new PaginaResultado<>(contenido, count, (int) Math.ceil((double) count / limite), pagina);
   }
@@ -345,6 +351,36 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     return mongoTemplate.aggregate(aggregation, "colecciones", Document.class);
   }
 
+  private AggregationResults<Document> buscarIntercambiablesConPerfil(
+      List<AggregationOperation> ops,
+      int pagina,
+      int limite
+  ) {
+    List<AggregationOperation> operaciones = new ArrayList<>();
+    operaciones.add(Aggregation.unwind("repetidas"));
+    operaciones.addAll(ops);
+    operaciones.add(Aggregation.skip((long) (pagina - 1) * limite));
+    operaciones.add(Aggregation.limit(limite));
+    operaciones.add(Aggregation.lookup(
+        "perfiles",
+        "repetidas.perfilId",
+        "_id",
+        "perfil"
+    ));
+    operaciones.add(Aggregation.unwind("perfil", true));
+    operaciones.add(Aggregation.project()
+        .and("repetidas").as("figurita")
+        .and("perfil._id").as("perfilId")
+        .and("perfil.nombre").as("perfilNombre")
+        .and("perfil.calificacionMedia").as("perfilCalificacionMedia"));
+
+    return mongoTemplate.aggregate(
+        Aggregation.newAggregation(operaciones),
+        "colecciones",
+        Document.class
+    );
+  }
+
   private int sumarDisponibles(String colId, String campo, List<AggregationOperation> ops) {
     List<AggregationOperation> operaciones = new ArrayList<>();
 
@@ -376,6 +412,44 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
         .stream()
         .map(doc -> converter.read(FiguritaIntercambiable.class, doc))
         .toList();
+  }
+
+  private List<FiguritaIntercambiableConPerfil> mapearIntercambiablesConPerfil(
+      AggregationResults<Document> resultado
+  ) {
+    MongoConverter converter = mongoTemplate.getConverter();
+
+    return resultado.getMappedResults().stream()
+        .map(documento -> {
+          FiguritaIntercambiable figurita = converter.read(
+              FiguritaIntercambiable.class,
+              documento.get("figurita", Document.class)
+          );
+
+          return new FiguritaIntercambiableConPerfil(
+              figurita,
+              mapearResumenPerfil(documento)
+          );
+        })
+        .toList();
+  }
+
+  private ResumenPerfil mapearResumenPerfil(Document documento) {
+    Object perfilId = documento.get("perfilId");
+    if (perfilId == null) {
+      return null;
+    }
+
+    Object calificacionMedia = documento.get("perfilCalificacionMedia");
+    double valor = calificacionMedia instanceof Number numero
+        ? numero.doubleValue()
+        : 0.0;
+
+    return new ResumenPerfil(
+        perfilId.toString(),
+        documento.getString("perfilNombre"),
+        valor
+    );
   }
 
   private Integer parseNumero(String termino) {

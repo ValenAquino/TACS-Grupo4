@@ -242,7 +242,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
     repositorioColecciones.guardar(coleccion);
 
-    PaginaResultado<FiguritaIntercambiable> resultado =
+    var resultado =
         repositorioColecciones.buscarIntercambiablesConFiltros(
             new FiguritasFiltro(
                 null,
@@ -257,7 +257,7 @@ public class RepositorioColeccionesTest extends MongoTestBase {
 
     assertEquals(1, resultado.contenido().size());
     assertEquals("Messi",
-        resultado.contenido().get(0).getFigurita().getJugador());
+        resultado.contenido().get(0).figurita().getFigurita().getJugador());
   }
 
   @Test

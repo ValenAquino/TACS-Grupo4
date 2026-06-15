@@ -2,10 +2,8 @@ package app.dto;
 
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
-import app.model.entities.Perfil;
 import app.model.entities.Seleccion;
-import app.model.entities.Subasta;
-import java.util.ArrayList;
+import app.repositories.projections.ResumenPerfil;
 import java.util.List;
 import lombok.Getter;
 
@@ -25,7 +23,7 @@ public class FiguritaIntercambiableDto {
   private String imagenUrl;
   private String subastaId;
 
-  public FiguritaIntercambiableDto(FiguritaIntercambiable f, Perfil perfil, String subastaId) {
+  public FiguritaIntercambiableDto(FiguritaIntercambiable f, ResumenPerfil perfil, String subastaId) {
     this.figuritaId = f.getFigurita().getId();
     this.numero = f.getFigurita().getNumero();
     this.jugador = f.getFigurita().getJugador();
@@ -36,28 +34,16 @@ public class FiguritaIntercambiableDto {
     this.cantidadReservada = f.getCantidadReservada();
     this.metodos = f.getMetodos();
     this.perfilId = f.getPerfilId();
-    this.nombreUsuario = perfil != null ? perfil.getNombre() : null;
-    this.reputacion = perfil != null ? (int) Math.round(perfil.getCalificacionMedia()) : null;
+    this.nombreUsuario = perfil != null ? perfil.nombre() : null;
+    this.reputacion = perfil != null ? (int) Math.round(perfil.calificacionMedia()) : null;
     this.subastaId = subastaId;
   }
 
-  public FiguritaIntercambiableDto(FiguritaIntercambiable f, Perfil perfil) {
-    this.figuritaId = f.getFigurita().getId();
-    this.numero = f.getFigurita().getNumero();
-    this.jugador = f.getFigurita().getJugador();
-    this.seleccion = f.getFigurita().getSeleccion();
-    this.posicion = f.getFigurita().getPosicion();
-    this.imagenUrl = f.getFigurita().getImagenUrl();
-    this.cantidadExistente = f.getCantidadExistente();
-    this.cantidadReservada = f.getCantidadReservada();
-    this.metodos = f.getMetodos();
-    this.perfilId = f.getPerfilId();
-    this.nombreUsuario = perfil != null ? perfil.getNombre() : null;
-    this.reputacion = perfil != null ? (int) Math.round(perfil.getCalificacionMedia()) : null;
-    this.subastaId = null;
+  public FiguritaIntercambiableDto(FiguritaIntercambiable f, ResumenPerfil perfil) {
+    this(f, perfil, null);
   }
 
   public FiguritaIntercambiableDto(FiguritaIntercambiable f) {
-    this(f, null);
+    this(f, null, null);
   }
 }

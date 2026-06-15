@@ -33,6 +33,7 @@ public class ServicioColeccion {
    *
    * @param colId identificador de la colección a la que se le agregará la figurita faltante
    * @param figId identificador de la figurita que se marcará como faltante
+   * @throws app.exceptions.NotFoundException si la figurita con el {@code figId} indicado no existe
    */
   public void agregarFaltante(String colId, String figId) {
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);
@@ -49,6 +50,7 @@ public class ServicioColeccion {
    * @param figId identificador de la figurita que se agregará como repetida
    * @param cantidadExistente cantidad de unidades disponibles de la figurita
    * @param modosIntercambio lista de métodos de intercambio aceptados para la figurita
+   * @throws app.exceptions.NotFoundException si la colección, el perfil o la figurita indicados no existen
    */
   @Transactional
   public void agregarRepetida(String colId, String perfilId, String figId, Integer
@@ -75,6 +77,7 @@ public class ServicioColeccion {
    * @param colId identificador de la colección sobre la que se buscarán las figuritas faltantes
    * @param filtros criterios de filtrado y paginación a aplicar en la búsqueda
    * @return página de resultados con las figuritas faltantes encontradas, representadas como {@link FiguritaDto}
+   * @throws app.exceptions.NotFoundException si la colección con el {@code colId} indicado no existe
    */
   public PaginaResultado<FiguritaDto> buscarFaltantes(String colId, FaltantesFiltro filtros) {
     PaginaResultado<Figurita> resultado = this.repositorioColecciones.buscarFaltantes(colId, filtros);
@@ -95,6 +98,7 @@ public class ServicioColeccion {
    * @param filtros criterios de filtrado y paginación a aplicar en la búsqueda
    * @return resultado con la cantidad de figuritas publicadas, disponibles y la página de
    *         figuritas repetidas encontradas, representadas como {@link FiguritaIntercambiableDto}
+   * @throws app.exceptions.NotFoundException si la colección con el {@code colId} indicado no existe
    */
   public Repetidas<FiguritaIntercambiableDto> buscarRepetidas(String colId, RepetidasFiltro filtros) {
     String colIdFaltantes = resolverColIdFaltantes(filtros.perfilId());

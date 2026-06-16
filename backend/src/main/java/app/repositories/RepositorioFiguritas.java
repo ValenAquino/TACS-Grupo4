@@ -13,7 +13,8 @@ public interface RepositorioFiguritas {
   List<Figurita> buscarPorIds(List<String> ids);
 
   /**
-   * Retorna las figuritas que cumplan los filtros provistos.
+   * Retorna las figuritas que cumplan los filtros provistos, paginadas segun
+   * {@link FiguritasFiltro#paginaEfectiva()} y {@link FiguritasFiltro#tamanioPaginaEfectivo()}.
    * Los parámetros nulos se ignoran. {@code jugador} usa contains case-insensitive.
    *
    * @throws app.exceptions.NotFoundException si ninguna figurita coincide con los filtros
@@ -23,11 +24,12 @@ public interface RepositorioFiguritas {
   void guardar(Figurita figurita);
 
   /**
-   * Retorna figuritas que aún no tienen imagen asignada: {@code imagenStatus} null, o
-   * {@code EN_PROCESO} con {@code imagenCreadoEn} anterior a {@code now - ttl} (registros
-   * colgados).
+   * Retorna hasta {@code tamanioPagina} figuritas pendientes: {@code imagenStatus} null,
+   * {@code EN_PROCESO} con {@code imagenCreadoEn} anterior a {@code now - ttlProcesamiento}
+   * (registros colgados), o {@code COMPLETADO} con {@code imagenCreadoEn} anterior a
+   * {@code now - ttlRefresco} (imagen vencida, a refrescar).
    */
-  List<Figurita> buscarPendientes(Duration ttl);
+  List<Figurita> buscarPendientes(Duration ttlProcesamiento, Duration ttlRefresco, int tamanioPagina);
 
   /**
    * Intenta atómicamente reclamar el procesamiento de una figurita via {@code findAndModify}.
@@ -38,5 +40,5 @@ public interface RepositorioFiguritas {
    * @return el documento <em>anterior</em> si el claim fue exitoso, {@code null} si otro proceso
    *     ya lo tomó
    */
-  Figurita reclamarParaProcesamiento(String figuritaId, Duration ttl);
+  Figurita reclamarParaProcesamiento(String figuritaId, Duration ttlProcesamiento, Duration ttlRefresco);
 }

@@ -98,28 +98,24 @@ const Administrador = () => {
 
       {!cargando && !error && stats && (
         <>
-          {/* Métricas globales y del período */}
+          {/* Métricas globales */}
+          <p className={`${styles.seccionTitulo} mb-2`}>Globales</p>
           <div className="row g-3 mb-3">
-            <div className="col-8">
-              <p className={`${styles.seccionTitulo} mb-2`}>Globales</p>
-              <div className="row g-3">
-                {TARJETAS_GLOBALES(stats).map((t) => (
-                  <div className="col-4" key={t.label}>
-                    <StatCard {...t} />
-                  </div>
-                ))}
+            {TARJETAS_GLOBALES(stats).map((t) => (
+              <div className="col-4" key={t.label}>
+                <StatCard {...t} />
               </div>
-            </div>
-            <div className="col-4">
-              <p className={`${styles.seccionTitulo} mb-2`}>Del período</p>
-              <div className="row g-3">
-                {TARJETAS_PERIODO(stats).map((t) => (
-                  <div className="col-12" key={t.label}>
-                    <StatCard {...t} />
-                  </div>
-                ))}
+            ))}
+          </div>
+
+          {/* Métricas del período */}
+          <p className={`${styles.seccionTitulo} mb-2`}>Del período</p>
+          <div className="row g-3 mb-3">
+            {TARJETAS_PERIODO(stats).map((t) => (
+              <div className="col-4" key={t.label}>
+                <StatCard {...t} />
               </div>
-            </div>
+            ))}
           </div>
 
           <div className="row g-3 mb-3">

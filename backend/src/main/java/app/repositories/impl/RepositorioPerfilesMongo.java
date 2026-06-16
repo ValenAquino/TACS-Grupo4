@@ -31,10 +31,12 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
   @Autowired
   private MongoTemplate mongoTemplate;
 
+  @Override
   public void guardar(Perfil perfil) {
     mongoTemplate.save(perfil);
   }
 
+  @Override
   public void guardar(Perfil perfil, CamposPerfil campos) {
     Update update = new Update();
 
@@ -57,6 +59,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     );
   }
 
+  @Override
   public Perfil buscarPorId(String id, CamposPerfil campos) {
     Query query = new Query();
     query.addCriteria(
@@ -72,6 +75,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     return this.normalizar(perfil);
   }
 
+  @Override
   public Perfil buscarPorUsuarioId(String usuarioId, CamposPerfil campos) {
     Query query = new Query();
     query.addCriteria(
@@ -88,6 +92,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     return perfil;
   }
 
+  @Override
   public List<Perfil> buscarPorFiguritaFaltante(Figurita figurita, CamposPerfil campos) {
     Query queryColecciones = new Query(
         Criteria.where("faltantes").is(figurita.getId())
@@ -108,17 +113,20 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     return mongoTemplate.find(queryPerfiles, Perfil.class).stream().map(this::normalizar).toList();
   }
 
+  @Override
   public List<Perfil> buscarTodos(CamposPerfil campos) {
     Query query = new Query();
     this.conCamposCargados(query, campos);
     return mongoTemplate.find(query, Perfil.class);
   }
 
+  @Override
   public long contar() {
     Query query = new Query();
     return mongoTemplate.count(query, Perfil.class);
   }
 
+  @Override
   public PaginaResultado<Sugerencia> generarSugerencias(Coleccion coleccionObjetivo, SugerenciasFiltro filtro) {
 
     List<String> faltantesObjetivo = coleccionObjetivo.getFaltantes()
@@ -234,12 +242,26 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     );
   }
 
+  /**
+   * Configura la proyección del query para excluir campos según los flags
+   * de {@link CamposPerfil}.
+   *
+   * @param query  query de MongoDB a modificar
+   * @param campos especifica qué campos incluir/excluir
+   */
   private void conCamposCargados(Query query, CamposPerfil campos) {
     if(!campos.getConMedioDeContacto()) {
       query.fields().exclude("mediosDeContacto");
     }
   }
 
+  /**
+   * Normaliza un perfil asegurando que la lista de medios de contacto
+   * no sea {@code null}.
+   *
+   * @param perfil perfil a normalizar
+   * @return el mismo perfil con medios de contacto inicializados
+   */
   private Perfil normalizar(Perfil perfil) {
     if(perfil.getMediosDeContacto() == null) {
       perfil.setMediosDeContacto(new ArrayList<>());

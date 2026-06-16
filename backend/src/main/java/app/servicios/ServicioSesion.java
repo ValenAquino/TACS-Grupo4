@@ -19,6 +19,15 @@ public class ServicioSesion {
   private final RepositorioPerfiles repoPerfiles;
   private final ServicioJwt servicioJwt;
 
+  /**
+   * Autentica un usuario con sus credenciales y genera un token JWT válido
+   * que incluye los datos de sesión (usuarioId, rol, perfilId, colId).
+   *
+   * @param request credenciales de inicio de sesión (nombre de usuario y contraseña)
+   * @return token JWT firmado con los datos de sesión del usuario
+   * @throws app.exceptions.UsuarioException si las credenciales son inválidas
+   * @throws app.exceptions.NotFoundException si no se encuentra el usuario o el perfil
+   */
   public String login(LoginRequest request) {
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 

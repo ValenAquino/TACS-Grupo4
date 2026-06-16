@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,7 +65,7 @@ public class OtlpMetricsConfig {
     for (String par : raw.split(",")) {
       String[] kv = par.split("=", 2);
       if (kv.length == 2) {
-        result.put(kv[0].trim(), URLDecoder.decode(kv[1].trim(), StandardCharsets.UTF_8));
+        result.put(kv[0].trim(), kv[1].trim());
       }
     }
     return result;

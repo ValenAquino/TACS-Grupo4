@@ -5,7 +5,7 @@ import TopSelecciones from './top-selecciones.jsx'
 import AdministradorSkeleton from './administrador-skeleton.jsx'
 import styles from './administrador.module.css'
 
-const TARJETAS = (stats) => [
+const TARJETAS_GLOBALES = (stats) => [
   { icono: 'bi-people-fill', numero: stats.totalUsuarios, label: 'Usuarios registrados' },
   {
     icono: 'bi-collection-fill',
@@ -13,15 +13,17 @@ const TARJETAS = (stats) => [
     label: 'Figuritas publicadas',
   },
   {
-    icono: 'bi-tags-fill',
-    numero: stats.totalPropuestas,
-    label: 'Propuestas realizadas',
-    destacado: true,
-  },
-  {
     icono: 'bi-stopwatch-fill',
     numero: stats.totalSubastasActivas,
     label: 'Subastas activas',
+  },
+]
+
+const TARJETAS_PERIODO = (stats) => [
+  {
+    icono: 'bi-tags-fill',
+    numero: stats.totalPropuestas,
+    label: 'Propuestas realizadas',
     destacado: true,
   },
 ]
@@ -30,6 +32,8 @@ const PROPUESTAS = [
   { label: 'Pendientes', key: 'pendientes', color: '#d49a2c' },
   { label: 'Aceptadas', key: 'aceptadas', color: '#198754' },
   { label: 'Rechazadas', key: 'rechazadas', color: '#dc3545' },
+  { label: 'Canceladas', key: 'canceladas', color: '#6c757d' },
+  { label: 'Seleccionadas', key: 'seleccionadas', color: '#0d6efd' },
 ]
 
 const MODALIDADES = [
@@ -39,39 +43,85 @@ const MODALIDADES = [
 ]
 
 const Administrador = () => {
-  const { stats, cargando, error } = useEstadisticasAdmin()
+  const { stats, cargando, error, desde, setDesde, hasta, setHasta } = useEstadisticasAdmin()
+
+  const rangoInvalido = desde && hasta && desde > hasta
 
   return (
     <div className={styles.page}>
-      {/* Encabezado */}
       <div className={styles.hero}>
         <div className="d-flex align-items-center gap-2 mb-1">
           <h1 className={styles.heroTitulo}>Panel de administración</h1>
           <span className={styles.adminBadge}>Admin</span>
         </div>
         <p className={styles.heroSubtitulo}>
-          Estadísticas globales de la plataforma Figus Mundial 2026
+          Estadísticas de la plataforma Figus Mundial 2026
         </p>
       </div>
 
-      {/* Skeleton de carga */}
-      {cargando && <AdministradorSkeleton />}
+      {/* Selector de rango */}
+      <div className={`${styles.seccionCard} mb-3`}>
+        <p className={styles.seccionTitulo}>Período</p>
+        <div className="d-flex align-items-center gap-3 flex-wrap">
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="desde" className="form-label mb-0 text-nowrap">Desde</label>
+            <input
+              id="desde"
+              type="date"
+              className="form-control form-control-sm"
+              value={desde}
+              max={hasta}
+              onChange={(e) => setDesde(e.target.value)}
+            />
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="hasta" className="form-label mb-0 text-nowrap">Hasta</label>
+            <input
+              id="hasta"
+              type="date"
+              className="form-control form-control-sm"
+              value={hasta}
+              min={desde}
+              onChange={(e) => setHasta(e.target.value)}
+            />
+          </div>
+        </div>
+        {rangoInvalido && (
+          <p className="text-danger small mt-2 mb-0">
+            &quot;Desde&quot; no puede ser posterior a &quot;Hasta&quot;.
+          </p>
+        )}
+      </div>
 
-      {/* Error */}
+      {cargando && <AdministradorSkeleton />}
       {error && <div className="alert alert-danger">{error}</div>}
 
       {!cargando && !error && stats && (
         <>
-          {/* Tarjetas de resumen */}
+          {/* Métricas globales y del período */}
           <div className="row g-3 mb-3">
-            {TARJETAS(stats).map((t) => (
-              <div className="col-6 col-md-3" key={t.label}>
-                <StatCard {...t} />
+            <div className="col-8">
+              <p className={`${styles.seccionTitulo} mb-2`}>Globales</p>
+              <div className="row g-3">
+                {TARJETAS_GLOBALES(stats).map((t) => (
+                  <div className="col-4" key={t.label}>
+                    <StatCard {...t} />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <div className="col-4">
+              <p className={`${styles.seccionTitulo} mb-2`}>Del período</p>
+              <div className="row g-3">
+                {TARJETAS_PERIODO(stats).map((t) => (
+                  <div className="col-12" key={t.label}>
+                    <StatCard {...t} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Gráficos de barras */}
           <div className="row g-3 mb-3">
             <div className="col-12 col-md-6">
               <SeccionBarras
@@ -89,7 +139,6 @@ const Administrador = () => {
             </div>
           </div>
 
-          {/* Ranking de selecciones */}
           {stats.topSelecciones?.length > 0 && (
             <div className="row g-3">
               <div className="col-12">

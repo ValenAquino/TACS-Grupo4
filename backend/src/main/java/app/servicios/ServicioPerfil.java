@@ -110,6 +110,10 @@ public class ServicioPerfil {
 
     this.repositorioCalificacion.guardar(calificacion);
     this.repositorioPerfiles.guardar(perfilDestino, sinCampos);
+
+    // Notificación al destinatario de que fue calificado
+    String cuerpo = autor.getNombre() + " te calificó con " + valor + " estrella" + (valor == 1 ? "" : "s");
+    servicioNotificacion.notificarInteresados(List.of(perfilDestino), cuerpo, "/perfil");
   }
 
   /**
@@ -127,8 +131,8 @@ public class ServicioPerfil {
 
     PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), filtros);
 
-    //TODO: sigue en implementacion
-    return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(), 0, 0, 0);
+    return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(),
+        sugerencias.cantidadDeElementos(), sugerencias.cantidadDePaginas(), sugerencias.numero());
   }
 
   /**

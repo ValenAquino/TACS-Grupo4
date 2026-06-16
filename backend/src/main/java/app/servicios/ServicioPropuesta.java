@@ -68,6 +68,7 @@ public class ServicioPropuesta {
         .map(repositorioFiguritas::buscarPorId)
         .toList();
 
+
     autor.getColeccion().reservarRepetidas(figuritasOfrecidas, MetodoIntercambio.INTERCAMBIO);
 
     Propuesta propuesta = Propuesta.builder()
@@ -76,14 +77,14 @@ public class ServicioPropuesta {
         .figuritaBuscada(figuritaBuscada)
         .figuritasOfrecidas(figuritasOfrecidas)
         .build();
-
     repositorioColecciones.guardar(autor.getColeccion());
     repositorioPropuestas.guardar(propuesta);
 
     String cuerpo = "Tenes una nueva propuesta de: " + autor.getNombre()
-        + " por la figurita numero: " + figuritaBuscada.getNumero();
+        + " por la figurita " + figuritaBuscada.getJugador() + " de " + figuritaBuscada.getSeleccion();
 
-    notificacionService.notificarInteresados(List.of(destino), cuerpo);
+    String link = "/intercambios/" + propuesta.getId();
+    notificacionService.notificarInteresados(List.of(destino), cuerpo, link);
 
     return new PropuestaDto(propuesta);
   }
@@ -138,7 +139,7 @@ public class ServicioPropuesta {
     repositorioPropuestas.guardar(propuesta);
 
     String link = "/intercambios/" + propuestaId;
-    String cuerpo = "Tu propuesta de intercambio fue aceptada";
+    String cuerpo = "Tu propuesta de intercambio con " + propuesta.getDestinatario().getNombre() + " fue aceptada";
     notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 
@@ -164,7 +165,7 @@ public class ServicioPropuesta {
 
     //Para Notificaciones
     String link = "/intercambios/" + id;
-    String cuerpo = "Tu propuesta de intercambio fue rechazada";
+    String cuerpo = "Tu propuesta de intercambio con " + propuesta.getDestinatario().getNombre() + " fue rechazada";
     notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 

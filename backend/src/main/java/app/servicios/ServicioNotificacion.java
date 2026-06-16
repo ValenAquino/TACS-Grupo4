@@ -62,6 +62,7 @@ public class ServicioNotificacion {
    */
   public void marcarTodasLeidas(String perfilId) {
       List<Notificacion> notis = repositorioNotificaciones.buscarPorPerfilFechaDesc(perfilId);
+      notis.forEach(Notificacion::marcarLeida);
       this.repositorioNotificaciones.guardar(notis);
   }
 }

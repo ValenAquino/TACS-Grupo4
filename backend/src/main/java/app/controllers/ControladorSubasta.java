@@ -204,18 +204,12 @@ public class ControladorSubasta {
         return ResponseEntity.ok(this.subastaService.obtenerSubastas(perfilId, filtros));
     }
 
-  /**
-   * Obtiene los datos completos de una subasta por su identificador.
-   *
-   * @param sub_id identificador de la subasta
-   * @return 200 OK con los datos de la subasta
-   */
-  @GetMapping("/{sub_id}")
-  public ResponseEntity<SubastaDto> obtenerSubasta(
+    @GetMapping("/{sub_id}")
+    public ResponseEntity<SubastaDto> obtenerSubasta(
       @PathVariable String sub_id
-  ) {
+    ) {
     SubastaDto subasta = this.subastaService.obtenerSubasta(sub_id);
 
     return ResponseEntity.ok().body(subasta);
-  }
+    }
 }

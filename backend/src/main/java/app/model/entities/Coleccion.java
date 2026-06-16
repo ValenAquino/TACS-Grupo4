@@ -117,8 +117,13 @@ public class Coleccion {
    */
   public void reservarRepetidas(List<Figurita> repetidas, MetodoIntercambio metodo) {
     repetidas.forEach(figurita -> {
+
       if (tieneRepetida(figurita)) {
-        obtenerRepetida(figurita).reservar(metodo);
+
+        FiguritaIntercambiable repetida = obtenerRepetida(figurita);
+        System.out.println("Con metodos: " + repetida.getMetodos());
+
+        repetida.reservar(metodo);
       }
     });
   }

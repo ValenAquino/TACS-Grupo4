@@ -12,6 +12,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import org.springframework.data.mongodb.core.query.Update;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
 @Repository
 public class RepositorioNotificacionesMongo implements RepositorioNotificaciones {
@@ -26,48 +29,40 @@ public class RepositorioNotificacionesMongo implements RepositorioNotificaciones
 
   @Override
   public void guardar(List<Notificacion> notificaciones) {
+      for (Notificacion n : notificaciones) {
+          Query query = new Query(Criteria.where("_id").is(n.getId()));
+          Update update = new Update().set("leida", n.isLeida());
+          mongoTemplate.updateFirst(query, update, Notificacion.class);
+      }
+  }
 
-    BulkOperations bulk = mongoTemplate.bulkOps(
-        BulkOperations.BulkMode.UNORDERED,
-        Notificacion.class
-    );
-
-    for (Notificacion n : notificaciones) {
-
-      Query query = new Query(
-          Criteria.where("_id").is(n.getId())
-      );
-
-      bulk.replaceOne(
-          query,
-          n,
-          FindAndReplaceOptions.options().upsert()
-      );
+    @Override
+    public List<Notificacion> buscarPorPerfil(Perfil perfil) {
+        Object refId = perfil.getId();
+        if (refId instanceof String && ObjectId.isValid((String) refId)) {
+            refId = new ObjectId((String) refId);
+        }
+        Query query = new Query();
+        query.addCriteria(Criteria.where("perfil").is(new Document("$ref", "perfiles").append("$id", refId))
+        );
+        return mongoTemplate.find(query, Notificacion.class);
     }
-
-    bulk.execute();
-  }
-
-  @Override
-  public List<Notificacion> buscarPorPerfil(Perfil perfil) {
-    Query query = new Query();
-    query.addCriteria(
-        Criteria.where("perfil").is(perfil.getId())
-    );
-
-    return this.mongoTemplate.find(query, Notificacion.class);
-  }
 
   @Override
   public List<Notificacion> buscarPorPerfilFechaDesc(String perfilId) {
 
-    Query query = new Query();
-    query.addCriteria(
-        Criteria.where("perfil").is(perfilId)
-    );
+      Object refId;
 
-    query.with(Sort.by(Sort.Direction.DESC, "mensaje.fecha"));
+      if (ObjectId.isValid(perfilId)) {
+          refId = new ObjectId(perfilId);
+      } else {
+          refId = perfilId;
+      }
 
-    return this.mongoTemplate.find(query, Notificacion.class);
+      Query query = new Query();
+      query.addCriteria(Criteria.where("perfil").is(new Document("$ref", "perfiles").append("$id", refId))
+      );
+      query.with(Sort.by(Sort.Direction.DESC, "mensaje.fecha"));
+      return mongoTemplate.find(query, Notificacion.class);
   }
 }

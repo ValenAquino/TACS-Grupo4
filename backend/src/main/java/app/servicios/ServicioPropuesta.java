@@ -73,9 +73,10 @@ public class ServicioPropuesta {
     repositorioPropuestas.guardar(propuesta);
 
     String cuerpo = "Tenes una nueva propuesta de: " + autor.getNombre()
-        + " por la figurita numero: " + figuritaBuscada.getNumero();
+        + " por la figurita numero: " + figuritaBuscada.getNumero() + " de " + figuritaBuscada.getSeleccion();
 
-    notificacionService.notificarInteresados(List.of(destino), cuerpo);
+    String link = "/intercambios/" + propuesta.getId();
+    notificacionService.notificarInteresados(List.of(destino), cuerpo, link);
 
     return new PropuestaDto(propuesta);
   }

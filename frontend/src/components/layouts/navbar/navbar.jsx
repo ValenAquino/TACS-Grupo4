@@ -28,7 +28,7 @@ const Navbar = () => {
     { to: '/registrar', label: 'Nuevo Admin', privilege: 'ADMINISTRADOR' },
   ]
 
-  const noLeidas = notificaciones.filter((n) => !n.leida).length
+  const noLeidas = Array.isArray(notificaciones) ? notificaciones.filter((n) => !n.leida).length : 0
 
   const cargarIniciales = async () => {
     try {
@@ -43,36 +43,42 @@ const Navbar = () => {
   }
 
   // Carga inicial de notificaciones cuando hay sesión
-  useEffect(() => {
+useEffect(() => {
     if (tieneSesion) {
-      obtenerNotificaciones().then(setNotificaciones)
-      cargarIniciales()
+        obtenerNotificaciones().then(data => setNotificaciones(Array.isArray(data) ? data : []))
+        cargarIniciales()
     }
-  }, [tieneSesion])
+}, [tieneSesion])
 
   // Cierra el popover si se toca fuera
   useEffect(() => {
-    const handleClickFuera = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setAbierto(false)
+      const handleClickFuera = async (e) => {
+          if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+              if (abierto) {
+                  await marcarTodasLeidas()
+                  setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })))
+              }
+              setAbierto(false)
+          }
       }
-    }
-    document.addEventListener('mousedown', handleClickFuera)
-    return () => document.removeEventListener('mousedown', handleClickFuera)
-  }, [])
+      document.addEventListener('mousedown', handleClickFuera)
+      return () => document.removeEventListener('mousedown', handleClickFuera)
+  }, [abierto])
 
-  const toggleNotificaciones = async () => {
-    if (abierto) {
-      // Al cerrar, marca todas como leídas y actualiza el estado local
-      await marcarTodasLeidas()
-      setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })))
-      setAbierto(false)
-    } else {
-      const data = await obtenerNotificaciones()
-      setNotificaciones(data)
-      setAbierto(true)
+    const toggleNotificaciones = async () => {
+        if (abierto) {
+            await marcarTodasLeidas()
+            // Al cerrar, marca todas como leídas y actualiza el estado local
+            setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })))
+            setAbierto(false)
+        } else {
+            if (notificaciones.length === 0) {
+                const data = await obtenerNotificaciones()
+                setNotificaciones(Array.isArray(data) ? data : [])
+            }
+            setAbierto(true)
+        }
     }
-  }
 
   const formatearFecha = (fecha) => {
     if (!fecha) return ''

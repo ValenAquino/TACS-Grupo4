@@ -56,6 +56,44 @@ const Administrador = () => {
         <p className={styles.heroSubtitulo}>Estadísticas de la plataforma Figus Mundial 2026</p>
       </div>
 
+      {/* Selector de rango — siempre visible para poder cambiar el período aún en carga o error */}
+      <div className={`${styles.seccionCard} mb-3`}>
+        <p className={styles.seccionTitulo}>Período</p>
+        <div className="d-flex align-items-center gap-3 flex-wrap">
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="desde" className="form-label mb-0 text-nowrap">
+              Desde
+            </label>
+            <input
+              id="desde"
+              type="date"
+              className="form-control form-control-sm"
+              value={desde}
+              max={hasta}
+              onChange={(e) => setDesde(e.target.value)}
+            />
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <label htmlFor="hasta" className="form-label mb-0 text-nowrap">
+              Hasta
+            </label>
+            <input
+              id="hasta"
+              type="date"
+              className="form-control form-control-sm"
+              value={hasta}
+              min={desde}
+              onChange={(e) => setHasta(e.target.value)}
+            />
+          </div>
+        </div>
+        {rangoInvalido && (
+          <p className="text-danger small mt-2 mb-0">
+            &quot;Desde&quot; no puede ser posterior a &quot;Hasta&quot;.
+          </p>
+        )}
+      </div>
+
       {cargando && <AdministradorSkeleton />}
       {error && <div className="alert alert-danger">{error}</div>}
 
@@ -80,46 +118,8 @@ const Administrador = () => {
             </div>
           </div>
 
-          {/* Selector de rango */}
-          <p className={`${styles.seccionTitulo} mb-2`}>Del período</p>
-          <div className={`${styles.seccionCard} mb-3`}>
-            <p className={styles.seccionTitulo}>Período</p>
-            <div className="d-flex align-items-center gap-3 flex-wrap">
-              <div className="d-flex align-items-center gap-2">
-                <label htmlFor="desde" className="form-label mb-0 text-nowrap">
-                  Desde
-                </label>
-                <input
-                  id="desde"
-                  type="date"
-                  className="form-control form-control-sm"
-                  value={desde}
-                  max={hasta}
-                  onChange={(e) => setDesde(e.target.value)}
-                />
-              </div>
-              <div className="d-flex align-items-center gap-2">
-                <label htmlFor="hasta" className="form-label mb-0 text-nowrap">
-                  Hasta
-                </label>
-                <input
-                  id="hasta"
-                  type="date"
-                  className="form-control form-control-sm"
-                  value={hasta}
-                  min={desde}
-                  onChange={(e) => setHasta(e.target.value)}
-                />
-              </div>
-            </div>
-            {rangoInvalido && (
-              <p className="text-danger small mt-2 mb-0">
-                &quot;Desde&quot; no puede ser posterior a &quot;Hasta&quot;.
-              </p>
-            )}
-          </div>
-
           {/* Métricas del período — filtradas por el rango seleccionado */}
+          <p className={`${styles.seccionTitulo} mb-2`}>Del período</p>
           <div className="row g-3 mb-3">
             <div className="col-12 col-md-6">
               <SeccionBarras

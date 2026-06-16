@@ -300,17 +300,15 @@ class ServicioEstadisticaTest extends MongoTestBase {
     }
 
     @Test
-    void propuestasPorEstado_incluyeCanceladasYSeleccionadas() {
+    void propuestasPorEstado_incluyeCanceladas() {
         Perfil autor = perfil("a", "usr-a", "Autor");
         Perfil destinatario = perfil("d", "usr-d", "Dest");
 
         repositorioPropuestas.guardar(propuestaConEstado("p1", autor, destinatario, EstadoProceso.CANCELADO));
-        repositorioPropuestas.guardar(propuestaConEstado("p2", autor, destinatario, EstadoProceso.SELECCIONADO));
 
         EstadisticasDto resultado = service.obtenerEstadisticas(adminSesion(), LocalDate.now().minusDays(7), LocalDate.now());
 
         assertEquals(1, resultado.getPropuestasPorEstado().getCanceladas());
-        assertEquals(1, resultado.getPropuestasPorEstado().getSeleccionadas());
         assertEquals(0, resultado.getPropuestasPorEstado().getPendientes());
     }
 

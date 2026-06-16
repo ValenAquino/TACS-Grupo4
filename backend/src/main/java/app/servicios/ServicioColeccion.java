@@ -34,6 +34,7 @@ public class ServicioColeccion {
    * @param colId identificador de la colección a la que se le agregará la figurita faltante
    * @param figId identificador de la figurita que se marcará como faltante
    * @throws app.exceptions.NotFoundException si la figurita con el {@code figId} indicado no existe
+   * @throws app.exceptions.BadRequestException si la figurita ya está listada como faltante
    */
   public void agregarFaltante(String colId, String figId) {
     Figurita faltante = this.repositorioFiguritas.buscarPorId(figId);

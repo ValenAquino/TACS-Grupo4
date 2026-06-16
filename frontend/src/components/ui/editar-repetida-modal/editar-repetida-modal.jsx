@@ -24,9 +24,22 @@ const EditarRepetidaModal = ({ figurita, onClose, onGuardar }) => {
   };
 
   const handleGuardar = () => {
+    const metodosFinales = [...metodosActuales, ...nuevosMetodos];
+    const cantidadNueva = Number(cantidadExistente);
+
+    const sinCambios =
+      cantidadNueva === figurita.cantidad_existente &&
+      metodosFinales.length === metodosActuales.length &&
+      metodosFinales.every((m) => metodosActuales.includes(m));
+
+    if (sinCambios) {
+      onClose();
+      return;
+    }
+
     onGuardar({
-      cantidadNueva: Number(cantidadExistente),
-      metodos: [...metodosActuales, ...nuevosMetodos],
+      cantidadNueva,
+      metodos: metodosFinales,
     });
 
     onClose();

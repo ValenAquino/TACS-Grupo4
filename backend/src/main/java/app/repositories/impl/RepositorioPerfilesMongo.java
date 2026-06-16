@@ -5,6 +5,7 @@ import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Sugerencia;
 import app.repositories.RepositorioPerfiles;
@@ -136,6 +137,11 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     ops.add(Aggregation.lookup("perfiles", "_id", "coleccion.$id", "perfil"));
     ops.add(Aggregation.unwind("perfil"));
 
+    List<String> repetidasObjetivoConIntercambio = coleccionObjetivo.getRepetidas().stream()
+        .filter(r -> r.getMetodos() != null && r.getMetodos().contains(MetodoIntercambio.INTERCAMBIO))
+        .map(r -> r.getFigurita().getId())
+        .toList();
+
     ops.add(context -> new Document("$addFields", new Document()
         .append("sugeridas", new Document("$filter", new Document()
             .append("input", "$repetidas")
@@ -145,7 +151,11 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
                     new Document("$toString", "$$r.figurita.$id"),
                     faltantesObjetivo
                 )),
-                new Document("$in", List.of("INTERCAMBIO", "$$r.metodos"))
+                new Document("$in", List.of("INTERCAMBIO", "$$r.metodos")),
+                new Document("$gt", List.of(
+                    new Document("$subtract", List.of("$$r.cantidadExistente", "$$r.cantidadReservada")),
+                    0
+                ))
             )))
         ))
         .append("necesarias", new Document("$filter", new Document()
@@ -153,7 +163,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
             .append("as", "f")
             .append("cond", new Document("$in", List.of(
                 new Document("$toString", "$$f.$id"),
-                repetidasObjetivo
+                repetidasObjetivoConIntercambio
             )))
         ))
     ));

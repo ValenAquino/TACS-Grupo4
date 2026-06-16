@@ -1,8 +1,10 @@
 import { api, handleAxiosError } from './api.js'
 
-export const obtenerEstadisticas = async () => {
+export const obtenerEstadisticas = async (desde, hasta) => {
   try {
-    const { data } = await api.get('/administrador/estadisticas')
+    const { data } = await api.get('/administrador/estadisticas', {
+      params: { desde, hasta },
+    })
     return {
       totalUsuarios: data.total_usuarios,
       totalFiguritasPublicadas: data.total_figuritas_publicadas,

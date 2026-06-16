@@ -9,4 +9,6 @@ public class PropuestasPorEstadoDto {
   private int pendientes;
   private int aceptadas;
   private int rechazadas;
+  private int canceladas;
+  private int seleccionadas;
 }

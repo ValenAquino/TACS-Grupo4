@@ -3,6 +3,7 @@ package app.controllers;
 import app.dto.EstadisticasDto;
 import app.dto.SesionDto;
 import app.dto.request.LoginRequest;
+import app.exceptions.BadRequestException;
 import app.servicios.ServicioEstadisticas;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSesion;
@@ -14,10 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,10 +29,29 @@ public class ControladorSesion {
 
     @GetMapping("/administrador/estadisticas")
     public ResponseEntity<EstadisticasDto> obtenerEstadisticas(
-        @CookieValue("token") String token
+        @CookieValue("token") String token,
+        @RequestParam(required = false) String desde,
+        @RequestParam(required = false) String hasta
     ) {
+        if (desde == null || hasta == null) {
+            throw new BadRequestException("Los parámetros 'desde' y 'hasta' son requeridos");
+        }
+
+        LocalDate fechaDesde;
+        LocalDate fechaHasta;
+        try {
+            fechaDesde = LocalDate.parse(desde);
+            fechaHasta = LocalDate.parse(hasta);
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException("Formato de fecha inválido. Use YYYY-MM-DD");
+        }
+
+        if (fechaDesde.isAfter(fechaHasta)) {
+            throw new BadRequestException("'desde' no puede ser posterior a 'hasta'");
+        }
+
         SesionDto dto = this.servicioJwt.obtenerSesion(token);
-        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas(dto));
+        return ResponseEntity.ok(estadisticasService.obtenerEstadisticas(dto, fechaDesde, fechaHasta));
     }
 
     @PostMapping("/login")

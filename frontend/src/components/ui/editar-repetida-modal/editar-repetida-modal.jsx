@@ -7,24 +7,26 @@ const EditarRepetidaModal = ({ figurita, onClose, onGuardar }) => {
     figurita.cantidad_existente
   );
 
-  const [metodosSeleccionados, setMetodosSeleccionados] = useState(
-    figurita.metodos
+  const metodosActuales = figurita.metodos;
+
+  const metodosDisponibles = METODOS.filter(
+    (m) => !metodosActuales.includes(m)
   );
 
-  const toggleMetodo = (metodo) => {
-    if (metodosSeleccionados.includes(metodo)) {
-      setMetodosSeleccionados(
-        metodosSeleccionados.filter((m) => m !== metodo)
-      );
+  const [nuevosMetodos, setNuevosMetodos] = useState([]);
+
+  const toggleNuevoMetodo = (metodo) => {
+    if (nuevosMetodos.includes(metodo)) {
+      setNuevosMetodos(nuevosMetodos.filter((m) => m !== metodo));
     } else {
-      setMetodosSeleccionados([...metodosSeleccionados, metodo]);
+      setNuevosMetodos([...nuevosMetodos, metodo]);
     }
   };
 
   const handleGuardar = () => {
     onGuardar({
       cantidadNueva: Number(cantidadExistente),
-      metodos: metodosSeleccionados,
+      metodos: [...metodosActuales, ...nuevosMetodos],
     });
 
     onClose();
@@ -67,29 +69,57 @@ const EditarRepetidaModal = ({ figurita, onClose, onGuardar }) => {
                 className="form-label fw-semibold"
                 style={{ fontSize: "0.9rem" }}
               >
-                Métodos de intercambio
+                Métodos actuales
               </label>
 
-              <div className="d-flex flex-column gap-2">
-                {METODOS.map((metodo) => (
-                  <div key={metodo} className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      checked={metodosSeleccionados.includes(metodo)}
-                      onChange={() => toggleMetodo(metodo)}
-                    />
-
-                    <label
-                      className="form-check-label"
-                      style={{ fontSize: "0.88rem" }}
-                    >
-                      {metodo}
-                    </label>
-                  </div>
+              <div className="d-flex flex-wrap gap-2 mb-2">
+                {metodosActuales.map((metodo) => (
+                  <span
+                    key={metodo}
+                    className="badge rounded-pill"
+                    style={{
+                      backgroundColor: "#e1f5ee",
+                      color: "#0f6e56",
+                      fontSize: "0.85rem",
+                      padding: "6px 12px",
+                    }}
+                  >
+                    {metodo}
+                  </span>
                 ))}
               </div>
             </div>
+
+            {metodosDisponibles.length > 0 && (
+              <div>
+                <label
+                  className="form-label fw-semibold"
+                  style={{ fontSize: "0.9rem" }}
+                >
+                  Agregar métodos
+                </label>
+
+                <div className="d-flex flex-column gap-2">
+                  {metodosDisponibles.map((metodo) => (
+                    <div key={metodo} className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={nuevosMetodos.includes(metodo)}
+                        onChange={() => toggleNuevoMetodo(metodo)}
+                      />
+
+                      <label
+                        className="form-check-label"
+                        style={{ fontSize: "0.88rem" }}
+                      >
+                        {metodo}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="modal-footer border-0 pt-0 gap-2">

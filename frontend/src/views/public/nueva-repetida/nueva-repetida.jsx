@@ -58,6 +58,21 @@ const NuevaRepetida = () => {
   }
 
   const ejecutarFormulario = async () => {
+    if (!figurita) {
+      showToast('Debés buscar y seleccionar una figurita primero', 'error')
+      return
+    }
+
+    if (modosIntercambio.length === 0) {
+      showToast('Debés seleccionar al menos un método de intercambio', 'error')
+      return
+    }
+
+    if (Number(cantidad) < 1) {
+      showToast('La cantidad debe ser al menos 1', 'error')
+      return
+    }
+
     try {
       await agregarRepetida({
         id: figurita.id,
@@ -130,6 +145,7 @@ const NuevaRepetida = () => {
                   onChange={(e) => {
                     setNumero(e.target.value.toUpperCase())
                     setFigurita(null)
+                    setJugador('')
                     setErrorFormato('')
                     setTocado(false)
                   }}
@@ -217,10 +233,7 @@ const NuevaRepetida = () => {
 
       <Button
         label="Publicar Repetida ↗"
-        disabled={!figurita || modosIntercambio.length === 0 || Number(cantidad) < 1}
-        onClick={() => {
-          ejecutarFormulario()
-        }}
+        onClick={() => ejecutarFormulario()}
       />
     </div>
   )

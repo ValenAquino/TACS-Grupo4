@@ -51,6 +51,11 @@ const NuevaFaltante = () => {
     };
 
     const ejecutarFormulario = async () => {
+        if (!figurita) {
+            showToast('Debés buscar y seleccionar una figurita primero', 'error')
+            return
+        }
+
         try {
             await agregarFaltante(figurita)
             setNumero('')
@@ -108,6 +113,7 @@ const NuevaFaltante = () => {
                                 onChange={(e) => {
                                     setNumero(e.target.value.toUpperCase());
                                     setFigurita(null);
+                                    setJugador('');
                                     setErrorFormato('');
                                     setTocado(false);
                                 }}
@@ -142,7 +148,6 @@ const NuevaFaltante = () => {
 
             <Button
                 label="Publicar faltante ↗"
-                disabled={!figurita}
                 onClick={() => ejecutarFormulario()}
             />
 

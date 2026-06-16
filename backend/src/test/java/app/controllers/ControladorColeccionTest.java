@@ -318,7 +318,7 @@ class ControladorColeccionTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "cantidadRepetidas": 5,
+                      "cantidad_nueva": 5,
                       "metodos": ["INTERCAMBIO", "SUBASTA"]
                     }
                 """)
@@ -386,7 +386,7 @@ class ControladorColeccionTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "cantidadRepetidas": 5,
+                      "cantidad_nueva": 5,
                       "metodos": ["INTERCAMBIO"]
                     }
                 """)

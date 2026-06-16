@@ -248,7 +248,9 @@ public class RepositorioColeccionesTest extends MongoTestBase {
                 null,
                 null,
                 null,
-                List.of(MetodoIntercambio.SUBASTA)
+                List.of(MetodoIntercambio.SUBASTA),
+                null,
+                null
             ),
             1,
             10

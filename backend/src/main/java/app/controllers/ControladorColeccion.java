@@ -106,7 +106,7 @@ public class ControladorColeccion {
     public ResponseEntity<Void> editarRepetida(
         @CookieValue("token") String token,
         @PathVariable String fig_id,
-        @RequestBody EditarRepetidaRequest req
+        @Valid @RequestBody EditarRepetidaRequest req
     ) {
         String colId = this.servicioJwt.getColeccionId(token);
         this.coleccionService.editarRepetida(colId, fig_id, req);

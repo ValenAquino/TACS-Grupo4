@@ -34,6 +34,17 @@ public class ServicioEstadisticas {
     private final RepositorioSubastas repositorioSubastas;
     private final RepositorioColecciones repositorioColecciones;
 
+    /**
+     * Obtiene las estadísticas generales del sistema, incluyendo cantidad de usuarios,
+     * figuritas publicadas, propuestas, subastas activas, y desgloses por estado de
+     * propuesta y por modalidad de intercambio. Solo puede ser invocado por un usuario
+     * con rol de administrador.
+     *
+     * @param dto datos de la sesión del usuario que solicita las estadísticas, utilizados
+     *            para validar que tenga rol de administrador
+     * @return un {@link EstadisticasDto} con el resumen de las estadísticas del sistema
+     * @throws UnauthorizedException si el rol del usuario no es {@code ADMINISTRADOR}
+     */
     public EstadisticasDto obtenerEstadisticas(SesionDto dto) {
 
         if(!"ADMINISTRADOR".equals(dto.rol())) {
@@ -64,6 +75,13 @@ public class ServicioEstadisticas {
         );
     }
 
+    /**
+     * Calcula la cantidad de propuestas agrupadas según su estado actual
+     * (pendiente, aceptada o rechazada).
+     *
+     * @return un {@link PropuestasPorEstadoDto} con la cantidad de propuestas
+     *         en cada uno de los estados posibles
+     */
     private PropuestasPorEstadoDto calcularPropuestasPorEstado() {
         Map<EstadoProceso, Long> porEstado = repositorioPropuestas.buscarTodosEstadisticas().stream()
             .collect(Collectors.groupingBy(p -> p.getEstadoActual().getValor(), Collectors.counting()));
@@ -75,6 +93,14 @@ public class ServicioEstadisticas {
         );
     }
 
+    /**
+     * Calcula la cantidad de figuritas repetidas disponibles según la modalidad
+     * de intercambio que aceptan: únicamente intercambio, únicamente subasta,
+     * o ambas modalidades a la vez.
+     *
+     * @return un {@link FiguritasPorModalidadDto} con la cantidad de figuritas
+     *         repetidas para cada modalidad
+     */
     private FiguritasPorModalidadDto calcularFiguritasPorModalidad() {
         long soloIntercambio = this.repositorioColecciones
             .contarRepetidas(List.of(MetodoIntercambio.INTERCAMBIO));

@@ -71,12 +71,28 @@ public class RepositorioFiguritasMongo implements RepositorioFiguritas {
     this.mongoTemplate.save(figurita);
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Utiliza un criteria que considera pendientes aquellas sin {@code imagenStatus}
+   * o con estado {@code EN_PROCESO} cuyo {@code imagenCreadoEn} haya expirado
+   * según el TTL provisto.
+   * </p>
+   */
   @Override
   public List<Figurita> buscarPendientes(Duration ttlProcesamiento, Duration ttlRefresco, int tamanioPagina) {
     Query query = new Query(pendientesCriteria(ttlProcesamiento, ttlRefresco)).limit(tamanioPagina);
     return mongoTemplate.find(query, Figurita.class);
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Implementación atómica con {@code findAndModify}: actualiza el documento
+   * a {@code EN_PROCESO} solo si aún está pendiente, evitando que dos
+   * instancias procesen la misma figurita simultáneamente.
+   * </p>
+   */
   @Override
   public Figurita reclamarParaProcesamiento(String figuritaId, Duration ttlProcesamiento, Duration ttlRefresco) {
     Query query = new Query(

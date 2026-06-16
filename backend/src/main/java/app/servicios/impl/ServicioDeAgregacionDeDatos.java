@@ -32,6 +32,14 @@ public class ServicioDeAgregacionDeDatos implements ServicioEnriquecimiento {
     this.repositorioFiguritas = repositorioFiguritas;
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Ejecuta de forma asíncrona el enriquecimiento de todas las figuritas pendientes.
+   * Es idempotente: si una figurita ya fue procesada por otra instancia, la ignora.
+   * Los errores individuales se registran pero no interrumpen el procesamiento del resto.
+   * </p>
+   */
   @Override
   @Async
   public void enriquecer() {
@@ -54,6 +62,13 @@ public class ServicioDeAgregacionDeDatos implements ServicioEnriquecimiento {
     } while (!pendientes.isEmpty());
   }
 
+  /**
+   * Procesa una figurita individual: la reclama para procesamiento (evitando
+   * concurrencia), busca su imagen a través del proveedor externo y persiste
+   * el resultado.
+   *
+   * @param figurita la figurita a enriquecer con la imagen del jugador
+   */
   private void procesarFigurita(Figurita figurita) {
     Figurita reclamada = repositorioFiguritas
         .reclamarParaProcesamiento(figurita.getId(), TIMEOUT_PROCESAMIENTO, TTL_REFRESCO_IMAGEN);

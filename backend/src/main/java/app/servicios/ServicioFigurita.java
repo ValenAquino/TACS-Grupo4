@@ -42,7 +42,7 @@ public class ServicioFigurita {
       Integer numero, String seleccion, String jugador,
       List<MetodoIntercambio> tipos, int pagina, int tamanioPagina) {
 
-    FiguritasFiltro filtros = new FiguritasFiltro(null, numero, seleccion, jugador, tipos);
+    FiguritasFiltro filtros = new FiguritasFiltro(null, numero, seleccion, jugador, tipos, null, null);
     PaginaResultado<FiguritaIntercambiableConPerfil> paginaRepo =
         repositorioColecciones.buscarIntercambiablesConFiltros(filtros, pagina, tamanioPagina);
 

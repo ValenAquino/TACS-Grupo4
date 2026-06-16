@@ -36,10 +36,12 @@ import java.util.List;
 public class RepositorioColeccionesMongo implements RepositorioColecciones {
   @Autowired
   private MongoTemplate mongoTemplate;
+
   @Override
   public void guardar(Coleccion coleccion) {
     mongoTemplate.save(coleccion);
   }
+
   @Override
   public void guardar(Coleccion coleccion, CamposColeccion campos) {
     Update update = new Update();
@@ -105,6 +107,57 @@ public class RepositorioColeccionesMongo implements RepositorioColecciones {
     }
 
     return this.normalizar(coleccion);
+  }
+
+  public FiguritaIntercambiable buscarRepetida(String colId, String figId) {
+    Aggregation aggregation = Aggregation.newAggregation(
+        Aggregation.match(
+            Criteria.where("_id").is(colId)
+        ),
+        Aggregation.unwind("repetidas"),
+        Aggregation.match(
+            Criteria.where("repetidas.figurita.$id").is(figId)
+        ),
+        Aggregation.replaceRoot("repetidas")
+    );
+
+    AggregationResults<FiguritaIntercambiable> result =
+        mongoTemplate.aggregate(
+            aggregation,
+            "colecciones",
+            FiguritaIntercambiable.class
+        );
+
+    FiguritaIntercambiable repetida = result.getUniqueMappedResult();
+
+    if (repetida == null) {
+      throw new NotFoundException("No se encontró la repetida");
+    }
+
+    return repetida;
+  }
+
+  public void actualizarRepetida(
+      String colId,
+      String figId,
+      FiguritaIntercambiable repetida
+  ) {
+    Query query = new Query();
+    query.addCriteria(
+        Criteria.where("_id").is(colId)
+            .and("repetidas.figurita.$id").is(figId)
+    );
+
+    Update update = new Update()
+        .set("repetidas.$.cantidadExistente", repetida.getCantidadExistente())
+        .set("repetidas.$.metodos", repetida.getMetodos());
+
+    UpdateResult result =
+        mongoTemplate.updateFirst(query, update, Coleccion.class);
+
+    if (result.getMatchedCount() == 0) {
+      throw new NotFoundException("No se encontró la repetida");
+    }
   }
 
   @Override

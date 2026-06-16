@@ -16,10 +16,6 @@ public record FiguritasFiltro(
   private static final int TAMANIO_PAGINA_POR_DEFECTO = 40;
   private static final int TAMANIO_PAGINA_MAXIMO = 40;
 
-  public FiguritasFiltro(String id, Integer numero, String seleccion, String jugador, List<MetodoIntercambio> tipos) {
-    this(id, numero, seleccion, jugador, tipos, null, null);
-  }
-
   public int paginaEfectiva() {
     return pagina != null ? pagina : 0;
   }

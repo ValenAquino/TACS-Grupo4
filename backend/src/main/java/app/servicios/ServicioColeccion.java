@@ -4,6 +4,8 @@ import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
+import app.dto.request.EditarRepetidaRequest;
+import app.exceptions.BadRequestException;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
@@ -13,6 +15,8 @@ import app.dto.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
+
+import java.util.HashSet;
 import java.util.List;
 
 import app.repositories.impl.campos.CamposPerfil;
@@ -113,6 +117,28 @@ public class ServicioColeccion {
     return new Repetidas<>(repetidas.getPublicadas(), repetidas.getDisponibles(), paginacionDto);
   }
 
+  @Transactional
+  public void editarRepetida(String colId, String figId, EditarRepetidaRequest req) {
+    FiguritaIntercambiable repetidaAmodificar = this.repositorioColecciones.buscarRepetida(colId, figId);
+
+    if(req.cantidadNueva() < repetidaAmodificar.getCantidadReservada()) {
+      throw new BadRequestException("No se puede tener menos cantidad que las reservadas");
+    }
+
+    repetidaAmodificar.setCantidadExistente(req.cantidadNueva());
+
+    if (!req.metodos().isEmpty()) {
+      validarQueNoQuiteMetodos(
+          repetidaAmodificar.getMetodos(),
+          req.metodos()
+      );
+
+      repetidaAmodificar.setMetodos(req.metodos());
+    }
+
+    this.repositorioColecciones.actualizarRepetida(colId, figId, repetidaAmodificar);
+  }
+
   /**
    * Resuelve el identificador de la colección de faltantes asociada a un perfil.
    *
@@ -126,4 +152,16 @@ public class ServicioColeccion {
     Perfil perfilFaltantes = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
     return perfilFaltantes.getColeccion().getId();
   }
+
+  private void validarQueNoQuiteMetodos(
+      List<MetodoIntercambio> actuales,
+      List<MetodoIntercambio> nuevos
+  ) {
+    if (!new HashSet<>(nuevos).containsAll(actuales)) {
+      throw new BadRequestException(
+          "No se pueden eliminar métodos de intercambio existentes"
+      );
+    }
+  }
 }
+

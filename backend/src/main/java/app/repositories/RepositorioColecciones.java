@@ -120,6 +120,11 @@ public interface RepositorioColecciones {
    */
   List<FiguritaIntercambiable> buscarIntercambiablesPorPerfilId(String usuarioId);
 
+  FiguritaIntercambiable buscarRepetida(String colId, String figId);
+  void actualizarRepetida( String colId,
+                        String figId,
+                        FiguritaIntercambiable repetida);
+
   /**
    * Cuenta la cantidad total de figuritas repetidas en todas las colecciones,
    * opcionalmente filtradas por métodos de intercambio.

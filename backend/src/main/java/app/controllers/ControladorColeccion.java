@@ -71,11 +71,13 @@ public class ControladorColeccion {
     }
 
     @PatchMapping("/repetidas/{fig_id}")
-    public ResponseEntity<Repetidas<FiguritaIntercambiableDto>> editarRepetida(
+    public ResponseEntity<Void> editarRepetida(
         @CookieValue("token") String token,
+        @PathVariable String fig_id,
         @ModelAttribute EditarRepetidaRequest req
     ) {
         String colId = this.servicioJwt.getColeccionId(token);
-        return ResponseEntity.ok(this.coleccionService.buscarRepetidas(colId, req));
+        this.coleccionService.editarRepetida(colId, fig_id, req);
+        return ResponseEntity.status(204).build();
     }
 }

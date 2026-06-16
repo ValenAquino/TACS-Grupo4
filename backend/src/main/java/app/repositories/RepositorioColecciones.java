@@ -42,5 +42,10 @@ public interface RepositorioColecciones {
   List<FiguritaIntercambiable> buscarIntercambiablesPorFiguritaIds(List<String> figuritaIds);
   List<FiguritaIntercambiable> buscarIntercambiablesPorPerfilId(String usuarioId);
 
+  FiguritaIntercambiable buscarRepetida(String colId, String figId);
+  void actualizarRepetida( String colId,
+                        String figId,
+                        FiguritaIntercambiable repetida);
+
   long contarRepetidas(List<MetodoIntercambio> filtros);
 }

@@ -5,6 +5,7 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
 import app.dto.request.EditarRepetidaRequest;
+import app.exceptions.BadRequestException;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
@@ -76,13 +77,27 @@ public class ServicioColeccion {
     return new Repetidas<>(repetidas.getPublicadas(), repetidas.getDisponibles(), paginacionDto);
   }
 
+  @Transactional
+  public void editarRepetida(String colId, String figId, EditarRepetidaRequest req) {
+    FiguritaIntercambiable repetidaAmodificar = this.repositorioColecciones.buscarRepetida(colId, figId);
+
+    if(req.cantidadRepetidas() < repetidaAmodificar.getCantidadReservada()) {
+      throw new BadRequestException("No se puede tener menos cantidad que las reservadas");
+    }
+
+    repetidaAmodificar.setCantidadExistente(req.cantidadRepetidas());
+
+    if(!req.metodos().isEmpty()) {
+      repetidaAmodificar.setMetodos(req.metodos());
+    }
+
+    this.repositorioColecciones.actualizarRepetida(colId, figId, repetidaAmodificar);
+  }
+
   private String resolverColIdFaltantes(String perfilId) {
     if (perfilId == null) return null;
     Perfil perfilFaltantes = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
     return perfilFaltantes.getColeccion().getId();
   }
 
-  private void editarRepetida(String colId, EditarRepetidaRequest req) {
-    FiguritaIntercambiable repetidaAmodificar = this.repositorioColecciones.
-  }
 }

@@ -6,6 +6,7 @@ import app.dto.filtros.FaltantesFiltro;
 import app.dto.filtros.RepetidasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
+import app.dto.request.EditarRepetidaRequest;
 import app.dto.request.FaltanteRequest;
 import app.dto.request.RepetidaRequest;
 import app.servicios.ServicioColeccion;
@@ -67,5 +68,14 @@ public class ControladorColeccion {
     ) {
         String colId = this.servicioJwt.getColeccionId(token);
         return ResponseEntity.ok(this.coleccionService.buscarRepetidas(colId, filtros));
+    }
+
+    @PatchMapping("/repetidas/{fig_id}")
+    public ResponseEntity<Repetidas<FiguritaIntercambiableDto>> editarRepetida(
+        @CookieValue("token") String token,
+        @ModelAttribute EditarRepetidaRequest req
+    ) {
+        String colId = this.servicioJwt.getColeccionId(token);
+        return ResponseEntity.ok(this.coleccionService.buscarRepetidas(colId, req));
     }
 }

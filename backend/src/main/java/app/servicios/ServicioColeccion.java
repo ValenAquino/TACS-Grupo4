@@ -4,6 +4,7 @@ import app.dto.FiguritaDto;
 import app.dto.FiguritaIntercambiableDto;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.paginacion.Repetidas;
+import app.dto.request.EditarRepetidaRequest;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
 import app.model.entities.MetodoIntercambio;
@@ -79,5 +80,9 @@ public class ServicioColeccion {
     if (perfilId == null) return null;
     Perfil perfilFaltantes = this.repositorioPerfiles.buscarPorId(perfilId, new CamposPerfil(false));
     return perfilFaltantes.getColeccion().getId();
+  }
+
+  private void editarRepetida(String colId, EditarRepetidaRequest req) {
+    FiguritaIntercambiable repetidaAmodificar = this.repositorioColecciones.
   }
 }

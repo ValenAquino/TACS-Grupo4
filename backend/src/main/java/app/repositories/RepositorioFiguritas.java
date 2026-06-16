@@ -7,9 +7,21 @@ import java.util.List;
 
 public interface RepositorioFiguritas {
 
-  /** @throws app.exceptions.NotFoundException si no existe figurita con ese id */
+  /**
+   * Busca una figurita por su identificador.
+   *
+   * @param id identificador de la figurita
+   * @return la figurita encontrada
+   * @throws app.exceptions.NotFoundException si no existe figurita con ese id
+   */
   Figurita buscarPorId(String id);
 
+  /**
+   * Busca múltiples figuritas por sus identificadores.
+   *
+   * @param ids lista de identificadores
+   * @return lista de figuritas encontradas
+   */
   List<Figurita> buscarPorIds(List<String> ids);
 
   /**

@@ -83,11 +83,11 @@ public class ServicioColeccion {
   public void editarRepetida(String colId, String figId, EditarRepetidaRequest req) {
     FiguritaIntercambiable repetidaAmodificar = this.repositorioColecciones.buscarRepetida(colId, figId);
 
-    if(req.cantidadRepetidas() < repetidaAmodificar.getCantidadReservada()) {
+    if(req.cantidadNueva() < repetidaAmodificar.getCantidadReservada()) {
       throw new BadRequestException("No se puede tener menos cantidad que las reservadas");
     }
 
-    repetidaAmodificar.setCantidadExistente(req.cantidadRepetidas());
+    repetidaAmodificar.setCantidadExistente(req.cantidadNueva());
 
     if (!req.metodos().isEmpty()) {
       validarQueNoQuiteMetodos(

@@ -342,7 +342,7 @@ class ControladorColeccionTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "cantidad_repetidas": 5,
+                      "cantidad_nueva": 5,
                       "metodos": ["INTERCAMBIO", "SUBASTA"]
                     }
                 """)
@@ -360,7 +360,7 @@ class ControladorColeccionTest {
 
     EditarRepetidaRequest req = captor.getValue();
 
-    assertEquals(5, req.cantidadRepetidas());
+    assertEquals(5, req.cantidadNueva());
     assertEquals(
         List.of(
             MetodoIntercambio.INTERCAMBIO,

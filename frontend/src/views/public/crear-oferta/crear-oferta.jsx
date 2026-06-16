@@ -47,7 +47,7 @@ const CrearOferta = () => {
           buscarPerfil(),
         ])
         setSubasta(payloadSubasta)
-        setRepetidas(payloadRepetidas ?? [])
+        setRepetidas(payloadRepetidas?.contenido ?? [])
         setCalificacion(payloadPerfil?.calificacion_media ?? null)
       } catch (e) {
         handleError(e, (err) => showToast(err.mensaje, 'error'))
@@ -180,7 +180,13 @@ const CrearOferta = () => {
             )}
           </div>
 
-          <SelectorRepetidas modo="multiple" bloqueadas={bloqueadas} onChange={setFiguritasExtra} metodoIntercambio = "SUBASTA"/>
+          <SelectorRepetidas
+            modo="multiple"
+            bloqueadas={bloqueadas}
+            onChange={setFiguritasExtra}
+            metodoIntercambio="SUBASTA"
+            perfilId={subasta.perfil.id}
+          />
 
           <Button
             label="Enviar oferta ↗"

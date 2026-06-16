@@ -38,7 +38,13 @@ const CrearPropuestaIntercambio = () => {
         <p className={styles.crearPropuestaSeleccionTitulo}>
           Seleccioná las figuritas que querés ofrecer
         </p>
-        <SelectorRepetidas modo="multiple" bloqueadas={[]} onChange={setSeleccionadas} metodoIntercambio = "INTERCAMBIO"/>
+        <SelectorRepetidas
+          modo="multiple"
+          bloqueadas={[]}
+          onChange={setSeleccionadas}
+          metodoIntercambio="INTERCAMBIO"
+          perfilId={figurita.perfil_id}
+        />
       </div>
 
       <Button

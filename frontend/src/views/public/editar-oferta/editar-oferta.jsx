@@ -187,7 +187,8 @@ const EditarOferta = () => {
             seleccionadasIniciales={ofrecidasAnteriores.filter(
               (f) => !bloqueadas.some((b) => b.figurita_id === f.figurita_id),
             )}
-            metodoIntercambio = "SUBASTA"
+            metodoIntercambio="SUBASTA"
+            perfilId={subasta.perfil.id}
           />
         </div>
 

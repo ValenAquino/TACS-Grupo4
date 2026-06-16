@@ -9,21 +9,27 @@ import app.servicios.ServicioJwt;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 class ServicioJwtTest {
 
+  @Autowired
   private ServicioJwt servicioJwt;
-
   private Usuario usuario;
   private Perfil perfil;
   private Coleccion coleccion;
 
   @BeforeEach
   void setUp() {
-    servicioJwt = new ServicioJwt();
 
     usuario = mock(Usuario.class);
     perfil = mock(Perfil.class);

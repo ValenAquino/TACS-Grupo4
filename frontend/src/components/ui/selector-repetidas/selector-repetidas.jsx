@@ -13,6 +13,7 @@ const SelectorRepetidas = ({
   onChange,
   seleccionadasIniciales = [],
   metodoIntercambio = null,
+  perfilId = null,
 }) => {
   const [figuritas, setFiguritas] = useState([])
   const [loading, setLoading] = useState(false)
@@ -29,6 +30,7 @@ const SelectorRepetidas = ({
         pagina: 1,
         limite: LIMITE,
         metodoIntercambio: metodoIntercambio,
+        perfilId: perfilId,
       })
       setFiguritas(payload.contenido ?? [])
       setTotal(payload.cantidad_de_elementos ?? null)

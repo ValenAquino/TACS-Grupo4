@@ -1,5 +1,8 @@
 package app.config;
 
+import app.model.entities.Calificacion;
+import app.model.entities.EstadoProceso;
+import app.model.entities.EstadoPropuesta;
 import app.model.entities.Figurita;
 import app.model.entities.Coleccion;
 import app.model.entities.FiguritaIntercambiable;
@@ -18,6 +21,7 @@ import app.repositories.RepositorioPerfiles;
 import app.repositories.RepositorioPropuestas;
 import app.repositories.RepositorioSubastas;
 import app.repositories.RepositorioUsuarios;
+import app.repositories.impl.campos.CamposSubasta;
 import app.servicios.ServicioEnriquecimiento;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -115,7 +119,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
     cargarAdmin();
     Map<String, Perfil> perfs = cargarPerfiles(figs);
     cargarPropuestas(figs, perfs.get("lucas"), perfs.get("sofia"), perfs.get("juan"),perfs.get("valentina"));
-    cargarSubastas(figs, perfs.get("lucas"), perfs.get("sofia"), perfs.get("matias"));
+    cargarSubastas(figs, perfs.get("lucas"), perfs.get("sofia"), perfs.get("matias"), perfs.get("valentina"));
     enriquecimiento.enriquecer();
   }
 
@@ -140,7 +144,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
   // ─── ADMIN ────────────────────────────────────────────────────────────────
 
   private void cargarAdmin() {
-    Usuario admin = crearUsuario("admin", "admin", Rol.ADMINISTRADOR);
+    Usuario admin = crearUsuario("admin", "Admin12!", Rol.ADMINISTRADOR);
     Coleccion coleccion = crearColeccion();
     crearPerfil("admin-id-001", "admin", admin, coleccion, "admin");
   }
@@ -150,7 +154,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
   private Map<String, Perfil> cargarPerfiles(Map<String, Figurita> figs) {
       // ── LUCAS ───────────────────────────────────────────────────────────────
 //    Faltantes: Lewandowski (POL-9), Eriksen (DEN-10), Xhaka (SUI-10), Kimmich (GER-6), De Bruyne (BEL-7), Modrić (CRO-10), Ronaldo POR-7, Pedri "ESP-10"
-//    Repetidas: Messi x3, Di María x2, J.Álvarez x2, E.Fernández x2, Neymar x2, Vinícius x3, Mbappé x2, Griezmann x2
+//    Repetidas: Messi x3, Di María x2, J.Álvarez x2, E.Fernández x2, Neymar x2, Vinícius x3, Mbappé x2, Griezmann x2, Kim Seung-gyu x1
     Coleccion coleccionLucas = crearColeccion();
     coleccionLucas.getFaltantes().addAll(List.of(
           figs.get("POL-9"),  // Lewandowski
@@ -162,7 +166,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           figs.get("POR-7"),  // Ronaldo
           figs.get("ESP-10")  // Pedri
       ));
-      Usuario userLucas = crearUsuario("lucas_fis", "gordo123", Rol.USUARIO);
+      Usuario userLucas = crearUsuario("lucas_fis", "Gordo123!", Rol.USUARIO);
       Perfil lucas = crearPerfil("lucas-id-001", "Lucas", userLucas, coleccionLucas, "@lucas");
 
       agregarRepetidaNueva(coleccionLucas, figs.get("ARG-10"), 3, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), lucas.getId()); // Messi x3
@@ -172,7 +176,8 @@ public class InicializadorDeDatos implements CommandLineRunner {
       agregarRepetidaNueva(coleccionLucas, figs.get("BRA-10"), 2, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), lucas.getId()); // Neymar x2
       agregarRepetidaNueva(coleccionLucas, figs.get("BRA-11"), 3, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA),     lucas.getId());                            // Vinícius x3
       agregarRepetidaNueva(coleccionLucas, figs.get("FRA-10"), 2, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), lucas.getId()); // Mbappé x2
-      agregarRepetidaNueva(coleccionLucas, figs.get("FRA-7"),  2, List.of(MetodoIntercambio.INTERCAMBIO ,MetodoIntercambio.SUBASTA), lucas.getId());                            // Griezmann x2
+      agregarRepetidaNueva(coleccionLucas, figs.get("FRA-7"),  2, List.of(MetodoIntercambio.INTERCAMBIO ,MetodoIntercambio.SUBASTA), lucas.getId());
+      agregarRepetidaNueva(coleccionLucas, figs.get("KOR-1"),  1, List.of(MetodoIntercambio.INTERCAMBIO ,MetodoIntercambio.SUBASTA), lucas.getId());// kim
 
       colecciones.guardar(coleccionLucas);
 
@@ -191,7 +196,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           figs.get("FRA-7"), //Griezmann
           figs.get("ARG-8") //E. fernandez
       ));
-      Usuario userSofia = crearUsuario("sofia_ape", "password", Rol.USUARIO);
+      Usuario userSofia = crearUsuario("sofia_ape", "Password1@", Rol.USUARIO);
       Perfil sofia = crearPerfil("sofia-id-001", "Sofía", userSofia, coleccionSofia, "@sofia");
 
       agregarRepetidaNueva(coleccionSofia, figs.get("ESP-10"), 2, List.of(MetodoIntercambio.INTERCAMBIO), sofia.getId()); // Pedri x2
@@ -216,7 +221,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           figs.get("POR-7"),  // Ronaldo
           figs.get("POR-10")  // B. Silva
       ));
-      Usuario userMatias = crearUsuario("mati_crim", "wordpass", Rol.USUARIO);
+      Usuario userMatias = crearUsuario("mati_crim", "Wordpass1$", Rol.USUARIO);
       Perfil matias = crearPerfil("matias-id-001", "Matías", userMatias, coleccionMatias, "@matias");
 
       agregarRepetidaNueva(coleccionMatias, figs.get("URU-9"),  2, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), matias.getId()); // D. Núñez x2
@@ -238,7 +243,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           figs.get("ARG-9"),  // J. Álvarez
           figs.get("ARG-8")   // E. Fernández
       ));
-      Usuario userJuan = crearUsuario("juan_jose", "una_contrasenia", Rol.USUARIO);
+      Usuario userJuan = crearUsuario("juan_jose", "Una_contrasenia1", Rol.USUARIO);
       Perfil juan = crearPerfil("juan-id-001", "Juan", userJuan, coleccionJuan, "@juan");
 
       agregarRepetidaNueva(coleccionJuan, figs.get("MAR-7"),  2, List.of(MetodoIntercambio.INTERCAMBIO), juan.getId()); // Ziyech x2
@@ -260,7 +265,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           figs.get("FRA-10"), // Mbappé
           figs.get("ENG-9")   // Kane
       ));
-      Usuario userValentina = crearUsuario("vale_gom", "passval", Rol.USUARIO);
+      Usuario userValentina = crearUsuario("vale_gom", "Passval2&", Rol.USUARIO);
       Perfil valentina = crearPerfil("valentina-id-001", "Valentina", userValentina, coleccionValentina, "@valentina");
 
       agregarRepetidaNueva(coleccionValentina, figs.get("MAR-7"),  2, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), valentina.getId()); // Ziyech x2
@@ -285,7 +290,7 @@ public class InicializadorDeDatos implements CommandLineRunner {
           figs.get("KOR-7"),  // Son
           figs.get("GHA-6")   // Partey
       ));
-      Usuario userDiego = crearUsuario("diego_ram", "diegopass", Rol.USUARIO);
+      Usuario userDiego = crearUsuario("diego_ram", "Diegopass2#", Rol.USUARIO);
       Perfil diego = crearPerfil("diego-id-001", "Diego", userDiego, coleccionDiego, "@diego");
 
       agregarRepetidaNueva(coleccionDiego, figs.get("ARG-10"), 2, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA), diego.getId()); // Messi x2
@@ -377,6 +382,43 @@ private void cargarPropuestas(Map<String, Figurita> figs,
       .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("GER-6"))))
       .figuritaBuscada(figs.get("ARG-10")).build());
   reservar(sofia, "GER-6");
+
+  // P09 FINALIZADA — Valentina → Lucas : ofrece Sergio Rochet (URU-1 INTERCAMBIO), busca Guillermo Varela (URU-2 INTERCAMBIO ✅)
+  Propuesta p09 = Propuesta.builder()
+      .autor(valentina).destinatario(lucas).estado(List.of(new EstadoPropuesta(LocalDateTime.now(), EstadoProceso.ACEPTADO)))
+      .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("URU-1"))))
+      .figuritaBuscada(figs.get("URU-2")).build();
+
+  propuestas.guardar(p09);
+
+  //Calificacion a lucas respecto a intercambio 9
+
+  Calificacion calificacionALucas = Calificacion.builder()
+      .autor(valentina)
+      .destinatario(lucas)
+      .valor(3)
+      .descripcion("Figurita doblada")
+      .transaccionId(p09.getId())
+      .tipoTransaccion(MetodoIntercambio.INTERCAMBIO)
+      .build();
+  lucas.agregarNuevaCalificacion(calificacionALucas);
+  calificaciones.guardar(calificacionALucas);
+  perfiles.guardar(lucas);
+
+  //Calificacion a valentina respecto a intercambio 9
+
+  Calificacion calificacionAValentina = Calificacion.builder()
+      .autor(lucas)
+      .destinatario(valentina)
+      .valor(4)
+      .descripcion("Mala onda")
+      .transaccionId(p09.getId())
+      .tipoTransaccion(MetodoIntercambio.INTERCAMBIO)
+      .build();
+  valentina.agregarNuevaCalificacion(calificacionAValentina);
+  calificaciones.guardar(calificacionAValentina);
+  perfiles.guardar(valentina);
+
 }
 
 // Busca la FiguritaIntercambiable en las repetidas del perfil por id de figurita
@@ -401,7 +443,7 @@ private void reservar(Perfil perfil, String figuritaId) {
 //
 //  Oferta de Lucas: ofrece E.Fernández → reserva(lucas, ARG-8)
   private void cargarSubastas(Map<String, Figurita> figs,
-                              Perfil lucas, Perfil sofia, Perfil matias) {
+                              Perfil lucas, Perfil sofia, Perfil matias, Perfil valentina) {
 // S1 — Lucas subasta Griezmann
     Subasta s1 = Subasta.builder()
         .autor(lucas)
@@ -458,6 +500,69 @@ private void reservar(Perfil perfil, String figuritaId) {
     reservar(lucas, "ARG-8");
 
     subastas.guardar(s2);
+
+    // S3 — Valentina subasta Modric
+    Subasta s3 = Subasta.builder()
+        .autor(valentina)
+        .figuritaSubastada(figs.get("CRO-10"))
+        .figuritasSolicitadas(List.of(figs.get("ARG-10")))
+        .fechaInicio(LocalDateTime.now().minusDays(1))
+        .fechaCierre(LocalDateTime.now().plusDays(7))
+        .build();
+    reservar(valentina, "CRO-10");
+    subastas.guardar(s3);
+
+    // S4 FINALIZADA — Lucas subasta Kim Seung-gyu
+    Subasta s4 = Subasta.builder()
+        .autor(lucas)
+        .figuritaSubastada(figs.get("KOR-1"))
+        .figuritasSolicitadas(List.of(figs.get("KOR-2")))
+        .fechaInicio(LocalDateTime.now().minusDays(3))
+        .fechaCierre(LocalDateTime.now().minusDays(1))
+        .build();
+    subastas.guardar(s4);
+
+    // Oferta de Valentina a S4
+    Propuesta ofertaValentina = Propuesta.builder()
+        .id("4")
+        .autor(valentina)
+        .destinatario(lucas)
+        .figuritasOfrecidas(new ArrayList<>(List.of(figs.get("KOR-2"), figs.get("KOR-3"))))
+        .figuritaBuscada(figs.get("KOR-1"))
+        .estado(List.of(new EstadoPropuesta(LocalDateTime.now().minusDays(2), EstadoProceso.ACEPTADO)))
+        .build();
+    s4.getOfertas().add(ofertaValentina);
+    subastas.guardar(s4, new CamposSubasta(true, false));
+
+    //Calificacion a lucas respecto a subasta 4
+
+    Calificacion calificacionALucas = Calificacion.builder()
+        .autor(valentina)
+        .destinatario(lucas)
+        .valor(4)
+        .descripcion("Tardo en responder")
+        .transaccionId(s4.getId())
+        .tipoTransaccion(MetodoIntercambio.SUBASTA)
+        .build();
+    lucas.agregarNuevaCalificacion(calificacionALucas);
+    calificaciones.guardar(calificacionALucas);
+    perfiles.guardar(lucas);
+
+    //Calificacion a valentina respecto a subasta 4
+
+    Calificacion calificacionAValentina = Calificacion.builder()
+        .autor(lucas)
+        .destinatario(valentina)
+        .valor(5)
+        .descripcion("Copada")
+        .transaccionId(s4.getId())
+        .tipoTransaccion(MetodoIntercambio.SUBASTA)
+        .build();
+
+    valentina.agregarNuevaCalificacion(calificacionAValentina);
+    calificaciones.guardar(calificacionAValentina);
+    perfiles.guardar(valentina);
+
   }
 
 }

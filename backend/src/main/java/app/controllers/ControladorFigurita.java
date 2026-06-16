@@ -27,7 +27,7 @@ public class ControladorFigurita {
         @RequestParam(required = false) String jugador,
         @RequestParam(required = false) List<MetodoIntercambio> tipo,
         @RequestParam(defaultValue = "0") int pagina,
-        @RequestParam(defaultValue = "10") int tamanioPagina
+        @RequestParam(defaultValue = "12") int tamanioPagina
     ) {
         int tamanioDePaginaAcotado = Math.min(tamanioPagina, 40);
         if (q != null && !q.isBlank()) {

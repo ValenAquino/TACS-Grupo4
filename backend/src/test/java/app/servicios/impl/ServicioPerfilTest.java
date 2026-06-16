@@ -201,11 +201,11 @@ class ServicioPerfilTest extends MongoTestBase {
         .build();
     repositorioFiguritas.guardar(diMaria);
     usuario.getColeccion().agregarFaltante(messi);
-    usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(diMaria, 2, new ArrayList<>()));
+    usuario.getColeccion().getRepetidas().add(new FiguritaIntercambiable(diMaria, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
     repositorioColecciones.guardar(usuario.getColeccion());
 
     Coleccion coleccionOtro = new Coleccion("c-3");
-    coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, new ArrayList<>()));
+    coleccionOtro.getRepetidas().add(new FiguritaIntercambiable(messi, 2, List.of(MetodoIntercambio.INTERCAMBIO)));
     coleccionOtro.getFaltantes().add(diMaria);
 
     repositorioColecciones.guardar(coleccionOtro);

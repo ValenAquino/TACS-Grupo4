@@ -221,7 +221,7 @@ class ServicioPerfilTest extends MongoTestBase {
 
     when(jwt.getPerfilId(any())).thenReturn("1");
 
-    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(1, 10));
 
     assertEquals(1, resultado.contenido().size());
   }
@@ -238,7 +238,7 @@ class ServicioPerfilTest extends MongoTestBase {
 
     when(jwt.getPerfilId(any())).thenReturn("1");
 
-    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(null, 1, 10));
+    var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(1, 10));
 
     assertEquals(0, resultado.contenido().size());
   }

@@ -6,7 +6,7 @@ import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import { useError } from '@/contexts/errorContext.jsx'
 import { useToast } from '@/contexts/toastContext.jsx'
 
-const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
+const MostradorSugerencias = ({extraInfoChildren}) => {
 
     const {handleError, errorTemplate} = useError()
     const {showToast} = useToast()
@@ -20,7 +20,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
     const cargarSugerencias = useCallback(async () => {
         try {
             setCargando(true)
-            const payload = await buscarSugerencias({ tipo, pagina: pagina, limite:10})
+            const payload = await buscarSugerencias({ pagina: pagina, limite:10})
             setPaginasTotales(payload.cantidad_de_paginas)
             setSugerencias(payload.contenido)
         } catch (error) {
@@ -32,7 +32,7 @@ const MostradorSugerencias = ({tipo, extraInfoChildren}) => {
 
     useEffect(() => {
         cargarSugerencias()
-    }, [tipo]);
+    }, []);
 
     const mostrarSugerencias = () => {
         if (error.codigo != null) return <h2 className="text-center text-secondary">No se pudo cargar la información</h2>

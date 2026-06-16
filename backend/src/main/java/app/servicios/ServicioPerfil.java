@@ -96,8 +96,8 @@ public class ServicioPerfil {
 
     PaginaResultado<Sugerencia> sugerencias = this.repositorioPerfiles.generarSugerencias(perfilObjetivo.getColeccion(), filtros);
 
-    //TODO: sigue en implementacion
-    return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(), 0, 0, 0);
+    return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(),
+        sugerencias.cantidadDeElementos(), sugerencias.cantidadDePaginas(), sugerencias.numero());
   }
 
   public List<ContadorDto> obtenerContadores(String perfilId) {

@@ -162,22 +162,6 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
         )
     ));
 
-    if (Objects.equals(filtro.tipo(), "1a1")) {
-      ops.add(Aggregation.match(
-          Criteria.where("sugeridas").size(1).and("necesarias").size(1)
-      ));
-    } else if (Objects.equals(filtro.tipo(), "Na1")) {
-      ops.add(context -> new Document("$match", new Document("$expr", new Document("$and", List.of(
-          new Document("$gt", List.of(new Document("$size", "$sugeridas"), 1)),
-          new Document("$eq", List.of(new Document("$size", "$necesarias"), 1))
-      )))));
-    } else if (Objects.equals(filtro.tipo(), "1aN")) {
-      ops.add(context -> new Document("$match", new Document("$expr", new Document("$and", List.of(
-          new Document("$eq", List.of(new Document("$size", "$sugeridas"), 1)),
-          new Document("$gt", List.of(new Document("$size", "$necesarias"), 1))
-      )))));
-    }
-
     // Count
     List<AggregationOperation> countOps = new ArrayList<>(ops);
     countOps.add(Aggregation.count().as("total"));

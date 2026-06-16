@@ -1,7 +1,6 @@
 package app.dto.filtros;
 
 public record SugerenciasFiltro (
-    String tipo,
     Integer pagina,
     Integer limite) {
   public SugerenciasFiltro {

@@ -1,12 +1,11 @@
 import SugerenciaCard from "@/views/public/sugerencias/sugerencia-card.jsx";
 import {useCallback, useEffect, useState} from "react";
 import {buscarSugerencias} from "@/services/perfilService.js";
-import ExtraInfo from "@/components/ui/extra-info/extra-info.jsx";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import { useError } from '@/contexts/errorContext.jsx'
 import { useToast } from '@/contexts/toastContext.jsx'
 
-const MostradorSugerencias = ({extraInfoChildren}) => {
+const MostradorSugerencias = () => {
 
     const {handleError, errorTemplate} = useError()
     const {showToast} = useToast()
@@ -38,11 +37,6 @@ const MostradorSugerencias = ({extraInfoChildren}) => {
         if (error.codigo != null) return <h2 className="text-center text-secondary">No se pudo cargar la información</h2>
         return (
             <>
-                {
-                    extraInfoChildren ? <ExtraInfo>
-                        {extraInfoChildren}
-                    </ExtraInfo> : null
-                }
                 {
                     sugerencias.length > 0 ?
                         sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}

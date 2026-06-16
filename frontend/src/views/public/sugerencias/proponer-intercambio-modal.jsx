@@ -76,9 +76,7 @@ const ProponerIntercambioModal = ({
             <p className={styles.seleccionLabel}>¿Qué le vas a ofrecer?</p>
             <SelectorRepetidas
               modo="multiple"
-              onSearch={(payload) => {
-                payload.contenido = payload.contenido.filter(p => p.metodos.includes('INTERCAMBIO'))
-              }}
+              metodoIntercambio="INTERCAMBIO"
               bloqueadas={[]}
               onChange={setRepetidas}
               perfilId={perfil?.id ?? null}

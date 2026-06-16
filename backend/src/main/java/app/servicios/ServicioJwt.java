@@ -24,7 +24,11 @@ public class ServicioJwt {
   private Duration expiration;
 
   /**
-   Metodo que genera un token con UserId, Rol, PerfilId y ColId.
+   * Genera un token JWT con los claims usuarioId, rol, perfilId y colId.
+   *
+   * @param usuario usuario autenticado del cual se extraen id y rol
+   * @param perfil  perfil asociado al usuario del cual se extraen perfilId y colId
+   * @return token JWT firmado con los datos de sesión
    */
   public String generarToken(
       Usuario usuario,
@@ -57,8 +61,8 @@ public class ServicioJwt {
   }
 
   /**
-   * Metodo que firma el token.
-  */
+   * Crea la clave de firma HMAC para el token.
+   */
   private Key getSignKey() {
 
     return Keys.hmacShaKeyFor(
@@ -67,7 +71,7 @@ public class ServicioJwt {
   }
 
   /**
-   * Metodo que valida el token. Valida tanto por expiracion como por firma (si fue modificado).
+   * Método que valida el token. Valida tanto por expiración como por firma (si fue modificado).
    */
   public Claims validarToken(String token) {
 
@@ -79,7 +83,7 @@ public class ServicioJwt {
   }
 
   /**
-   * Metodo que valida el token y devuelve los datos guardados en el.
+   * Método que valida el token y devuelve los datos guardados en el.
    */
   public SesionDto obtenerSesion(String token) {
 

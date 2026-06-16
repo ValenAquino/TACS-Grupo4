@@ -39,7 +39,15 @@ public class ServicioPropuesta {
 
   /**
    * Crea una propuesta de intercambio. Valida que el usuario origen,
-   * destino y figuritas existan. El estado inicial es PENDIENTE.
+   * destino y figuritas existan. Verifica que la figurita buscada esté
+   * en los faltantes del autor y reserva las figuritas ofrecidas.
+   * El estado inicial es PENDIENTE. Notifica al destinatario.
+   *
+   * @param autorId identificador del perfil que crea la propuesta (autor)
+   * @param request datos de la propuesta (destinatario, figurita buscada, figuritas ofrecidas)
+   * @return datos de la propuesta creada como {@link PropuestaDto}
+   * @throws app.exceptions.BadRequestException si la figurita buscada no está en faltantes del autor
+   * @throws app.exceptions.NotFoundException  si no se encuentra el perfil, destino o alguna figurita
    */
   @Transactional
   public PropuestaDto crearPropuesta(String autorId, CrearPropuestaRequest request) {

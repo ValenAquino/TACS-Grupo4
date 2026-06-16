@@ -128,12 +128,12 @@ public class ControladorSubasta {
         return ResponseEntity.ok(this.subastaService.obtenerSubastas(perfilId, filtros));
     }
 
-  @GetMapping("/{sub_id}")
-  public ResponseEntity<SubastaDto> obtenerSubasta(
+    @GetMapping("/{sub_id}")
+    public ResponseEntity<SubastaDto> obtenerSubasta(
       @PathVariable String sub_id
-  ) {
+    ) {
     SubastaDto subasta = this.subastaService.obtenerSubasta(sub_id);
 
     return ResponseEntity.ok().body(subasta);
-  }
+    }
 }

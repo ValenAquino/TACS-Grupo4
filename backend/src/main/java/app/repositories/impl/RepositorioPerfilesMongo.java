@@ -188,7 +188,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
 
     // Paginación
     List<AggregationOperation> pageOps = new ArrayList<>(ops);
-    pageOps.add(Aggregation.skip((long) (filtro.paginaActual() - 1) * filtro.limite()));
+    pageOps.add(Aggregation.skip((long) (filtro.pagina() - 1) * filtro.limite()));
     pageOps.add(Aggregation.limit(filtro.limite()));
 
     AggregationResults<Document> resultados = mongoTemplate.aggregate(
@@ -233,7 +233,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
         sugerencias,
         total,
         (int) Math.ceil((double) total / filtro.limite()),
-        filtro.paginaActual()
+        filtro.pagina()
     );
   }
 

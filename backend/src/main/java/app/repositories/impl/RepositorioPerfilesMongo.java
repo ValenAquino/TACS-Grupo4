@@ -140,9 +140,12 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
         .append("sugeridas", new Document("$filter", new Document()
             .append("input", "$repetidas")
             .append("as", "r")
-            .append("cond", new Document("$in", List.of(
-                new Document("$toString", "$$r.figurita.$id"),
-                faltantesObjetivo
+            .append("cond", new Document("$and", List.of(
+                new Document("$in", List.of(
+                    new Document("$toString", "$$r.figurita.$id"),
+                    faltantesObjetivo
+                )),
+                new Document("$in", List.of("INTERCAMBIO", "$$r.metodos"))
             )))
         ))
         .append("necesarias", new Document("$filter", new Document()

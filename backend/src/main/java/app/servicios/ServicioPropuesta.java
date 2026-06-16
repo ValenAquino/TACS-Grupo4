@@ -68,6 +68,7 @@ public class ServicioPropuesta {
         .map(repositorioFiguritas::buscarPorId)
         .toList();
 
+
     autor.getColeccion().reservarRepetidas(figuritasOfrecidas, MetodoIntercambio.INTERCAMBIO);
 
     Propuesta propuesta = Propuesta.builder()
@@ -76,7 +77,6 @@ public class ServicioPropuesta {
         .figuritaBuscada(figuritaBuscada)
         .figuritasOfrecidas(figuritasOfrecidas)
         .build();
-
     repositorioColecciones.guardar(autor.getColeccion());
     repositorioPropuestas.guardar(propuesta);
 

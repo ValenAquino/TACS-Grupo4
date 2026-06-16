@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -302,5 +303,20 @@ class ControladorColeccionTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(json))
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void buscarFaltantesSinPaginacionRetorna_200() throws Exception {
+    mockMvc.perform(get("/colecciones/faltantes")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+  }
+  @Test
+  void buscarRepetidasSinPaginacionRetorna_200() throws Exception {
+    mockMvc.perform(get("/colecciones/repetidas")
+            .cookie(cookie)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
   }
 }

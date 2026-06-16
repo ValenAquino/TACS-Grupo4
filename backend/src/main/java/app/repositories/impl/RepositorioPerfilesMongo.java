@@ -5,6 +5,7 @@ import app.dto.paginacion.PaginaResultado;
 import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
+import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Sugerencia;
 import app.repositories.RepositorioPerfiles;
@@ -144,13 +145,25 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
     ops.add(Aggregation.lookup("perfiles", "_id", "coleccion.$id", "perfil"));
     ops.add(Aggregation.unwind("perfil"));
 
+    List<String> repetidasObjetivoConIntercambio = coleccionObjetivo.getRepetidas().stream()
+        .filter(r -> r.getMetodos() != null && r.getMetodos().contains(MetodoIntercambio.INTERCAMBIO))
+        .map(r -> r.getFigurita().getId())
+        .toList();
+
     ops.add(context -> new Document("$addFields", new Document()
         .append("sugeridas", new Document("$filter", new Document()
             .append("input", "$repetidas")
             .append("as", "r")
-            .append("cond", new Document("$in", List.of(
-                new Document("$toString", "$$r.figurita.$id"),
-                faltantesObjetivo
+            .append("cond", new Document("$and", List.of(
+                new Document("$in", List.of(
+                    new Document("$toString", "$$r.figurita.$id"),
+                    faltantesObjetivo
+                )),
+                new Document("$in", List.of("INTERCAMBIO", "$$r.metodos")),
+                new Document("$gt", List.of(
+                    new Document("$subtract", List.of("$$r.cantidadExistente", "$$r.cantidadReservada")),
+                    0
+                ))
             )))
         ))
         .append("necesarias", new Document("$filter", new Document()
@@ -158,7 +171,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
             .append("as", "f")
             .append("cond", new Document("$in", List.of(
                 new Document("$toString", "$$f.$id"),
-                repetidasObjetivo
+                repetidasObjetivoConIntercambio
             )))
         ))
     ));
@@ -170,22 +183,6 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
         )
     ));
 
-    if (Objects.equals(filtro.tipo(), "1a1")) {
-      ops.add(Aggregation.match(
-          Criteria.where("sugeridas").size(1).and("necesarias").size(1)
-      ));
-    } else if (Objects.equals(filtro.tipo(), "Na1")) {
-      ops.add(context -> new Document("$match", new Document("$expr", new Document("$and", List.of(
-          new Document("$gt", List.of(new Document("$size", "$sugeridas"), 1)),
-          new Document("$eq", List.of(new Document("$size", "$necesarias"), 1))
-      )))));
-    } else if (Objects.equals(filtro.tipo(), "1aN")) {
-      ops.add(context -> new Document("$match", new Document("$expr", new Document("$and", List.of(
-          new Document("$eq", List.of(new Document("$size", "$sugeridas"), 1)),
-          new Document("$gt", List.of(new Document("$size", "$necesarias"), 1))
-      )))));
-    }
-
     // Count
     List<AggregationOperation> countOps = new ArrayList<>(ops);
     countOps.add(Aggregation.count().as("total"));
@@ -196,7 +193,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
 
     // Paginación
     List<AggregationOperation> pageOps = new ArrayList<>(ops);
-    pageOps.add(Aggregation.skip((long) (filtro.paginaActual() - 1) * filtro.limite()));
+    pageOps.add(Aggregation.skip((long) (filtro.pagina() - 1) * filtro.limite()));
     pageOps.add(Aggregation.limit(filtro.limite()));
 
     AggregationResults<Document> resultados = mongoTemplate.aggregate(
@@ -241,7 +238,7 @@ public class RepositorioPerfilesMongo implements RepositorioPerfiles {
         sugerencias,
         total,
         (int) Math.ceil((double) total / filtro.limite()),
-        filtro.paginaActual()
+        filtro.pagina()
     );
   }
 

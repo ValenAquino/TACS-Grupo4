@@ -85,7 +85,7 @@ const Repetidas = () => {
           item.figurita_id === repetidaSeleccionada.figurita_id
             ? {
               ...item,
-              cantidad_existente: payload.cantidad_existente,
+              cantidad_existente: payload.cantidadNueva,
               metodos: payload.metodos,
             }
             : item
@@ -95,7 +95,8 @@ const Repetidas = () => {
       showToast("Repetida actualizada", "success");
       cerrarModalEdicion();
     } catch (err) {
-      showToast(handleError(err), "error");
+
+      showToast(handleError(err, () => {}), "error");
     }
   };
 

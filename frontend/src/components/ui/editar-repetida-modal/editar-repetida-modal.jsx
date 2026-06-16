@@ -22,8 +22,8 @@ const EditarRepetidaModal = ({ figurita, onClose, onGuardar }) => {
   };
 
   const handleGuardar = () => {
-    onGuardar(figurita.figurita_id, {
-      cantidad_existente: Number(cantidadExistente),
+    onGuardar({
+      cantidadNueva: Number(cantidadExistente),
       metodos: metodosSeleccionados,
     });
 

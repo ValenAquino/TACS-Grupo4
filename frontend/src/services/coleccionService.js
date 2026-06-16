@@ -44,11 +44,11 @@ export const agregarRepetida = async (repetida) => {
   }
 }
 
-export const editarRepetida = async (figId, cantidadExistente, metodos) => {
+export const editarRepetida = async (figId, payload) => {
   try {
     const { data } = await api.patch(`${COLECCIONES_URL}/repetidas/${figId}`, {
-      cantidad_nueva: cantidadExistente,
-      metodos: metodos
+      cantidad_nueva: payload.cantidadNueva,
+      metodos: payload.metodos
     })
 
     return data

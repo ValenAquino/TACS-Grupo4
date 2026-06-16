@@ -7,6 +7,11 @@ import app.model.entities.Propuesta;
 import java.util.List;
 
 public interface RepositorioPropuestas {
+    /**
+     * Obtiene todas las propuestas sin filtros para fines estadísticos.
+     *
+     * @return lista completa de todas las propuestas del sistema
+     */
     List<Propuesta> buscarTodosEstadisticas();
     Propuesta buscarPorId(String id);
     int contar();

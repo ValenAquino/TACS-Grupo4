@@ -39,7 +39,15 @@ public class ServicioPropuesta {
 
   /**
    * Crea una propuesta de intercambio. Valida que el usuario origen,
-   * destino y figuritas existan. El estado inicial es PENDIENTE.
+   * destino y figuritas existan. Verifica que la figurita buscada esté
+   * en los faltantes del autor y reserva las figuritas ofrecidas.
+   * El estado inicial es PENDIENTE. Notifica al destinatario.
+   *
+   * @param autorId identificador del perfil que crea la propuesta (autor)
+   * @param request datos de la propuesta (destinatario, figurita buscada, figuritas ofrecidas)
+   * @return datos de la propuesta creada como {@link PropuestaDto}
+   * @throws app.exceptions.BadRequestException si la figurita buscada no está en faltantes del autor
+   * @throws app.exceptions.NotFoundException  si no se encuentra el perfil, destino o alguna figurita
    */
   @Transactional
   public PropuestaDto crearPropuesta(String autorId, CrearPropuestaRequest request) {
@@ -80,6 +88,15 @@ public class ServicioPropuesta {
     return new PropuestaDto(propuesta);
   }
 
+  /**
+   * Obtiene una propuesta por su identificador, determinando si fue enviada o recibida
+   * por el perfil que la solicita.
+   *
+   * @param propuestaId identificador de la propuesta a obtener
+   * @param perfilId    identificador del perfil que solicita la propuesta
+   * @return datos de la propuesta con la clasificación ENVIADA o RECIBIDA
+   * @throws app.exceptions.NotFoundException si no se encuentra la propuesta
+   */
    public PropuestaDto obtenerPorId(String propuestaId, String perfilId) {
       Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
       if (propuesta == null) throw new NotFoundException("Propuesta no encontrada");
@@ -90,6 +107,16 @@ public class ServicioPropuesta {
       return new PropuestaDto(propuesta, tipo);
   }
 
+  /**
+   * Acepta una propuesta de intercambio. Reserva la figurita buscada en la colección
+   * del destinatario y ejecuta el intercambio de figuritas entre ambas partes.
+   * Notifica al autor de la propuesta que fue aceptada.
+   *
+   * @param propuestaId identificador de la propuesta a aceptar
+   * @param perfilId    identificador del perfil que acepta la propuesta (destinatario)
+   * @throws app.exceptions.BadRequestException si la propuesta no está pendiente
+   * @throws app.exceptions.NotFoundException  si no se encuentra la propuesta
+   */
   @Transactional
   public void aceptar(String propuestaId, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(propuestaId);
@@ -115,6 +142,15 @@ public class ServicioPropuesta {
     notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 
+  /**
+   * Rechaza una propuesta de intercambio. Libera las figuritas ofrecidas que estaban
+   * reservadas y notifica al autor del rechazo.
+   *
+   * @param id       identificador de la propuesta a rechazar
+   * @param perfilId identificador del perfil que rechaza la propuesta
+   * @throws app.exceptions.BadRequestException si la propuesta no está pendiente
+   * @throws app.exceptions.NotFoundException  si no se encuentra la propuesta
+   */
   @Transactional
   public void rechazar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
@@ -132,6 +168,15 @@ public class ServicioPropuesta {
     notificacionService.notificarInteresados(List.of(propuesta.getAutor()), cuerpo, link);
   }
 
+  /**
+   * Cancela una propuesta de intercambio. Libera las figuritas ofrecidas que estaban
+   * reservadas en la colección del autor.
+   *
+   * @param id       identificador de la propuesta a cancelar
+   * @param perfilId identificador del perfil que cancela la propuesta (autor)
+   * @throws app.exceptions.BadRequestException si la propuesta no está pendiente
+   * @throws app.exceptions.NotFoundException  si no se encuentra la propuesta
+   */
   @Transactional
   public void cancelar(String id, String perfilId) {
     Propuesta propuesta = repositorioPropuestas.buscarPorId(id);
@@ -144,6 +189,14 @@ public class ServicioPropuesta {
     this.repositorioPropuestas.guardar(propuesta);
   }
 
+  /**
+   * Busca las propuestas de intercambio de un perfil de forma paginada, indicando
+   * si cada intercambio ya fue calificado por el perfil.
+   *
+   * @param perfilId identificador del perfil del cual se buscarán las propuestas
+   * @param filtros  criterios de filtrado (tipo: ENVIADAS/RECIBIDAS, paginación)
+   * @return página de intercambios con indicación de calificación
+   */
   public PaginaResultado<IntercambioDto> buscarPropuestas(String perfilId, PropuestasFiltro filtros) {
     PaginaResultado<Propuesta> resultado = this.repositorioPropuestas.buscarTodos(perfilId, filtros);
 

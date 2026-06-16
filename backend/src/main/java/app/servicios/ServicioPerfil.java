@@ -110,6 +110,10 @@ public class ServicioPerfil {
 
     this.repositorioCalificacion.guardar(calificacion);
     this.repositorioPerfiles.guardar(perfilDestino, sinCampos);
+
+    // Notificación al destinatario de que fue calificado
+    String cuerpo = autor.getNombre() + " te calificó con " + valor + " estrella" + (valor == 1 ? "" : "s");
+    servicioNotificacion.notificarInteresados(List.of(perfilDestino), cuerpo, "/perfil");
   }
 
   /**

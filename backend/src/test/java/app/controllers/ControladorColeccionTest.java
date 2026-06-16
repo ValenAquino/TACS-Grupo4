@@ -395,6 +395,8 @@ class ControladorColeccionTest {
                 """)
         )
         .andExpect(status().isBadRequest());
+  }
+  @Test
   void buscarFaltantesSinPaginacionRetorna_200() throws Exception {
     mockMvc.perform(get("/colecciones/faltantes")
             .cookie(cookie)

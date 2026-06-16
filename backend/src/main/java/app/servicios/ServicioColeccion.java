@@ -15,6 +15,8 @@ import app.dto.filtros.RepetidasFiltro;
 import app.repositories.RepositorioColecciones;
 import app.repositories.RepositorioFiguritas;
 import app.repositories.RepositorioPerfiles;
+
+import java.util.HashSet;
 import java.util.List;
 
 import app.repositories.impl.campos.CamposPerfil;
@@ -87,7 +89,12 @@ public class ServicioColeccion {
 
     repetidaAmodificar.setCantidadExistente(req.cantidadRepetidas());
 
-    if(!req.metodos().isEmpty()) {
+    if (!req.metodos().isEmpty()) {
+      validarQueNoQuiteMetodos(
+          repetidaAmodificar.getMetodos(),
+          req.metodos()
+      );
+
       repetidaAmodificar.setMetodos(req.metodos());
     }
 
@@ -100,4 +107,14 @@ public class ServicioColeccion {
     return perfilFaltantes.getColeccion().getId();
   }
 
+  private void validarQueNoQuiteMetodos(
+      List<MetodoIntercambio> actuales,
+      List<MetodoIntercambio> nuevos
+  ) {
+    if (!new HashSet<>(nuevos).containsAll(actuales)) {
+      throw new BadRequestException(
+          "No se pueden eliminar métodos de intercambio existentes"
+      );
+    }
+  }
 }

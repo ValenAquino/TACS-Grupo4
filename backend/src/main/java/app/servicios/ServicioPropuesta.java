@@ -71,16 +71,12 @@ public class ServicioPropuesta {
 
     autor.getColeccion().reservarRepetidas(figuritasOfrecidas, MetodoIntercambio.INTERCAMBIO);
 
-    System.out.println("Creo la propuesta");
-
     Propuesta propuesta = Propuesta.builder()
         .autor(autor)
         .destinatario(destino)
         .figuritaBuscada(figuritaBuscada)
         .figuritasOfrecidas(figuritasOfrecidas)
         .build();
-
-    System.out.println("Guardo la propuesta");
     repositorioColecciones.guardar(autor.getColeccion());
     repositorioPropuestas.guardar(propuesta);
 

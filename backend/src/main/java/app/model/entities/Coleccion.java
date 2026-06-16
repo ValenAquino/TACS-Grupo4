@@ -121,8 +121,6 @@ public class Coleccion {
       if (tieneRepetida(figurita)) {
 
         FiguritaIntercambiable repetida = obtenerRepetida(figurita);
-
-        System.out.println("Reservo la figurita: " + figurita.getJugador());
         System.out.println("Con metodos: " + repetida.getMetodos());
 
         repetida.reservar(metodo);

@@ -10,5 +10,4 @@ public class PropuestasPorEstadoDto {
   private int aceptadas;
   private int rechazadas;
   private int canceladas;
-  private int seleccionadas;
 }

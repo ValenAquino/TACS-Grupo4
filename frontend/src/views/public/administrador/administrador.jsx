@@ -33,7 +33,6 @@ const PROPUESTAS = [
   { label: 'Aceptadas', key: 'aceptadas', color: '#198754' },
   { label: 'Rechazadas', key: 'rechazadas', color: '#dc3545' },
   { label: 'Canceladas', key: 'canceladas', color: '#6c757d' },
-  { label: 'Seleccionadas', key: 'seleccionadas', color: '#0d6efd' },
 ]
 
 const MODALIDADES = [
@@ -54,43 +53,7 @@ const Administrador = () => {
           <h1 className={styles.heroTitulo}>Panel de administración</h1>
           <span className={styles.adminBadge}>Admin</span>
         </div>
-        <p className={styles.heroSubtitulo}>
-          Estadísticas de la plataforma Figus Mundial 2026
-        </p>
-      </div>
-
-      {/* Selector de rango */}
-      <div className={`${styles.seccionCard} mb-3`}>
-        <p className={styles.seccionTitulo}>Período</p>
-        <div className="d-flex align-items-center gap-3 flex-wrap">
-          <div className="d-flex align-items-center gap-2">
-            <label htmlFor="desde" className="form-label mb-0 text-nowrap">Desde</label>
-            <input
-              id="desde"
-              type="date"
-              className="form-control form-control-sm"
-              value={desde}
-              max={hasta}
-              onChange={(e) => setDesde(e.target.value)}
-            />
-          </div>
-          <div className="d-flex align-items-center gap-2">
-            <label htmlFor="hasta" className="form-label mb-0 text-nowrap">Hasta</label>
-            <input
-              id="hasta"
-              type="date"
-              className="form-control form-control-sm"
-              value={hasta}
-              min={desde}
-              onChange={(e) => setHasta(e.target.value)}
-            />
-          </div>
-        </div>
-        {rangoInvalido && (
-          <p className="text-danger small mt-2 mb-0">
-            &quot;Desde&quot; no puede ser posterior a &quot;Hasta&quot;.
-          </p>
-        )}
+        <p className={styles.heroSubtitulo}>Estadísticas de la plataforma Figus Mundial 2026</p>
       </div>
 
       {cargando && <AdministradorSkeleton />}
@@ -98,7 +61,7 @@ const Administrador = () => {
 
       {!cargando && !error && stats && (
         <>
-          {/* Métricas globales */}
+          {/* Métricas globales — estado actual, no dependen del rango */}
           <p className={`${styles.seccionTitulo} mb-2`}>Globales</p>
           <div className="row g-3 mb-3">
             {TARJETAS_GLOBALES(stats).map((t) => (
@@ -107,17 +70,56 @@ const Administrador = () => {
               </div>
             ))}
           </div>
-
-          {/* Métricas del período */}
-          <p className={`${styles.seccionTitulo} mb-2`}>Del período</p>
-          <div className="row g-3 mb-3">
-            {TARJETAS_PERIODO(stats).map((t) => (
-              <div className="col-4" key={t.label}>
-                <StatCard {...t} />
-              </div>
-            ))}
+          <div className="row g-3 mb-5">
+            <div className="col-12 col-md-6">
+              <SeccionBarras
+                titulo="Figuritas por modalidad"
+                config={MODALIDADES}
+                data={stats.figuritasPorModalidad ?? {}}
+              />
+            </div>
           </div>
 
+          {/* Selector de rango */}
+          <p className={`${styles.seccionTitulo} mb-2`}>Del período</p>
+          <div className={`${styles.seccionCard} mb-3`}>
+            <p className={styles.seccionTitulo}>Período</p>
+            <div className="d-flex align-items-center gap-3 flex-wrap">
+              <div className="d-flex align-items-center gap-2">
+                <label htmlFor="desde" className="form-label mb-0 text-nowrap">
+                  Desde
+                </label>
+                <input
+                  id="desde"
+                  type="date"
+                  className="form-control form-control-sm"
+                  value={desde}
+                  max={hasta}
+                  onChange={(e) => setDesde(e.target.value)}
+                />
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <label htmlFor="hasta" className="form-label mb-0 text-nowrap">
+                  Hasta
+                </label>
+                <input
+                  id="hasta"
+                  type="date"
+                  className="form-control form-control-sm"
+                  value={hasta}
+                  min={desde}
+                  onChange={(e) => setHasta(e.target.value)}
+                />
+              </div>
+            </div>
+            {rangoInvalido && (
+              <p className="text-danger small mt-2 mb-0">
+                &quot;Desde&quot; no puede ser posterior a &quot;Hasta&quot;.
+              </p>
+            )}
+          </div>
+
+          {/* Métricas del período — filtradas por el rango seleccionado */}
           <div className="row g-3 mb-3">
             <div className="col-12 col-md-6">
               <SeccionBarras
@@ -126,12 +128,12 @@ const Administrador = () => {
                 data={stats.propuestasPorEstado ?? {}}
               />
             </div>
-            <div className="col-12 col-md-6">
-              <SeccionBarras
-                titulo="Figuritas por modalidad"
-                config={MODALIDADES}
-                data={stats.figuritasPorModalidad ?? {}}
-              />
+            <div className="col-12 col-md-6 d-flex align-items-center">
+              {TARJETAS_PERIODO(stats).map((t) => (
+                <div className="w-100" key={t.label}>
+                  <StatCard {...t} />
+                </div>
+              ))}
             </div>
           </div>
 

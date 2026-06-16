@@ -77,8 +77,7 @@ public class ServicioEstadisticas {
             porEstado.getOrDefault(EstadoProceso.PENDIENTE, 0L).intValue(),
             porEstado.getOrDefault(EstadoProceso.ACEPTADO, 0L).intValue(),
             porEstado.getOrDefault(EstadoProceso.RECHAZADO, 0L).intValue(),
-            porEstado.getOrDefault(EstadoProceso.CANCELADO, 0L).intValue(),
-            porEstado.getOrDefault(EstadoProceso.SELECCIONADO, 0L).intValue()
+            porEstado.getOrDefault(EstadoProceso.CANCELADO, 0L).intValue()
         );
     }
 

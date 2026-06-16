@@ -14,7 +14,7 @@ export const buscarContadoresSugerencias = async () => {
 export const buscarSugerencias = async ({ tipo, pagina, limite }) => {
   try {
     const { data } = await api.get(`${PERFIL_URL}/sugerencias`, {
-      params: { tipo, paginaActual: pagina, limite },
+      params: { tipo, pagina, limite },
     })
     return data
   } catch (error) {

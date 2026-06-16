@@ -332,4 +332,20 @@ public class RepositorioColeccionesTest extends MongoTestBase {
     assertEquals(1, dto.getData().cantidadDeElementos());
     assertEquals("Messi", dto.getData().contenido().get(0).getFigurita().getJugador());
   }
+
+  @Test
+  void contarRepetidas_modalidadExclusiva_noContabilizaAmbos() {
+    Coleccion coleccion = new Coleccion();
+    coleccion.agregarRepetida(new FiguritaIntercambiable(messi, 1, List.of(MetodoIntercambio.INTERCAMBIO)));
+    coleccion.agregarRepetida(new FiguritaIntercambiable(diMaria, 1, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA)));
+    repositorioColecciones.guardar(coleccion);
+
+    long soloIntercambio = repositorioColecciones.contarRepetidas(List.of(MetodoIntercambio.INTERCAMBIO));
+    long soloSubasta = repositorioColecciones.contarRepetidas(List.of(MetodoIntercambio.SUBASTA));
+    long ambos = repositorioColecciones.contarRepetidas(List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA));
+
+    assertEquals(1, soloIntercambio);
+    assertEquals(0, soloSubasta);
+    assertEquals(1, ambos);
+  }
 }

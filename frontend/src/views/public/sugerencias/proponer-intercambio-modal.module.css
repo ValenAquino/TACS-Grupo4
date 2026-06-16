@@ -31,7 +31,6 @@
   overflow-y: auto;
   padding: 1.5rem;
   display: flex;
-  flex-column: column;
   flex-direction: column;
   gap: 0;
   animation: slideUp 0.2s ease;

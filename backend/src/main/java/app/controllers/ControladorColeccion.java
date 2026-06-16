@@ -27,6 +27,13 @@ public class ControladorColeccion {
     private final ServicioColeccion coleccionService;
     private final ServicioJwt servicioJwt;
 
+    /**
+     * Agrega una figurita a la lista de faltantes de la colección del usuario autenticado.
+     *
+     * @param token   token JWT del que se extrae el identificador de la colección
+     * @param request datos de la figurita a marcar como faltante
+     * @return 201 Created si la operación se realizó correctamente
+     */
     @PostMapping("/faltantes")
     public ResponseEntity<Void> agregarFaltante(
         @CookieValue("token") String token,
@@ -38,6 +45,14 @@ public class ControladorColeccion {
         return ResponseEntity.status(201).build();
     }
 
+    /**
+     * Agrega una figurita repetida a la colección del usuario autenticado, marcándola
+     * como disponible para intercambio. Notifica a los perfiles que la tienen como faltante.
+     *
+     * @param token   token JWT del que se extraen el identificador de la colección y del perfil
+     * @param request datos de la figurita repetida (identificador, cantidad, modos de intercambio)
+     * @return 201 Created si la operación se realizó correctamente
+     */
     @PostMapping("/repetidas")
     public ResponseEntity<Void> agregarRepetida(
         @CookieValue("token") String token,
@@ -51,6 +66,14 @@ public class ControladorColeccion {
         return ResponseEntity.status(201).build();
     }
 
+    /**
+     * Busca las figuritas faltantes de la colección del usuario autenticado,
+     * aplicando los filtros de búsqueda y paginación proporcionados.
+     *
+     * @param token   token JWT del que se extrae el identificador de la colección
+     * @param filtros criterios de filtrado y paginación
+     * @return 200 OK con la página de figuritas faltantes encontradas
+     */
     @GetMapping("/faltantes")
     public ResponseEntity<PaginaResultado<FiguritaDto>> buscarFaltantes(
         @CookieValue("token") String token,
@@ -60,6 +83,15 @@ public class ControladorColeccion {
         return ResponseEntity.ok(this.coleccionService.buscarFaltantes(colId, filtros));
     }
 
+    /**
+     * Busca las figuritas repetidas de la colección del usuario autenticado,
+     * aplicando los filtros de búsqueda y paginación proporcionados.
+     *
+     * @param token   token JWT del que se extrae el identificador de la colección
+     * @param filtros criterios de filtrado y paginación
+     * @return 200 OK con las figuritas repetidas encontradas, incluyendo contadores
+     *         de publicadas y disponibles
+     */
     @GetMapping("/repetidas")
     public ResponseEntity<Repetidas<FiguritaIntercambiableDto>> buscarRepetidas(
         @CookieValue("token") String token,

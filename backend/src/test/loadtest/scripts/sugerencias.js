@@ -24,8 +24,10 @@ export default function () {
     const cookie = login(BASE, USUARIO);
     const authHeaders = { 'Cookie': `token=${cookie}` };
 
-    const res = http.get(`${BASE}/sugerencias`, { headers: authHeaders });
+    const res = http.get(`${BASE}/perfil/sugerencias`, { headers: authHeaders });
     check(res, { 'sugerencias: status 200': r => r.status === 200 });
+
+    console.log(res.status, res.body);
 
     sleep(1);
 }

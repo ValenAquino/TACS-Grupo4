@@ -41,6 +41,8 @@ logs-front:
 test:
 	docker compose -f docker-compose.dev.yml run --rm backend mvn test
 
-	docker compose -f docker-compose.test.yml --profile test up
-
+    #Todos los scripts
 	docker compose -f docker-compose.test.yml --profile test run --rm loadtest
+
+    #Un solo scripts
+    docker compose -f docker-compose.test.yml --profile test run --rm loadtest sugerencias.js

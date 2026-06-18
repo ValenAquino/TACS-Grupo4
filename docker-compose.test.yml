@@ -42,11 +42,11 @@ services:
       mongo-init-test:
         condition: service_completed_successfully
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/ping" ]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s
+      start_period: 1s
     profiles:
       - test
 
@@ -70,8 +70,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend/src/test/loadtest:/loadtest
-    entrypoint: /bin/sh
-    command: /loadtest/run-all.sh
+    entrypoint: /bin/sh /loadtest/entrypoint.sh
     profiles:
       - test
 

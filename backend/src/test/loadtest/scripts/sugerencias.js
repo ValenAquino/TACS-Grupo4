@@ -12,7 +12,7 @@ export const options = {
         { duration: '10s', target: 0   },  // bajada
     ],
     thresholds: {
-        http_req_duration: ['p(95)<500'],
+        http_req_duration: ['p(95)<200'],
         http_req_failed:   ['rate<0.01'],
     },
 };
@@ -26,8 +26,6 @@ export default function () {
 
     const res = http.get(`${BASE}/perfil/sugerencias`, { headers: authHeaders });
     check(res, { 'sugerencias: status 200': r => r.status === 200 });
-
-    console.log(res.status, res.body);
 
     sleep(1);
 }

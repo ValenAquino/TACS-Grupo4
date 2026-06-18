@@ -40,3 +40,7 @@ logs-front:
 
 test:
 	docker compose -f docker-compose.dev.yml run --rm backend mvn test
+
+	docker compose -f docker-compose.test.yml --profile test up
+
+	docker compose -f docker-compose.test.yml --profile test run --rm loadtest

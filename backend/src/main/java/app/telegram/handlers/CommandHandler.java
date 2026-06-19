@@ -12,22 +12,40 @@ public class CommandHandler {
   // @Autowired private IntercambioHandler intercambioHandler;
 
   private final AuthHandler authHandler;
+  private final RepetidaHandler repetidaHandler;
   private final SessionManager sessionManager;
 
   public CommandHandler(
       AuthHandler authHandler,
+      RepetidaHandler repetidaHandler,
       SessionManager sessionManager
   ) {
     this.authHandler = authHandler;
+    this.repetidaHandler = repetidaHandler;
     this.sessionManager = sessionManager;
   }
 
   public void handle(Update update) {
+
+    // Manejo de botones inline (paginación, acciones)
+    if (update.hasCallbackQuery()) {
+      handleCallback(update);
+      return;
+    }
+
+    if (!update.hasMessage() || !update.getMessage().hasText()) return;
+
+    // Login en progreso tiene prioridad
+    if (authHandler.handlePendingLogin(update)) return;
+
     String text = update.getMessage().getText();
     long chatId = update.getMessage().getChatId();
 
-    // Primero chequeamos si hay un login en progreso
-    if (authHandler.handlePendingLogin(update)) return;
+    // Comandos con argumentos (ej: "/buscar Messi")
+    if (text.startsWith("/buscar")) {
+      repetidaHandler.handleBuscar(update);
+      return;
+    }
 
     switch (text) {
       case "/start"  -> handleStart(update);
@@ -75,6 +93,17 @@ public class CommandHandler {
                 /logout — Cerrar sesión
                 """;
     // sendMessage(update, menu);
+  }
+
+  private void handleCallback(Update update) {
+    String data = update.getCallbackQuery().getData();
+
+    if (data.startsWith("figuritas:")) {
+      repetidaHandler.handlePaginacion(update);
+    }
+    // A medida que agreguemos más handlers, los conectamos acá
+    // if (data.startsWith("subastas:")) { ... }
+    // if (data.startsWith("intercambios:")) { ... }
   }
 
   private void handleUnknown(Update update) {

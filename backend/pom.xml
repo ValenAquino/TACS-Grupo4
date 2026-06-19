@@ -111,6 +111,14 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
+    <!-- Telegram-->
+
+    <dependency>
+      <groupId>org.telegram</groupId>
+      <artifactId>telegrambots-spring-boot-starter</artifactId>
+      <version>6.9.7.1</version>
+    </dependency>
+
   </dependencies>
 
   <build>

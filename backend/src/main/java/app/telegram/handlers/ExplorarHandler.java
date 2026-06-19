@@ -5,7 +5,6 @@ import app.dto.paginacion.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.servicios.ServicioFigurita;
 import app.telegram.bot.BotResponse;
-import app.telegram.sesion.SessionManager;
 import app.telegram.utils.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -20,13 +19,11 @@ public class ExplorarHandler {
   private final ServicioFigurita figuitaService;
   private final MessageBuilder messageBuilder;
 
-  // Guardamos la última búsqueda por chat para poder paginar
   private final Map<Long, String> ultimaQuery = new ConcurrentHashMap<>();
   private final Map<Long, List<MetodoIntercambio>> ultimoTipo = new ConcurrentHashMap<>();
 
   public ExplorarHandler(ServicioFigurita figuitaService,
-                         MessageBuilder messageBuilder,
-                         SessionManager sessionManager
+                         MessageBuilder messageBuilder
   ) {
     this.figuitaService = figuitaService;
     this.messageBuilder = messageBuilder;
@@ -52,7 +49,6 @@ public class ExplorarHandler {
     return buscarYArmar(chatId, query, 0);
   }
 
-  // Maneja los botones de paginación (callback "figuritas:2")
   public BotResponse handlePaginacion(Update update) {
     long chatId = update.getCallbackQuery().getMessage().getChatId();
     String data = update.getCallbackQuery().getData();

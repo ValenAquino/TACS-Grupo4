@@ -10,15 +10,18 @@ public class CommandHandler {
 
   private final AuthHandler authHandler;
   private final ExplorarHandler explorarHandler;
+  private final ColeccionHandler coleccionHandler;
   private final SessionManager sessionManager;
 
   public CommandHandler(
       AuthHandler authHandler,
-      ExplorarHandler repetidaHandler,
+      ExplorarHandler explorarHandler,
+      ColeccionHandler coleccionHandler,
       SessionManager sessionManager
   ) {
     this.authHandler = authHandler;
-    this.explorarHandler = repetidaHandler;
+    this.explorarHandler = explorarHandler;
+    this.coleccionHandler = coleccionHandler;
     this.sessionManager = sessionManager;
   }
 
@@ -33,15 +36,22 @@ public class CommandHandler {
     String text = update.getMessage().getText();
     long chatId = update.getMessage().getChatId();
 
-    // Si hay login pendiente pero el usuario mandó un comando → cancelamos el login
     if (sessionManager.getPendingField(chatId) != null) {
       if (text.startsWith("/")) {
         authHandler.cancelarLogin(chatId);
-        // continúa abajo a procesar el comando normalmente
       } else {
-        // No es un comando, lo tomamos como input del login
         BotResponse loginResponse = authHandler.handlePendingLogin(update);
         if (loginResponse != null) return loginResponse;
+      }
+    }
+
+    if (coleccionHandler.tienePendiente(chatId)) {
+      if (text.startsWith("/")) {
+        coleccionHandler.cancelarPendiente(chatId);
+        // sigue a procesar el comando
+      } else {
+        BotResponse r = coleccionHandler.handlePendiente(update);
+        if (r != null) return r;
       }
     }
 
@@ -55,6 +65,11 @@ public class CommandHandler {
       case "/logout"    -> authHandler.handleLogout(update);
       case "/menu"      -> handleMenu(update);
       case "/explorar" -> explorarHandler.handleVerFiguritas(update);
+      case "/coleccion"    -> coleccionHandler.handleMenu(update);
+      case "/misfaltantes" -> coleccionHandler.handleVerFaltantes(update);
+      case "/misrepetidas" -> coleccionHandler.handleVerRepetidas(update);
+      case "/agfaltante"   -> coleccionHandler.handleAgregarFaltante(update);
+      case "/agrepetida"   -> coleccionHandler.handleAgregarRepetida(update);
       default           -> BotResponse.texto("❓ Comando no reconocido. Usá /menu para ver las opciones.");
     };
   }
@@ -70,29 +85,26 @@ public class CommandHandler {
   }
 
   private BotResponse handleMenu(Update update) {
-    long chatId = update.getMessage().getChatId();
-
-    if (!sessionManager.isAuthenticated(chatId)) {
-      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
-    }
-
     return BotResponse.texto("""
-                📋 *Menú principal*
-                
-                🃏 Figuritas
-                /explorar — Ver figuritas intercambiables
-                /buscar    — Buscar por nombre o selección
-                
-                🔄 Intercambios
-                /intercambios — Ver propuestas
-                /proponer     — Crear propuesta
-                
-                🏷️ Subastas
-                /subastas — Ver subastas activas
-                /subastar — Crear una subasta
-                
-                /logout — Cerrar sesión
-                """);
+              📋 *Menú principal*
+              
+              🃏 Figuritas
+              /explorar — Ver figuritas intercambiables
+              /buscar   — Buscar por nombre o selección
+              
+              📦 Colección
+              /coleccion — Ver y gestionar mi colección
+              
+              🔄 Intercambios
+              /intercambios — Ver propuestas
+              /proponer     — Crear propuesta
+              
+              🏷️ Subastas
+              /subastas — Ver subastas activas
+              /subastar — Crear una subasta
+              
+              /logout — Cerrar sesión
+              """);
   }
 
   private BotResponse handleCallback(Update update) {
@@ -102,10 +114,9 @@ public class CommandHandler {
       return explorarHandler.handlePaginacion(update);
     }
 
-    return null;
-  }
+    if (data.startsWith("faltantes:"))  return coleccionHandler.handlePaginacionFaltantes(update);
+    if (data.startsWith("repetidas:"))  return coleccionHandler.handlePaginacionRepetidas(update);
 
-  private void handleUnknown(Update update) {
-    // Responde cuando el comando no existe
+    return null;
   }
 }

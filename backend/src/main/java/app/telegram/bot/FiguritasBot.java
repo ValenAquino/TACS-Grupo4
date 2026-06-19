@@ -2,13 +2,11 @@ package app.telegram.bot;
 
 import app.telegram.handlers.CommandHandler;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
@@ -19,9 +17,6 @@ public class FiguritasBot implements LongPollingUpdateConsumer {
 
   private final CommandHandler commandHandler;
   private final TelegramClient telegramClient;
-
-  @Value("${telegram.bot.token}")
-  private String botToken;
 
   public FiguritasBot(CommandHandler commandHandler,
                       @Value("${telegram.bot.token}") String botToken) {

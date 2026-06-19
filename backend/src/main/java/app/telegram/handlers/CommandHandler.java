@@ -2,27 +2,23 @@ package app.telegram.handlers;
 
 import app.telegram.bot.BotResponse;
 import app.telegram.sesion.SessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class CommandHandler {
 
-  // Acá vas a ir inyectando los handlers a medida que los creemos
-  // @Autowired private IntercambioHandler intercambioHandler;
-
   private final AuthHandler authHandler;
-  private final RepetidaHandler repetidaHandler;
+  private final ExplorarHandler explorarHandler;
   private final SessionManager sessionManager;
 
   public CommandHandler(
       AuthHandler authHandler,
-      RepetidaHandler repetidaHandler,
+      ExplorarHandler repetidaHandler,
       SessionManager sessionManager
   ) {
     this.authHandler = authHandler;
-    this.repetidaHandler = repetidaHandler;
+    this.explorarHandler = repetidaHandler;
     this.sessionManager = sessionManager;
   }
 
@@ -50,7 +46,7 @@ public class CommandHandler {
     }
 
     if (text.startsWith("/buscar")) {
-      return repetidaHandler.handleBuscar(update);
+      return explorarHandler.handleBuscar(update);
     }
 
     return switch (text) {
@@ -58,7 +54,7 @@ public class CommandHandler {
       case "/login"     -> authHandler.handleLoginCommand(update);
       case "/logout"    -> authHandler.handleLogout(update);
       case "/menu"      -> handleMenu(update);
-      case "/figuritas" -> repetidaHandler.handleVerFiguritas(update);
+      case "/explorar" -> explorarHandler.handleVerFiguritas(update);
       default           -> BotResponse.texto("❓ Comando no reconocido. Usá /menu para ver las opciones.");
     };
   }
@@ -84,7 +80,7 @@ public class CommandHandler {
                 📋 *Menú principal*
                 
                 🃏 Figuritas
-                /figuritas — Ver figuritas intercambiables
+                /explorar — Ver figuritas intercambiables
                 /buscar    — Buscar por nombre o selección
                 
                 🔄 Intercambios
@@ -103,7 +99,7 @@ public class CommandHandler {
     String data = update.getCallbackQuery().getData();
 
     if (data.startsWith("figuritas:")) {
-      return repetidaHandler.handlePaginacion(update);
+      return explorarHandler.handlePaginacion(update);
     }
 
     return null;

@@ -5,44 +5,35 @@ import app.dto.paginacion.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.servicios.ServicioFigurita;
 import app.telegram.bot.BotResponse;
-import app.telegram.bot.FiguritasBot;
 import app.telegram.sesion.SessionManager;
 import app.telegram.utils.MessageBuilder;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class RepetidaHandler {
+public class ExplorarHandler {
 
   private final ServicioFigurita figuitaService;
   private final MessageBuilder messageBuilder;
-  private final SessionManager sessionManager;
 
   // Guardamos la última búsqueda por chat para poder paginar
   private final Map<Long, String> ultimaQuery = new ConcurrentHashMap<>();
   private final Map<Long, List<MetodoIntercambio>> ultimoTipo = new ConcurrentHashMap<>();
 
-  public RepetidaHandler(ServicioFigurita figuitaService,
-                        MessageBuilder messageBuilder,
-                        SessionManager sessionManager
+  public ExplorarHandler(ServicioFigurita figuitaService,
+                         MessageBuilder messageBuilder,
+                         SessionManager sessionManager
   ) {
     this.figuitaService = figuitaService;
     this.messageBuilder = messageBuilder;
-    this.sessionManager = sessionManager;
   }
 
   public BotResponse handleVerFiguritas(Update update) {
     long chatId = update.getMessage().getChatId();
-
-    if (!sessionManager.isAuthenticated(chatId)) {
-      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
-    }
 
     ultimaQuery.remove(chatId);
     return buscarYArmar(chatId, null, 0);
@@ -50,10 +41,6 @@ public class RepetidaHandler {
 
   public BotResponse handleBuscar(Update update) {
     long chatId = update.getMessage().getChatId();
-
-    if (!sessionManager.isAuthenticated(chatId)) {
-      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
-    }
 
     String[] partes = update.getMessage().getText().split(" ", 2);
     if (partes.length < 2 || partes[1].isBlank()) {
@@ -77,21 +64,24 @@ public class RepetidaHandler {
 
   private BotResponse buscarYArmar(long chatId, String query, int pagina) {
     try {
+      int paginaSegura = pagina + 1;
+
       PaginaResultado<FiguritaIntercambiableDto> resultado = (query != null && !query.isBlank())
-          ? figuitaService.buscarPorQuery(query, null, pagina, 5)
-          : figuitaService.buscarFiguritas(null, null, null, null, pagina, 5);
+          ? figuitaService.buscarPorQuery(query, null, paginaSegura, 5)
+          : figuitaService.buscarFiguritas(null, null, null, null, paginaSegura, 5);
 
       String texto = messageBuilder.formatearPagina(resultado);
 
       if (resultado.cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(texto,
-            messageBuilder.tecladoPaginacion(pagina, resultado.cantidadDePaginas(), "figuritas"));
+            messageBuilder.tecladoPaginacion(paginaSegura, resultado.cantidadDePaginas(), "figuritas"));
       }
 
       return BotResponse.texto(texto);
 
     } catch (Exception e) {
-      return BotResponse.texto("❌ Error al obtener las figuritas. Intentá de nuevo.");
+      e.printStackTrace();
+      return BotResponse.texto("❌ Error al obtener las figuritas. Intentá de nuevo." + e.getMessage());
     }
   }
 }

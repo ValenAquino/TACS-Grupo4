@@ -3,6 +3,7 @@ package app.telegram.handlers;
 import app.dto.request.LoginRequest;
 import app.exceptions.UsuarioException;
 import app.servicios.ServicioSesion;
+import app.telegram.bot.BotResponse;
 import app.telegram.sesion.SessionManager;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -24,38 +25,33 @@ public class AuthHandler {
     this.sessionManager = sessionManager;
   }
 
-  // Paso 1: usuario escribe /login
-  public void handleLoginCommand(Update update) {
+  public BotResponse handleLoginCommand(Update update) {
     long chatId = update.getMessage().getChatId();
 
-    // Solo permitimos login en chat privado
     if (!update.getMessage().getChat().getType().equals("private")) {
-      sendMessage(update, "⚠️ Por seguridad, el login solo está disponible en chat privado con el bot.");
-      return;
+      return BotResponse.texto("⚠️ Por seguridad, el login solo está disponible en chat privado.");
     }
 
     if (sessionManager.isAuthenticated(chatId)) {
-      sendMessage(update, "✅ Ya estás autenticado. Usá /menu para ver las opciones.");
-      return;
+      return BotResponse.texto("✅ Ya estás autenticado. Usá /menu para ver las opciones.");
     }
 
     sessionManager.setPendingField(chatId, "username");
-    sendMessage(update, "🔐 *Inicio de sesión*\n\nEscribí tu nombre de usuario:");
+    return BotResponse.texto("🔐 *Inicio de sesión*\n\nEscribí tu nombre de usuario:");
   }
 
-  // Paso 2 y 3: recibe usuario, luego contraseña
-  public boolean handlePendingLogin(Update update) {
+  public BotResponse handlePendingLogin(Update update) {
     long chatId = update.getMessage().getChatId();
     String field = sessionManager.getPendingField(chatId);
-    String text = update.getMessage().getText();
 
-    if (field == null) return false; // no hay login pendiente
+    if (field == null) return null;
+
+    String text = update.getMessage().getText();
 
     if (field.equals("username")) {
       pendingUsername.put(chatId, text);
       sessionManager.setPendingField(chatId, "password");
-      sendMessage(update, "🔑 Ahora escribí tu contraseña:");
-      return true;
+      return BotResponse.texto("🔑 Ahora escribí tu contraseña:");
     }
 
     if (field.equals("password")) {
@@ -64,27 +60,19 @@ public class AuthHandler {
       pendingUsername.remove(chatId);
 
       try {
-        // Reutilizamos exactamente tu servicio existente
-        LoginRequest loginRequest = new LoginRequest(nombre, text);
-        String token = servicioSesion.login(loginRequest);
+        String token = servicioSesion.login(new LoginRequest(nombre, text));
         sessionManager.saveToken(chatId, token);
-        sendMessage(update, "✅ *¡Bienvenido, " + nombre + "!*\n\nUsá /menu para ver todas las opciones.");
+        return BotResponse.texto("✅ *¡Bienvenido, " + nombre + "!*\n\nUsá /menu para ver todas las opciones.");
       } catch (UsuarioException e) {
-        sendMessage(update, "❌ Credenciales inválidas. Intentá de nuevo con /login");
+        return BotResponse.texto("❌ Credenciales inválidas. Intentá de nuevo con /login");
       }
-      return true;
     }
 
-    return false;
+    return null;
   }
 
-  public void handleLogout(Update update) {
-    long chatId = update.getMessage().getChatId();
-    sessionManager.logout(chatId);
-    sendMessage(update, "👋 Sesión cerrada correctamente.");
-  }
-
-  private void sendMessage(Update update, String text) {
-    // Lo implementamos cuando creemos el MessageBuilder
+  public BotResponse handleLogout(Update update) {
+    sessionManager.logout(update.getMessage().getChatId());
+    return BotResponse.texto("👋 Sesión cerrada correctamente.");
   }
 }

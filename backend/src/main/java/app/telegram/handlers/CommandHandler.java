@@ -1,5 +1,6 @@
 package app.telegram.handlers;
 
+import app.telegram.bot.BotResponse;
 import app.telegram.sesion.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,62 +26,57 @@ public class CommandHandler {
     this.sessionManager = sessionManager;
   }
 
-  public void handle(Update update) {
+  public BotResponse handle(Update update) {
 
-    // Manejo de botones inline (paginación, acciones)
     if (update.hasCallbackQuery()) {
-      handleCallback(update);
-      return;
+      return handleCallback(update);
     }
 
-    if (!update.hasMessage() || !update.getMessage().hasText()) return;
+    if (!update.hasMessage() || !update.getMessage().hasText()) return null;
 
     // Login en progreso tiene prioridad
-    if (authHandler.handlePendingLogin(update)) return;
+    BotResponse loginResponse = authHandler.handlePendingLogin(update);
+    if (loginResponse != null) return loginResponse;
 
     String text = update.getMessage().getText();
-    long chatId = update.getMessage().getChatId();
 
-    // Comandos con argumentos (ej: "/buscar Messi")
     if (text.startsWith("/buscar")) {
-      repetidaHandler.handleBuscar(update);
-      return;
+      return repetidaHandler.handleBuscar(update);
     }
 
-    switch (text) {
-      case "/start"  -> handleStart(update);
-      case "/login"  -> authHandler.handleLoginCommand(update);
-      case "/logout" -> authHandler.handleLogout(update);
-      case "/menu"   -> handleMenu(update);
-      default        -> handleUnknown(update);
-    }
+    return switch (text) {
+      case "/start"     -> handleStart();
+      case "/login"     -> authHandler.handleLoginCommand(update);
+      case "/logout"    -> authHandler.handleLogout(update);
+      case "/menu"      -> handleMenu(update);
+      case "/figuritas" -> repetidaHandler.handleVerFiguritas(update);
+      default           -> BotResponse.texto("❓ Comando no reconocido. Usá /menu para ver las opciones.");
+    };
   }
 
-  private void handleStart(Update update) {
-    String msg = """
+  private BotResponse handleStart() {
+    return BotResponse.texto("""
                 👋 *¡Bienvenido al bot de Figuritas Mundial!*
                 
-                Con este bot podés gestionar tus figuritas directamente desde Telegram.
+                Con este bot podés gestionar tus figuritas desde Telegram.
                 
                 Para empezar, iniciá sesión con /login
-                """;
-    // sendMessage(update, msg);
+                """);
   }
 
-  private void handleMenu(Update update) {
+  private BotResponse handleMenu(Update update) {
     long chatId = update.getMessage().getChatId();
 
     if (!sessionManager.isAuthenticated(chatId)) {
-      // sendMessage(update, "⚠️ Necesitás iniciar sesión primero. Usá /login");
-      return;
+      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    String menu = """
+    return BotResponse.texto("""
                 📋 *Menú principal*
                 
                 🃏 Figuritas
-                /misfigus — Ver mis repetidas y faltantes
-                /cargar   — Cargar figuritas
+                /figuritas — Ver figuritas intercambiables
+                /buscar    — Buscar por nombre o selección
                 
                 🔄 Intercambios
                 /intercambios — Ver propuestas
@@ -91,19 +87,17 @@ public class CommandHandler {
                 /subastar — Crear una subasta
                 
                 /logout — Cerrar sesión
-                """;
-    // sendMessage(update, menu);
+                """);
   }
 
-  private void handleCallback(Update update) {
+  private BotResponse handleCallback(Update update) {
     String data = update.getCallbackQuery().getData();
 
     if (data.startsWith("figuritas:")) {
-      repetidaHandler.handlePaginacion(update);
+      return repetidaHandler.handlePaginacion(update);
     }
-    // A medida que agreguemos más handlers, los conectamos acá
-    // if (data.startsWith("subastas:")) { ... }
-    // if (data.startsWith("intercambios:")) { ... }
+
+    return null;
   }
 
   private void handleUnknown(Update update) {

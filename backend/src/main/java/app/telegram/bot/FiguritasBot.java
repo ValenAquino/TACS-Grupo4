@@ -32,19 +32,20 @@ public class FiguritasBot implements LongPollingUpdateConsumer {
   @Override
   public void consume(List<Update> updates) {
     updates.forEach(update -> {
-      System.out.println(">>> UPDATE RECIBIDO: " + update); // log temporal
-      if (update.hasMessage() && update.getMessage().hasText()) {
-        commandHandler.handle(update);
+      BotResponse response = commandHandler.handle(update);
+      if (response != null) {
+        long chatId = getChatId(update);
+        enviar(chatId, response);
       }
     });
   }
 
-  // Los handlers llaman a estos métodos para enviar mensajes
-  public void enviarMensaje(long chatId, String texto) {
+  private void enviar(long chatId, BotResponse response) {
     SendMessage msg = SendMessage.builder()
         .chatId(chatId)
-        .text(texto)
+        .text(response.texto())
         .parseMode("Markdown")
+        .replyMarkup(response.teclado()) // null si no hay teclado, está bien
         .build();
     try {
       telegramClient.execute(msg);
@@ -53,17 +54,10 @@ public class FiguritasBot implements LongPollingUpdateConsumer {
     }
   }
 
-  public void enviarMensajeConBotones(long chatId, String texto, InlineKeyboardMarkup teclado) {
-    SendMessage msg = SendMessage.builder()
-        .chatId(chatId)
-        .text(texto)
-        .parseMode("Markdown")
-        .replyMarkup(teclado)
-        .build();
-    try {
-      telegramClient.execute(msg);
-    } catch (TelegramApiException e) {
-      e.printStackTrace();
+  private long getChatId(Update update) {
+    if (update.hasCallbackQuery()) {
+      return update.getCallbackQuery().getMessage().getChatId();
     }
+    return update.getMessage().getChatId();
   }
 }

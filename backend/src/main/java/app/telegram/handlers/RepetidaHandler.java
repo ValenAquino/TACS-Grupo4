@@ -4,6 +4,7 @@ import app.dto.FiguritaIntercambiableDto;
 import app.dto.paginacion.PaginaResultado;
 import app.model.entities.MetodoIntercambio;
 import app.servicios.ServicioFigurita;
+import app.telegram.bot.BotResponse;
 import app.telegram.bot.FiguritasBot;
 import app.telegram.sesion.SessionManager;
 import app.telegram.utils.MessageBuilder;
@@ -22,7 +23,6 @@ public class RepetidaHandler {
   private final ServicioFigurita figuitaService;
   private final MessageBuilder messageBuilder;
   private final SessionManager sessionManager;
-  private final FiguritasBot bot;
 
   // Guardamos la última búsqueda por chat para poder paginar
   private final Map<Long, String> ultimaQuery = new ConcurrentHashMap<>();
@@ -30,89 +30,68 @@ public class RepetidaHandler {
 
   public RepetidaHandler(ServicioFigurita figuitaService,
                         MessageBuilder messageBuilder,
-                        SessionManager sessionManager,
-                        @Lazy FiguritasBot bot
+                        SessionManager sessionManager
   ) {
     this.figuitaService = figuitaService;
     this.messageBuilder = messageBuilder;
     this.sessionManager = sessionManager;
-    this.bot = bot;
   }
 
-  // /misfigus → primera página sin filtros
-  public void handleVerFiguritas(Update update) {
+  public BotResponse handleVerFiguritas(Update update) {
     long chatId = update.getMessage().getChatId();
 
     if (!sessionManager.isAuthenticated(chatId)) {
-      bot.enviarMensaje(chatId, "⚠️ Necesitás iniciar sesión primero. Usá /login");
-      return;
+      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    // Limpiamos filtros previos
     ultimaQuery.remove(chatId);
-    ultimoTipo.remove(chatId);
-
-    buscarYMostrar(chatId, null, null, null, null, null, 0);
+    return buscarYArmar(chatId, null, 0);
   }
 
-  // Búsqueda con query libre: "/buscar Messi"
-  public void handleBuscar(Update update) {
+  public BotResponse handleBuscar(Update update) {
     long chatId = update.getMessage().getChatId();
 
     if (!sessionManager.isAuthenticated(chatId)) {
-      bot.enviarMensaje(chatId, "⚠️ Necesitás iniciar sesión primero. Usá /login");
-      return;
+      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
     String[] partes = update.getMessage().getText().split(" ", 2);
     if (partes.length < 2 || partes[1].isBlank()) {
-      bot.enviarMensaje(chatId,
-          "🔍 Usá el comando así:\n`/buscar Messi`\n`/buscar Argentina`");
-      return;
+      return BotResponse.texto("🔍 Usá el comando así:\n`/buscar Messi`\n`/buscar Argentina`");
     }
 
     String query = partes[1].trim();
     ultimaQuery.put(chatId, query);
-
-    buscarYMostrar(chatId, query, null, null, null, null, 0);
+    return buscarYArmar(chatId, query, 0);
   }
 
   // Maneja los botones de paginación (callback "figuritas:2")
-  public void handlePaginacion(Update update) {
+  public BotResponse handlePaginacion(Update update) {
     long chatId = update.getCallbackQuery().getMessage().getChatId();
-    String data = update.getCallbackQuery().getData(); // "figuritas:2"
+    String data = update.getCallbackQuery().getData();
     int pagina = Integer.parseInt(data.split(":")[1]);
 
     String query = ultimaQuery.get(chatId);
-    List<MetodoIntercambio> tipo = ultimoTipo.get(chatId);
-
-    buscarYMostrar(chatId, query, null, null, null, tipo, pagina);
+    return buscarYArmar(chatId, query, pagina);
   }
 
-  private void buscarYMostrar(long chatId, String q, Integer numero, String seleccion,
-                              String jugador, List<MetodoIntercambio> tipo, int pagina) {
+  private BotResponse buscarYArmar(long chatId, String query, int pagina) {
     try {
-      PaginaResultado<FiguritaIntercambiableDto> resultado;
-
-      if (q != null && !q.isBlank()) {
-        resultado = figuitaService.buscarPorQuery(q, tipo, pagina, 5); // 5 por página en Telegram
-      } else {
-        resultado = figuitaService.buscarFiguritas(numero, seleccion, jugador, tipo, pagina, 5);
-      }
+      PaginaResultado<FiguritaIntercambiableDto> resultado = (query != null && !query.isBlank())
+          ? figuitaService.buscarPorQuery(query, null, pagina, 5)
+          : figuitaService.buscarFiguritas(null, null, null, null, pagina, 5);
 
       String texto = messageBuilder.formatearPagina(resultado);
 
       if (resultado.cantidadDePaginas() > 1) {
-        InlineKeyboardMarkup teclado = messageBuilder.tecladoPaginacion(
-            pagina, resultado.cantidadDePaginas(), "figuritas"
-        );
-        bot.enviarMensajeConBotones(chatId, texto, teclado);
-      } else {
-        bot.enviarMensaje(chatId, texto);
+        return BotResponse.conTeclado(texto,
+            messageBuilder.tecladoPaginacion(pagina, resultado.cantidadDePaginas(), "figuritas"));
       }
 
+      return BotResponse.texto(texto);
+
     } catch (Exception e) {
-      bot.enviarMensaje(chatId, "❌ Error al obtener las figuritas. Intentá de nuevo.");
+      return BotResponse.texto("❌ Error al obtener las figuritas. Intentá de nuevo.");
     }
   }
 }

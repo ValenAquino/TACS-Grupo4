@@ -71,6 +71,11 @@ public class AuthHandler {
     return null;
   }
 
+  public void cancelarLogin(long chatId) {
+    sessionManager.clearPendingField(chatId);
+    pendingUsername.remove(chatId);
+  }
+
   public BotResponse handleLogout(Update update) {
     sessionManager.logout(update.getMessage().getChatId());
     return BotResponse.texto("👋 Sesión cerrada correctamente.");

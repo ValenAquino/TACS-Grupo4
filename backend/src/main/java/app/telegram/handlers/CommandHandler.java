@@ -34,11 +34,20 @@ public class CommandHandler {
 
     if (!update.hasMessage() || !update.getMessage().hasText()) return null;
 
-    // Login en progreso tiene prioridad
-    BotResponse loginResponse = authHandler.handlePendingLogin(update);
-    if (loginResponse != null) return loginResponse;
-
     String text = update.getMessage().getText();
+    long chatId = update.getMessage().getChatId();
+
+    // Si hay login pendiente pero el usuario mandó un comando → cancelamos el login
+    if (sessionManager.getPendingField(chatId) != null) {
+      if (text.startsWith("/")) {
+        authHandler.cancelarLogin(chatId);
+        // continúa abajo a procesar el comando normalmente
+      } else {
+        // No es un comando, lo tomamos como input del login
+        BotResponse loginResponse = authHandler.handlePendingLogin(update);
+        if (loginResponse != null) return loginResponse;
+      }
+    }
 
     if (text.startsWith("/buscar")) {
       return repetidaHandler.handleBuscar(update);

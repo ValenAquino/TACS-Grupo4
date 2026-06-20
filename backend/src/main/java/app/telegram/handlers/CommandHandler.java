@@ -11,17 +11,20 @@ public class CommandHandler {
   private final AuthHandler authHandler;
   private final ExplorarHandler explorarHandler;
   private final ColeccionHandler coleccionHandler;
+  private final PropuestaHandler propuestaHandler;
   private final SessionManager sessionManager;
 
   public CommandHandler(
       AuthHandler authHandler,
       ExplorarHandler explorarHandler,
       ColeccionHandler coleccionHandler,
+      PropuestaHandler propuestaHandler,
       SessionManager sessionManager
   ) {
     this.authHandler = authHandler;
     this.explorarHandler = explorarHandler;
     this.coleccionHandler = coleccionHandler;
+    this.propuestaHandler = propuestaHandler;
     this.sessionManager = sessionManager;
   }
 
@@ -55,9 +58,19 @@ public class CommandHandler {
       }
     }
 
-    if (text.startsWith("/buscar")) {
-      return explorarHandler.handleBuscar(update);
+    // Flujo propuesta pendiente
+    if (propuestaHandler.tienePendiente(chatId)) {
+      if (text.startsWith("/")) propuestaHandler.cancelarPendiente(chatId);
+      else {
+        BotResponse r = propuestaHandler.handlePendiente(update);
+        if (r != null) return r;
+      }
     }
+
+    if (text.startsWith("/buscar"))   return explorarHandler.handleBuscar(update);
+    if (text.startsWith("/aceptar"))  return propuestaHandler.handleAceptar(update);
+    if (text.startsWith("/rechazar")) return propuestaHandler.handleRechazar(update);
+    if (text.startsWith("/cancelar")) return propuestaHandler.handleCancelar(update);
 
     return switch (text) {
       case "/start"     -> handleStart();
@@ -70,6 +83,10 @@ public class CommandHandler {
       case "/misrepetidas" -> coleccionHandler.handleVerRepetidas(update);
       case "/agfaltante"   -> coleccionHandler.handleAgregarFaltante(update);
       case "/agrepetida"   -> coleccionHandler.handleAgregarRepetida(update);
+      case "/propuestas"   -> propuestaHandler.handleMenu(update);
+      case "/enviadas"     -> propuestaHandler.handleVerEnviadas(update);
+      case "/recibidas"    -> propuestaHandler.handleVerRecibidas(update);
+      case "/proponer"     -> propuestaHandler.handleCrearPropuesta(update);
       default           -> BotResponse.texto("❓ Comando no reconocido. Usá /menu para ver las opciones.");
     };
   }
@@ -96,8 +113,7 @@ public class CommandHandler {
               /coleccion — Ver y gestionar mi colección
               
               🔄 Intercambios
-              /intercambios — Ver propuestas
-              /proponer     — Crear propuesta
+              /propuestas — Ver mis propuestas y proponer
               
               🏷️ Subastas
               /subastas — Ver subastas activas

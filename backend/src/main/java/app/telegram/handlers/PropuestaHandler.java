@@ -14,17 +14,20 @@ import app.servicios.ServicioPropuesta;
 import app.telegram.bot.BotResponse;
 import app.telegram.sesion.SessionManager;
 import app.telegram.utils.MessageBuilder;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
-public class PropuestaHandler {
+@Order(2)
+public class PropuestaHandler implements BotHandler {
 
   private final ServicioPropuesta propuestaService;
   private final ServicioJwt servicioJwt;
@@ -47,6 +50,46 @@ public class PropuestaHandler {
     this.sessionManager = sessionManager;
     this.messageBuilder = messageBuilder;
     this.repositorioPerfiles = repositorioPerfiles;
+  }
+
+  @Override
+  public Set<String> comandos() {
+    return Set.of(
+        "/propuestas", "/enviadas", "/recibidas", "/proponer"
+    );
+  }
+
+  @Override
+  public Set<String> prefijos() {
+    return Set.of("/aceptar", "/rechazar", "/cancelar");
+  }
+
+  @Override
+  public Set<String> callbackPrefijos() {
+    return Set.of("propuestas_enviadas:", "propuestas_recibidas:");
+  }
+
+  @Override
+  public BotResponse handle(Update update) {
+    String text = update.getMessage().getText();
+
+    // prefijos con argumentos
+    if (text.startsWith("/aceptar"))  return handleAceptar(update);
+    if (text.startsWith("/rechazar")) return handleRechazar(update);
+    if (text.startsWith("/cancelar")) return handleCancelar(update);
+
+    return switch (text) {
+      case "/propuestas" -> this.handleMenu(update);
+      case "/enviadas" -> this.handleVerEnviadas(update);
+      case "/recibidas" -> this.handleVerRecibidas(update);
+      case "/proponer" -> this.handleCrearPropuesta(update);
+      default -> null;
+    };
+  }
+
+  @Override
+  public BotResponse handleCallback(Update update) {
+    return handlePaginacion(update);
   }
 
   // ─── Menú principal ───────────────────────────────────────────────
@@ -128,9 +171,9 @@ public class PropuestaHandler {
 
   public BotResponse handlePaginacion(Update update) {
     long chatId = update.getCallbackQuery().getMessage().getChatId();
-    String data = update.getCallbackQuery().getData(); // "propuestas_enviadas:2"
+    String data = update.getCallbackQuery().getData();
     String[] partes = data.split(":");
-    String tipo = partes[0].equals("propuestas_enviadas") ? "ENVIADA" : "RECIBIDA";
+    String tipo = partes[0].equals("propuestas_enviadas") ? "ENVIADAS" : "RECIBIDAS";
     int pagina = Integer.parseInt(partes[1]);
 
     EstadoProceso estado = ultimoEstado.get(chatId);
@@ -139,12 +182,21 @@ public class PropuestaHandler {
   }
 
   private BotResponse buscarPropuestasYArmar(long chatId, String tipo, int pagina, EstadoProceso estado) {
+    System.out.println(">>> ENTRO buscarPropuestasYArmar");
+    System.out.println(">>> token: " + sessionManager.getToken(chatId));
     try {
       String token = sessionManager.getToken(chatId);
       String perfilId = servicioJwt.getPerfilId(token);
 
+      System.out.println(">>> perfilId: " + perfilId);
+
       PropuestasFiltro filtros = new PropuestasFiltro(tipo, pagina, 5, estado);
+
+      System.out.println(">>> filtros: " + filtros);
+
       PaginaResultado<IntercambioDto> resultado = propuestaService.buscarPropuestas(perfilId, filtros);
+
+      System.out.println(">>> resultado size: " + resultado.contenido().size());
 
       if (resultado == null || resultado.contenido() == null || resultado.contenido().isEmpty()) {
         return BotResponse.texto("😕 No tenés propuestas " +
@@ -288,10 +340,13 @@ public class PropuestaHandler {
   public BotResponse handlePendiente(Update update) {
     long chatId = update.getMessage().getChatId();
     String estado = estadoPendiente.get(chatId);
+    String texto = update.getMessage().getText().trim();
+
+    System.out.println(">>> PropuestaHandler.handlePendiente");
+    System.out.println(">>> estado en mapa: '" + estado + "'");
+    System.out.println(">>> texto: '" + texto + "'");
 
     if (estado == null) return null;
-
-    String texto = update.getMessage().getText().trim();
 
     return switch (estado) {
 
@@ -363,19 +418,22 @@ public class PropuestaHandler {
       }
 
       case "propuestas:esperando_filtro" -> {
+        System.out.println(">>> texto bytes: " + Arrays.toString(texto.getBytes()));
+        System.out.println(">>> estado bytes: " + Arrays.toString(estado.getBytes()));
         EstadoProceso estadoProceso = switch (texto) {
           case "1" -> EstadoProceso.PENDIENTE;
           case "2" -> EstadoProceso.ACEPTADO;
           case "3" -> EstadoProceso.RECHAZADO;
           case "4" -> EstadoProceso.CANCELADO;
-          case "0" -> null;
-          default  -> {
-            yield null; // si ingresa algo inválido mostramos todas
-          }
+          default -> null;
         };
-        String tipo = datosPendientes.get(chatId).get("tipo");
 
-        ultimoEstado.put(chatId, estadoProceso);
+        String tipo = datosPendientes.get(chatId).get("tipo");
+        if (estadoProceso != null) {
+          ultimoEstado.put(chatId, estadoProceso);
+        } else {
+          ultimoEstado.remove(chatId);
+        }
         ultimoTipoPropuesta.put(chatId, tipo);
 
         cancelarPendiente(chatId);

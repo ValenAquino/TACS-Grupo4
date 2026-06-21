@@ -6,15 +6,18 @@ import app.model.entities.MetodoIntercambio;
 import app.servicios.ServicioFigurita;
 import app.telegram.bot.BotResponse;
 import app.telegram.utils.MessageBuilder;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class ExplorarHandler {
+@Order(2)
+public class ExplorarHandler implements BotHandler {
 
   private final ServicioFigurita figuitaService;
   private final MessageBuilder messageBuilder;
@@ -29,24 +32,50 @@ public class ExplorarHandler {
     this.messageBuilder = messageBuilder;
   }
 
+  @Override
+  public Set<String> comandos() {
+    return Set.of("/explorar");
+  }
+
+  @Override
+  public Set<String> prefijos() {
+    return Set.of("/buscar");
+  }
+
+  @Override
+  public Set<String> callbackPrefijos() {
+    return Set.of("figuritas:");
+  }
+
+  @Override
+  public BotResponse handle(Update update) {
+    String text = update.getMessage().getText();
+    if (text.startsWith("/buscar")) return handleBuscar(update);
+    return handleVerFiguritas(update);
+  }
+
+  @Override
+  public BotResponse handleCallback(Update update) {
+    return handlePaginacion(update);
+  }
+
   public BotResponse handleVerFiguritas(Update update) {
     long chatId = update.getMessage().getChatId();
-
     ultimaQuery.remove(chatId);
-    return buscarYArmar(chatId, null, 0);
+    return buscarYArmar(null, 0);
   }
 
   public BotResponse handleBuscar(Update update) {
     long chatId = update.getMessage().getChatId();
-
     String[] partes = update.getMessage().getText().split(" ", 2);
+
     if (partes.length < 2 || partes[1].isBlank()) {
       return BotResponse.texto("🔍 Usá el comando así:\n`/buscar Messi`\n`/buscar Argentina`");
     }
 
     String query = partes[1].trim();
     ultimaQuery.put(chatId, query);
-    return buscarYArmar(chatId, query, 0);
+    return buscarYArmar(query, 0);
   }
 
   public BotResponse handlePaginacion(Update update) {
@@ -55,10 +84,10 @@ public class ExplorarHandler {
     int pagina = Integer.parseInt(data.split(":")[1]);
 
     String query = ultimaQuery.get(chatId);
-    return buscarYArmar(chatId, query, pagina);
+    return buscarYArmar(query, pagina);
   }
 
-  private BotResponse buscarYArmar(long chatId, String query, int pagina) {
+  private BotResponse buscarYArmar(String query, int pagina) {
     try {
       int paginaSegura = pagina + 1;
 

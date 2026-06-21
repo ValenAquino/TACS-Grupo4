@@ -12,16 +12,19 @@ import app.servicios.ServicioJwt;
 import app.telegram.bot.BotResponse;
 import app.telegram.sesion.SessionManager;
 import app.telegram.utils.MessageBuilder;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
-public class ColeccionHandler {
+@Order(2)
+public class ColeccionHandler implements BotHandler {
 
   private final ServicioColeccion coleccionService;
   private final ServicioJwt servicioJwt;
@@ -41,6 +44,40 @@ public class ColeccionHandler {
     this.servicioJwt = servicioJwt;
     this.sessionManager = sessionManager;
     this.messageBuilder = messageBuilder;
+  }
+
+  @Override
+  public Set<String> comandos() {
+    return Set.of(
+        "/coleccion", "/misfaltantes", "/misrepetidas",
+        "/agfaltante", "/agrepetida"
+    );
+  }
+
+  @Override
+  public Set<String> callbackPrefijos() {
+    return Set.of("faltantes:", "repetidas:");
+  }
+
+  @Override
+  public BotResponse handle(Update update) {
+    String text = update.getMessage().getText();
+    return switch (text) {
+      case "/coleccion"    -> handleMenu(update);
+      case "/misfaltantes" -> handleVerFaltantes(update);
+      case "/misrepetidas" -> handleVerRepetidas(update);
+      case "/agfaltante"   -> handleAgregarFaltante(update);
+      case "/agrepetida"   -> handleAgregarRepetida(update);
+      default              -> null;
+    };
+  }
+
+  @Override
+  public BotResponse handleCallback(Update update) { // 🆕
+    String data = update.getCallbackQuery().getData();
+    if (data.startsWith("faltantes:")) return handlePaginacionFaltantes(update);
+    if (data.startsWith("repetidas:")) return handlePaginacionRepetidas(update);
+    return null;
   }
 
   // ─── Menú principal ───────────────────────────────────────────────

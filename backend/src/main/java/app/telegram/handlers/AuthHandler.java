@@ -5,14 +5,17 @@ import app.exceptions.UsuarioException;
 import app.servicios.ServicioSesion;
 import app.telegram.bot.BotResponse;
 import app.telegram.sesion.SessionManager;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class AuthHandler {
+@Order(1)
+public class AuthHandler implements BotHandler {
 
   private final ServicioSesion servicioSesion;
   private final SessionManager sessionManager;
@@ -25,7 +28,39 @@ public class AuthHandler {
     this.sessionManager = sessionManager;
   }
 
-  public BotResponse handleLoginCommand(Update update) {
+  @Override
+  public Set<String> comandos() {
+    return Set.of(
+        "/login", "/logout"
+    );
+  }
+
+  @Override
+  public BotResponse handle(Update update) {
+    String text = update.getMessage().getText();
+    return switch (text) {
+      case "/login" -> this.handleLogin(update);
+      case "/logout" -> this.handleLogout(update);
+      default -> null;
+    };
+  }
+
+  @Override
+  public boolean tienePendiente(long chatId) { // 🆕
+    return sessionManager.getPendingField(chatId) != null;
+  }
+
+  @Override
+  public BotResponse handlePendiente(Update update) { // 🆕
+    return handlePendingLogin(update);
+  }
+
+  @Override
+  public void cancelarPendiente(long chatId) { // 🆕
+    cancelarLogin(chatId);
+  }
+
+  public BotResponse handleLogin(Update update) {
     long chatId = update.getMessage().getChatId();
 
     if (!update.getMessage().getChat().getType().equals("private")) {

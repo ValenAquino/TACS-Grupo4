@@ -12,12 +12,6 @@ import java.util.Set;
 @Order(1) // junto con AuthHandler, pero Spring los diferencia por tipo
 public class MenuHandler implements BotHandler {
 
-  private final SessionManager sessionManager;
-
-  public MenuHandler(SessionManager sessionManager) {
-    this.sessionManager = sessionManager;
-  }
-
   @Override
   public Set<String> comandos() {
     return Set.of("/start", "/menu");

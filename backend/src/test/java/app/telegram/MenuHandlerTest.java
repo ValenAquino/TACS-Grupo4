@@ -14,7 +14,6 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 public class MenuHandlerTest {
 
   private MenuHandler menuHandler;

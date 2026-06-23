@@ -182,21 +182,13 @@ public class PropuestaHandler implements BotHandler {
   }
 
   private BotResponse buscarPropuestasYArmar(long chatId, String tipo, int pagina, EstadoProceso estado) {
-    System.out.println(">>> ENTRO buscarPropuestasYArmar");
-    System.out.println(">>> token: " + sessionManager.getToken(chatId));
     try {
       String token = sessionManager.getToken(chatId);
       String perfilId = servicioJwt.getPerfilId(token);
 
-      System.out.println(">>> perfilId: " + perfilId);
-
       PropuestasFiltro filtros = new PropuestasFiltro(tipo, pagina, 5, estado);
 
-      System.out.println(">>> filtros: " + filtros);
-
       PaginaResultado<IntercambioDto> resultado = propuestaService.buscarPropuestas(perfilId, filtros);
-
-      System.out.println(">>> resultado size: " + resultado.contenido().size());
 
       if (resultado == null || resultado.contenido() == null || resultado.contenido().isEmpty()) {
         return BotResponse.texto("😕 No tenés propuestas " +

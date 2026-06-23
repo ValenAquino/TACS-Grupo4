@@ -8,196 +8,244 @@ import app.telegram.handlers.ExplorarHandler;
 import app.telegram.utils.MessageBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class ExplorarHandlerTest {
+class ExplorarHandlerTest {
 
-  @Mock
-  private ServicioFigurita servicioFigurita;
-
-  @Mock
+  private ServicioFigurita figuritaService;
   private MessageBuilder messageBuilder;
+  private ExplorarHandler handler;
 
-  private ExplorarHandler explorarHandler;
+  private static final long CHAT_ID = 1L;
+
+  // ─── Setup ────────────────────────────────────────────────────────
 
   @BeforeEach
   void setUp() {
-    explorarHandler = new ExplorarHandler(
-        servicioFigurita,
-        messageBuilder
-    );
+    figuritaService = mock(ServicioFigurita.class);
+    messageBuilder  = mock(MessageBuilder.class);
+    handler = new ExplorarHandler(figuritaService, messageBuilder);
   }
 
-  @Test
-  void comandos_debeRetornarExplorar() {
-    assertEquals(Set.of("/explorar"), explorarHandler.comandos());
-  }
+  // ─── Helpers ──────────────────────────────────────────────────────
 
-  @Test
-  void prefijos_debeRetornarBuscar() {
-    assertEquals(Set.of("/buscar"), explorarHandler.prefijos());
-  }
-
-  @Test
-  void handleBuscar_sinArgumentos_debeMostrarAyuda() {
-    Update update = crearUpdateConTexto("/buscar", 1L);
-
-    BotResponse response = explorarHandler.handleBuscar(update);
-
-    assertNotNull(response);
-    assertTrue(response.texto().contains("Usá el comando así"));
-  }
-
-  @Test
-  void handleVerFiguritas_conUnaPagina_debeRetornarTextoSinTeclado() {
-    Update update = crearUpdate(1L);
-
-    PaginaResultado<FiguritaIntercambiableDto> pagina =
-        new PaginaResultado<>(List.of(), 0, 1, 0);
-
-    when(servicioFigurita.buscarFiguritas(null, null, null, null, 1, 5))
-        .thenReturn(pagina);
-
-    when(messageBuilder.formatearPagina(pagina))
-        .thenReturn("pagina 1");
-
-    BotResponse response = explorarHandler.handleVerFiguritas(update);
-
-    assertEquals("pagina 1", response.texto());
-    assertNull(response.teclado());
-  }
-
-  @Test
-  void handleBuscar_conQueryValida_debeBuscarPorQuery() {
-    Update update = crearUpdateConTexto("/buscar Messi", 1L);
-
-    PaginaResultado<FiguritaIntercambiableDto> pagina =
-        new PaginaResultado<>(List.of(), 0, 1, 0);
-
-    when(servicioFigurita.buscarPorQuery("Messi", null, 1, 5))
-        .thenReturn(pagina);
-
-    when(messageBuilder.formatearPagina(pagina))
-        .thenReturn("resultado");
-
-    BotResponse response = explorarHandler.handleBuscar(update);
-
-    assertEquals("resultado", response.texto());
-
-    verify(servicioFigurita)
-        .buscarPorQuery("Messi", null, 1, 5);
-  }
-
-  @Test
-  void handleBuscar_conMultiplesPaginas_debeAgregarTeclado() {
-    Update update = crearUpdateConTexto("/buscar Messi", 1L);
-
-    PaginaResultado<FiguritaIntercambiableDto> pagina =
-        new PaginaResultado<>(List.of(), 10, 3, 0);
-
-    InlineKeyboardMarkup teclado = mock(InlineKeyboardMarkup.class);
-
-    when(servicioFigurita.buscarPorQuery("Messi", null, 1, 5))
-        .thenReturn(pagina);
-
-    when(messageBuilder.formatearPagina(pagina))
-        .thenReturn("resultado");
-
-    when(messageBuilder.tecladoPaginacion(1, 3, "figuritas"))
-        .thenReturn(teclado);
-
-    BotResponse response = explorarHandler.handleBuscar(update);
-
-    assertEquals("resultado", response.texto());
-    assertEquals(teclado, response.teclado());
-  }
-
-  @Test
-  void handlePaginacion_debeIrALaPaginaSolicitada() {
-    Update buscar = crearUpdateConTexto("/buscar Messi", 1L);
-
-    PaginaResultado<FiguritaIntercambiableDto> paginaInicial =
-        new PaginaResultado<>(List.of(), 10, 3, 0);
-
-    when(servicioFigurita.buscarPorQuery("Messi", null, 1, 5))
-        .thenReturn(paginaInicial);
-    when(messageBuilder.formatearPagina(paginaInicial))
-        .thenReturn("inicial");
-
-    explorarHandler.handleBuscar(buscar);
-
-    Update callback = crearCallbackUpdate("figuritas:2", 1L);
-
-    PaginaResultado<FiguritaIntercambiableDto> paginaDos =
-        new PaginaResultado<>(List.of(), 10, 3, 2);
-
-    when(servicioFigurita.buscarPorQuery("Messi", null, 3, 5))
-        .thenReturn(paginaDos);
-
-    when(messageBuilder.formatearPagina(paginaDos))
-        .thenReturn("pagina 3");
-
-    BotResponse response = explorarHandler.handlePaginacion(callback);
-
-    assertEquals("pagina 3", response.texto());
-  }
-
-//  @Test
-//  void handle_siServiceFalla_debeRetornarMensajeDeError() {
-//    Update update = crearUpdateConTexto("/explorar", 1L);
-//
-//    when(servicioFigurita.buscarFiguritas(null, null, null, null, 1, 5))
-//        .thenThrow(new RuntimeException("DB caída"));
-//
-//    BotResponse response = explorarHandler.handleVerFiguritas(update);
-//
-//    assertTrue(response.texto().contains("Error al obtener las figuritas"));
-//  }
-
-  private Update crearUpdate(Long chatId) {
-    Update update = mock(Update.class);
+  private Update updateConTexto(long chatId, String texto) {
     Message message = mock(Message.class);
-
-    when(update.getMessage()).thenReturn(message);
     when(message.getChatId()).thenReturn(chatId);
-
-    return update;
-  }
-
-  private Update crearUpdateConTexto(String texto, Long chatId) {
-    Update update = mock(Update.class);
-    Message message = mock(Message.class);
-
-    when(update.getMessage()).thenReturn(message);
     when(message.getText()).thenReturn(texto);
-    when(message.getChatId()).thenReturn(chatId);
 
+    Update update = mock(Update.class);
+    when(update.getMessage()).thenReturn(message);
     return update;
   }
 
-  private Update crearCallbackUpdate(String data, Long chatId) {
-    Update update = mock(Update.class);
-    CallbackQuery callback = mock(CallbackQuery.class);
+  private Update updateConCallback(long chatId, String data) {
     Message message = mock(Message.class);
+    when(message.getChatId()).thenReturn(chatId);
 
-    when(update.getCallbackQuery()).thenReturn(callback);
+    CallbackQuery callback = mock(CallbackQuery.class);
     when(callback.getData()).thenReturn(data);
     when(callback.getMessage()).thenReturn(message);
-    when(message.getChatId()).thenReturn(chatId);
 
+    Update update = mock(Update.class);
+    when(update.getCallbackQuery()).thenReturn(callback);
     return update;
+  }
+
+  private PaginaResultado<FiguritaIntercambiableDto> pagina(int totalPaginas) {
+    return new PaginaResultado<>(List.of(), 0, totalPaginas, 1);
+  }
+
+  // ─── handleVerFiguritas ───────────────────────────────────────────
+
+  @Test
+  void explorar_llamaABuscarFiguritasSinFiltros() throws Exception {
+    when(figuritaService.buscarFiguritas(null, null, null, null, 1, 5)).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("listado");
+
+    handler.handleVerFiguritas(updateConTexto(CHAT_ID, "/explorar"));
+
+    verify(figuritaService).buscarFiguritas(null, null, null, null, 1, 5);
+    verify(figuritaService, never()).buscarPorQuery(any(), any(), anyInt(), anyInt());
+  }
+
+  @Test
+  void explorar_devuelveTextoFormateado() throws Exception {
+    when(figuritaService.buscarFiguritas(null, null, null, null, 1, 5)).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("figuritas del mundo");
+
+    BotResponse r = handler.handleVerFiguritas(updateConTexto(CHAT_ID, "/explorar"));
+
+    assertEquals("figuritas del mundo", r.texto());
+  }
+
+  @Test
+  void explorar_variasPaginas_devuelveConTeclado() throws Exception {
+    when(figuritaService.buscarFiguritas(null, null, null, null, 1, 5)).thenReturn(pagina(3));
+    when(messageBuilder.formatearPagina(any())).thenReturn("listado");
+    when(messageBuilder.tecladoPaginacion(anyInt(), anyInt(), eq("figuritas")))
+        .thenReturn(mock(InlineKeyboardMarkup.class));
+
+    BotResponse r = handler.handleVerFiguritas(updateConTexto(CHAT_ID, "/explorar"));
+
+    assertNotNull(r.teclado());
+  }
+
+  @Test
+  void explorar_unaSolaPagina_sinTeclado() throws Exception {
+    when(figuritaService.buscarFiguritas(null, null, null, null, 1, 5)).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("listado");
+
+    BotResponse r = handler.handleVerFiguritas(updateConTexto(CHAT_ID, "/explorar"));
+
+    assertNull(r.teclado());
+  }
+
+  @Test
+  void explorar_limpiaQueryAnterior() throws Exception {
+    // Simula que había una búsqueda previa
+    when(figuritaService.buscarPorQuery(eq("Messi"), any(), anyInt(), anyInt())).thenReturn(pagina(1));
+    when(figuritaService.buscarFiguritas(null, null, null, null, 1, 5)).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("listado");
+
+    handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Messi"));
+    handler.handleVerFiguritas(updateConTexto(CHAT_ID, "/explorar"));
+
+    // La paginación siguiente debe usar buscarFiguritas, no buscarPorQuery
+    when(figuritaService.buscarFiguritas(null, null, null, null, 2, 5)).thenReturn(pagina(1));
+    handler.handlePaginacion(updateConCallback(CHAT_ID, "figuritas:1"));
+
+    verify(figuritaService, never()).buscarPorQuery(eq("Messi"), any(), eq(2), anyInt());
+  }
+
+  // ─── handleBuscar ─────────────────────────────────────────────────
+
+  @Test
+  void buscar_sinArgumentos_devuelveInstrucciones() {
+    BotResponse r = handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar"));
+    assertTrue(r.texto().contains("/buscar Messi"));
+  }
+
+  @Test
+  void buscar_soloEspacios_devuelveInstrucciones() {
+    BotResponse r = handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar   "));
+    assertTrue(r.texto().contains("/buscar Messi"));
+  }
+
+  @Test
+  void buscar_conQuery_llamaABuscarPorQuery() throws Exception {
+    when(figuritaService.buscarPorQuery(eq("Messi"), any(), eq(1), eq(5))).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("resultados");
+
+    handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Messi"));
+
+    verify(figuritaService).buscarPorQuery("Messi", null, 1, 5);
+    verify(figuritaService, never()).buscarFiguritas(any(), any(), any(), any(), anyInt(), anyInt());
+  }
+
+  @Test
+  void buscar_conQuery_devuelveTextoFormateado() throws Exception {
+    when(figuritaService.buscarPorQuery(eq("Messi"), any(), anyInt(), anyInt())).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("Messi encontrado");
+
+    BotResponse r = handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Messi"));
+
+    assertEquals("Messi encontrado", r.texto());
+  }
+
+  @Test
+  void buscar_queryConEspacios_pasaQueryCompleta() throws Exception {
+    when(figuritaService.buscarPorQuery(eq("Leo Messi"), any(), anyInt(), anyInt())).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("ok");
+
+    handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Leo Messi"));
+
+    verify(figuritaService).buscarPorQuery("Leo Messi", null, 1, 5);
+  }
+
+  @Test
+  void buscar_variasPaginas_devuelveConTeclado() throws Exception {
+    when(figuritaService.buscarPorQuery(eq("Messi"), any(), anyInt(), anyInt())).thenReturn(pagina(3));
+    when(messageBuilder.formatearPagina(any())).thenReturn("resultados");
+    when(messageBuilder.tecladoPaginacion(anyInt(), anyInt(), eq("figuritas")))
+        .thenReturn(mock(InlineKeyboardMarkup.class));
+
+    BotResponse r = handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Messi"));
+
+    assertNotNull(r.teclado());
+  }
+
+  @Test
+  void buscar_errorDeServicio_devuelveMensajeDeError() throws Exception {
+    doThrow(new RuntimeException("timeout"))
+        .when(figuritaService).buscarPorQuery(any(), any(), anyInt(), anyInt());
+
+    BotResponse r = handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Messi"));
+
+    assertTrue(r.texto().contains("❌"));
+  }
+
+  // ─── handlePaginacion ─────────────────────────────────────────────
+
+  @Test
+  void paginacion_sinQueryPrevia_usaBuscarFiguritas() throws Exception {
+    when(figuritaService.buscarFiguritas(null, null, null, null, 2, 5)).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("pagina 2");
+
+    handler.handlePaginacion(updateConCallback(CHAT_ID, "figuritas:1"));
+
+    verify(figuritaService).buscarFiguritas(null, null, null, null, 2, 5);
+  }
+
+  @Test
+  void paginacion_conQueryPrevia_usaBuscarPorQuery() throws Exception {
+    // Primero hacemos una búsqueda para guardar la query
+    when(figuritaService.buscarPorQuery(eq("Ronaldo"), any(), eq(1), eq(5))).thenReturn(pagina(3));
+    when(figuritaService.buscarPorQuery(eq("Ronaldo"), any(), eq(2), eq(5))).thenReturn(pagina(3));
+    when(messageBuilder.formatearPagina(any())).thenReturn("ok");
+
+    handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Ronaldo"));
+    handler.handlePaginacion(updateConCallback(CHAT_ID, "figuritas:1")); // página 2 (índice 1)
+
+    verify(figuritaService).buscarPorQuery("Ronaldo", null, 2, 5);
+  }
+
+  @Test
+  void paginacion_numeroDePaginaCorrectoDesdeCallback() throws Exception {
+    when(figuritaService.buscarFiguritas(null, null, null, null, 4, 5)).thenReturn(pagina(1));
+    when(messageBuilder.formatearPagina(any())).thenReturn("ok");
+
+    // callback "figuritas:3" → pagina = 3 + 1 = 4
+    handler.handlePaginacion(updateConCallback(CHAT_ID, "figuritas:3"));
+
+    verify(figuritaService).buscarFiguritas(null, null, null, null, 4, 5);
+  }
+
+  @Test
+  void paginacion_dosChatsIndependientes() throws Exception {
+    long chatId2 = 2L;
+    when(figuritaService.buscarPorQuery(eq("Messi"), any(), anyInt(), anyInt())).thenReturn(pagina(2));
+    when(figuritaService.buscarFiguritas(isNull(), isNull(), isNull(), isNull(), anyInt(), eq(5)))
+        .thenReturn(pagina(3));
+    when(messageBuilder.formatearPagina(any())).thenReturn("ok");
+
+    // Chat 1 busca "Messi", chat 2 explora sin query
+    handler.handleBuscar(updateConTexto(CHAT_ID, "/buscar Messi"));
+    handler.handleVerFiguritas(updateConTexto(chatId2, "/explorar"));
+
+    // Paginación de chat 2 no debe usar la query de chat 1
+    Update callbackChat2 = updateConCallback(chatId2, "figuritas:1");
+    handler.handlePaginacion(callbackChat2);
+
+    verify(figuritaService).buscarFiguritas(null, null, null, null, 2, 5);
+    verify(figuritaService, never()).buscarPorQuery(eq("Messi"), any(), eq(2), anyInt());
   }
 }

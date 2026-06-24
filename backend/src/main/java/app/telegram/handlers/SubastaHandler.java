@@ -4,7 +4,10 @@ import app.dto.filtros.SubastasFiltro;
 import app.dto.paginacion.PaginaResultado;
 import app.dto.request.EditarOfertaRequest;
 import app.dto.request.OfertarEnSubastaRequest;
+import app.dto.subasta.MiSubastaActivaDto;
+import app.dto.subasta.MiSubastaFinalizadaDto;
 import app.dto.subasta.SubastaDto;
+import app.dto.subasta.SubastaParticipoDto;
 import app.servicios.ServicioJwt;
 import app.servicios.ServicioSubasta;
 import app.telegram.bot.BotResponse;
@@ -14,10 +17,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -487,24 +489,25 @@ public class SubastaHandler implements BotHandler {
 
         yield switch (accion) {
           case "cancelar" -> {
+            Map<String, String> datos = datosPendientes.get(chatId);
+            String subastaId = datos != null ? datos.get("subastaId") : null;
             cancelarPendiente(chatId);
+
             try {
               String token = sessionManager.getToken(chatId);
               String perfilId = servicioJwt.getPerfilId(token);
-              String subastaId = datosPendientes.get(chatId) != null
-                  ? datosPendientes.get(chatId).get("subastaId") : null;
               subastaService.cancelarOferta(perfilId, subastaId, texto);
               yield BotResponse.texto("🚫 Oferta cancelada correctamente.");
             } catch (Exception e) {
               yield BotResponse.texto("❌ Error al cancelar la oferta: " + e.getMessage());
             }
           }
-          default -> { // editar
+          default -> {
             estadoPendiente.put(chatId, "oferta:esperando_figuritas");
             yield BotResponse.texto("""
-                            Paso 3/3 — Ingresá los nuevos IDs de figuritas ofrecidas,
-                            separados por coma (ej: `BRA-10, ESP-7`):
-                            """);
+              Paso 3/3 — Ingresá los nuevos IDs de figuritas ofrecidas,
+              separados por coma (ej: `BRA-10, ESP-7`):
+              """);
           }
         };
       }
@@ -516,12 +519,13 @@ public class SubastaHandler implements BotHandler {
           yield BotResponse.texto("❌ Ingresá al menos un ID de figurita:");
         }
 
-        cancelarPendiente(chatId);
         // Necesitamos los datos antes de limpiarlos
         Map<String, String> datos = datosPendientes.get(chatId);
         String accion  = datos != null ? datos.get("accion")    : null;
         String subId   = datos != null ? datos.get("subastaId") : null;
         String ofertId = datos != null ? datos.get("ofertaId")  : null;
+
+        cancelarPendiente(chatId);
 
         try {
           String token = sessionManager.getToken(chatId);
@@ -600,11 +604,10 @@ public class SubastaHandler implements BotHandler {
       String token = sessionManager.getToken(chatId);
       String perfilId = servicioJwt.getPerfilId(token);
 
-      String estado = "activas".equals(tipo) ? "ACTIVA" : "FINALIZADA";
+      String estado = "activas".equals(tipo) ? "ACTIVA" : "FINALIZADA"; // ← ojo, el servicio compara con "ACTIVA"
       SubastasFiltro filtro = new SubastasFiltro(pagina, 5, perfilId, null, estado);
 
-      PaginaResultado<SubastaDto> resultado = (PaginaResultado<SubastaDto>)
-          subastaService.obtenerSubastas(perfilId, filtro);
+      PaginaResultado<?> resultado = subastaService.obtenerSubastas(perfilId, filtro); // ← sin cast
 
       if (resultado == null || resultado.contenido().isEmpty()) {
         return BotResponse.texto("😕 No tenés subastas " +
@@ -617,7 +620,10 @@ public class SubastaHandler implements BotHandler {
           .append("📄 Página ").append(pagina).append(" de ")
           .append(resultado.cantidadDePaginas()).append("\n\n");
 
-      resultado.contenido().forEach(s -> sb.append(formatearSubastaResumen(s)));
+      resultado.contenido().forEach(obj -> {
+        if (obj instanceof MiSubastaActivaDto s)    sb.append(formatearSubastaActiva(s));
+        else if (obj instanceof MiSubastaFinalizadaDto s) sb.append(formatearSubastaFinalizada(s));
+      });
 
       String prefijo = "activas".equals(tipo) ? "subastas_activas" : "subastas_finalizadas";
 
@@ -641,8 +647,7 @@ public class SubastaHandler implements BotHandler {
 
       SubastasFiltro filtro = new SubastasFiltro(pagina, 5, null, perfilId, null);
 
-      PaginaResultado<SubastaDto> resultado = (PaginaResultado<SubastaDto>)
-          subastaService.obtenerSubastas(perfilId, filtro);
+      PaginaResultado<?> resultado = subastaService.obtenerSubastas(perfilId, filtro);
 
       if (resultado == null || resultado.contenido().isEmpty()) {
         return BotResponse.texto("😕 No participaste en ninguna subasta todavía.");
@@ -653,7 +658,9 @@ public class SubastaHandler implements BotHandler {
           .append("📄 Página ").append(pagina).append(" de ")
           .append(resultado.cantidadDePaginas()).append("\n\n");
 
-      resultado.contenido().forEach(s -> sb.append(formatearSubastaResumen(s)));
+      resultado.contenido().forEach(obj -> {
+        if (obj instanceof SubastaParticipoDto s) sb.append(formatearParticipacion(s));
+      });
 
       if (resultado.cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(sb.toString(),
@@ -699,18 +706,6 @@ public class SubastaHandler implements BotHandler {
 
   // ─── Helpers de formateo ──────────────────────────────────────────
 
-  private String formatearSubastaResumen(SubastaDto s) {
-    return "🆔 `%s`\n🃏 Figurita: #%s — %s\n👤 Autor: %s\n⏱️ Cierre: %s\n🎁 Ofertas: %d\n\n"
-        .formatted(
-            s.getId(),
-            s.getFigurita().getNumero(),
-            s.getFigurita().getJugador(),
-            s.getPerfil().getNombre(),
-            s.getCierre().toString(),
-            s.getOfertas().size()
-        );
-  }
-
   private String formatearSubastaDetalle(SubastaDto s) {
     StringBuilder sb = new StringBuilder();
     sb.append("🏷️ *Subasta* `").append(s.getId()).append("`\n\n");
@@ -741,5 +736,53 @@ public class SubastaHandler implements BotHandler {
     }
 
     return sb.toString();
+  }
+
+  private String formatearSubastaActiva(MiSubastaActivaDto s) {
+    return "🆔 `%s`\n🃏 Figurita: #%s — %s\n📅 Apertura: %s\n⏱️ Cierre: %s\n🎁 Ofertas activas: %d\n\n"
+        .formatted(
+            s.getId(),
+            s.getFiguritaSubastada().getNumero(),
+            s.getFiguritaSubastada().getJugador(),
+            formatearFecha(s.getFechaInicio()),
+            formatearFecha(s.getFechaCierre()),
+            s.getOfertas().size()
+        );
+  }
+
+  private String formatearSubastaFinalizada(MiSubastaFinalizadaDto s) {
+    String ganador = s.getOfertaGanadora() != null
+        ? "🏆 Oferta ganadora: `" + s.getOfertaGanadora().getId() + "`"
+        : "📭 Sin oferta ganadora";
+
+    String calificacion = s.isYaCalificado() ? "✅ Ya calificaste" : "⭐ Pendiente de calificación";
+
+    return "🆔 `%s`\n🃏 Figurita: #%s — %s\n⏱️ Cierre: %s\n%s\n%s\n\n"
+        .formatted(
+            s.getId(),
+            s.getFiguritaSubastada().getNumero(),
+            s.getFiguritaSubastada().getJugador(),
+            formatearFecha(s.getFechaCierre()),
+            ganador,
+            calificacion
+        );
+  }
+
+  private String formatearParticipacion(SubastaParticipoDto s) {
+    String calificacion = s.isYaCalificado() ? "✅ Ya calificaste" : "⭐ Pendiente de calificación";
+    return "🆔 `%s`\n👤 Autor: %s\n🃏 Figurita: #%s — %s\n⏱️ Cierre: %s\n%s\n\n"
+        .formatted(
+            s.getId(),
+            s.getAutor().getNombre(),
+            s.getFiguritaSubastada().getNumero(),
+            s.getFiguritaSubastada().getJugador(),
+            formatearFecha(s.getFechaCierre()),
+            calificacion
+        );
+  }
+
+  private String formatearFecha(LocalDateTime fecha) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm", new Locale("es", "AR"));
+    return fecha.format(formatter);
   }
 }

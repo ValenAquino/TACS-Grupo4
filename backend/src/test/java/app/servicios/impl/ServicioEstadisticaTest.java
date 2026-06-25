@@ -14,7 +14,6 @@ import app.servicios.ServicioEstadisticas;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,11 +66,6 @@ class ServicioEstadisticaTest extends MongoTestBase {
 
     private FiguritaIntercambiable ambosMetodos(Figurita f) {
         return new FiguritaIntercambiable(f, 1, List.of(MetodoIntercambio.INTERCAMBIO, MetodoIntercambio.SUBASTA));
-    }
-
-    @BeforeEach
-    void setUp() {
-        service = new ServicioEstadisticas(repositorioPerfiles, repositorioPropuestas, repositorioSubastas, repositorioColecciones);
     }
 
     @Test

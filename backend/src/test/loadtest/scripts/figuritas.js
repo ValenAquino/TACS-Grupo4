@@ -1,8 +1,8 @@
-// loadtest/scripts/figuritas.js
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { login } from './helpers/auth.js';
 import {optionsDefault} from './helpers/options.js'
+import {checkHttp} from "./helpers/checks.js";
 
 export const options = optionsDefault
 
@@ -17,10 +17,7 @@ export default function () {
 
     const figuritas = res.json(); // parseo único
 
-    check(res, {
-        'status 200':      (r) => r.status === 200,
-        'body no vacio':   (r) => r.body.length > 0,
-    });
+    checkHttp(res,200)
 
     check(figuritas, {
         'es un array':     (f) => Array.isArray(f),

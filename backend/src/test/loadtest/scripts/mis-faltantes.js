@@ -1,8 +1,8 @@
-// loadtest/scripts/figuritas.js
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { login } from './helpers/auth.js';
-import {optionsDefault} from "./helpers/options";
+import {optionsDefault} from "./helpers/options.js";
+import {checkHttp, checkPaginacion} from "./helpers/checks.js";
 
 export const options = optionsDefault
 
@@ -17,18 +17,14 @@ export default function () {
 
     const faltantes = res.json();
 
-    check(res, {
-        'status 200':      (r) => r.status === 200,
-        'body no vacio':   (r) => r.body.length > 0,
-    });
+    checkHttp(res, 200)
 
-    check(faltantes, {
-        'esta paginado':      (s) => s.numero != null && typeof s.numero === 'number',
-        'contenido es array': (s) => Array.isArray(s.contenido),
-        'no esta vacio':   (f) => f.contenido.length > 0,
-        'con id definido': (f) => f.contenido.every(fig => fig.id !== null && fig.id !== ""),
-        'con numero':      (f) => f.contenido.every(fig => typeof fig.numero === 'number'),
-        'con jugador':     (f) => f.contenido.every(fig => typeof fig.jugador === 'string'),
+    checkPaginacion(faltantes);
+
+    check(faltantes.contenido, {
+        'con id definido': (f) => f.every(fig => fig.id !== null && fig.id !== ""),
+        'con numero':      (f) => f.every(fig => typeof fig.numero === 'number'),
+        'con jugador':     (f) => f.every(fig => typeof fig.jugador === 'string'),
     });
 
     sleep(1);

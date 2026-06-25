@@ -25,7 +25,22 @@ export default function () {
     const authHeaders = { 'Cookie': `token=${cookie}` };
 
     const res = http.get(`${BASE}/colecciones/faltantes`, { headers: authHeaders });
-    check(res, { 'sugerencias: status 200': r => r.status === 200 });
+
+    const faltantes = res.json();
+
+    check(res, {
+        'status 200':      (r) => r.status === 200,
+        'body no vacio':   (r) => r.body.length > 0,
+    });
+
+    check(faltantes, {
+        'esta paginado':      (s) => s.numero != null && typeof s.numero === 'number',
+        'contenido es array': (s) => Array.isArray(s.contenido),
+        'no esta vacio':   (f) => f.length > 0,
+        'con id definido': (f) => f.contenido.every(fig => fig.id !== null && fig.id !== ""),
+        'con numero':      (f) => f.contenido.every(fig => typeof fig.numero === 'number'),
+        'con jugador':     (f) => f.contenido.every(fig => typeof fig.jugador === 'string'),
+    });
 
     sleep(1);
 }

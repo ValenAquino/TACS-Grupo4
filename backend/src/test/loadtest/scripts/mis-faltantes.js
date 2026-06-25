@@ -9,23 +9,24 @@ export const options = optionsDefault
 const BASE = 'http://backend-test:8080';
 const USUARIO = { nombre: 'lucas_fis', contrasenia: 'Gordo123!' };
 
+export function testMisFaltantes(authHeaders) {
+    const res = http.get(`${BASE}/colecciones/faltantes`, { headers: authHeaders });
+    const body = res.json();
+
+    checkHttp(res, 200);
+    checkPaginacion(body);
+    check(body.contenido, {
+        '[faltantes] con id definido': (f) => f.every(fig => fig.id !== null && fig.id !== ""),
+        '[faltantes] con numero':      (f) => f.every(fig => typeof fig.numero === 'number'),
+        '[faltantes] con jugador':     (f) => f.every(fig => typeof fig.jugador === 'string'),
+    });
+}
+
 export default function () {
     const cookie = login(BASE, USUARIO);
     const authHeaders = { 'Cookie': `token=${cookie}` };
 
-    const res = http.get(`${BASE}/colecciones/faltantes`, { headers: authHeaders });
-
-    const faltantes = res.json();
-
-    checkHttp(res, 200)
-
-    checkPaginacion(faltantes);
-
-    check(faltantes.contenido, {
-        'con id definido': (f) => f.every(fig => fig.id !== null && fig.id !== ""),
-        'con numero':      (f) => f.every(fig => typeof fig.numero === 'number'),
-        'con jugador':     (f) => f.every(fig => typeof fig.jugador === 'string'),
-    });
+    testMisFaltantes(authHeaders)
 
     sleep(1);
 }

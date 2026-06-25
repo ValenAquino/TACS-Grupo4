@@ -42,7 +42,7 @@ test:
 	docker compose -f docker-compose.dev.yml run --rm backend mvn test
 
     #Todos los scripts
-	docker compose -f docker-compose.test.yml --profile test run --rm loadtest
+	docker compose -f docker-compose.test.yml run --rm loadtest
 
-    #Un solo scripts
-    docker compose -f docker-compose.test.yml --profile test run --rm loadtest sugerencias.js
+    #Un solo script
+    docker compose -f docker-compose.test.yml run --rm loadtest sugerencias.js

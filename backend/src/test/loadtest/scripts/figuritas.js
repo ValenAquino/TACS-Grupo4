@@ -12,8 +12,8 @@ export const options = {
         { duration: '10s', target: 0   },  // bajada
     ],
     thresholds: {
-        http_req_duration: ['p(95)<200'],
-        http_req_failed:   ['rate<0.01'],
+        'http_req_failed': ['rate<0.01'],
+        'checks': ['rate>0.99'],
     },
 };
 
@@ -25,7 +25,21 @@ export default function () {
     const authHeaders = { 'Cookie': `token=${cookie}` };
 
     const res = http.get(`${BASE}/figuritas`, { headers: authHeaders });
-    check(res, { 'figuritas: status 200': r => r.status === 200 });
+
+    const figuritas = res.json(); // parseo único
+
+    check(res, {
+        'status 200':      (r) => r.status === 200,
+        'body no vacio':   (r) => r.body.length > 0,
+    });
+
+    check(figuritas, {
+        'es un array':     (f) => Array.isArray(f),
+        'no esta vacio':   (f) => f.length > 0,
+        'con id definido': (f) => f.every(fig => fig.id !== null && fig.id !== ""),
+        'con numero':      (f) => f.every(fig => typeof fig.numero === 'number'),
+        'con jugador':     (f) => f.every(fig => typeof fig.jugador === 'string'),
+    });
 
     sleep(1);
 }

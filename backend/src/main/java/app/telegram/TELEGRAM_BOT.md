@@ -76,13 +76,8 @@ El bot usa **long polling** (no webhooks). Corre dentro del mismo proceso Spring
 </dependency>
 ```
 
-### Variables de entorno (`.env`)
 
 ```
-TELEGRAM_BOT_TOKEN=8617707902:AAHljkkrYUSwQgB30IFz2sWrqC0okVRa1UI
-TELEGRAM_BOT_USERNAME=FigunetBot
-```
-
 ### application.properties
 
 ```properties
@@ -427,7 +422,5 @@ telegram.bot.username=TestBot
 
 ## Referencias
 
-- **Token del bot:** `8617707902:AAHljkkrYUSwQgB30IFz2sWrqC0okVRa1UI`
-- **Username del bot:** `@FigunetBot`
 - **Librería:** [TelegramBots v7.10.0](https://github.com/rubenlagus/TelegramBots) (long-polling)
 - **Cliente HTTP:** OkHttp (integrado en `telegrambots-client`)

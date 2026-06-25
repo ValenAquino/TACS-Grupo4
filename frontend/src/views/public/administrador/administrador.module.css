@@ -175,6 +175,12 @@
   white-space: nowrap;
 }
 
+.delPeriodoNota {
+  font-size: 0.78rem;
+  color: var(--color-subtitle);
+  white-space: nowrap;
+}
+
 /* ── Filtro de período (barra estilo search) ─────────────────────────────────── */
 
 .heroPeriodoFiltro {

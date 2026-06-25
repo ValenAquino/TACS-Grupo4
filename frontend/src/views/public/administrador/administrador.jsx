@@ -97,7 +97,8 @@ const Administrador = () => {
 
             {/* Estadísticas del período */}
             <div className={styles.delPeriodoRow}>
-              <p className={styles.delPeriodoLabel}>Estadisticas del período</p>
+              <p className={styles.delPeriodoLabel}>Estadísticas del período</p>
+              <span className={styles.delPeriodoNota}>según fecha de creación</span>
             </div>
 
             <div className="row g-3 mb-3">

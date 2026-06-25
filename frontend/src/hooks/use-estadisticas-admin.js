@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { obtenerEstadisticas } from '@/services/administradorService.js'
 
-const formatDate = (date) => date.toISOString().split('T')[0]
+const formatDate = (date) => date.toLocaleDateString('en-CA')
 
 const getDefaultRange = () => {
   const hasta = new Date()

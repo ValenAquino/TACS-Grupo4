@@ -1,10 +1,11 @@
 import styles from './administrador.module.css'
 
 const ESTADOS = [
-  { label: 'Pendientes', key: 'pendientes', color: '#d49a2c' },
-  { label: 'Aceptadas', key: 'aceptadas', color: '#198754' },
-  { label: 'Rechazadas', key: 'rechazadas', color: '#dc3545' },
-  { label: 'Canceladas', key: 'canceladas', color: '#6c757d' },
+  { label: 'Pendientes',    key: 'pendientes',    color: '#d49a2c' },
+  { label: 'Seleccionadas', key: 'seleccionadas', color: '#7c3aed' },
+  { label: 'Aceptadas',     key: 'aceptadas',     color: '#198754' },
+  { label: 'Rechazadas',    key: 'rechazadas',     color: '#dc3545' },
+  { label: 'Canceladas',    key: 'canceladas',    color: '#6c757d' },
 ]
 
 const PropuestasPorEstado = ({ propuestasPorEstado, totalPropuestas }) => (

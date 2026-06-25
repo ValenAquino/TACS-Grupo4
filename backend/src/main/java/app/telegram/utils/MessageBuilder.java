@@ -49,7 +49,7 @@ public class MessageBuilder {
 
     StringBuilder sb = new StringBuilder();
     sb.append("🃏 *Figuritas intercambiables*\n");
-    sb.append("📄 Página ").append(pagina.numero() + 1)
+    sb.append("📄 Página ").append(pagina.numero())
         .append(" de ").append(pagina.cantidadDePaginas())
         .append(" — ").append(pagina.cantidadDeElementos()).append(" resultados\n\n");
 

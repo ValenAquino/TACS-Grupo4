@@ -1,7 +1,6 @@
 package app.telegram.handlers;
 
 import app.dto.request.LoginRequest;
-import app.exceptions.UsuarioException;
 import app.servicios.ServicioSesion;
 import app.telegram.bot.BotResponse;
 import app.telegram.sesion.SessionManager;
@@ -91,14 +90,15 @@ public class AuthHandler implements BotHandler {
 
     if (field.equals("password")) {
       String nombre = pendingUsername.get(chatId);
-      sessionManager.clearPendingField(chatId);
-      pendingUsername.remove(chatId);
 
       try {
         String token = servicioSesion.login(new LoginRequest(nombre, text));
+        sessionManager.clearPendingField(chatId);
+        pendingUsername.remove(chatId);
         sessionManager.saveToken(chatId, token);
         return BotResponse.texto("✅ *¡Bienvenido, " + nombre + "!*\n\nUsá /menu para ver todas las opciones.");
-      } catch (UsuarioException e) {
+      } catch (Exception e) {
+        cancelarLogin(chatId);
         return BotResponse.texto("❌ Credenciales inválidas. Intentá de nuevo con /login");
       }
     }

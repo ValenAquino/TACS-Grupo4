@@ -99,7 +99,7 @@ public class ExplorarHandler implements BotHandler {
 
       if (resultado.cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(texto,
-            messageBuilder.tecladoPaginacion(paginaSegura, resultado.cantidadDePaginas(), "figuritas"));
+            messageBuilder.tecladoPaginacion(pagina, resultado.cantidadDePaginas(), "figuritas"));
       }
 
       return BotResponse.texto(texto);

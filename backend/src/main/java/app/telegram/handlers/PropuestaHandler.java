@@ -55,13 +55,14 @@ public class PropuestaHandler implements BotHandler {
   @Override
   public Set<String> comandos() {
     return Set.of(
-        "/propuestas", "/enviadas", "/recibidas", "/proponer"
+        "/propuestas", "/enviadas", "/recibidas", "/proponer",
+        "/aceptar", "/rechazar", "/cancelar"
     );
   }
 
   @Override
   public Set<String> prefijos() {
-    return Set.of("/aceptar", "/rechazar", "/cancelar");
+    return Set.of();
   }
 
   @Override
@@ -73,16 +74,14 @@ public class PropuestaHandler implements BotHandler {
   public BotResponse handle(Update update) {
     String text = update.getMessage().getText();
 
-    // prefijos con argumentos
-    if (text.startsWith("/aceptar"))  return handleAceptar(update);
-    if (text.startsWith("/rechazar")) return handleRechazar(update);
-    if (text.startsWith("/cancelar")) return handleCancelar(update);
-
     return switch (text) {
       case "/propuestas" -> this.handleMenu(update);
       case "/enviadas" -> this.handleVerEnviadas(update);
       case "/recibidas" -> this.handleVerRecibidas(update);
       case "/proponer" -> this.handleCrearPropuesta(update);
+      case "/aceptar" -> this.handleAceptar(update);
+      case "/rechazar" -> this.handleRechazar(update);
+      case "/cancelar" -> this.handleCancelar(update);
       default -> null;
     };
   }
@@ -109,9 +108,9 @@ public class PropuestaHandler implements BotHandler {
                 /enviadas   — Ver propuestas que enviaste
                 /recibidas  — Ver propuestas que recibiste
                 /proponer   — Crear una nueva propuesta
-                /aceptar <idPropuesta> — Aceptar una propuesta
-                /rechazar <idPropuesta> — Rechazar una propuesta
-                /cancelar <idPropuesta> — Aceptar una propuesta
+                /aceptar    — Aceptar una propuesta
+                /rechazar   — Rechazar una propuesta
+                /cancelar   — Cancelar una propuesta
                 """);
   }
 
@@ -186,7 +185,7 @@ public class PropuestaHandler implements BotHandler {
       String token = sessionManager.getToken(chatId);
       String perfilId = servicioJwt.getPerfilId(token);
 
-      PropuestasFiltro filtros = new PropuestasFiltro(tipo, pagina, 5, estado);
+      PropuestasFiltro filtros = new PropuestasFiltro(tipo, pagina + 1, 5, estado);
 
       PaginaResultado<IntercambioDto> resultado = propuestaService.buscarPropuestas(perfilId, filtros);
 
@@ -196,6 +195,7 @@ public class PropuestaHandler implements BotHandler {
             (estado != null ? " con estado " + formatearEstado(estado) : "") + ".");
       }
 
+      int paginaActual = pagina + 1;
       StringBuilder sb = new StringBuilder();
       sb.append(tipo.equals("ENVIADAS") ? "📤" : "📥")
           .append(" *Propuestas ").append(tipo.equals("ENVIADAS") ? "enviadas" : "recibidas").append("*");
@@ -204,7 +204,7 @@ public class PropuestaHandler implements BotHandler {
         sb.append(" — ").append(formatearEstado(estado));
       }
 
-      sb.append("\n📄 Página ").append(pagina).append(" de ")
+      sb.append("\n📄 Página ").append(paginaActual).append(" de ")
           .append(resultado.cantidadDePaginas()).append("\n\n");
 
       resultado.contenido().forEach(p -> {
@@ -219,11 +219,11 @@ public class PropuestaHandler implements BotHandler {
         sb.append("📌 Estado: ").append(formatearEstado(p.getEstado())).append("\n");
 
         if (tipo.equals("RECIBIDAS") && p.getEstado() == EstadoProceso.PENDIENTE) {
-          sb.append("✅ Aceptar: `/aceptar ").append(p.getId()).append("`\n");
-          sb.append("❌ Rechazar: `/rechazar ").append(p.getId()).append("`\n");
+          sb.append("✅ Usá `/aceptar` para aceptar\n");
+          sb.append("❌ Usá `/rechazar` para rechazar\n");
         }
         if (tipo.equals("ENVIADAS") && p.getEstado() == EstadoProceso.PENDIENTE) {
-          sb.append("🚫 Cancelar: `/cancelar ").append(p.getId()).append("`\n");
+          sb.append("🚫 Usá `/cancelar` para cancelar\n");
         }
 
         sb.append("\n");
@@ -233,7 +233,7 @@ public class PropuestaHandler implements BotHandler {
 
       if (resultado.cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(sb.toString(),
-            messageBuilder.tecladoPaginacion(pagina - 1, resultado.cantidadDePaginas(), prefijo));
+            messageBuilder.tecladoPaginacion(pagina, resultado.cantidadDePaginas(), prefijo));
       }
 
       return BotResponse.texto(sb.toString());
@@ -264,67 +264,49 @@ public class PropuestaHandler implements BotHandler {
                 """);
   }
 
-  // ─── Aceptar propuesta ────────────────────────────────────────────
+  // ─── Aceptar propuesta (multi-paso) ───────────────────────────────
 
   public BotResponse handleAceptar(Update update) {
     long chatId = update.getMessage().getChatId();
-    String[] partes = update.getMessage().getText().split(" ", 2);
 
-    if (partes.length < 2 || partes[1].isBlank()) {
-      return BotResponse.texto("❌ Usá el comando así:\n`/aceptar <id_propuesta>`");
+    if (!sessionManager.isAuthenticated(chatId)) {
+      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    try {
-      String token = sessionManager.getToken(chatId);
-      String perfilId = servicioJwt.getPerfilId(token);
-      propuestaService.aceptar(partes[1].trim(), perfilId);
-      return BotResponse.texto("✅ Propuesta aceptada correctamente. ¡El intercambio se realizó!");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return BotResponse.texto("❌ Error al aceptar: " + e.getMessage());
-    }
+    estadoPendiente.put(chatId, "propuesta:esperando_id_para_aceptar");
+    datosPendientes.put(chatId, new ConcurrentHashMap<>());
+
+    return BotResponse.texto("✅ *Aceptar propuesta*\n\nIngresá el ID de la propuesta a aceptar:");
   }
 
-  // ─── Rechazar propuesta ───────────────────────────────────────────
+  // ─── Rechazar propuesta (multi-paso) ──────────────────────────────
 
   public BotResponse handleRechazar(Update update) {
     long chatId = update.getMessage().getChatId();
-    String[] partes = update.getMessage().getText().split(" ", 2);
 
-    if (partes.length < 2 || partes[1].isBlank()) {
-      return BotResponse.texto("❌ Usá el comando así:\n`/rechazar <id_propuesta>`");
+    if (!sessionManager.isAuthenticated(chatId)) {
+      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    try {
-      String token = sessionManager.getToken(chatId);
-      String perfilId = servicioJwt.getPerfilId(token);
-      propuestaService.rechazar(partes[1].trim(), perfilId);
-      return BotResponse.texto("❌ Propuesta rechazada.");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return BotResponse.texto("❌ Error al rechazar: " + e.getMessage());
-    }
+    estadoPendiente.put(chatId, "propuesta:esperando_id_para_rechazar");
+    datosPendientes.put(chatId, new ConcurrentHashMap<>());
+
+    return BotResponse.texto("❌ *Rechazar propuesta*\n\nIngresá el ID de la propuesta a rechazar:");
   }
 
-  // ─── Cancelar propuesta ───────────────────────────────────────────
+  // ─── Cancelar propuesta (multi-paso) ──────────────────────────────
 
   public BotResponse handleCancelar(Update update) {
     long chatId = update.getMessage().getChatId();
-    String[] partes = update.getMessage().getText().split(" ", 2);
 
-    if (partes.length < 2 || partes[1].isBlank()) {
-      return BotResponse.texto("❌ Usá el comando así:\n`/cancelar <id_propuesta>`");
+    if (!sessionManager.isAuthenticated(chatId)) {
+      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    try {
-      String token = sessionManager.getToken(chatId);
-      String perfilId = servicioJwt.getPerfilId(token);
-      propuestaService.cancelar(partes[1].trim(), perfilId);
-      return BotResponse.texto("🚫 Propuesta cancelada.");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return BotResponse.texto("❌ Error al cancelar: " + e.getMessage());
-    }
+    estadoPendiente.put(chatId, "propuesta:esperando_id_para_cancelar");
+    datosPendientes.put(chatId, new ConcurrentHashMap<>());
+
+    return BotResponse.texto("🚫 *Cancelar propuesta*\n\nIngresá el ID de la propuesta a cancelar:");
   }
 
   // ─── Flujo multi-paso ─────────────────────────────────────────────
@@ -409,6 +391,42 @@ public class PropuestaHandler implements BotHandler {
         }
       }
 
+      case "propuesta:esperando_id_para_aceptar" -> {
+        cancelarPendiente(chatId);
+        try {
+          String token = sessionManager.getToken(chatId);
+          String perfilId = servicioJwt.getPerfilId(token);
+          propuestaService.aceptar(texto, perfilId);
+          yield BotResponse.texto("✅ Propuesta aceptada correctamente. ¡El intercambio se realizó!");
+        } catch (Exception e) {
+          yield BotResponse.texto("❌ Error al aceptar: " + e.getMessage());
+        }
+      }
+
+      case "propuesta:esperando_id_para_rechazar" -> {
+        cancelarPendiente(chatId);
+        try {
+          String token = sessionManager.getToken(chatId);
+          String perfilId = servicioJwt.getPerfilId(token);
+          propuestaService.rechazar(texto, perfilId);
+          yield BotResponse.texto("❌ Propuesta rechazada.");
+        } catch (Exception e) {
+          yield BotResponse.texto("❌ Error al rechazar: " + e.getMessage());
+        }
+      }
+
+      case "propuesta:esperando_id_para_cancelar" -> {
+        cancelarPendiente(chatId);
+        try {
+          String token = sessionManager.getToken(chatId);
+          String perfilId = servicioJwt.getPerfilId(token);
+          propuestaService.cancelar(texto, perfilId);
+          yield BotResponse.texto("🚫 Propuesta cancelada.");
+        } catch (Exception e) {
+          yield BotResponse.texto("❌ Error al cancelar: " + e.getMessage());
+        }
+      }
+
       case "propuestas:esperando_filtro" -> {
         System.out.println(">>> texto bytes: " + Arrays.toString(texto.getBytes()));
         System.out.println(">>> estado bytes: " + Arrays.toString(estado.getBytes()));
@@ -429,7 +447,7 @@ public class PropuestaHandler implements BotHandler {
         ultimoTipoPropuesta.put(chatId, tipo);
 
         cancelarPendiente(chatId);
-        yield buscarPropuestasYArmar(chatId, tipo, 1, estadoProceso);
+        yield buscarPropuestasYArmar(chatId, tipo, 0, estadoProceso);
       }
 
       default -> {

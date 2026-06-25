@@ -50,14 +50,14 @@ public class SubastaHandler implements BotHandler {
   @Override
   public Set<String> comandos() {
     return Set.of(
-        "/subastas", "/missubastas", "/participadas"
+        "/subasta", "/subastas", "/missubastas", "/participadas"
     );
   }
 
   @Override
   public Set<String> prefijos() {
     return Set.of(
-        "/subasta", "/crearsubasta", "/ofertar",
+        "/crearsubasta", "/ofertar",
         "/editaroferta", "/cancelaroferta", "/seleccionar",
         "/rechazaroferta", "/cancelarsubasta", "/cerrarsubasta"
     );
@@ -76,7 +76,6 @@ public class SubastaHandler implements BotHandler {
   public BotResponse handle(Update update) {
     String text = update.getMessage().getText();
 
-    if (text.startsWith("/subasta "))        return handleVerSubasta(update);
     if (text.startsWith("/crearsubasta"))    return handleCrearSubasta(update);
     if (text.startsWith("/ofertar"))         return handleOfertar(update);
     if (text.startsWith("/editaroferta"))    return handleEditarOferta(update);
@@ -87,6 +86,7 @@ public class SubastaHandler implements BotHandler {
     if (text.startsWith("/cerrarsubasta"))   return handleCerrarSubasta(update);
 
     return switch (text) {
+      case "/subasta"      -> handleVerSubasta(update);
       case "/subastas"     -> handleMenu(update);
       case "/missubastas"  -> handleMisSubastas(update);
       case "/participadas" -> handleParticipadas(update);
@@ -124,9 +124,9 @@ public class SubastaHandler implements BotHandler {
             
             ¿Qué querés hacer?
             
+            /subasta              — Ver detalle de una subasta
             /missubastas          — Ver tus subastas activas y finalizadas
             /participadas         — Ver subastas en las que ofertaste
-            /subasta <id>         — Ver detalle de una subasta
             /crearsubasta         — Crear una nueva subasta
             /ofertar              — Hacer una oferta en una subasta
             /editaroferta         — Modificar una oferta existente
@@ -138,21 +138,19 @@ public class SubastaHandler implements BotHandler {
             """);
   }
 
-  // ─── Ver detalle de subasta ───────────────────────────────────────
+  // ─── Ver detalle de subasta (multi-paso) ──────────────────────────
 
   private BotResponse handleVerSubasta(Update update) {
-    String[] partes = update.getMessage().getText().split(" ", 2);
+    long chatId = update.getMessage().getChatId();
 
-    if (partes.length < 2 || partes[1].isBlank()) {
-      return BotResponse.texto("❌ Usá el comando así:\n`/subasta <id_subasta>`");
+    if (!sessionManager.isAuthenticated(chatId)) {
+      return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    try {
-      SubastaDto subasta = subastaService.obtenerSubasta(partes[1].trim());
-      return BotResponse.texto(formatearSubastaDetalle(subasta));
-    } catch (Exception e) {
-      return BotResponse.texto("❌ Error al obtener la subasta: " + e.getMessage());
-    }
+    estadoPendiente.put(chatId, "subasta:esperando_id_para_ver");
+    datosPendientes.put(chatId, new ConcurrentHashMap<>());
+
+    return BotResponse.texto("🔍 *Ver subasta*\n\nIngresá el ID de la subasta:");
   }
 
   // ─── Mis subastas (activas / finalizadas) ─────────────────────────
@@ -187,7 +185,7 @@ public class SubastaHandler implements BotHandler {
       return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    return buscarParticipacionesYArmar(chatId, 1);
+    return buscarParticipacionesYArmar(chatId, 0);
   }
 
   // ─── Crear subasta (multi-paso) ───────────────────────────────────
@@ -356,8 +354,8 @@ public class SubastaHandler implements BotHandler {
       case "subastas:esperando_tipo" -> {
         cancelarPendiente(chatId);
         yield switch (texto) {
-          case "1" -> buscarSubastasYArmar(chatId, "activas", 1);
-          case "2" -> buscarSubastasYArmar(chatId, "finalizadas", 1);
+          case "1" -> buscarSubastasYArmar(chatId, "activas", 0);
+          case "2" -> buscarSubastasYArmar(chatId, "finalizadas", 0);
           default  -> BotResponse.texto("❌ Opción inválida. Respondé 1 o 2.");
         };
       }
@@ -431,6 +429,17 @@ public class SubastaHandler implements BotHandler {
           yield BotResponse.texto("🚫 Subasta cancelada. Usá /crearsubasta para intentar de nuevo.");
         } else {
           yield BotResponse.texto("❓ Respondé *si* o *no*:");
+        }
+      }
+
+      // ── Ver subasta ──
+      case "subasta:esperando_id_para_ver" -> {
+        cancelarPendiente(chatId);
+        try {
+          SubastaDto subasta = subastaService.obtenerSubasta(texto);
+          yield BotResponse.texto(formatearSubastaDetalle(subasta));
+        } catch (Exception e) {
+          yield BotResponse.texto("❌ Error al obtener la subasta: " + e.getMessage());
         }
       }
 
@@ -604,20 +613,21 @@ public class SubastaHandler implements BotHandler {
       String token = sessionManager.getToken(chatId);
       String perfilId = servicioJwt.getPerfilId(token);
 
-      String estado = "activas".equals(tipo) ? "ACTIVA" : "FINALIZADA"; // ← ojo, el servicio compara con "ACTIVA"
-      SubastasFiltro filtro = new SubastasFiltro(pagina, 5, perfilId, null, estado);
+      String estado = "activas".equals(tipo) ? "ACTIVA" : "FINALIZADA";
+      SubastasFiltro filtro = new SubastasFiltro(pagina + 1, 5, perfilId, null, estado);
 
-      PaginaResultado<?> resultado = subastaService.obtenerSubastas(perfilId, filtro); // ← sin cast
+      PaginaResultado<?> resultado = subastaService.obtenerSubastas(perfilId, filtro);
 
       if (resultado == null || resultado.contenido().isEmpty()) {
         return BotResponse.texto("😕 No tenés subastas " +
             ("activas".equals(tipo) ? "activas" : "finalizadas") + ".");
       }
 
+      int paginaActual = pagina + 1;
       StringBuilder sb = new StringBuilder();
       sb.append("activas".equals(tipo) ? "🟢" : "🏁")
           .append(" *Subastas ").append(tipo).append("*\n")
-          .append("📄 Página ").append(pagina).append(" de ")
+          .append("📄 Página ").append(paginaActual).append(" de ")
           .append(resultado.cantidadDePaginas()).append("\n\n");
 
       resultado.contenido().forEach(obj -> {
@@ -629,7 +639,7 @@ public class SubastaHandler implements BotHandler {
 
       if (resultado.cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(sb.toString(),
-            messageBuilder.tecladoPaginacion(pagina - 1, resultado.cantidadDePaginas(), prefijo));
+            messageBuilder.tecladoPaginacion(pagina, resultado.cantidadDePaginas(), prefijo));
       }
 
       return BotResponse.texto(sb.toString());
@@ -645,7 +655,7 @@ public class SubastaHandler implements BotHandler {
       String token = sessionManager.getToken(chatId);
       String perfilId = servicioJwt.getPerfilId(token);
 
-      SubastasFiltro filtro = new SubastasFiltro(pagina, 5, null, perfilId, null);
+      SubastasFiltro filtro = new SubastasFiltro(pagina + 1, 5, null, perfilId, null);
 
       PaginaResultado<?> resultado = subastaService.obtenerSubastas(perfilId, filtro);
 
@@ -653,9 +663,10 @@ public class SubastaHandler implements BotHandler {
         return BotResponse.texto("😕 No participaste en ninguna subasta todavía.");
       }
 
+      int paginaActual = pagina + 1;
       StringBuilder sb = new StringBuilder();
       sb.append("🤝 *Subastas en las que participaste*\n")
-          .append("📄 Página ").append(pagina).append(" de ")
+          .append("📄 Página ").append(paginaActual).append(" de ")
           .append(resultado.cantidadDePaginas()).append("\n\n");
 
       resultado.contenido().forEach(obj -> {
@@ -664,7 +675,7 @@ public class SubastaHandler implements BotHandler {
 
       if (resultado.cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(sb.toString(),
-            messageBuilder.tecladoPaginacion(pagina - 1, resultado.cantidadDePaginas(), "subastas_participadas"));
+            messageBuilder.tecladoPaginacion(pagina, resultado.cantidadDePaginas(), "subastas_participadas"));
       }
 
       return BotResponse.texto(sb.toString());

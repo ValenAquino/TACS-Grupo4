@@ -110,7 +110,7 @@ public class ColeccionHandler implements BotHandler {
       return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    return buscarFaltantesYArmar(chatId, 1);
+    return buscarFaltantesYArmar(chatId, 0);
   }
 
   public BotResponse handlePaginacionFaltantes(Update update) {
@@ -124,15 +124,16 @@ public class ColeccionHandler implements BotHandler {
       String token = sessionManager.getToken(chatId);
       String colId = servicioJwt.getColeccionId(token);
 
-      FaltantesFiltro filtros = new FaltantesFiltro(5, pagina);
+      FaltantesFiltro filtros = new FaltantesFiltro(5, pagina + 1);
       PaginaResultado<FiguritaDto> resultado = coleccionService.buscarFaltantes(colId, filtros);
 
       if (resultado.contenido().isEmpty()) {
         return BotResponse.texto("😕 No tenés figuritas faltantes cargadas.");
       }
 
+      int paginaActual = pagina + 1;
       StringBuilder sb = new StringBuilder("📋 *Mis faltantes*\n");
-      sb.append("📄 Página ").append(pagina).append(" de ").append(resultado.cantidadDePaginas()).append("\n\n");
+      sb.append("📄 Página ").append(paginaActual).append(" de ").append(resultado.cantidadDePaginas()).append("\n\n");
 
       resultado.contenido().forEach(f ->
           sb.append("• #").append(f.getNumero())
@@ -142,7 +143,7 @@ public class ColeccionHandler implements BotHandler {
 
       if (resultado.cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(sb.toString(),
-            messageBuilder.tecladoPaginacion(pagina - 1, resultado.cantidadDePaginas(), "faltantes"));
+            messageBuilder.tecladoPaginacion(pagina, resultado.cantidadDePaginas(), "faltantes"));
       }
 
       return BotResponse.texto(sb.toString());
@@ -162,7 +163,7 @@ public class ColeccionHandler implements BotHandler {
       return BotResponse.texto("⚠️ Necesitás iniciar sesión primero. Usá /login");
     }
 
-    return buscarRepetidasYArmar(chatId, 1);
+    return buscarRepetidasYArmar(chatId, 0);
   }
 
   public BotResponse handlePaginacionRepetidas(Update update) {
@@ -176,15 +177,16 @@ public class ColeccionHandler implements BotHandler {
       String token = sessionManager.getToken(chatId);
       String colId = servicioJwt.getColeccionId(token);
 
-      RepetidasFiltro filtros = new RepetidasFiltro(null, null, 5, pagina);
+      RepetidasFiltro filtros = new RepetidasFiltro(null, null, 5, pagina + 1);
       Repetidas<FiguritaIntercambiableDto> resultado = coleccionService.buscarRepetidas(colId, filtros);
 
       if (resultado.getData().contenido().isEmpty()) {
         return BotResponse.texto("😕 No tenés figuritas repetidas cargadas.");
       }
 
+      int paginaActual = pagina + 1;
       StringBuilder sb = new StringBuilder("🔁 *Mis repetidas*\n");
-      sb.append("📄 Página ").append(pagina).append(" de ")
+      sb.append("📄 Página ").append(paginaActual).append(" de ")
           .append(resultado.getData().cantidadDePaginas()).append("\n\n");
 
       resultado.getData().contenido().forEach(f -> {
@@ -200,7 +202,7 @@ public class ColeccionHandler implements BotHandler {
 
       if (resultado.getData().cantidadDePaginas() > 1) {
         return BotResponse.conTeclado(sb.toString(),
-            messageBuilder.tecladoPaginacion(pagina - 1, resultado.getData().cantidadDePaginas(), "repetidas"));
+            messageBuilder.tecladoPaginacion(pagina, resultado.getData().cantidadDePaginas(), "repetidas"));
       }
 
       return BotResponse.texto(sb.toString());

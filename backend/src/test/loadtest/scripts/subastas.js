@@ -24,22 +24,22 @@ export default function () {
     const cookie = login(BASE, USUARIO);
     const authHeaders = { 'Cookie': `token=${cookie}` };
 
-    const res = http.get(`${BASE}/colecciones/faltantes`, { headers: authHeaders });
+    const res = http.get(`${BASE}/subastas`, { headers: authHeaders });
 
-    const faltantes = res.json();
+    const subastas = res.json(); // parseo único
 
     check(res, {
         'status 200':      (r) => r.status === 200,
         'body no vacio':   (r) => r.body.length > 0,
     });
 
-    check(faltantes, {
+    check(subastas, {
         'esta paginado':      (s) => s.numero != null && typeof s.numero === 'number',
         'contenido es array': (s) => Array.isArray(s.contenido),
-        'no esta vacio':   (f) => f.contenido.length > 0,
-        'con id definido': (f) => f.contenido.every(fig => fig.id !== null && fig.id !== ""),
-        'con numero':      (f) => f.contenido.every(fig => typeof fig.numero === 'number'),
-        'con jugador':     (f) => f.contenido.every(fig => typeof fig.jugador === 'string'),
+        'tiene elementos':    (s) => s.contenido.length > 0,
+        'tienen id': (s) => s.contenido.every(sub => sub.id !== null && sub.id !== ""),
+        'tienen figurita subastada': (s) => s.contenido.every(sub => sub.figurita_subastada != null),
+        'tienen cierre': (s) => s.contenido.every(sub => sub.fecha_inicio != null && sub.fecha_cierre != null)
     });
 
     sleep(1);

@@ -2,6 +2,9 @@ package app.telegram;
 
 import app.dto.PerfilDto;
 import app.dto.paginacion.PaginaResultado;
+import app.dto.subasta.MiSubastaActivaDto;
+import app.dto.subasta.MiSubastaFinalizadaDto;
+import app.dto.subasta.SubastaParticipoDto;
 import app.dto.subasta.SubastaDto;
 import app.model.entities.Figurita;
 import app.servicios.ServicioJwt;
@@ -94,11 +97,61 @@ class SubastaHandlerTest {
     return dto;
   }
 
-  private PaginaResultado<SubastaDto> paginaVacia() {
+  private MiSubastaActivaDto subastaActivaDto(String id) {
+    MiSubastaActivaDto dto = mock(MiSubastaActivaDto.class);
+    when(dto.getId()).thenReturn(id);
+    when(dto.getFechaInicio()).thenReturn(LocalDateTime.now().minusDays(1));
+    when(dto.getFechaCierre()).thenReturn(LocalDateTime.now().plusDays(1));
+
+    app.dto.FiguritaDto figurita = mock(app.dto.FiguritaDto.class);
+    when(figurita.getNumero()).thenReturn(10);
+    when(figurita.getJugador()).thenReturn("Messi");
+    when(dto.getFiguritaSubastada()).thenReturn(figurita);
+    when(dto.getOfertas()).thenReturn(List.of());
+
+    return dto;
+  }
+
+  private SubastaParticipoDto subastaParticipoDto(String id) {
+    SubastaParticipoDto dto = mock(SubastaParticipoDto.class);
+    when(dto.getId()).thenReturn(id);
+    when(dto.getFechaInicio()).thenReturn(LocalDateTime.now().minusDays(1));
+    when(dto.getFechaCierre()).thenReturn(LocalDateTime.now().plusDays(1));
+
+    PerfilDto perfil = mock(PerfilDto.class);
+    when(perfil.getNombre()).thenReturn("Vendedor");
+    when(dto.getAutor()).thenReturn(perfil);
+
+    app.dto.FiguritaDto figurita = mock(app.dto.FiguritaDto.class);
+    when(figurita.getNumero()).thenReturn(10);
+    when(figurita.getJugador()).thenReturn("Messi");
+    when(dto.getFiguritaSubastada()).thenReturn(figurita);
+    when(dto.isYaCalificado()).thenReturn(false);
+
+    return dto;
+  }
+
+  private MiSubastaFinalizadaDto subastaFinalizadaDto(String id) {
+    MiSubastaFinalizadaDto dto = mock(MiSubastaFinalizadaDto.class);
+    when(dto.getId()).thenReturn(id);
+    when(dto.getFechaInicio()).thenReturn(LocalDateTime.now().minusDays(3));
+    when(dto.getFechaCierre()).thenReturn(LocalDateTime.now().minusDays(1));
+
+    app.dto.FiguritaDto figurita = mock(app.dto.FiguritaDto.class);
+    when(figurita.getNumero()).thenReturn(10);
+    when(figurita.getJugador()).thenReturn("Messi");
+    when(dto.getFiguritaSubastada()).thenReturn(figurita);
+    when(dto.getOfertaGanadora()).thenReturn(null);
+    when(dto.isYaCalificado()).thenReturn(false);
+
+    return dto;
+  }
+
+  private <T> PaginaResultado<T> paginaVacia() {
     return new PaginaResultado<>(List.of(), 0, 0, 1);
   }
 
-  private PaginaResultado<SubastaDto> paginaCon(SubastaDto dto, int totalPaginas) {
+  private <T> PaginaResultado<T> paginaCon(T dto, int totalPaginas) {
     return new PaginaResultado<>(List.of(dto), 1, totalPaginas, 1);
   }
 
@@ -121,8 +174,8 @@ class SubastaHandlerTest {
 
   @Test
   void verSubasta_sinId_devuelveInstrucciones() {
-    BotResponse r = handler.handle(updateConTexto(CHAT_ID, "/subasta "));
-    assertTrue(r.texto().contains("/subasta <id_subasta>"));
+    BotResponse r = handler.handle(updateConTexto(CHAT_ID, "/subasta"));
+    assertTrue(r.texto().contains("Ingresá el ID de la subasta"));
   }
 
   @Test
@@ -130,7 +183,8 @@ class SubastaHandlerTest {
     SubastaDto dto = subastaDto("sub-1");
     when(subastaService.obtenerSubasta("sub-1")).thenReturn(dto);
 
-    BotResponse r = handler.handle(updateConTexto(CHAT_ID, "/subasta sub-1"));
+    handler.handle(updateConTexto(CHAT_ID, "/subasta"));
+    BotResponse r = handler.handlePendiente(updateConTexto(CHAT_ID, "sub-1"));
 
     assertTrue(r.texto().contains("sub-1"));
     assertTrue(r.texto().contains("Messi"));
@@ -139,7 +193,8 @@ class SubastaHandlerTest {
   @Test
   void verSubasta_errorDeServicio_devuelveMensajeError() throws Exception {
     doThrow(new RuntimeException("no encontrada")).when(subastaService).obtenerSubasta(any());
-    BotResponse r = handler.handle(updateConTexto(CHAT_ID, "/subasta sub-x"));
+    handler.handle(updateConTexto(CHAT_ID, "/subasta"));
+    BotResponse r = handler.handlePendiente(updateConTexto(CHAT_ID, "sub-x"));
     assertTrue(r.texto().contains("❌"));
   }
 
@@ -202,7 +257,7 @@ class SubastaHandlerTest {
 
   @Test
   void misSubastas_conResultados_muestraSubastas() throws Exception {
-    SubastaDto dto = subastaDto("sub-99");
+    MiSubastaActivaDto dto = subastaActivaDto("sub-99");
     doReturn(paginaCon(dto, 1)).when(subastaService).obtenerSubastas(eq(PERFIL_ID), any());
 
     handler.handle(updateConTexto(CHAT_ID, "/missubastas"));
@@ -213,7 +268,7 @@ class SubastaHandlerTest {
 
   @Test
   void misSubastas_variasPaginas_devuelveConTeclado() throws Exception {
-    SubastaDto dto = subastaDto("sub-1");
+    MiSubastaActivaDto dto = subastaActivaDto("sub-1");
     doReturn(paginaCon(dto, 3)).when(subastaService).obtenerSubastas(eq(PERFIL_ID), any());
     when(messageBuilder.tecladoPaginacion(anyInt(), anyInt(), any()))
         .thenReturn(mock(InlineKeyboardMarkup.class));
@@ -242,7 +297,7 @@ class SubastaHandlerTest {
 
   @Test
   void participadas_conResultados_muestraSubastas() throws Exception {
-    SubastaDto dto = subastaDto("sub-participada");
+    SubastaParticipoDto dto = subastaParticipoDto("sub-participada");
     doReturn(paginaCon(dto, 1)).when(subastaService).obtenerSubastas(eq(PERFIL_ID), any());
 
     BotResponse r = handler.handle(updateConTexto(CHAT_ID, "/participadas"));
@@ -382,7 +437,7 @@ class SubastaHandlerTest {
     handler.handlePendiente(updateConTexto(CHAT_ID, "sub-1"));     // subasta id
     handler.handlePendiente(updateConTexto(CHAT_ID, "BRA-7, ESP-5")); // figuritas
 
-    verify(subastaService).ofertarEnSubasta(eq(PERFIL_ID), isNull(), eq(List.of("BRA-7", "ESP-5")));
+    verify(subastaService).ofertarEnSubasta(eq(PERFIL_ID), eq("sub-1"), eq(List.of("BRA-7", "ESP-5")));
     assertFalse(handler.tienePendiente(CHAT_ID));
   }
 
@@ -458,7 +513,7 @@ class SubastaHandlerTest {
 
   @Test
   void callbackActivas_enrutaCorrectamente() throws Exception {
-    SubastaDto dto = subastaDto("sub-activa");
+    MiSubastaActivaDto dto = subastaActivaDto("sub-activa");
     doReturn(paginaCon(dto, 1)).when(subastaService).obtenerSubastas(eq(PERFIL_ID), any());
 
     BotResponse r = handler.handleCallback(updateConCallback(CHAT_ID, "subastas_activas:2"));
@@ -467,7 +522,7 @@ class SubastaHandlerTest {
 
   @Test
   void callbackFinalizadas_enrutaCorrectamente() throws Exception {
-    SubastaDto dto = subastaDto("sub-final");
+    MiSubastaFinalizadaDto dto = subastaFinalizadaDto("sub-final");
     doReturn(paginaCon(dto, 1)).when(subastaService).obtenerSubastas(eq(PERFIL_ID), any());
 
     BotResponse r = handler.handleCallback(updateConCallback(CHAT_ID, "subastas_finalizadas:1"));
@@ -476,7 +531,7 @@ class SubastaHandlerTest {
 
   @Test
   void callbackParticipadas_enrutaCorrectamente() throws Exception {
-    SubastaDto dto = subastaDto("sub-participada");
+    SubastaParticipoDto dto = subastaParticipoDto("sub-participada");
     doReturn(paginaCon(dto, 1)).when(subastaService).obtenerSubastas(eq(PERFIL_ID), any());
 
     BotResponse r = handler.handleCallback(updateConCallback(CHAT_ID, "subastas_participadas:1"));

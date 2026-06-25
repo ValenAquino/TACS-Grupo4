@@ -238,25 +238,28 @@ class PropuestaHandlerTest {
   @Test
   void aceptar_sinId_devuelveInstrucciones() {
     BotResponse r = handler.handleAceptar(updateConTexto(CHAT_ID, "/aceptar"));
-    assertTrue(r.texto().contains("/aceptar <id_propuesta>"));
+    assertTrue(r.texto().contains("Ingresá el ID de la propuesta a aceptar"));
   }
 
   @Test
   void aceptar_conId_llamaAlServicio() throws Exception {
-    handler.handleAceptar(updateConTexto(CHAT_ID, "/aceptar prop-123"));
+    handler.handleAceptar(updateConTexto(CHAT_ID, "/aceptar"));
+    handler.handlePendiente(updateConTexto(CHAT_ID, "prop-123"));
     verify(propuestaService).aceptar("prop-123", PERFIL_ID);
   }
 
   @Test
   void aceptar_exitoso_devuelveMensajeExito() throws Exception {
-    BotResponse r = handler.handleAceptar(updateConTexto(CHAT_ID, "/aceptar prop-123"));
+    handler.handleAceptar(updateConTexto(CHAT_ID, "/aceptar"));
+    BotResponse r = handler.handlePendiente(updateConTexto(CHAT_ID, "prop-123"));
     assertTrue(r.texto().contains("✅"));
   }
 
   @Test
   void aceptar_errorDeServicio_devuelveMensajeDeError() throws Exception {
     doThrow(new RuntimeException("no encontrada")).when(propuestaService).aceptar(any(), any());
-    BotResponse r = handler.handleAceptar(updateConTexto(CHAT_ID, "/aceptar prop-123"));
+    handler.handleAceptar(updateConTexto(CHAT_ID, "/aceptar"));
+    BotResponse r = handler.handlePendiente(updateConTexto(CHAT_ID, "prop-123"));
     assertTrue(r.texto().contains("❌"));
   }
 
@@ -265,19 +268,21 @@ class PropuestaHandlerTest {
   @Test
   void rechazar_sinId_devuelveInstrucciones() {
     BotResponse r = handler.handleRechazar(updateConTexto(CHAT_ID, "/rechazar"));
-    assertTrue(r.texto().contains("/rechazar <id_propuesta>"));
+    assertTrue(r.texto().contains("Ingresá el ID de la propuesta a rechazar"));
   }
 
   @Test
   void rechazar_conId_llamaAlServicio() throws Exception {
-    handler.handleRechazar(updateConTexto(CHAT_ID, "/rechazar prop-123"));
+    handler.handleRechazar(updateConTexto(CHAT_ID, "/rechazar"));
+    handler.handlePendiente(updateConTexto(CHAT_ID, "prop-123"));
     verify(propuestaService).rechazar("prop-123", PERFIL_ID);
   }
 
   @Test
   void rechazar_errorDeServicio_devuelveMensajeDeError() throws Exception {
     doThrow(new RuntimeException("error")).when(propuestaService).rechazar(any(), any());
-    BotResponse r = handler.handleRechazar(updateConTexto(CHAT_ID, "/rechazar prop-123"));
+    handler.handleRechazar(updateConTexto(CHAT_ID, "/rechazar"));
+    BotResponse r = handler.handlePendiente(updateConTexto(CHAT_ID, "prop-123"));
     assertTrue(r.texto().contains("❌"));
   }
 
@@ -286,12 +291,13 @@ class PropuestaHandlerTest {
   @Test
   void cancelar_sinId_devuelveInstrucciones() {
     BotResponse r = handler.handleCancelar(updateConTexto(CHAT_ID, "/cancelar"));
-    assertTrue(r.texto().contains("/cancelar <id_propuesta>"));
+    assertTrue(r.texto().contains("Ingresá el ID de la propuesta a cancelar"));
   }
 
   @Test
   void cancelar_conId_llamaAlServicio() throws Exception {
-    handler.handleCancelar(updateConTexto(CHAT_ID, "/cancelar prop-123"));
+    handler.handleCancelar(updateConTexto(CHAT_ID, "/cancelar"));
+    handler.handlePendiente(updateConTexto(CHAT_ID, "prop-123"));
     verify(propuestaService).cancelar("prop-123", PERFIL_ID);
   }
 

@@ -179,6 +179,9 @@
                     <exclude>app.dto.filtros</exclude>
                     <exclude>app.dto.response</exclude>
                     <exclude>app.config</exclude>
+                    <exclude>app.telegram.bot</exclude>
+                    <exclude>app.telegram.sesion</exclude>
+                    <exclude>app.telegram.utils</exclude>
                     <exclude>app</exclude>
                     <exclude>default</exclude>
                     <exclude>app.repositories</exclude>

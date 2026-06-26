@@ -2,11 +2,13 @@ package app.repositories.impl;
 
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.paginacion.PaginaResultado;
+import app.exceptions.NotFoundException;
 import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Sugerencia;
 import app.repositories.RepositorioSugerencias;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.BulkOperations;
@@ -15,6 +17,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.AggregationUpdate;
+import org.springframework.data.mongodb.core.aggregation.BooleanOperators;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -51,6 +55,18 @@ public class RepositorioSugerenciasMongo implements RepositorioSugerencias {
 
     if (!sugerencias.isEmpty()) {
       bulk.execute();
+    }
+  }
+
+  public void alternarFavorito(String id, String perfilId) {
+
+    Query query = new Query(Criteria.where("_id").is(id).andOperator(Criteria.where("autor.$id").is(perfilId)));
+    AggregationUpdate update = AggregationUpdate.update()
+        .set("favorito").toValue(BooleanOperators.Not.not("$favorito"));
+    UpdateResult result = mongoTemplate.updateFirst(query, update, Sugerencia.class);
+
+    if (result.getMatchedCount() == 0) {
+      throw new NotFoundException("Sugerencia no encontrada para el perfil utilizado");
     }
   }
 

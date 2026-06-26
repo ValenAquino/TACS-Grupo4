@@ -37,4 +37,9 @@ public class ServicioSugerencia {
     return new PaginaResultado<>(sugerencias.contenido().stream().map(SugerenciaDto::new).toList(),
         sugerencias.cantidadDeElementos(), sugerencias.cantidadDePaginas(), sugerencias.numero());
   }
+
+  public void alternarFavorito(String sugerenciaId, String perfilId) {
+
+    this.repositorioSugerencias.alternarFavorito(sugerenciaId, perfilId);
+  }
 }

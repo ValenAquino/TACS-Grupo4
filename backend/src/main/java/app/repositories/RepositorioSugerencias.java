@@ -23,5 +23,7 @@ public interface RepositorioSugerencias {
    */
   List<Sugerencia> generarSugerencias(Perfil perfil);
 
+  void alternarFavorito(String sugerenciaId, String perfilId);
+
   void eliminacionProgramada();
 }

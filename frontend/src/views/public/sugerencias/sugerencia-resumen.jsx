@@ -2,19 +2,23 @@ import PerfilSimple from '@/components/ui/perfil-simple/perfil-simple.jsx'
 import FiguritaRecomendadaCard from '@/views/public/sugerencias/figurita-recomendada-card.jsx'
 import styles from '@/views/public/sugerencias/sugerencia-card.module.css'
 import { useState } from 'react'
-
-const toggleFavoritoSugerencia = async (sugerenciaId, esFavorito) => {
-  // TODO: llamada a la API
-  // await api.patch(`/sugerencias/${sugerenciaId}/favorito`, { favorito: esFavorito })
-}
+import { alternarFavorito } from '@/services/sugerenciasService.js'
+import { useToast } from '@/contexts/toastContext.jsx'
+import { useError } from '@/contexts/errorContext.jsx'
 
 const SugerenciaResumen = ({id, figuritasNecesarias, figuritasRecomendadas, perfil, favorito }) => {
   const [esFavorito, setEsFavorito] = useState(favorito)
+  const {showToast} = useToast()
+  const {handleError, errorTemplate} = useError()
+  const [error, setErrorState] = useState(errorTemplate())
 
   const handleToggleFavorito = async () => {
-    const nuevoEstado = !esFavorito
-    setEsFavorito(!nuevoEstado)
-    await toggleFavoritoSugerencia(id)
+    try {
+      setEsFavorito(!esFavorito)
+      await alternarFavorito({ sugerenciaId: id })
+    } catch (error) {
+      showToast(handleError(error, setErrorState),'error')
+    }
   }
 
   return (

@@ -21,6 +21,7 @@ const MostradorSugerencias = () => {
             setCargando(true)
             const payload = await buscarSugerencias({ pagina: pagina, limite:10})
             setPaginasTotales(payload.cantidad_de_paginas)
+
             setSugerencias(payload.contenido)
         } catch (error) {
           showToast(handleError(error, setError),'error')
@@ -41,7 +42,7 @@ const MostradorSugerencias = () => {
                     sugerencias.length > 0 ?
                         sugerencias.map((s, index) => <SugerenciaCard key={index} id={s.id} perfil={s.sugerido}
                                                      figuritasNecesarias = {s.figuritas_necesarias}
-                                                     figuritasRecomendadas = {s.figuritas_recomendadas} favorite = {s.favorito}/>
+                                                     figuritasRecomendadas = {s.figuritas_recomendadas} favorito = {s.favorito}/>
                         ) : <h2 className="text-center text-muted py-4 fw-light">No pudimos encontrar sugerencias!</h2>
                 }
                 <Paginacion page={pagina} totalPages={paginasTotales} onChange={setPagina}/>

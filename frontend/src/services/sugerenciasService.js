@@ -12,3 +12,12 @@ export const buscarSugerencias = async ({ pagina, limite }) => {
     handleAxiosError(error)
   }
 }
+
+export const alternarFavorito = async ({sugerenciaId}) => {
+  try {
+    const { data } = await api.patch(`${SUGERENCIAS_URL}/${sugerenciaId}/favorito`)
+    return data
+  } catch (error) {
+    handleAxiosError(error)
+  }
+}

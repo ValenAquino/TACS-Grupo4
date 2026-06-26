@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,5 +54,12 @@ public class ControladorSugerencia {
     PaginaResultado<SugerenciaDto> sugerenciasDto = this.sugerenciaService.obtenerSugerencias(perfilId, filtro);
 
     return ResponseEntity.ok().body(sugerenciasDto);
+  }
+
+  @PatchMapping("/{sugerenciaId}/favorito")
+  public ResponseEntity<Void> alternarFavorito(@CookieValue String token, @PathVariable String sugerenciaId) {
+    String perfilId = this.servicioJwt.getPerfilId(token);
+    this.sugerenciaService.alternarFavorito(sugerenciaId, perfilId);
+    return ResponseEntity.noContent().build();
   }
 }

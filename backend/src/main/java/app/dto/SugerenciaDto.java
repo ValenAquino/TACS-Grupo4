@@ -7,6 +7,7 @@ import java.util.List;
 
 @Getter
 public class SugerenciaDto {
+  String id;
   PerfilDto autor;
   PerfilDto sugerido;
   List<Figurita> figuritasRecomendadas;
@@ -14,6 +15,7 @@ public class SugerenciaDto {
   Boolean favorito;
 
   public SugerenciaDto(Sugerencia sugerencia) {
+    this.id = sugerencia.getId();
     this.autor = new PerfilDto(sugerencia.getAutor());
     this.sugerido = new PerfilDto(sugerencia.getSugerido());
     this.figuritasRecomendadas = sugerencia.getFiguritasSugeridas();

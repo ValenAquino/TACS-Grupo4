@@ -22,4 +22,6 @@ public interface RepositorioSugerencias {
    * @return página de sugerencias de intercambio
    */
   List<Sugerencia> generarSugerencias(Perfil perfil);
+
+  void eliminacionProgramada();
 }

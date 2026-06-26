@@ -31,6 +31,8 @@ public class Cronjobs implements ApplicationRunner {
   // Corre todos los días a las 3am
   @Scheduled(cron = "0 0 3 * * *")
   public void crearSugerencias() {
+    this.repositorioSugerencias.eliminacionProgramada();
+
     List<Perfil> perfiles = this.repositorioPerfiles.buscarTodos(new CamposPerfil(false));
     perfiles.forEach(perfil -> {
 

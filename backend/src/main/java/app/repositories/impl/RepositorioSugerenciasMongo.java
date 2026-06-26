@@ -2,12 +2,10 @@ package app.repositories.impl;
 
 import app.dto.filtros.SugerenciasFiltro;
 import app.dto.paginacion.PaginaResultado;
-import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.MetodoIntercambio;
 import app.model.entities.Perfil;
 import app.model.entities.Sugerencia;
-import app.model.notificador.Notificacion;
 import app.repositories.RepositorioSugerencias;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,6 @@ import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -149,7 +146,24 @@ public class RepositorioSugerenciasMongo implements RepositorioSugerencias {
     return sugerencias;
   }
 
-  public PaginaResultado<Sugerencia> buscarPorPerfil(Perfil perfil, SugerenciasFiltro filtro) {
-    return null;
+  public PaginaResultado<Sugerencia> buscarPorPerfil(Perfil perfil, SugerenciasFiltro filtros) {
+    Query query = new Query();
+    query.addCriteria(
+        Criteria.where("autor").is(perfil)
+    );
+
+    long count = mongoTemplate.count(query, Sugerencia.class);
+
+    query.skip((long) (filtros.pagina()-1) * filtros.limite()).limit(filtros.limite());
+    List<Sugerencia> sugerencias = mongoTemplate.find(query, Sugerencia.class);
+
+    return new PaginaResultado<>(sugerencias, count, (int) Math.ceil((double) count / filtros.limite()), filtros.pagina());
+  }
+
+  public void eliminacionProgramada() {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("favorito").is(false));
+
+    mongoTemplate.findAllAndRemove(query, Sugerencia.class);
   }
 }

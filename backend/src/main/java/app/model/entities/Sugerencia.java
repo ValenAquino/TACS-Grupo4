@@ -26,4 +26,6 @@ public class Sugerencia {
   List<Figurita> figuritasSugeridas;
   @DBRef
   List<Figurita> figuritasNecesarias;
+  @Builder.Default
+  Boolean favorito = false;
 }

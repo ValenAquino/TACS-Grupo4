@@ -1,9 +1,9 @@
 import SugerenciaCard from "@/views/public/sugerencias/sugerencia-card.jsx";
 import {useCallback, useEffect, useState} from "react";
-import {buscarSugerencias} from "@/services/perfilService.js";
 import Paginacion from "@/components/ui/paginacion/paginacion.jsx";
 import { useError } from '@/contexts/errorContext.jsx'
 import { useToast } from '@/contexts/toastContext.jsx'
+import { buscarSugerencias } from '@/services/sugerenciasService.js'
 
 const MostradorSugerencias = () => {
 
@@ -39,9 +39,9 @@ const MostradorSugerencias = () => {
             <>
                 {
                     sugerencias.length > 0 ?
-                        sugerencias.map(s => <SugerenciaCard key={s.perfil.id} perfil={s.perfil}
+                        sugerencias.map((s, index) => <SugerenciaCard key={index} id={s.id} perfil={s.sugerido}
                                                      figuritasNecesarias = {s.figuritas_necesarias}
-                                                     figuritasRecomendadas = {s.figuritas_recomendadas}/>
+                                                     figuritasRecomendadas = {s.figuritas_recomendadas} favorite = {s.favorito}/>
                         ) : <h2 className="text-center text-muted py-4 fw-light">No pudimos encontrar sugerencias!</h2>
                 }
                 <Paginacion page={pagina} totalPages={paginasTotales} onChange={setPagina}/>

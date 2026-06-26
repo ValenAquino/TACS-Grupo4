@@ -11,11 +11,13 @@ public class SugerenciaDto {
   PerfilDto sugerido;
   List<Figurita> figuritasRecomendadas;
   List<Figurita> figuritasNecesarias;
+  Boolean favorito;
 
   public SugerenciaDto(Sugerencia sugerencia) {
     this.autor = new PerfilDto(sugerencia.getAutor());
     this.sugerido = new PerfilDto(sugerencia.getSugerido());
     this.figuritasRecomendadas = sugerencia.getFiguritasSugeridas();
     this.figuritasNecesarias = sugerencia.getFiguritasNecesarias();
+    this.favorito = sugerencia.getFavorito();
   }
 }

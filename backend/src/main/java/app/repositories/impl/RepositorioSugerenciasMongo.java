@@ -83,6 +83,22 @@ public class RepositorioSugerenciasMongo implements RepositorioSugerencias {
     ops.add(Aggregation.lookup("perfiles", "_id", "coleccion.$id", "perfil"));
     ops.add(Aggregation.unwind("perfil"));
 
+    ops.add(context -> new Document("$lookup", new Document()
+        .append("from", "sugerencias")
+        .append("let", new Document("perfilId", "$perfil._id"))
+        .append("pipeline", List.of(
+            new Document("$match", new Document("$expr", new Document("$and", List.of(
+                new Document("$eq", List.of("$autor.$id", autor.getId())),
+                new Document("$eq", List.of("$sugerido.$id", "$$perfilId"))
+            ))))
+        ))
+        .append("as", "sugerenciaExistente")
+    ));
+
+    ops.add(Aggregation.match(
+        Criteria.where("sugerenciaExistente").is(List.of())
+    ));
+
     List<String> repetidasObjetivoConIntercambio = autor.getColeccion().getRepetidas().stream()
         .filter(r -> r.getMetodos() != null && r.getMetodos().contains(MetodoIntercambio.INTERCAMBIO))
         .map(r -> r.getFigurita().getId())
@@ -125,7 +141,6 @@ public class RepositorioSugerenciasMongo implements RepositorioSugerencias {
         Aggregation.newAggregation(ops), "colecciones", Document.class
     );
 
-    // Mapeo
     MongoConverter converter = mongoTemplate.getConverter();
     List<Sugerencia> sugerencias = resultados.getMappedResults().stream()
         .map(doc -> {

@@ -29,7 +29,7 @@ public class Cronjobs implements ApplicationRunner {
   }
 
   // Corre todos los días a las 3am
-  @Scheduled(cron = "0 0 3 * * *")
+  @Scheduled(cron = "0 * * * * *")
   public void crearSugerencias() {
     this.repositorioSugerencias.eliminacionProgramada();
 

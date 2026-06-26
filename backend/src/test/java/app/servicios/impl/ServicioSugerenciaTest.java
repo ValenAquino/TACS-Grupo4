@@ -2,6 +2,7 @@ package app.servicios.impl;
 
 import app.MongoTestBase;
 import app.dto.filtros.SugerenciasFiltro;
+import app.exceptions.NotFoundException;
 import app.model.entities.Coleccion;
 import app.model.entities.Figurita;
 import app.model.entities.FiguritaIntercambiable;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -135,5 +137,101 @@ public class ServicioSugerenciaTest extends MongoTestBase {
     var resultado = service.obtenerSugerencias("1", new SugerenciasFiltro(1, 10));
 
     assertEquals(0, resultado.contenido().size());
+  }
+
+  @Test
+  void alternarFavorito_cambiaEstadoAFavorito() {
+    Sugerencia sugerencia = Sugerencia.builder()
+        .id("sug-001")
+        .autor(usuario)
+        .sugerido(otro)
+        .figuritasSugeridas(List.of(messi))
+        .figuritasNecesarias(List.of(messi))
+        .build();
+    repositorioSugerencias.guardar(sugerencia);
+
+    service.alternarFavorito("sug-001", usuario.getId());
+
+    Sugerencia resultado = repositorioSugerencias.buscarPorId("sug-001");
+    assertEquals(true, resultado.getFavorito());
+  }
+
+  @Test
+  void alternarFavorito_cambiaEstadoDeFavoritoANoFavorito() {
+    Sugerencia sugerencia = Sugerencia.builder()
+        .id("sug-002")
+        .autor(usuario)
+        .sugerido(otro)
+        .figuritasSugeridas(List.of(messi))
+        .figuritasNecesarias(List.of(messi))
+        .favorito(true)
+        .build();
+    repositorioSugerencias.guardar(sugerencia);
+
+    service.alternarFavorito("sug-002", usuario.getId());
+
+    Sugerencia resultado = repositorioSugerencias.buscarPorId("sug-002");
+    assertEquals(false, resultado.getFavorito());
+  }
+
+  @Test
+  void alternarFavorito_sugerenciaInexistente_lanzaExcepcion() {
+    assertThrows(NotFoundException.class, () ->
+        service.alternarFavorito("no-existe", usuario.getId())
+    );
+  }
+
+  @Test
+  void obtenerSugerencias_soloRetornaSugerenciasDelPerfil() {
+    Figurita diMaria = Figurita.builder()
+        .id("ARG-11")
+        .numero(11)
+        .jugador("Di María")
+        .seleccion(Seleccion.ARGENTINA)
+        .build();
+    repositorioFiguritas.guardar(diMaria);
+
+    Sugerencia sugerencia1 = Sugerencia.builder()
+        .id("sug-003")
+        .autor(usuario)
+        .sugerido(otro)
+        .figuritasSugeridas(List.of(messi))
+        .figuritasNecesarias(List.of(diMaria))
+        .build();
+
+    Sugerencia sugerencia2 = Sugerencia.builder()
+        .id("sug-004")
+        .autor(otro)
+        .sugerido(usuario)
+        .figuritasSugeridas(List.of(diMaria))
+        .figuritasNecesarias(List.of(messi))
+        .build();
+
+    repositorioSugerencias.guardar(sugerencia1);
+    repositorioSugerencias.guardar(sugerencia2);
+
+    var resultado = service.obtenerSugerencias(usuario.getId(), new SugerenciasFiltro(0, 10));
+
+    assertEquals(1, resultado.contenido().size());
+  }
+
+  @Test
+  void obtenerSugerencias_paginacionCorrecta() {
+    for (int i = 0; i < 5; i++) {
+      Sugerencia s = Sugerencia.builder()
+          .id("sug-pag-" + i)
+          .autor(usuario)
+          .sugerido(otro)
+          .figuritasSugeridas(List.of(messi))
+          .figuritasNecesarias(List.of(messi))
+          .build();
+      repositorioSugerencias.guardar(s);
+    }
+
+    var resultado = service.obtenerSugerencias(usuario.getId(), new SugerenciasFiltro(0, 2));
+
+    assertEquals(2, resultado.contenido().size());
+    assertEquals(5, resultado.cantidadDeElementos());
+    assertEquals(3, resultado.cantidadDePaginas());
   }
 }

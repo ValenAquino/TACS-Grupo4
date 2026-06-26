@@ -25,5 +25,7 @@ public interface RepositorioSugerencias {
 
   void alternarFavorito(String sugerenciaId, String perfilId);
 
+  Sugerencia buscarPorId(String id);
+
   void eliminacionProgramada();
 }

@@ -58,6 +58,10 @@ public class RepositorioSugerenciasMongo implements RepositorioSugerencias {
     }
   }
 
+  public Sugerencia buscarPorId(String id) {
+    return mongoTemplate.findById(id, Sugerencia.class);
+  }
+
   public void alternarFavorito(String id, String perfilId) {
 
     Query query = new Query(Criteria.where("_id").is(id).andOperator(Criteria.where("autor.$id").is(perfilId)));

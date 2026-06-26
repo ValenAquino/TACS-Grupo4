@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Component
 @DependsOn("inicializadorDeDatos")
+@Profile("!test")
 @RequiredArgsConstructor
 public class Cronjobs implements ApplicationRunner {
 
@@ -29,7 +31,7 @@ public class Cronjobs implements ApplicationRunner {
   }
 
   // Corre todos los días a las 3am
-  @Scheduled(cron = "0 * * * * *")
+  @Scheduled(cron = "0 0 3 * * *")
   public void crearSugerencias() {
     this.repositorioSugerencias.eliminacionProgramada();
 

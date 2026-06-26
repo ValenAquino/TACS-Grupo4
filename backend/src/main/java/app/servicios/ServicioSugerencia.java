@@ -16,9 +16,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ServicioSugerencia {
   @Autowired
-  RepositorioSugerencias repositorioSugerencias;
+  private final RepositorioSugerencias repositorioSugerencias;
   @Autowired
-  RepositorioPerfiles repositorioPerfiles;
+  private final RepositorioPerfiles repositorioPerfiles;
 
   /**
    * Genera sugerencias de intercambio para un perfil basándose en su colección
